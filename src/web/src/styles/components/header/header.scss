@@ -1,0 +1,46 @@
+@import "../../abstracts/variables";
+@import "../../abstracts/mixins";
+
+.header{
+    height: $header-height;
+    background-color: $color-white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 28px;
+
+    &__drawer{
+        width: 30px;
+        height: 30px;
+        cursor: pointer;
+        margin-right: 28px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        svg{
+            width: 100% !important;
+            height: 100% !important;
+        }
+        @include desktop_width{
+            display: none;
+        }
+    }
+
+    &__space{
+        flex:1;
+    }
+
+    &__notification{
+        margin-right:  20px;
+    }
+
+    &__profile{
+        width: 64px;
+        height: 64px;
+        cursor: pointer;
+
+        
+    }
+
+
+}
