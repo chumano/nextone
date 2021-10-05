@@ -1,5 +1,17 @@
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Channel from "./pages/channel/Channel";
 import Home from "./pages/home/Home";
+import { faHome,
+     faAddressBook,
+     faSnowflake,
+     faMap
+} from '@fortawesome/free-solid-svg-icons'
+import MapConfig from "./pages/admin/map-config/MapConfig";
+import Channels from "./pages/admin/channels/Channels";
+import AuthLogin from "./pages/auth-login/AuthLogin";
+import AuthCallback from "./pages/auth-callback/AuthCallback";
+
+
 
 export interface IRouteConfig {
     path: string,
@@ -10,15 +22,19 @@ export interface IRouteConfig {
     exact?: boolean
 }
 const routes: Array<IRouteConfig> = [
+    //common
     {
         path: "/auth/callback",
-        component: {}
+        component: AuthCallback,
+        useAuthLayout: true
     },
     {
         path: "/auth/login",
-        component: {}
+        component: AuthLogin,
+        useAuthLayout: true
     },
-    //chanel manager
+
+    //channel manager
     {
         path: "/home",
         component: Home,
@@ -33,13 +49,47 @@ const routes: Array<IRouteConfig> = [
     //admin
     {
         path: "/admin/users",
-        component: {}
+        component: Home,
+        useAuthLayout: true
     },
     {
-        path: "/admin/chanels",
-        component: {}
+        path: "/admin/channels",
+        component: Channels,
+        useAuthLayout: true
+    },
+    {
+        path: "/admin/map-config",
+        component: MapConfig,
+        useAuthLayout: true
     }
 
 ];
 
-export { routes };
+const MenuList = [
+    {
+        id:0,
+        title:'Trang chủ',
+        path: '/home',
+        icon: <FontAwesomeIcon icon={faHome} />
+    },
+    {
+        id:1,
+        title:'Quản lý kênh',
+        path: '/admin/channels',
+        icon: <FontAwesomeIcon icon={faSnowflake} />
+    },
+    {
+        id:2,
+        title:'Quản lý người dùng',
+        path: '/admin/users',
+        icon: <FontAwesomeIcon icon={faAddressBook} />
+    },
+    {
+        id:3,
+        title:'Cấu hình bản đồ',
+        path: '/admin/map-config',
+        icon: <FontAwesomeIcon icon={faMap} />
+    }
+]
+
+export { routes, MenuList };

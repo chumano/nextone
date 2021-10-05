@@ -1,28 +1,21 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from '../../logo.svg';
+import { MenuList } from "../../Route";
 import '../../styles/components/layout/sidebar.scss';
-import { faCoffee, faAddressBook } from '@fortawesome/free-solid-svg-icons'
-
-const MenuList = [
-    {
-        id:0,
-        title:'Menu 1',
-        path: '/home',
-        icon: <FontAwesomeIcon icon={faCoffee} />
-    },
-    {
-        id:1,
-        title:'Menu 2',
-        path: '/channel',
-        icon: <FontAwesomeIcon icon={faAddressBook} />
-    }
-]
 
 interface IProp {
     show: boolean
 }
 const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
+    const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
+
+    useEffect(() => {
+        const path = window.location.pathname.toLowerCase();
+        const index = MenuList.findIndex((menu)=>menu.path == path);
+        setSelectedMenuIndex(index);
+    }, []);
 
     return <>
         <div className={"sidebar " + (show?"open":"")}>
@@ -32,8 +25,8 @@ const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
 
             <div className="sidebar-menu">
                 <ul className="sidebar-menu__ul">
-                    {MenuList.map((item,key)=>(
-                        <li key={item.id} className="sidebar-menu__item"> 
+                    {MenuList.map((item,index)=>(
+                        <li key={item.id} className={"sidebar-menu__item"+ (selectedMenuIndex==index?" active":"")}> 
                             <Link to={item.path} >
                                 <div className="li-icon">
                                     {item.icon}

@@ -29,6 +29,9 @@ $height : 44px;
         .toggle__title{
             color: $color-dark-2;
             font-weight: 700;;
+            &.unread{
+                color:red;
+            }
         }
 
         .toggle__down-icon{
@@ -46,4 +49,93 @@ $height : 44px;
         }
     }
     
+    &__dropdown{
+        border-radius: 0;
+        border: none;
+        padding: 0;
+        top: 15px !important;
+        width: 325px;
+        box-shadow: 0px 3px 3px 2px #00000022;
+
+        @include mobile_width{
+            width: 260px;
+        }
+
+        .dropdown-head{
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 20px 0 15px;
+            margin-bottom: 10px;
+
+            &__title{
+                color: $color-dark;
+                font-weight: 500;
+            }
+
+            &__link{
+                color: $color-dark-2;
+                font-size: 14px;
+            }
+        }
+
+        .dropdown-body{
+            width: 100%;
+            padding: 0 15px;
+            max-height: 250px;
+            overflow-y: auto;
+
+            @include scrollbar_square;
+
+            .notification-item{
+                display: flex;
+                align-items: center;
+                padding: 10px 0;
+                border-top: 1px solid $color-white-2;
+                cursor: pointer;
+                justify-content: space-between;
+
+                &__left{
+                    display: flex;
+                    align-items: center;
+                }
+
+                &__status{
+                    width: 5px;
+                    height: 5px;
+                    border-radius: 50%;
+                    background-color: red;
+                    position: relative;
+                    left:-2px;
+                    margin-right: 4px;
+                }
+
+                &__content{
+                    max-width: 200px;
+                    overflow: hidden;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    display: inline-block;
+                    font-size: 14px;
+                }
+
+                &__time{
+                    margin-left: 10px;
+                    font-size: small;
+                }
+
+            }
+
+            .no-notifications{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border-top: 1px solid $color-white-2;
+                height: 100px;
+                span{
+                    color: $color-grey;
+                    font-size: 16px;
+                }
+            }
+        }
+    }
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Suspense } from "react";
 import { RouteComponentProps, useHistory, useParams } from "react-router";
 import Loading from "../controls/loading/Loading";
+import Backdrop from "./Backdrop";
 
 const Header = React.lazy(()=> import('../header/Header'));
 const SideBar = React.lazy(()=> import('./SideBar'));
@@ -27,6 +28,8 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
         {authenticated &&
             <div className="layout">
                 <Suspense fallback={<Loading/>}>
+                    {sideDrawer?<Backdrop backdropClick={hideDrawer}/>:(<></>)}
+                    
                     <SideBar show={sideDrawer}/>
 
                     <div className="layout__container">

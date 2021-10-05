@@ -46,7 +46,6 @@ $sidebar-width : 230px;
         &__item{
             margin: 0 10px;
             height: 50px;
-            width: 200px;
             display: flex;
             align-items: center;
             padding: 19px 0 19px 10px;
@@ -60,7 +59,17 @@ $sidebar-width : 230px;
                 .li-icon{
                     width: 24px;
                     height: 24px;
-                    margin-right: 24px;
+                    margin-right: 15px;
+                }
+            }
+
+            &.active{
+                background-color: $color-white;
+                a{
+                    color: $color-dark-2;
+                    .li-icon svg{
+                        fill: $color-dark-2;
+                    }
                 }
             }
         }
