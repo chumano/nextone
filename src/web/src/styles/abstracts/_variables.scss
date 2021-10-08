@@ -10,10 +10,22 @@ $color-white-3: #f0f0f0;
 $color-grey: #777777;
 $color-grey-2: #a3a3a3;
 $color-grey-3: #a4a4a4;
+$color-grey-4: #c4c4c4;
+$color-grey-5: #e3e3e3;
+$color-grey-6: #e1e1e1;
+$color-grey-7: #9b9b9b;
+$color-grey-8: #ececec;
+$color-grey-9: #cccccc;
+
+$color-blue: #0a12bf;
+$color-blue-2: #03002e;
+
+$color-primary-btn : #0a12bf;
+$color-primary-btn-hover : #03002e;
 
 // FONT
 $font-family: "Ubuntu";
-$font-family-bool: "Ubuntu Bold";
+$font-family-bold: "Ubuntu Bold";
 
 
 // BREAK POINT
@@ -23,3 +35,4 @@ $break-point-tablet : 900px;
 
 // SIZE
 $header-height : 80px;
+$input-control-height:  40px;

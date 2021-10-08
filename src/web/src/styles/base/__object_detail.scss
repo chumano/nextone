@@ -1,0 +1,36 @@
+@import "../abstracts/variables";
+@import "../abstracts/mixins";
+
+.object-detail{
+    &__head{
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+
+        @include mobile_width{
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        &--title{
+
+        }
+
+        &--actions{
+            display: flex;
+            align-items: center;
+            align-self: flex-end;
+            
+        }
+    }
+
+    &__body{
+        background-color: $color-white;
+        padding: 1.5rem;
+        margin-right: 0;
+        margin-left: 0;
+        border-width: 1px;
+        border-top-left-radius: .25rem;
+        border-top-right-radius: .25rem;
+    }
+}

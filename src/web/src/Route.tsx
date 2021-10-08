@@ -10,6 +10,7 @@ import MapConfig from "./pages/admin/map-config/MapConfig";
 import Channels from "./pages/admin/channels/Channels";
 import AuthLogin from "./pages/auth-login/AuthLogin";
 import AuthCallback from "./pages/auth-callback/AuthCallback";
+import Users from "./pages/admin/users/Users";
 
 
 
@@ -49,7 +50,7 @@ const routes: Array<IRouteConfig> = [
     //admin
     {
         path: "/admin/users",
-        component: Home,
+        component: Users,
         useAuthLayout: true
     },
     {

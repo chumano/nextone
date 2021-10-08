@@ -1,0 +1,124 @@
+@import "../abstracts/variables";
+@import "../abstracts/mixins";
+
+/* Common */
+.flex-spacer{
+    flex: 1;
+}
+
+.clickable{
+    cursor: pointer;
+}
+
+.display-none{
+    display: none !important;
+}
+
+/* Table */
+.table-responsive{
+    margin-bottom: 20px;
+    table{
+        color: $color-dark;
+        margin-bottom: 0;
+    }
+
+    @include scrollbar_square;
+}
+
+table{
+    color: $color-dark;
+    background-color: $color-white;
+    th {
+        font-family: $font-family-bold;
+    }
+}
+
+
+/* Input controls */
+/* button */
+.button{
+    min-width: $input-control-height;
+    height: $input-control-height;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    margin-left: 12px;
+    padding: 0 15px;
+
+    @include tablet_width{
+        &:nth-child(1){
+            margin-left: 0;
+        }
+    }
+
+    &:disabled{
+        cursor: default !important;
+        background-color: $color-grey-6;
+        color: $color-grey-7;
+    }
+
+    &--blue{
+        background-color: $color-blue;
+        color: $color-white;
+
+        &:hover{
+            background-color: $color-blue-2;
+        }
+    }
+
+    &--loading{
+        cursor: default !important;
+    }
+
+    &--icon-label{
+        svg{
+            margin-right: 5px;
+        }
+        @include mobile-width{
+            display: flex;
+            svg{
+                margin-right: 0;
+            }
+            .button-label{
+                display: none;
+            }
+        }
+    }
+}
+
+.button-primary{
+    //@extend .button;
+    background-color: $color-primary-btn;
+    color: $color-white;
+
+    &:hover{
+        background-color: $color-primary-btn-hover;
+    }
+}
+
+.button-link{
+    border: none;
+    font-size: 16px;
+    text-decoration: underline;
+    background-color: $color-white;
+
+    &:hover{
+        background-color: $color-white-2;
+    }
+
+    &--grey{
+        color: $color-grey;
+    }
+
+    &--blue{
+        color: $color-blue;
+    }
+}
+
+.link-clickable{
+    color: $color-blue;
+    text-decoration: underline;
+    cursor: pointer;
+}
+/* checkbox */
+

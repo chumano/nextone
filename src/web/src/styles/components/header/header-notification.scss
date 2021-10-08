@@ -16,6 +16,10 @@ $height : 44px;
         margin-right: 20pxl;
         padding: 0;
 
+        @include mobile-width{
+            width: auto;
+        }
+
         .toggle__icon{
             margin-left: 5px;
             margin-right: 10px;
@@ -28,9 +32,16 @@ $height : 44px;
 
         .toggle__title{
             color: $color-dark-2;
-            font-weight: 700;;
+            font-weight: 700;
+            margin-right: 10px;
             &.unread{
                 color:red;
+            }
+
+            @include mobile-width{
+                .label{
+                    display: none;
+                }
             }
         }
 
@@ -94,6 +105,11 @@ $height : 44px;
                 cursor: pointer;
                 justify-content: space-between;
 
+                @include mobile-width{
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+
                 &__left{
                     display: flex;
                     align-items: center;
@@ -121,6 +137,9 @@ $height : 44px;
                 &__time{
                     margin-left: 10px;
                     font-size: small;
+                    @include mobile-width{
+                        align-self: flex-end;
+                    }
                 }
 
             }

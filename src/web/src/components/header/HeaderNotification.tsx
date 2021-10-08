@@ -67,7 +67,7 @@ const HeaderNotification : React.FC = ()=>{
                 </div>
                 <div className={"toggle__title" + (unreadNotifications.length>0?" unread":"")}> 
                     <span> {unreadNotifications.length} </span>
-                    <span>Thông báo</span>
+                    <span className="label">Thông báo</span>
                 </div>
                 <div className="toggle__down-icon">
                     <FontAwesomeIcon icon={faChevronDown}/>

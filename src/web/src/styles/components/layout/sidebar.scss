@@ -27,8 +27,11 @@ $sidebar-width : 230px;
     }
 
     &__logo{
-        width: 100px;
-        min-height: 50px;
+        text-align: center;
+        img{
+            width: 100px;
+            min-height: 50px;
+        }
     }
 
     &-menu{

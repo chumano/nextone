@@ -19,9 +19,12 @@ const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
 
     return <>
         <div className={"sidebar " + (show?"open":"")}>
-            <Link to={'/home'}>
-                <img className="sidebar__logo" src={logo} alt='' />
-            </Link>
+            <div className="sidebar__logo">
+                <Link to={'/home'} >
+                    <img  src={logo} alt='' />
+                </Link>
+            </div>
+            
 
             <div className="sidebar-menu">
                 <ul className="sidebar-menu__ul">

@@ -5,10 +5,11 @@ import {
     faCog } 
     from "@fortawesome/free-solid-svg-icons";
 import { Dropdown, DropdownMenu, DropdownToggle } from "reactstrap"
-import { useState } from "react";
+import { useContext, useState } from "react";
 import React from "react";
 import { Link } from "react-router-dom";
 import '../../styles/components/header/user-profile-menu.scss'
+import { AppContext } from "../../utils/contexts/AppContext";
 
 
 const ProfileMenus:any[] = [
@@ -24,17 +25,22 @@ const ProfileMenus:any[] = [
     },
     {
         label: "Đăng xuất",
-        click: ()=>{ console.log("logout")},
+        click: (fn:()=>void)=>{ fn() },
         icon: <FontAwesomeIcon icon={faSignOutAlt} />
     }
 ];
 
 const UserProfileMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const appContext = useContext(AppContext);
+    const logoutClick = ()=>{
+        appContext.userLogOut();
+    }
+
     return <>
         <Dropdown
             isOpen={isOpen}
-            toggle={() => { setIsOpen(!isOpen); }}
+            toggle={() => { setIsOpen(!isOpen); appContext.userLogIn({name :"loc"}) }}
             className="profile"
         >
             <DropdownToggle
@@ -62,7 +68,7 @@ const UserProfileMenu: React.FC = () => {
                                     </Link>
 
                                 ) :
-                                    (<button onClick={()=> menu.click() } className="dropdown-item dropdown__item">
+                                    (<button onClick={()=> menu.click(logoutClick) } className="dropdown-item dropdown__item">
                                         <div className="dropdown__icon">
                                             {menu.icon}
                                         </div>

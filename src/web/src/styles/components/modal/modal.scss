@@ -1,0 +1,41 @@
+
+@import "../../abstracts/variables";
+@import "../../abstracts/mixins";
+
+.modal-info{
+    .modal-body{
+        padding: 20px;
+    }
+
+    &__head{
+        margin-bottom: 15px;
+        font-size: 20px;
+        font-weight: 400;
+        color: $color-grey;
+
+        @include mobile-width{
+            font-size: 16px;
+        }
+    }
+
+    &__content{
+        font-size: 18px;
+        font-weight: 400;
+        color: $color-dark-2;
+        @include mobile-width{
+            font-size: 15px;
+        }
+    }
+
+    &__bottom{
+        display: flex;
+        justify-content: flex-end;
+        .no-btn{
+            margin-right: 5px;
+        }
+        .yes-btn{
+            width: 100px;
+        }
+    }
+
+}
