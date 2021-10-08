@@ -18,67 +18,39 @@ import { AuthState } from '../../../store';
 import {fetchUsers, getAll, IUserStore, userStore} from '../../../store/users/userStore';
 import { bindActionCreators } from '@reduxjs/toolkit';
 
-const FakeUserList:IUser[]= [
-    {
-        id: "id1",
-        name :"Loc Hoang",
-        email: "loc@mail.com",
-        manageChannels:[],
-        roles:[]
-    },
-    {
-        id: "id2",
-        name :"Loc Hoang 2",
-        email: "loc@mail.com",
-        manageChannels:[],
-        roles:[]
-    },
-    {
-        id: "id3",
-        name :"Loc Hoang 3",
-        email: "loc@mail.com",
-        manageChannels:[],
-        roles:[]
-    }
-];
-
 interface IProp {
     users: IUser[],
-    getAll: () => void;
+    totalUser: number,
+    getUsers: (filters?:any) => void;
 }
 const Users : React.FC<IProp> = ({
+    totalUser,
     users,
-    getAll
+    getUsers
 })=>{
-    const [totalRecord, setTotalRecord] = useState(210);
     const [userList, setUserList] = useState<IUser[]>([]);
+    const [totalRecord, setTotalRecord] = useState(userList.length);
     const [openDetail, setOpenDetail] = useState(false);
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const newUser : IUser= createNewUser();
     const [selectedUser,setSelectedUser] = useState(newUser); 
     
-    const [dataFilter,setDataFilter] =useState<any>({})
-    const [pageSize, setPageSize] = useState(30 ||DEFAULT_PAGE_SIZE);
+    const [dataFilter,setDataFilter] =useState<any>({
+        page: 1,
+        pageSize : DEFAULT_PAGE_SIZE
+    })
 
     const appContext = useContext(AppContext);
     
-
-    useEffect(() => {
-        getAll();
-    }, [getAll]);
-    
     useEffect(()=>{
-        setUserList(users ||FakeUserList);
-    },[users])
-
-    const getUserData = ()=>{
-
-    }
+        setTotalRecord(totalUser);
+        setUserList(users || []);
+    },[users,totalUser])
 
     useEffect(() => {
         console.log("getUserData:", dataFilter);
-        getUserData();
-    }, [dataFilter]);
+        getUsers(dataFilter);
+    }, [dataFilter, getUsers]);
 
     const onPageChange = (page:number)=>{
         if(page!=dataFilter.page){
@@ -240,13 +212,14 @@ const Users : React.FC<IProp> = ({
 
 const mapStateToProps = (state : IUserStore) => {
     return {
+      totalUser : state.userState.totalUser,
       users: state.userState.users,
     };
   };
   
 const mapDispatchToProps = (dispatch: any) =>{
     return bindActionCreators({
-        getAll : fetchUsers,
+        getUsers : fetchUsers,
     }, dispatch);
 }
 export default connect(mapStateToProps, mapDispatchToProps,undefined, {

@@ -4,6 +4,7 @@
 export * from "./constants/constants";
 export * from "./common";
 export * from "./axios";
+export * from "./data/fakeData";
 
 //types
 export * from "./types/models/channel";

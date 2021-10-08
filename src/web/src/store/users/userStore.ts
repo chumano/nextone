@@ -3,16 +3,17 @@ import { Dispatch } from "react";
 import { UserService } from "../../services";
 import { IUser } from "../../utils";
 
-const initialState : {
-    users: IUser[]
-} = {
+type UserState = {
+    totalUser: number,
+    users : IUser[]
+} 
+const initialState : UserState  = {
+    totalUser :0,
     users : []
 } 
 
 export interface IUserStore{
-    userState : {
-        users : IUser[]
-    } 
+    userState :UserState
 }
 
 export const userSlice = createSlice({
@@ -20,7 +21,8 @@ export const userSlice = createSlice({
     initialState,
     reducers: {
         getAll: (state, action) => {
-            state.users = action.payload;
+            state.totalUser = action.payload.total;
+            state.users = action.payload.items;
         }
     },
 })
@@ -31,9 +33,9 @@ export const { getAll } = userSlice.actions;
 export const getUsers = (state: IUserStore) => state.userState;
 
 
-export const fetchUsers = () => async (dispatch : Dispatch<any>) => {
+export const fetchUsers = (filters?: any) => async (dispatch : Dispatch<any>) => {
     //dispatch(usersLoading())
-    const response = await UserService.getAll();
+    const response = await UserService.findBy(filters);
     dispatch(getAll(response.data))
   }
 
