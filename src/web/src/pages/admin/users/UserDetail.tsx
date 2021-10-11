@@ -3,15 +3,19 @@ import {
     faTimes,
     faSave
 } from "@fortawesome/free-solid-svg-icons";
-import { createNewUser, IUser } from "../../../utils";
-import { useState } from "react";
+import { createNewUser, IUser, useEnvDev } from "../../../utils";
+import { useEffect, useState } from "react";
 import { getIsLoggedIn } from "../../../store";
 import { useSelector } from "react-redux";
 import { Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
+import ReactJson from "react-json-view";
+import { useForm } from "react-hook-form";
+import ErrorSummary, { addServerErrors } from "../../../components/error-summary/ErrorSummary";
+import ErrorMessage from "../../../components/error-summary/ErrorMessage";
 
 interface IProp {
     userData?: IUser,
-    closeDetail?: () => void;
+    closeDetail: () => void;
     saveData: (data: IUser) => void;
 }
 const UserDetail: React.FC<IProp> = ({
@@ -21,80 +25,99 @@ const UserDetail: React.FC<IProp> = ({
 }) => {
     const newData: IUser = createNewUser();
     const [data, setData] = useState<IUser>(userData || newData);
+    const [isAdd, _] = useState<boolean>(!data.id);
+    const isDev = useEnvDev();
     const isLoggedIn = useSelector(getIsLoggedIn);
-    console.log("UserDetail", data);
+    //https://react-hook-form.com/api/useform/setFocus
+    const { register, handleSubmit, formState: { errors , isDirty , dirtyFields, isSubmitted, isValid, submitCount}, setError,
+        getValues, clearErrors, control, reset, setValue, setFocus, watch, trigger, unregister } = useForm({
+            defaultValues: data
+        });
+
+    const submitForm = async (data: any) => {
+        console.log("formData", data);
+        const result = {
+            errors: {
+                name: ["The name is exist"],
+                email: ["The email is invalid"]
+            }
+        }
+        addServerErrors(result.errors, setError);
+    };
+
+    const onSubmit = handleSubmit(submitForm);
+
+    const onSaveClick = () => {
+
+        onSubmit();
+        //saveData(data);
+    }
+
+    useEffect(() => {
+        setFocus("name");
+    }, [setFocus]);
+
+    const onCloseClick = () => {
+        //Loi :https://github.com/react-hook-form/react-hook-form/issues/6754
+        //setFocus("isActive");
+        closeDetail();
+    }
+
+
     return <>
         <div className="object-detail">
             <div className="object-detail__head">
                 <div className="object-detail__head--title page-title">
-                    Thêm người dùng {isLoggedIn && "isLoggedIn"}
+                    {isAdd ? "Thêm người dùng" : "Thông tin người dùng"}
                 </div>
 
                 <div className="flex-spacer"></div>
 
                 <div className="object-detail__head--actions">
-                    <button className="button button-primary button--icon-label" onClick={() => { saveData(data) }} >
+                    <button className="button button-primary button--icon-label" onClick={onSaveClick} >
                         <FontAwesomeIcon icon={faSave} />
                         <span className="button-label">Lưu </span>
                     </button>
 
-                    <button className="button button-link button--icon-label" onClick={closeDetail} >
+                    <button className="button button-link button--icon-label" onClick={onCloseClick} >
                         <FontAwesomeIcon icon={faTimes} />
                         <span className="button-label">Close </span>
                     </button>
                 </div>
             </div>
             <div className="object-detail__body">
-                <Form>
+                <form >
                     <Row >
                         <Col md={6}>
                             <div className="mb-3">
-                                <Label for="exampleEmail">Email</Label>
-                                <Input type="email" name="email" id="exampleEmail" placeholder="with a placeholder" />
+                                <Label for="userName">Tên</Label>
+                                <input type="text" id="userName" placeholder="userName placeholder" className="form-control"
+                                    {...register("name", { required: { value: true, message: "You must enter your name" } })} />
+                                <ErrorMessage errors={errors} name={"name"} as="div" className="error-message" />
                             </div>
                         </Col>
-                        <Col md={6}>
-                            <div className="mb-3">
-                                <Label for="examplePassword">Password</Label>
-                                <Input type="password" name="password" id="examplePassword" placeholder="password placeholder" />
-                            </div>
-                        </Col>
+                        <div className="col-md-6">
+                            <ErrorSummary errors={errors} />
+                        </div>
                     </Row>
-                    <div className="mb-3">
-                        <Label for="exampleAddress">Address</Label>
-                        <Input type="text" name="address" id="exampleAddress" placeholder="1234 Main St" />
+                    <div className="row">
+                        <div className="col-md-6 mb-3">
+                            <Label for="userEmail">Email</Label>
+                            <input type="email" autoComplete="off" id="userEmail" placeholder="with a placeholder" className="form-control"
+                                {...register("email", { required: { value: true, message: "You must enter your email" } })} />
+                            <ErrorMessage errors={errors} name={"email"} as="div" className="error-message" />
+                        </div>
                     </div>
-                    <div  className="mb-3">
-                        <Label for="exampleAddress2">Address 2</Label>
-                        <Input type="text" name="address2" id="exampleAddress2" placeholder="Apartment, studio, or floor" />
-                    </div>
-                    <Row >
-                        <Col md={6}>
-                            <div className="mb-3">
-                                <Label for="exampleCity">City</Label>
-                                <Input type="text" name="city" id="exampleCity" />
-                            </div>
-                        </Col>
-                        <Col md={4}>
-                            <div className="mb-3">
-                                <Label for="exampleState">State</Label>
-                                <Input type="text" name="state" id="exampleState" />
-                            </div>
-                        </Col>
-                        <Col md={2}>
-                            <div className="mb-3">
-                                <Label for="exampleZip">Zip</Label>
-                                <Input type="text" name="zip" id="exampleZip" />
-                            </div>
-                        </Col>
-                    </Row>
                     <div className="form-check mb-3">
-                        <Input type="checkbox" name="check" id="exampleCheck" />
-                        <Label for="exampleCheck" check>Check me out</Label>
+                        <input type="checkbox" id="userCheck" className="form-check-input"
+                            {...register("isActive")} />
+                        <Label for="userCheck" check>Kích hoạt?</Label>
                     </div>
-                </Form>
+                </form>
             </div>
         </div>
+
+        {isDev && <ReactJson src={getValues()} />}
 
     </>;
 }

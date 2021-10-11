@@ -7,95 +7,86 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import '../../../styles/pages/admin-users/users.scss';
 import { Table } from 'reactstrap';
-import { createNewUser, DEFAULT_PAGE_SIZE, IUser } from '../../../utils';
-import { useContext, useEffect, useState } from 'react';
+import { createNewUser, DEFAULT_PAGE_SIZE, IUser, useDebounce } from '../../../utils';
+import { Dispatch, useContext, useEffect, useState } from 'react';
 import ModalInfo from '../../../components/modal/ModalInfo';
 import PaginationInfo from '../../../components/pagination/PaginationInfo';
 import UserDetail from './UserDetail';
 import { AppContext, UserContext } from '../../../utils/contexts/AppContext';
 import { connect, Provider, useDispatch, useSelector } from 'react-redux';
 import { AuthState } from '../../../store';
-import {fetchUsers, getAll, IUserStore, userStore} from '../../../store/users/userStore';
+import { fetchUsers, IUserStore, userStore } from '../../../store/users/userStore';
 import { bindActionCreators } from '@reduxjs/toolkit';
+import usePrevious from '../../../utils/hooks/usePrevious';
+import UserList from './UserList';
 
 interface IProp {
+    loading: 'pending' | 'idle'
     users: IUser[],
     totalUser: number,
-    getUsers: (filters?:any) => void;
+    getUsers: (filters?: any) => void;
 }
-const Users : React.FC<IProp> = ({
-    totalUser,
+const Users: React.FC<IProp> = ({
+    loading,
     users,
+    totalUser,
     getUsers
-})=>{
-    const [userList, setUserList] = useState<IUser[]>([]);
-    const [totalRecord, setTotalRecord] = useState(userList.length);
+}) => {  
+    const appContext = useContext(AppContext);
     const [openDetail, setOpenDetail] = useState(false);
     const [openCreateModal, setOpenCreateModal] = useState(false);
-    const newUser : IUser= createNewUser();
-    const [selectedUser,setSelectedUser] = useState(newUser); 
-    
-    const [dataFilter,setDataFilter] =useState<any>({
-        page: 1,
-        pageSize : DEFAULT_PAGE_SIZE
-    })
+    const [dataFilter, setDataFilter] = useState<any>({});
+    const newUser: IUser = createNewUser();
+    const [selectedUser, setSelectedUser] = useState(newUser);
 
-    const appContext = useContext(AppContext);
-    
+    const debounceGetUsers = useDebounce((dataFilter) => {
+        console.log("getUserData:", dataFilter);
+        getUsers(dataFilter)
+    }, 500);
+
     useEffect(()=>{
-        setTotalRecord(totalUser);
-        setUserList(users || []);
-    },[users,totalUser])
+        console.log("new datas")
+    },[users, totalUser]);
 
     useEffect(() => {
-        console.log("getUserData:", dataFilter);
-        getUsers(dataFilter);
+        //if(loading=='pending') return;
+        debounceGetUsers(dataFilter)
     }, [dataFilter, getUsers]);
 
-    const onPageChange = (page:number)=>{
-        if(page!=dataFilter.page){
-            setDataFilter({
-                ...dataFilter,
-                page: page
-            });
-        }
+
+    const onPagingChange = (pagingData: {page:number, pageSize:number}) => {
+        setDataFilter({
+            ...dataFilter,
+            ...pagingData
+        });
     }
 
-    const onPageSizeChange = (pageSize:number)=>{
-        if(pageSize!=dataFilter.pageSize){
-            setDataFilter({
-                ...dataFilter,
-                pageSize: pageSize
-            });
-        }
-    }
-
-    const onBtnCreateClick =()=>{
+    const onBtnCreateClick = () => {
         setSelectedUser(newUser);
         setOpenDetail(true);
-        //appContext.userLogIn({name:"loc"});
         //setOpenCreateModal(!openCreateModal);
     }
 
-    const onCloseDetail=()=>{
-        setOpenDetail(false);
-        //appContext.userLogOut();
-        //setOpenCreateModal(!openCreateModal);
-    }
-
-    const openUserDetail =(user:IUser) =>{
+    const openUserDetail = (user: IUser) => {
         setSelectedUser(user);
         setOpenDetail(true);
     }
 
-    const onSaveUser = (user:IUser)=>{
+    const onSaveUser = (user: IUser) => {
         //save error : pass errors to form
 
         //save successful then close
         setOpenDetail(false);
     }
+
+    const onCloseDetail = () => {
+        setOpenDetail(false);
+        //appContext.userLogOut();
+        //setOpenCreateModal(!openCreateModal);
+    }
+
     return <>
-        <div className={"user-page"+ (openDetail?" display-none":"")}>
+        <div className={"user-page" + (openDetail ? " display-none" : "")}>
             <div className="user-page__head">
                 <div className="user-page__head--left">
                     <span className="page-title">
@@ -109,7 +100,7 @@ const Users : React.FC<IProp> = ({
                 <div className="flex-spacer"></div>
                 <div className="user-page__head--right">
                     <button className="button button-primary button--icon-label add-btn" onClick={onBtnCreateClick}>
-                        <FontAwesomeIcon icon={faPlus} /> 
+                        <FontAwesomeIcon icon={faPlus} />
                         <span className="button-label"> Thêm mới </span>
                     </button>
                 </div>
@@ -138,91 +129,51 @@ const Users : React.FC<IProp> = ({
             </div>
 
             <div className="user-page__body">
-                <div className="user-list">
-                    <Table size="small" responsive={true} hover={true}>
-                        <thead>
-                            <tr>
-                                <th> Tên </th>
-                                <th> Email </th>
-                                <th> Quyền </th>
-                                <th> Kênh </th>
-                                <th> </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {userList.length !==0?
-                            (
-                                userList.map((user,index)=>(
-                                    <tr key={user.id}>
-                                        <td>
-                                            <span className="link-clickable" onClick={()=>openUserDetail(user)}>
-                                              {user.name}
-                                            </span>
-                                        </td>
-                                        <td>{user.email}</td>
-                                        <td></td>
-                                        <td></td>
-                                        <td> 
-                                            <button className="delete-btn button button-link">
-                                                Xóa
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))
-                            ):(
-                                <tr>
-                                    <td colSpan={5}> Không có dữ liệu </td>
-                                </tr> 
-                            ) }
-                            
-                        </tbody>
-                    </Table>
-                </div>
-            
-                <PaginationInfo 
-                    totalRecord={totalRecord}
-                    onPageChange={onPageChange}
-                    onPageSizeChange={onPageSizeChange}
-                />
+                <UserList
+                    users={users}
+                    totalUser={totalUser}
+                    openUserDetail={openUserDetail}
+                    pagingChanged={onPagingChange}
+                ></UserList>
             </div>
         </div>
-    
-        {openCreateModal&&(
+
+        {openCreateModal && (
             <ModalInfo isOpen={openCreateModal} loading={false}
-                 title={"Tạo user mới"} 
-                 content="Bạn có muốn tạo mới user không?" 
-                 type={'yes-no'}
-                 yesNoOptions={{
-                    onYes :()=>{setOpenCreateModal(false); },
-                    onNo :()=>{setOpenCreateModal(false)}
-                 }}
-                 okOptions={{
-                    onOk :()=>{setOpenCreateModal(false)}
-                 }}
-                >
+                title={"Tạo user mới"}
+                content="Bạn có muốn tạo mới user không?"
+                type={'yes-no'}
+                yesNoOptions={{
+                    onYes: () => { setOpenCreateModal(false); },
+                    onNo: () => { setOpenCreateModal(false) }
+                }}
+                okOptions={{
+                    onOk: () => { setOpenCreateModal(false) }
+                }}
+            >
 
             </ModalInfo>
-        )}        
+        )}
 
-        {openDetail&&(
+        {openDetail && (
             <UserDetail userData={selectedUser} closeDetail={onCloseDetail} saveData={onSaveUser}> </UserDetail>
-        )}                  
+        )}
     </>;
 }
 
-const mapStateToProps = (state : IUserStore) => {
+const mapStateToProps = (state: IUserStore) => {
     return {
-      totalUser : state.userState.totalUser,
-      users: state.userState.users,
+        loading: state.userState.loading,
+        totalUser: state.userState.totalUser,
+        users: state.userState.users,
     };
-  };
-  
-const mapDispatchToProps = (dispatch: any) =>{
+};
+
+const mapDispatchToProps = (dispatch: any) => {
     return bindActionCreators({
-        getUsers : fetchUsers,
+        getUsers: fetchUsers,
     }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps,undefined, {
+export default connect(mapStateToProps, mapDispatchToProps, undefined, {
     context: UserContext
 })(Users);
-  

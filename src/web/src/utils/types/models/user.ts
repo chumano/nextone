@@ -7,6 +7,7 @@ export interface IUser {
     email?: string,
     roles: IRole[],
     manageChannels: IChannel[],
+    isActive:boolean
 }
 
 export interface IRole {
@@ -19,6 +20,7 @@ export const createNewUser = (): IUser => {
         id: "",
         name: "",
         roles: [],
-        manageChannels: []
+        manageChannels: [],
+        isActive: true
     };
 }

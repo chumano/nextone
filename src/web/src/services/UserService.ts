@@ -57,7 +57,7 @@ class UserService {
                     total: total,
                     items: items
                 }));
-            }, 2000);
+            }, 1000);
         });
         //return http.get(`${this.pathUrl}?${filters}`);
     }
