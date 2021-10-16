@@ -5,6 +5,12 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService", "IdentityService\IdentityService.csproj", "{8B3CE8B4-633F-4199-9EE5-C25956BB2DA5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{94BB176E-6247-4F14-83AA-DAF212D983F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterService", "MasterService\MasterService.csproj", "{4393901C-40A2-48CB-BE43-4D12519C7502}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "Gateway\Gateway.csproj", "{CBDB8212-F448-43CF-A563-F74CFC8546FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +21,14 @@ Global
 		{8B3CE8B4-633F-4199-9EE5-C25956BB2DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B3CE8B4-633F-4199-9EE5-C25956BB2DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B3CE8B4-633F-4199-9EE5-C25956BB2DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4393901C-40A2-48CB-BE43-4D12519C7502}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4393901C-40A2-48CB-BE43-4D12519C7502}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4393901C-40A2-48CB-BE43-4D12519C7502}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4393901C-40A2-48CB-BE43-4D12519C7502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

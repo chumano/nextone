@@ -44,7 +44,12 @@
         padding: 10px;
 
         .navbar-brand {
-            font-size :2rem;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            .title{
+                margin-left: 10px;
+            }
         }
     }
 }

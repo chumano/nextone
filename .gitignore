@@ -2,3 +2,13 @@
 src/IdentityService/.vs/IdentityService/v16
 src/IdentityService/bin
 src/IdentityService/obj
+src/IdentityService/wwwroot/css/site.css
+src/IdentityService/wwwroot/css/**.min.css
+src/IdentityService/wwwroot/css/**.min.css.gz
+src/IdentityService/wwwroot/js/**.min.js
+src/IdentityService/wwwroot/css/site.min.css
+src/IdentityService/wwwroot/css/site.min.css.gz
+src/Gateway/bin
+src/Gateway/obj
+src/MasterService/bin
+src/MasterService/obj

@@ -9,8 +9,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using IdentityServerHost.Quickstart.UI;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication;
+using System.Reflection;
+using IdentityService.Models;
+using IdentityService.Data;
 
 namespace IdentityService
 {
@@ -29,7 +32,26 @@ namespace IdentityService
         {
             services.AddControllersWithViews();
 
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString);
+                options.EnableDetailedErrors(true);
+                options.EnableSensitiveDataLogging(true);
+
+            });
+
+            _ = services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+                {
+                  // Lockout settings
+                  // options.Lockout = Configuration.GetValue<LockoutOptions>("IdentityServiceOptions:Lockout");
+              })
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddSignInManager()
+                .AddDefaultTokenProviders();
 
             var builder = services.AddIdentityServer(options =>
             {
@@ -41,20 +63,29 @@ namespace IdentityService
                 // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
                 options.EmitStaticAudienceClaim = true;
             })
-                .AddTestUsers(TestUsers.Users)
+                //.AddTestUsers(TestUsers.Users)
                 // this adds the config data from DB (clients, resources, CORS)
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
+                    options.ConfigureDbContext = builder =>
+                    {
+                        //builder.UseSqlite(connectionString);
+                        builder.UseSqlServer(connectionString);
+                    };
                 })
                 // this adds the operational data from DB (codes, tokens, consents)
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = builder => builder.UseSqlite(connectionString);
+                    options.ConfigureDbContext = builder =>
+                    {
+                        //builder.UseSqlite(connectionString);
+                        builder.UseSqlServer(connectionString);
+                    };
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;
-                });
+                })
+                .AddAspNetIdentity<ApplicationUser>(); ;
 
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();

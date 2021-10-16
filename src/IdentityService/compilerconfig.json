@@ -1,0 +1,18 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/site.css",
+    "inputFile": "wwwroot/css/site.scss"
+  },
+  {
+    "outputFile": "wwwroot/js/signin-redirect.es5.js",
+    "inputFile": "wwwroot/js/signin-redirect.js"
+  },
+  {
+    "outputFile": "wwwroot/lib/jquery/dist/jquery.es5.js",
+    "inputFile": "wwwroot/lib/jquery/dist/jquery.js"
+  },
+  {
+    "outputFile": "wwwroot/lib/jquery/dist/jquery.slim.es5.js",
+    "inputFile": "wwwroot/lib/jquery/dist/jquery.slim.js"
+  }
+]

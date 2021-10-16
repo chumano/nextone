@@ -1,4 +1,5 @@
 ﻿@using IdentityService;
+@inject Microsoft.AspNetCore.Hosting.IHostingEnvironment HostEnvironment;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,23 +8,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
 
     <title>@Messages.TITLE</title>
-    
+
     <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
     <link rel="shortcut icon" type="image/x-icon" href="~/favicon.ico" />
-    
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    @* Use full versions in non-dev, but minified in dev *@
+    @if (HostEnvironment.EnvironmentName=="Developement")
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    }
+    else
+    {
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.min.css" />
+    }
+
 </head>
 <body>
     <partial name="_Nav" />
-   
+
     <div class="container body-container">
         @RenderBody()
     </div>
 
-    <script src="~/lib/jquery/dist/jquery.slim.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-
+    @if (HostEnvironment.EnvironmentName == "Developement")
+    {
+        <script src="~/lib/jquery/dist/jquery.slim.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+    }
+    else
+    {
+        <script src="~/lib/jquery/dist/jquery.slim.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    }
     @RenderSection("scripts", required: false)
 </body>
 </html>

@@ -1,0 +1,48 @@
+{
+  "Routes": [
+    //master service
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5103
+        }
+      ],
+      "UpstreamPathTemplate": "/master/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "ServiceName": "", // let it empty, use for service discovery
+
+      "DownstreamHeaderTransform": {
+        "header-down": "BobDown" //response to client
+      },
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}",
+        "header-up": "BobUp" //send to service
+      }
+    },
+    //com service
+
+    //map service
+
+    //websocket
+    {
+      //https://ocelot.readthedocs.io/en/latest/features/websockets.html
+      "DownstreamPathTemplate": "/hub/{catchAll}",
+      "DownstreamScheme": "ws",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5105
+        }
+      ],
+      "UpstreamPathTemplate": "/com/hub/{catchAll}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "RequestIdKey": "OcRequestId",
+    "AdministrationPath": "/administration"
+  }
+}

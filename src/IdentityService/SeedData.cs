@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using IdentityServer4.EntityFramework.Storage;
 using Serilog;
+using System.Reflection;
+using IdentityService.Data;
 
 namespace IdentityService
 {
@@ -16,22 +18,35 @@ namespace IdentityService
     {
         public static void EnsureSeedData(string connectionString)
         {
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var services = new ServiceCollection();
+
+            services.AddDbContext<ApplicationDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+
+            });
+
             services.AddOperationalDbContext(options =>
             {
-                options.ConfigureDbContext = db => db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
+                options.ConfigureDbContext = db =>
+                    //db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
+                    db.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
             });
             services.AddConfigurationDbContext(options =>
             {
-                options.ConfigureDbContext = db => db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
+                options.ConfigureDbContext = db =>
+                    //db => db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
+                    db.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
             });
 
             var serviceProvider = services.BuildServiceProvider();
 
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
+                scope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
 
+                scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
                 var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
                 context.Database.Migrate();
                 EnsureSeedData(context);
