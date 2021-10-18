@@ -20,10 +20,34 @@
       "UpstreamHeaderTransform": {
         "X-Forwarded-For": "{RemoteIpAddress}",
         "header-up": "BobUp" //send to service
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": [ "master-scope", "invalid-scope" ] // one of them is valid => allowed
       }
     },
     //com service
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5104
+        }
+      ],
+      "UpstreamPathTemplate": "/com/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "ServiceName": "", // let it empty, use for service discovery
 
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      },
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": [ ] // one of them is valid => allowed
+      }
+    },
     //map service
 
     //websocket

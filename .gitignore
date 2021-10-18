@@ -12,3 +12,5 @@ src/Gateway/bin
 src/Gateway/obj
 src/MasterService/bin
 src/MasterService/obj
+src/ComService/bin
+src/ComService/obj

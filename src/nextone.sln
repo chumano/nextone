@@ -11,6 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterService", "MasterServ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "Gateway\Gateway.csproj", "{CBDB8212-F448-43CF-A563-F74CFC8546FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComService", "ComService\ComService.csproj", "{B682EE79-EDA8-4C9B-B342-F907F041B728}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_schema", "_schema", "{79F5B075-4907-4650-A875-8BC82BC09810}"
+	ProjectSection(SolutionItems) = preProject
+		_schema\proto\common\common.proto = _schema\proto\common\common.proto
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,6 +36,10 @@ Global
 		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBDB8212-F448-43CF-A563-F74CFC8546FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B682EE79-EDA8-4C9B-B342-F907F041B728}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B682EE79-EDA8-4C9B-B342-F907F041B728}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B682EE79-EDA8-4C9B-B342-F907F041B728}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B682EE79-EDA8-4C9B-B342-F907F041B728}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

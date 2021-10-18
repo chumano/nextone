@@ -24,6 +24,7 @@ namespace IdentityService
 
         public Startup(IWebHostEnvironment environment, IConfiguration configuration)
         {
+            //IdentityServer4.Models.GrantTypes.Hybrid;
             Environment = environment;
             Configuration = configuration;
         }
@@ -44,7 +45,7 @@ namespace IdentityService
 
             });
 
-            _ = services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
                   // Lockout settings
                   // options.Lockout = Configuration.GetValue<LockoutOptions>("IdentityServiceOptions:Lockout");

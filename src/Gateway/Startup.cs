@@ -1,4 +1,6 @@
 using Gateway.Middlewares;
+using IdentityServer4.AccessTokenValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
@@ -36,9 +39,22 @@ namespace Gateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+
             services.AddOcelot()
                     .AddConsul();
             services.AddControllers();
+
+            var authenticationProviderKey = "Bearer";
+            Action<JwtBearerOptions> options = o =>
+            {
+                o.Authority = "https://localhost:5102";
+                o.Audience = "gateway"; // ApiResources
+                // etc
+            };
+
+            services.AddAuthentication()//IdentityServerAuthenticationDefaults.AuthenticationScheme
+                .AddJwtBearer(authenticationProviderKey, options);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +62,7 @@ namespace Gateway
         {
             if (env.IsDevelopment())
             {
+                IdentityModelEventSource.ShowPII = true; // apply for debug Identity error. I will show personally identifiable information
                 app.UseDeveloperExceptionPage();
             }
 

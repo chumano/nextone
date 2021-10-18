@@ -11,6 +11,8 @@ using IdentityServer4.EntityFramework.Storage;
 using Serilog;
 using System.Reflection;
 using IdentityService.Data;
+using Microsoft.AspNetCore.Identity;
+using IdentityService.Models;
 
 namespace IdentityService
 {
@@ -21,11 +23,16 @@ namespace IdentityService
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var services = new ServiceCollection();
 
+            services.AddLogging();
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
 
             });
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddSignInManager();
 
             services.AddOperationalDbContext(options =>
             {
@@ -44,16 +51,58 @@ namespace IdentityService
 
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                scope.ServiceProvider.GetService<ApplicationDbContext>().Database.Migrate();
+                var identityContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
+                identityContext.Database.Migrate();
+
+                var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
+                EnsureSeedUserData(identityContext, userManager);
+
+                var configurationContext = scope.ServiceProvider.GetService<ConfigurationDbContext>();
+                configurationContext.Database.Migrate();
+                EnsureSeedClientData(configurationContext);
 
                 scope.ServiceProvider.GetService<PersistedGrantDbContext>().Database.Migrate();
-                var context = scope.ServiceProvider.GetService<ConfigurationDbContext>();
-                context.Database.Migrate();
-                EnsureSeedData(context);
             }
         }
 
-        private static void EnsureSeedData(ConfigurationDbContext context)
+        private static void EnsureSeedUserData(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        {
+            if (!context.Roles.Any())
+            {
+                Log.Debug("Roles being populated");
+                foreach (var role in Config.Roles)
+                {
+                    context.Roles.Add(role);
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Debug("Roles already populated");
+            }
+
+            if (!context.Users.Any())
+            {
+                Log.Debug("Users being populated");
+                foreach (var user in Config.Users)
+                {
+                    IdentityResult result = userManager.CreateAsync(user, "Nextone@123").Result;
+
+                    if (result.Succeeded)
+                    {
+                        var role = user.UserName.ToLower();
+                        userManager.AddToRoleAsync(user, role).Wait();
+                    }
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Debug("Users already populated");
+            }
+        }
+
+        private static void EnsureSeedClientData(ConfigurationDbContext context)
         {
             if (!context.Clients.Any())
             {
@@ -83,7 +132,7 @@ namespace IdentityService
                 Log.Debug("IdentityResources already populated");
             }
 
-            if (!context.ApiResources.Any())
+            if (!context.ApiScopes.Any())
             {
                 Log.Debug("ApiScopes being populated");
                 foreach (var resource in Config.ApiScopes.ToList())
@@ -95,6 +144,21 @@ namespace IdentityService
             else
             {
                 Log.Debug("ApiScopes already populated");
+            }
+
+
+            if (!context.ApiResources.Any())
+            {
+                Log.Debug("ApiResources being populated");
+                foreach (var resource in Config.ApiResources.ToList())
+                {
+                    context.ApiResources.Add(resource.ToEntity());
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Debug("ApiResources already populated");
             }
         }
     }
