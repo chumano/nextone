@@ -10,7 +10,7 @@ interface IProp extends RouteComponentProps{
 const NoAuthLayout :React.FC<IProp> = (props):JSX.Element=>{
 
     return <>
-        NoAuthLayout page
+        No AuthLayout page
         <Suspense fallback={loading()}>
             {props.children}
         </Suspense>

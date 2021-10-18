@@ -5,7 +5,7 @@ import {
     faCog } 
     from "@fortawesome/free-solid-svg-icons";
 import { Dropdown, DropdownMenu, DropdownToggle } from "reactstrap"
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { Link } from "react-router-dom";
 import '../../styles/components/header/user-profile-menu.scss'
@@ -33,6 +33,10 @@ const ProfileMenus:any[] = [
 const UserProfileMenu: React.FC = () => {
     const [isOpen, setIsOpen] = useState(false);
     const appContext = useContext(AppContext);
+    useEffect(() => {
+        //appContext.userLogIn({name :"loc"}) 
+    }, []);
+    
     const logoutClick = ()=>{
         appContext.userLogOut();
     }
@@ -40,7 +44,7 @@ const UserProfileMenu: React.FC = () => {
     return <>
         <Dropdown
             isOpen={isOpen}
-            toggle={() => { setIsOpen(!isOpen); appContext.userLogIn({name :"loc"}) }}
+            toggle={() => { setIsOpen(!isOpen); }}
             className="profile"
         >
             <DropdownToggle

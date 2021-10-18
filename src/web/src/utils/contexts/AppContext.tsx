@@ -1,9 +1,10 @@
-import { createContext, Dispatch, Reducer, ReducerAction, useCallback, useMemo, useReducer } from "react";
+import { User } from "oidc-client";
+import { createContext, Dispatch, Reducer, ReducerAction, useCallback, useEffect, useMemo, useReducer } from "react";
 import { useDispatch } from "react-redux";
+import { AuthenticationService } from "../../services";
 import { login, logout } from "../../store";
 
 export const GlobalContext = createContext<any>({});
-export const UserContext =  createContext<any>({});
 
 export const AppActions = {
     USER_LOGIN: 'USER_LOGIN',
@@ -11,14 +12,14 @@ export const AppActions = {
 }
 
 interface AppState {
-    user: any,
-    userLogIn: (user: any) => void,
+    user: User | undefined,
+    userLogIn: (user: User) => void,
     userLogOut: () => void
 }
 
 const initialAppState: AppState = {
-    user: { name: "chumano" },
-    userLogIn: (user: any) => {},
+    user: undefined,
+    userLogIn: (user: User) => {},
     userLogOut: () => {}
 };
 
@@ -49,19 +50,53 @@ const appStateReducer = (state: AppState, action: AppAction) => {
 }
 
 const AppContextProvider = (props: IContextProviderProp) => {
-    const rDispatch = useDispatch();
+    const storeDispatch = useDispatch();
     const [state, dispatch] = useReducer<Reducer<AppState, AppAction>>(appStateReducer, initialAppState)
 
+    const handleUserOnLoaded = ()=> (user: User)=>{
+        logIn(user);
+    }
+
+    const handleTokenExpired = () => async ()=>{
+        dispatch({ type: AppActions.USER_LOGOUT});
+        storeDispatch(logout());
+
+        await AuthenticationService.signinSilent();
+    }
+
+    const addOidcEvents = useCallback(()=>{
+        AuthenticationService.Events.addUserLoaded(handleUserOnLoaded());
+        AuthenticationService.Events.addAccessTokenExpired(handleTokenExpired());
+    },[])
+
+    const removeOidcEvents = useCallback(()=>{
+        AuthenticationService.Events.removeUserLoaded(handleUserOnLoaded());
+        AuthenticationService.Events.removeAccessTokenExpired(handleTokenExpired());
+    },[])
+
+    useEffect(() => {
+        addOidcEvents();
+        AuthenticationService.getUser().then( (user)=>{
+            if(user){
+                logIn(user);
+            }
+        });
+        return () => {
+            removeOidcEvents();
+        }
+    }, [addOidcEvents, removeOidcEvents])
+    //===================================
     const logIn = useCallback(
         (user: any) => {
             dispatch({ type: AppActions.USER_LOGIN, payload: user });
-            rDispatch(login());
+            storeDispatch(login());
         }, []);
 
     const logOut = useCallback(
         () => {
             dispatch({ type: AppActions.USER_LOGOUT});
-            rDispatch(logout());
+            storeDispatch(logout());
+            AuthenticationService.signout();
         }, []);
     
     const value = useMemo(() => ({

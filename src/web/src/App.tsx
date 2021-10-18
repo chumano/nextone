@@ -12,15 +12,15 @@ import {
 import Home from './pages/home/Home';
 import Channel from './pages/channel/Channel';
 import NotFound404 from './pages/not-found/NotFount404';
-import { routes } from './Route';
+import { authRoutes, routes } from './Route';
 import withLayout from './utils/hoc/withLayout';
 import Loadable from 'react-loadable';
 import Loading from './components/controls/loading/Loading';
 import { axiosSetup } from './utils';
-import { AppContext, AppContextProvider, UserContext } from './utils/contexts/AppContext';
+import { AppContext, AppContextProvider } from './utils/contexts/AppContext';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import { userStore } from './store/users/userStore';
+import { UserContext, userStore } from './store/users/userStore';
 
 
 //=================================
@@ -54,11 +54,30 @@ const App = () => {
   return <>
     <Router>
       <Provider store={store}>
-        
+      {/* this userStore for users page : need to remove*/}
       <Provider context={UserContext} store={userStore}>
         <AppContextProvider>
           <div className="App">
             <Switch>
+              {/* Auth */}
+              {authRoutes.map((route, index) => {
+                return (
+                  <Route key={index} path={route.path} 
+                    component={withLayout((props) => {
+                      const Layout = NoAuthLayout
+                      return (
+                        <Suspense fallback={loading()}>
+                          <Layout {...props} title={route.title || ""}>
+                            <route.component {...props} />
+                          </Layout>
+                        </Suspense>
+                      )
+                    })}
+                  />
+                )
+              })}
+
+              {/* Pages */}
               {routes.map((route, index) => {
                 return (
                   <Route key={index} path={route.path} exact={route.exact}

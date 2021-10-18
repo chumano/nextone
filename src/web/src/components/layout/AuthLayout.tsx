@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Suspense } from "react";
 import { RouteComponentProps, useHistory, useParams } from "react-router";
+import { AuthenticationService } from "../../services";
+import { AppContext } from "../../utils/contexts/AppContext";
 import Loading from "../controls/loading/Loading";
 import Backdrop from "./Backdrop";
 
@@ -15,7 +17,15 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
     const history = useHistory();
     const params = useParams();
     const [sideDrawer, setSideDrawer] = useState(false);
-    
+    const {user, userLogIn, userLogOut} = useContext(AppContext);
+
+    useEffect(() => {
+        if(!user){
+            let redirectUrl = location.pathname + (location.search || "");
+            AuthenticationService.signinRedirect(redirectUrl);
+        }
+    }, [user,location])
+
     const toggleDrawer = ()=>{
         setSideDrawer(!sideDrawer);
     }

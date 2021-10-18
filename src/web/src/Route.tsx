@@ -8,11 +8,40 @@ import { faHome,
 } from '@fortawesome/free-solid-svg-icons'
 import MapConfig from "./pages/admin/map-config/MapConfig";
 import Channels from "./pages/admin/channels/Channels";
-import AuthLogin from "./pages/auth-login/AuthLogin";
-import AuthCallback from "./pages/auth-callback/AuthCallback";
+import AuthLogin from "./components/auth/AuthLogin";
 import Users from "./pages/admin/users/Users";
+import AuthSilentCallback from "./components/auth/AuthSilentCallback";
+import NotAuthenticated from "./components/auth/NotAuthenticated";
+import AuthCallback from "./components/auth/AuthCallback";
 
 
+const authRoutes: Array<{
+    path: string,
+    component: any,
+    title: string
+}> = [
+    {
+        path : "/auth/callback",
+        component : AuthCallback,
+        title : "Signin callback"
+    },
+    {
+        path : "/auth/silent-callback",
+        component : AuthSilentCallback,
+        title : "Silent callback"
+    },
+    {
+        path : "/auth/401",
+        component : NotAuthenticated,
+        title : "Not Authenticated"
+    },
+    {
+        path: "/auth/login",
+        component: AuthLogin,
+        title: "Login"
+    },
+
+]
 
 export interface IRouteConfig {
     path: string,
@@ -23,18 +52,6 @@ export interface IRouteConfig {
     exact?: boolean
 }
 const routes: Array<IRouteConfig> = [
-    //common
-    {
-        path: "/auth/callback",
-        component: AuthCallback,
-        useAuthLayout: true
-    },
-    {
-        path: "/auth/login",
-        component: AuthLogin,
-        useAuthLayout: true
-    },
-
     //channel manager
     {
         path: "/home",
@@ -93,4 +110,4 @@ const MenuList = [
     }
 ]
 
-export { routes, MenuList };
+export { authRoutes, routes, MenuList };

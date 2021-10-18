@@ -6,7 +6,7 @@ import {
     faBars
 } from "@fortawesome/free-solid-svg-icons";
 import { AppContext } from '../../utils/contexts/AppContext';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { AuthState, getIsLoggedIn } from '../../store';
 
@@ -14,8 +14,13 @@ interface IProp {
     toggleDrawer: ()=> void
 }
 const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
-    const appContext = useContext(AppContext);
+    const {user} = useContext(AppContext);
     const isLoggedIn = useSelector(getIsLoggedIn);
+    const [userName, setUserName] = useState('Guest')
+    useEffect(() => {
+        const name:string  = user?.profile?.name || user?.profile?.email || user?.profile?.sub || 'NoName';
+        setUserName( name as string )
+    }, [user])
     
     return <>
         <div className="header">
@@ -23,7 +28,7 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
                 <FontAwesomeIcon icon={faBars} />
             </div>
             <div>
-                Welcome: {appContext.user?.name || 'Guest'}!
+                Welcome: {userName}!
                 
             </div>
 

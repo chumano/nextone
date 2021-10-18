@@ -5,6 +5,7 @@ let hostUrl  = window.location.origin;
 export const OidcConfig: UserManagerSettings = {
     client_id: "web-spa",
     redirect_uri: `${hostUrl}/auth/callback`,
+    authority: `https://localhost:5102`,
     response_type: "code",
     post_logout_redirect_uri: `${hostUrl}`,
     scope : "openid profile gateway master-scope",

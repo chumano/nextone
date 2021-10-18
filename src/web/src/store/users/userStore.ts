@@ -1,7 +1,9 @@
 import { configureStore, createSlice } from "@reduxjs/toolkit";
-import { Dispatch } from "react";
+import { createContext, Dispatch } from "react";
 import { UserService } from "../../services";
 import { IUser } from "../../utils";
+
+export const UserContext =  createContext<any>({});
 
 type UserState = {
     loading: 'pending' | 'idle',

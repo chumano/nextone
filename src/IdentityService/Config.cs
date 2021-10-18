@@ -93,7 +93,9 @@ namespace IdentityService
                   new ApiResource[]
                   {
                         new ApiResource(){ Name = "gateway", ShowInDiscoveryDocument =false,DisplayName="Gateway api resource", Enabled= true, 
-                            Scopes = new List<string>{"gateway"} },
+                            Scopes = new List<string>{"gateway"},
+                            UserClaims = new List<string>{"role"} //reuqest role claim
+                        },
                   };
 
         public static IEnumerable<Client> Clients =>
@@ -114,15 +116,18 @@ namespace IdentityService
                 // interactive client using code flow + pkce
                 new Client
                 {
-                    ClientId = "interactive",
+                    ClientId = "web-spa",
                     ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
                     RequireClientSecret = false,
 
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AlwaysSendClientClaims = false,
+
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = { "https://localhost:44300/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44300/signout-oidc",
-                    PostLogoutRedirectUris = { "https://localhost:44300/signout-callback-oidc" },
+                    RedirectUris = { "https://localhost:5100/auth/callback" , "http://localhost:5100/auth/callback"},
+                    FrontChannelLogoutUri = "https://localhost:5100/auth/signout",
+                    PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "scope2", "gateway" }
@@ -141,7 +146,7 @@ namespace IdentityService
                     FrontChannelLogoutUri = "",
                     PostLogoutRedirectUris = { },
 
-                    AllowOfflineAccess = true,
+                    AllowOfflineAccess = false,
                     AllowedScopes = { "openid", "profile", "gateway", "master-scope" }
                 },
             };

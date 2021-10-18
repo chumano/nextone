@@ -14,6 +14,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Reflection;
 using IdentityService.Models;
 using IdentityService.Data;
+using IdentityServer4.Services;
+using IdentityServer4.AspNetIdentity;
+using IdentityService.Services;
 
 namespace IdentityService
 {
@@ -45,7 +48,7 @@ namespace IdentityService
 
             });
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            var identityBuilder = services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {
                   // Lockout settings
                   // options.Lockout = Configuration.GetValue<LockoutOptions>("IdentityServiceOptions:Lockout");
@@ -61,11 +64,9 @@ namespace IdentityService
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
 
-                // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
-                options.EmitStaticAudienceClaim = true;
+               // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
+               options.EmitStaticAudienceClaim = true;
             })
-                //.AddTestUsers(TestUsers.Users)
-                // this adds the config data from DB (clients, resources, CORS)
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = builder =>
@@ -88,6 +89,23 @@ namespace IdentityService
                 })
                 .AddAspNetIdentity<ApplicationUser>(); ;
 
+            services.AddTransient<IProfileService, ProfileService>();
+            services.AddScoped<IEventSink, IdentityEventSink>();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins("http://localhost:5100")
+                            .SetIsOriginAllowedToAllowWildcardSubdomains()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
+
             // not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
 
@@ -103,7 +121,7 @@ namespace IdentityService
             }
 
             app.UseStaticFiles();
-
+            app.UseCors("AllowAllOrigins");
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();

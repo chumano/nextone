@@ -1,12 +1,27 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import { RouteChildrenProps } from "react-router";
+import { AuthenticationService } from "../../services";
 import Loading from "../controls/loading/Loading";
 
-const AuthCallback : React.FC = () =>{
+interface IProp extends  React.Component , RouteChildrenProps{
+
+} 
+const AuthCallback : React.FC<IProp> = (props) =>{
     useEffect(() => {
-        
+        let signinCallback = async ()=>{
+            try{
+                const user = await AuthenticationService.signinRedirectCallback();
+                props.history.push(user.state.url);
+            }catch (error){
+                console.error(error);
+            }
+        }
+
+        signinCallback();
     }, [])
 
     return <>
+        <h1>Đang xác thực...</h1>
         <Loading></Loading>
     </>;
 }
