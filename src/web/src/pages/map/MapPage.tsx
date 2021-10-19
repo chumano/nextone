@@ -27,6 +27,7 @@ const ResizeMap = () => {
 const defaultCenter: L.LatLngTuple = [51.505, -0.09];
 const defaultZoom = 13
 
+//https://react-leaflet.js.org/docs/start-introduction/
 const MapPage: React.FC = () => {
     const [map, setMap] = useState<L.Map | undefined>(undefined);
     const [position, setPosition] = useState<L.LatLng | undefined>(undefined);
