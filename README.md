@@ -14,16 +14,21 @@
 -- map config page
 
 ### Services
-Web : https://localhost:5100
-Gateway : https://localhost:5101
-Identity : https://localhost:5102
-Master : https://localhost:5103
-Com : https://localhost:5104
-Map : https://localhost:5105
-Seq : http://localhost:5109
+Web :       http://localhost:5100
+Gateway :   https://localhost:5101
+Identity :  https://localhost:5102
+Master :    https://localhost:5103
+Com :       https://localhost:5104
+Map :       https://localhost:5105
+Seq :       http://localhost:5109
 
-DB : localhost, 1433
+DB :        localhost, 1433
 
+#### Seed identity data
+```
+# run at ./src
+dotnet run --project .\IdentityService /seed
+```
 
 ### font-awesome 
 https://fontawesome.com/v5.15/how-to-use/on-the-web/using-with/react

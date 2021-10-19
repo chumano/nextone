@@ -4,7 +4,8 @@ import Home from "./pages/home/Home";
 import { faHome,
      faAddressBook,
      faSnowflake,
-     faMap
+     faMap,
+     faTasks
 } from '@fortawesome/free-solid-svg-icons'
 import MapConfig from "./pages/admin/map-config/MapConfig";
 import Channels from "./pages/admin/channels/Channels";
@@ -13,6 +14,9 @@ import Users from "./pages/admin/users/Users";
 import AuthSilentCallback from "./components/auth/AuthSilentCallback";
 import NotAuthenticated from "./components/auth/NotAuthenticated";
 import AuthCallback from "./components/auth/AuthCallback";
+import AuthRedirect from "./components/auth/AuthRedirect";
+import { Redirect } from "react-router-dom";
+import TestPage from "./pages/test/TestPage";
 
 
 const authRoutes: Array<{
@@ -35,10 +39,20 @@ const authRoutes: Array<{
         component : NotAuthenticated,
         title : "Not Authenticated"
     },
+    // {
+    //     path: "/auth/signout-callback",
+    //     component: AuthLogin,
+    //     title: "Login"
+    // },
     {
-        path: "/auth/login",
+        path: "/intro",
         component: AuthLogin,
-        title: "Login"
+        title: "Intro"
+    },
+    {
+        path: "/auth/redirect",
+        component: AuthRedirect,
+        title: "Auth Redirect"
     },
 
 ]
@@ -79,6 +93,13 @@ const routes: Array<IRouteConfig> = [
         path: "/admin/map-config",
         component: MapConfig,
         useAuthLayout: true
+    },
+
+    //test
+    {
+        path: "/test",
+        component: TestPage,
+        useAuthLayout: true
     }
 
 ];
@@ -107,6 +128,13 @@ const MenuList = [
         title:'Cấu hình bản đồ',
         path: '/admin/map-config',
         icon: <FontAwesomeIcon icon={faMap} />
+    },
+    //Test components
+    {
+        id:1000,
+        title:'Test components',
+        path: '/test',
+        icon: <FontAwesomeIcon icon={faTasks} />
     }
 ]
 

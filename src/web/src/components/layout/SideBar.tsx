@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from '../../logo.svg';
+import logo from '../../assets/logo.png';
 import { MenuList } from "../../Route";
 import '../../styles/components/layout/sidebar.scss';
 

@@ -5,6 +5,7 @@ import { AuthenticationService } from "../../services";
 import { AppContext } from "../../utils/contexts/AppContext";
 import Loading from "../controls/loading/Loading";
 import Backdrop from "./Backdrop";
+import '../../styles/components/layout/auth-layout.scss';
 
 const Header = React.lazy(()=> import('../header/Header'));
 const SideBar = React.lazy(()=> import('./SideBar'));

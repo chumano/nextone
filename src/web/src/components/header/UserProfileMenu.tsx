@@ -7,7 +7,7 @@ import {
 import { Dropdown, DropdownMenu, DropdownToggle } from "reactstrap"
 import { useContext, useEffect, useState } from "react";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import '../../styles/components/header/user-profile-menu.scss'
 import { AppContext } from "../../utils/contexts/AppContext";
 
@@ -31,6 +31,7 @@ const ProfileMenus:any[] = [
 ];
 
 const UserProfileMenu: React.FC = () => {
+    const history = useHistory();
     const [isOpen, setIsOpen] = useState(false);
     const appContext = useContext(AppContext);
     useEffect(() => {
@@ -39,6 +40,7 @@ const UserProfileMenu: React.FC = () => {
     
     const logoutClick = ()=>{
         appContext.userLogOut();
+        history.push("/auth/redirect");
     }
 
     return <>

@@ -1,5 +1,6 @@
 ﻿@model LoggedOutViewModel
 @using IdentityService;
+@using IdentityService;
 @{ 
     // set this so the layout rendering sees an anonymous user
     ViewData["signed-out"] = true;
@@ -13,8 +14,7 @@
     @if (Model.PostLogoutRedirectUri != null)
     {
         <div>
-            Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
-            <span>@Model.ClientName</span> application.
+            @Messages.RETURN_BACK <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">@Model.ClientName</a>
         </div>
     }
 

@@ -7,7 +7,7 @@ export const OidcConfig: UserManagerSettings = {
     redirect_uri: `${hostUrl}/auth/callback`,
     authority: `https://localhost:5102`,
     response_type: "code",
-    post_logout_redirect_uri: `${hostUrl}`,
+    post_logout_redirect_uri: `${hostUrl}/auth/signout-callback`,// the page will be returned after logout from SSO
     scope : "openid profile gateway master-scope",
     silent_redirect_uri : `${hostUrl}/auth/silent-callback`,
     automaticSilentRenew : true,

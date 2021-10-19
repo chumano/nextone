@@ -14,3 +14,5 @@ src/MasterService/bin
 src/MasterService/obj
 src/ComService/bin
 src/ComService/obj
+src/.vs
+devvolumes

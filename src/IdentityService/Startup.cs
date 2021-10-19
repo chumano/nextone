@@ -98,7 +98,7 @@ namespace IdentityService
                     builder =>
                     {
                         builder
-                            .WithOrigins("http://localhost:5100")
+                            .WithOrigins("http://localhost:5100", "https://localhost:5100")
                             .SetIsOriginAllowedToAllowWildcardSubdomains()
                             .AllowAnyHeader()
                             .AllowAnyMethod();

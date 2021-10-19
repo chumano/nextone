@@ -1,0 +1,26 @@
+@import "../../abstracts/variables";
+@import "../../abstracts/mixins";
+
+.noauth-layout{
+    display: flex;
+    height: 100%;
+    @include tablet-width{
+        display: block;
+        position: relative;
+    }
+
+    &__container {
+        background-color: $color-white-3;
+        flex-grow: 1;
+        height: 100vh;
+
+        @include tablet-width{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 90;
+        }
+    }
+
+}

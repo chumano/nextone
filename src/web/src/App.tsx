@@ -1,7 +1,6 @@
 import React, { createContext, Suspense, useContext } from 'react';
 
 import './App.scss';
-import './styles/components/layout/auth-layout.scss';
 import {
   BrowserRouter as Router,
   Switch,
@@ -76,6 +75,20 @@ const App = () => {
                   />
                 )
               })}
+              <Route path={'/auth/signout-callback'} exact={true}
+                component={withLayout((props) => {
+                  const Layout = NoAuthLayout
+                  return (
+                    <Suspense fallback={loading()}>
+                      <Layout {...props} title={""}>
+                        <Redirect {...props} to="/intro" />
+                      </Layout>
+                    </Suspense>
+                  )
+                })}
+              >
+              </Route>
+
 
               {/* Pages */}
               {routes.map((route, index) => {
@@ -95,6 +108,7 @@ const App = () => {
                 )
               })}
 
+              
 
               <Route path={'/'} exact={true}
                 component={withLayout((props) => {
@@ -102,13 +116,12 @@ const App = () => {
                   return (
                     <Suspense fallback={loading()}>
                       <Layout {...props} title={""}>
-                        <Redirect {...props} to="/home" />
+                        <Redirect {...props} to="/intro" />
                       </Layout>
                     </Suspense>
                   )
                 })}
               >
-
               </Route>
 
 

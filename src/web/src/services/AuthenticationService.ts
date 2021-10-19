@@ -34,9 +34,9 @@ class AuthenticationService {
     //send request to signin
     public async signinRedirect(url: string){
         const authenticated = await this.isAuthenticated();
-        if(authenticated){
+        //if(!authenticated){
             await this.userManager.signinRedirect({data: {url}});
-        }
+        //}
     }
 
     //receive signin response

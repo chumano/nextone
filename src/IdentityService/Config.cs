@@ -117,6 +117,7 @@ namespace IdentityService
                 new Client
                 {
                     ClientId = "web-spa",
+                    ClientName = "Web App",
                     ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
                     RequireClientSecret = false,
 
@@ -130,12 +131,13 @@ namespace IdentityService
                     PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "scope2", "gateway" }
+                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" }
                 },
 
                  new Client
                 {
                     ClientId = "postman",
+                    ClientName = "Postman",
                     ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
                     RequireClientSecret = false,
                     RequirePkce = false,
