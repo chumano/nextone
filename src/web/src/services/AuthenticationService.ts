@@ -11,16 +11,30 @@ class AuthenticationService {
         return this.userManager?.getUser();
     }
 
+    public async getAuthenticatedUser() : Promise<User|null>{
+        const user = await this.getUser();
+        if(user && !user.expired) return user;
+
+        return null;
+    }
+
     public async getAccessToken() : Promise<string>{
         const user = await this.getUser();
         if(!user) return "";
         return user.access_token;
     }
 
+    public async isAuthenticated() {
+        const user = await this.getUser();
+        if(!user) return false;
+
+        return !user.expired;
+    }
+
     //send request to signin
     public async signinRedirect(url: string){
-        const user = await this.getUser();
-        if(!user || user.expired){
+        const authenticated = await this.isAuthenticated();
+        if(authenticated){
             await this.userManager.signinRedirect({data: {url}});
         }
     }

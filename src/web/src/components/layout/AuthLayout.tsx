@@ -13,9 +13,9 @@ interface IProp extends RouteComponentProps{
     title: string
 } 
 const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
-    const authenticated = true;
     const history = useHistory();
     const params = useParams();
+    const [authenticated, setAuthenticated] = useState(false)
     const [sideDrawer, setSideDrawer] = useState(false);
     const {user, userLogIn, userLogOut} = useContext(AppContext);
 
@@ -23,6 +23,8 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
         if(!user){
             let redirectUrl = location.pathname + (location.search || "");
             AuthenticationService.signinRedirect(redirectUrl);
+        }else{
+            setAuthenticated(true);
         }
     }, [user,location])
 

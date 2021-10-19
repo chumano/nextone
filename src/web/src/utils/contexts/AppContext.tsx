@@ -76,7 +76,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
 
     useEffect(() => {
         addOidcEvents();
-        AuthenticationService.getUser().then( (user)=>{
+        AuthenticationService.getAuthenticatedUser().then( (user)=>{
             if(user){
                 logIn(user);
             }
