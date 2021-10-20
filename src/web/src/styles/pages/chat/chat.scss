@@ -2,5 +2,24 @@
 @import "../../abstracts/mixins";
 
 .chat-page{
+    &__component{
+        padding: 10px;
+        label{
+            margin-bottom: 5px;
+        }
+    }
 
+    .message-list{
+        height: 300px;
+    }
+
+    .chat-list{
+        height: 300px;
+    }
+
+    .meeting-list{
+        height: 300px;  
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }
