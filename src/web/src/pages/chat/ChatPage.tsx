@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import 'react-chat-elements/dist/main.css';
 import '../../styles/pages/chat/chat.scss';
 import logo from '../../assets/logo.png';
@@ -7,13 +7,161 @@ import {
     ChatList, Input, Popup, Dropdown,
     Avatar, MeetingItem, MeetingList
 } from 'react-chat-elements';
-import { Button } from 'reactstrap';
+
+import { MentionsInput, Mention } from 'react-mentions'
 // https://www.npmjs.com/package/react-chat-elements-typescript
 // memtions @input : https://github.com/signavio/react-mentions
+
+const users = [
+    {
+        id: 'walter',
+        display: 'Walter White',
+    },
+    {
+        id: 'jesse',
+        display: 'Jesse Pinkman',
+    },
+    {
+        id: 'gus',
+        display: 'Gustavo "Gus" Fring',
+    },
+    {
+        id: 'saul',
+        display: 'Saul Goodman',
+    },
+    {
+        id: 'hank',
+        display: 'Hank Schrader',
+    },
+    {
+        id: 'skyler',
+        display: 'Skyler White',
+    },
+    {
+        id: 'mike',
+        display: 'Mike Ehrmantraut',
+    },
+    {
+        id: 'lydia',
+        display: 'Lydìã Rôdarté-Qüayle',
+    },
+]
+
+const tags = [{
+    id: 'tag1',
+    display: 'tagname 1',
+},
+{
+    id: 'tag2',
+    display: 'tagname 2',
+}
+]
+
+const memtionStypes = {
+    control: {
+        backgroundColor: '#fff',
+        fontSize: 14,
+        fontWeight: 'normal',
+    },
+
+    '&multiLine': {
+        control: {
+            fontFamily: 'monospace',
+            minHeight: 63,
+        },
+        highlighter: {
+            padding: 9,
+            border: '1px solid transparent',
+        },
+        input: {
+            padding: 9,
+            border: '1px solid silver',
+        },
+    },
+
+    '&singleLine': {
+        display: 'inline-block',
+        width: 180,
+
+        highlighter: {
+            padding: 1,
+            border: '2px inset transparent',
+        },
+        input: {
+            padding: 1,
+            border: '2px inset',
+        },
+    },
+
+    suggestions: {
+        list: {
+            backgroundColor: 'white',
+            border: '1px solid rgba(0,0,0,0.15)',
+            fontSize: 14,
+        },
+        item: {
+            padding: '5px 15px',
+            borderBottom: '1px solid rgba(0,0,0,0.15)',
+            '&focused': {
+                backgroundColor: '#cee4e5',
+            },
+        },
+    },
+}
 const ChatPage: React.FC = () => {
-    const [showPopup, setShowPopup] = useState(false)
+    const [showPopup, setShowPopup] = useState(false);
+    const [memtionValue, setMemtionValue] = useState("Hi @[John Doe](user:johndoe)");
+    const [emojis, setEmojis] = useState([])
+
+    useEffect(() => {
+        fetch(
+            'https://gist.githubusercontent.com/oliveratgithub/0bf11a9aff0d6da7b46f1490f86a71eb/raw/d8e4b78cfe66862cf3809443c1dba017f37b61db/emojis.json'
+        )
+            .then((response) => {
+                return response.json()
+            })
+            .then((jsonData) => {
+                setEmojis(jsonData.emojis)
+            })
+    }, [])
+
+    const queryEmojis = (query: any, callback: any) => {
+        if (query.length === 0) return
+
+        const matches = emojis
+            .filter((emoji: any) => {
+                return emoji.name.indexOf(query.toLowerCase()) > -1
+            })
+            .slice(0, 10)
+        return matches.map(({ emoji }) => ({ id: emoji }))
+    }
+    const neverMatchingRegex = /($a)/
     return (
         <div className="chat-page">
+            <div className="chat-page__component">
+                <label>MentionsInput</label>
+                <MentionsInput value={memtionValue}
+                    onChange={(event) => { setMemtionValue(event.target.value) }}
+                    style={memtionStypes}>
+                    <Mention style={{ backgroundColor: '#cee4e5' }}
+                        trigger="@"
+                        data={users}
+                    />
+                    <Mention style={{ backgroundColor: '#aaccbb' }}
+                        trigger="#"
+                        markup='#[__display__](__id__)'
+                        data={tags}
+                    />
+                    <Mention
+                        trigger=":"
+                        markup="__id__"
+                        regex={neverMatchingRegex}
+                        data={queryEmojis}
+                    />
+                </MentionsInput>
+                {memtionValue}
+            </div>
+
             <div className="chat-page__component">
                 <label>ChatItem</label>
                 <ChatItem
@@ -341,17 +489,17 @@ const ChatPage: React.FC = () => {
                             date: new Date(),
                             avatars: [{
                                 src: logo,
-                            },{
+                            }, {
                                 src: logo,
-                            },{
+                            }, {
                                 src: logo,
-                            },{
+                            }, {
                                 src: logo,
-                            },{
+                            }, {
                                 src: logo,
-                            },{
+                            }, {
                                 src: logo,
-                            },{
+                            }, {
                                 src: logo,
                             }]
                         },
