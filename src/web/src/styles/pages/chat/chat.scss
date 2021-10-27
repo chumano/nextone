@@ -7,21 +7,21 @@
 
   @include mobile-width{
     flex-direction: column;
-}
+  }
   
-   &__sidebar{
+  &__sidebar{
       width: 300px;
       background-color: $color-white;
       border-right: 1px solid $color-grey-5;
-   } 
+  } 
 
-   &__main{
+  &__main{
       flex-grow: 1;
       background-color: $color-grey-9;
       display: flex;
       flex-direction: column;
       height: 100%;
-   }
+  }
 
 
   /*-------------------*/

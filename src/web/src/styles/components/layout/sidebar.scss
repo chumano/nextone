@@ -6,6 +6,7 @@ $sidebar-width : 230px;
 .sidebar{
     background-color: black;
     width: $sidebar-width;
+    min-width: $sidebar-width;
     position: relative;
     z-index: 200;
     flex-direction: column;

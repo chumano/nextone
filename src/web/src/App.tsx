@@ -8,8 +8,6 @@ import {
   Link,
   Redirect
 } from "react-router-dom";
-import Home from './pages/home/Home';
-import Channel from './pages/channel/Channel';
 import NotFound404 from './pages/not-found/NotFount404';
 import { authRoutes, routes } from './Route';
 import withLayout from './utils/hoc/withLayout';

@@ -144,24 +144,24 @@ export const messageList = [
     {
         position: 'right',
         type: 'text',
-        text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
+        text: 'Lorem ipsum dolor ',
         date: new Date(2020, 10, 1),
     },
     {
         position: 'left',
         type: 'text',
-        text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
+        text: 'Lorem ',
         date: new Date(),
     }, {
         position: 'right',
         type: 'text',
-        text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
+        text: 'Lorem ipsum dolor sit amet',
         date: new Date(2020, 10, 1),
     },
     {
         position: 'left',
         type: 'text',
-        text: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
+        text: 'Lorem ipsum',
         date: new Date(),
     }, {
         position: 'right',

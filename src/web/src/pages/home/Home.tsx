@@ -7,6 +7,7 @@ const Home: React.FC = (): JSX.Element => {
         <div className="home-page">
             <div>
                 <span className="page-title">Home page</span>
+               
             </div>
         </div>
     </>;
