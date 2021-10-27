@@ -23,16 +23,18 @@ import {
 import { messageList } from "../chat/fakedate";
 
 interface ChatModalProp{
-    isShow : boolean
+    isShow : boolean,
+    user?: any,
+    onMinimize: ()=>void
 }
-const ChatModal: React.FC<ChatModalProp> = ({isShow}) => {
+const ChatModal: React.FC<ChatModalProp> = ({isShow, onMinimize, user}) => {
     const [isMinimize, setIsMinimize] = useState(isShow);
     useEffect(()=>{
         setIsMinimize(!isShow);
     },[isShow])
 
     const onClose = ()=>{
-        setIsMinimize(true);
+        onMinimize();
     }
 
     return <>
@@ -42,7 +44,7 @@ const ChatModal: React.FC<ChatModalProp> = ({isShow}) => {
                     <img src={userIcon} />
                 </div>
                 <div className="user-name">
-                    Loc Hoang
+                    {user?.title ??"Loc Hoang"}
                 </div>
                 <div className="flex-spacer"></div>
 

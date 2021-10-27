@@ -7,10 +7,14 @@ import ChatModal from './ChatModal';
 
 const ChannelPage: React.FC = (): JSX.Element => {
     const [isShowModal, setIsShowModal] = useState(false);
-    const onMemberItemClick = ()=>{
+    const [chatUser, setChatUser] = useState(undefined);
+
+    const onMemberItemClick = (member:any)=>{
+        const user = member;
+        setChatUser(user);
         setIsShowModal(true);
     }
-    
+
     return <>
         <div className="channel-page">
             <div className="channel-page__header">
@@ -31,7 +35,7 @@ const ChannelPage: React.FC = (): JSX.Element => {
             </div>
         </div>
         
-        <ChatModal isShow={isShowModal} ></ChatModal>
+        <ChatModal isShow={isShowModal} onMinimize={()=>{setIsShowModal(false)}} user={chatUser}></ChatModal>
     </>;
 }
 
