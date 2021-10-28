@@ -43,10 +43,10 @@
       "UpstreamHeaderTransform": {
         "X-Forwarded-For": "{RemoteIpAddress}"
       },
-      "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer",
-        "AllowedScopes": [] // one of them is valid => allowed
-      }
+      //"AuthenticationOptions": {
+      //  "AuthenticationProviderKey": "Bearer",
+      //  "AllowedScopes": [] // one of them is valid => allowed
+      //}
     },
     //map service
 

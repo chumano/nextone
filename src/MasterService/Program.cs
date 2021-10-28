@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace MasterService
@@ -20,7 +23,26 @@ namespace MasterService
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.ConfigureKestrel((ctx, options) =>
+                    {
+                        if (ctx.HostingEnvironment.IsDevelopment())
+                        {
+                            IdentityModelEventSource.ShowPII = true;
+                        }
+
+                        options.Limits.MinRequestBodyDataRate = null;
+                        options.Listen(IPAddress.Any, 5003);
+                        options.Listen(IPAddress.Any, 15003, listenOptions =>
+                        {
+                            listenOptions.Protocols = HttpProtocols.Http2;
+                        });
+                    });
+
+                    webBuilder.UseStartup<Startup>()
+                        .UseKestrel(o =>
+                        {
+                            o.AllowSynchronousIO = true;
+                        }); ;
                 });
     }
 }

@@ -26,6 +26,14 @@ namespace ComService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            //Grpc Clients
+            services.AddGrpcClient<NextOne.Protobuf.Master.GrpcMasterService.GrpcMasterServiceClient>(o =>
+            {
+                var grpcUrl = "http://localhost:15003";
+                o.Address = new Uri(grpcUrl);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

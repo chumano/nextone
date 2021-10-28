@@ -7,15 +7,39 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService", "Identity
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{94BB176E-6247-4F14-83AA-DAF212D983F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MasterService", "MasterService\MasterService.csproj", "{4393901C-40A2-48CB-BE43-4D12519C7502}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MasterService", "MasterService\MasterService.csproj", "{4393901C-40A2-48CB-BE43-4D12519C7502}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gateway", "Gateway\Gateway.csproj", "{CBDB8212-F448-43CF-A563-F74CFC8546FF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Gateway", "Gateway\Gateway.csproj", "{CBDB8212-F448-43CF-A563-F74CFC8546FF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ComService", "ComService\ComService.csproj", "{B682EE79-EDA8-4C9B-B342-F907F041B728}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ComService", "ComService\ComService.csproj", "{B682EE79-EDA8-4C9B-B342-F907F041B728}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_schema", "_schema", "{79F5B075-4907-4650-A875-8BC82BC09810}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "proto", "proto", "{7E983FED-5D80-444F-B956-E5508DBB4A65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{7C4F254F-447B-46A2-B2E2-556765CCFA61}"
 	ProjectSection(SolutionItems) = preProject
 		_schema\proto\common\common.proto = _schema\proto\common\common.proto
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "master-service", "master-service", "{B2F3A171-AD77-40C2-9B71-62724B597415}"
+	ProjectSection(SolutionItems) = preProject
+		_schema\proto\master-service\master-service.proto = _schema\proto\master-service\master-service.proto
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "identity-service", "identity-service", "{8E40E6C0-EDC7-4BE6-AD67-1C6989931F2D}"
+	ProjectSection(SolutionItems) = preProject
+		_schema\proto\identity-service\identity-service.proto = _schema\proto\identity-service\identity-service.proto
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "com-service", "com-service", "{CB06E4A7-0502-4001-929E-6500334D6A2F}"
+	ProjectSection(SolutionItems) = preProject
+		_schema\proto\com-service\com-service.proto = _schema\proto\com-service\com-service.proto
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "map-service", "map-service", "{5FB95FC2-58ED-411B-9C8C-4887DC0C3A15}"
+	ProjectSection(SolutionItems) = preProject
+		_schema\proto\map-service\map-service.proto = _schema\proto\map-service\map-service.proto
 	EndProjectSection
 EndProject
 Global
@@ -43,6 +67,14 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7E983FED-5D80-444F-B956-E5508DBB4A65} = {79F5B075-4907-4650-A875-8BC82BC09810}
+		{7C4F254F-447B-46A2-B2E2-556765CCFA61} = {7E983FED-5D80-444F-B956-E5508DBB4A65}
+		{B2F3A171-AD77-40C2-9B71-62724B597415} = {7E983FED-5D80-444F-B956-E5508DBB4A65}
+		{8E40E6C0-EDC7-4BE6-AD67-1C6989931F2D} = {7E983FED-5D80-444F-B956-E5508DBB4A65}
+		{CB06E4A7-0502-4001-929E-6500334D6A2F} = {7E983FED-5D80-444F-B956-E5508DBB4A65}
+		{5FB95FC2-58ED-411B-9C8C-4887DC0C3A15} = {7E983FED-5D80-444F-B956-E5508DBB4A65}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {97BEC3E4-43A9-451E-A635-83A612FEBA8B}

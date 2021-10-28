@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package nextone.common;
+option csharp_namespace = "NextOne.Common";
+
+import "google/protobuf/wrappers.proto";
+
+message Error {
+	string message = 1;
+}
