@@ -1,10 +1,12 @@
 using MasterService.Boudaries.Grpc;
+using MasterService.Infrastructure;
 using MasterService.Infrastructure.Grpc;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +31,21 @@ namespace MasterService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            //DBContext
+            var connString = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<MasterDBContext>(options =>
+            {
+                options.UseSqlServer(connString, o =>
+                {
+                    o.EnableRetryOnFailure(maxRetryCount: 3);
+                });
+                options.EnableDetailedErrors(true);
+                options.EnableSensitiveDataLogging(false);
+            });
+            services.AddScoped<DbContext>(provider => provider.GetService<MasterDBContext>());
+
 
             //Grpc Service
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);

@@ -6,6 +6,7 @@ namespace IdentityService.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
+        public const string DB_SCHEMA = "identity";
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -14,7 +15,7 @@ namespace IdentityService.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
+            builder.HasDefaultSchema(DB_SCHEMA);
         }
     }
 }

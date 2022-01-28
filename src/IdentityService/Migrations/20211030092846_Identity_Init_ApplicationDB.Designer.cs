@@ -10,13 +10,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211016191651_InitialIdentityServerApplicationDBMigration")]
-    partial class InitialIdentityServerApplicationDBMigration
+    [Migration("20211030092846_Identity_Init_ApplicationDB")]
+    partial class Identity_Init_ApplicationDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("identity")
                 .HasAnnotation("ProductVersion", "3.1.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);

@@ -7,16 +7,17 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace IdentityService.Migrations
+namespace IdentityService.Migrations.PersistedGrantDb
 {
     [DbContext(typeof(PersistedGrantDbContext))]
-    [Migration("20211016191626_InitialIdentityServerPersistedGrantDbMigration")]
-    partial class InitialIdentityServerPersistedGrantDbMigration
+    [Migration("20211030093446_Identity_Init_PersistedGrantDB")]
+    partial class Identity_Init_PersistedGrantDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("identity")
                 .HasAnnotation("ProductVersion", "3.1.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);

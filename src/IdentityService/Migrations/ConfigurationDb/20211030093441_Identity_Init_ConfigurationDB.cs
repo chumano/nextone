@@ -1,14 +1,18 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace IdentityService.Migrations
+namespace IdentityService.Migrations.ConfigurationDb
 {
-    public partial class InitialIdentityServerConfigurationDbMigration : Migration
+    public partial class Identity_Init_ConfigurationDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "identity");
+
             migrationBuilder.CreateTable(
                 name: "ApiResources",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -31,6 +35,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiScopes",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -50,6 +55,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Clients",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -105,6 +111,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "IdentityResources",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -127,6 +134,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceClaims",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -140,6 +148,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ApiResourceClaims_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "identity",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -147,6 +156,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceProperties",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -161,6 +171,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ApiResourceProperties_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "identity",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -168,6 +179,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceScopes",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -181,6 +193,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ApiResourceScopes_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "identity",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -188,6 +201,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceSecrets",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -205,6 +219,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ApiResourceSecrets_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "identity",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -212,6 +227,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiScopeClaims",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -225,6 +241,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ApiScopeClaims_ApiScopes_ScopeId",
                         column: x => x.ScopeId,
+                        principalSchema: "identity",
                         principalTable: "ApiScopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -232,6 +249,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ApiScopeProperties",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -246,6 +264,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ApiScopeProperties_ApiScopes_ScopeId",
                         column: x => x.ScopeId,
+                        principalSchema: "identity",
                         principalTable: "ApiScopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -253,6 +272,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientClaims",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -267,6 +287,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientClaims_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -274,6 +295,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientCorsOrigins",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -287,6 +309,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientCorsOrigins_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -294,6 +317,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientGrantTypes",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -307,6 +331,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientGrantTypes_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -314,6 +339,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientIdPRestrictions",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -327,6 +353,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientIdPRestrictions_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -334,6 +361,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientPostLogoutRedirectUris",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -347,6 +375,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientPostLogoutRedirectUris_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -354,6 +383,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientProperties",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -368,6 +398,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientProperties_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -375,6 +406,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientRedirectUris",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -388,6 +420,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientRedirectUris_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -395,6 +428,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientScopes",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -408,6 +442,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientScopes_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -415,6 +450,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "ClientSecrets",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -432,6 +468,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_ClientSecrets_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "identity",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -439,6 +476,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "IdentityResourceClaims",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -452,6 +490,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_IdentityResourceClaims_IdentityResources_IdentityResourceId",
                         column: x => x.IdentityResourceId,
+                        principalSchema: "identity",
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -459,6 +498,7 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateTable(
                 name: "IdentityResourceProperties",
+                schema: "identity",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
@@ -473,6 +513,7 @@ namespace IdentityService.Migrations
                     table.ForeignKey(
                         name: "FK_IdentityResourceProperties_IdentityResources_IdentityResourceId",
                         column: x => x.IdentityResourceId,
+                        principalSchema: "identity",
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -480,109 +521,130 @@ namespace IdentityService.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceClaims_ApiResourceId",
+                schema: "identity",
                 table: "ApiResourceClaims",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceProperties_ApiResourceId",
+                schema: "identity",
                 table: "ApiResourceProperties",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResources_Name",
+                schema: "identity",
                 table: "ApiResources",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceScopes_ApiResourceId",
+                schema: "identity",
                 table: "ApiResourceScopes",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceSecrets_ApiResourceId",
+                schema: "identity",
                 table: "ApiResourceSecrets",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopeClaims_ScopeId",
+                schema: "identity",
                 table: "ApiScopeClaims",
                 column: "ScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopeProperties_ScopeId",
+                schema: "identity",
                 table: "ApiScopeProperties",
                 column: "ScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_Name",
+                schema: "identity",
                 table: "ApiScopes",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientClaims_ClientId",
+                schema: "identity",
                 table: "ClientClaims",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientCorsOrigins_ClientId",
+                schema: "identity",
                 table: "ClientCorsOrigins",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientGrantTypes_ClientId",
+                schema: "identity",
                 table: "ClientGrantTypes",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientIdPRestrictions_ClientId",
+                schema: "identity",
                 table: "ClientIdPRestrictions",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientPostLogoutRedirectUris_ClientId",
+                schema: "identity",
                 table: "ClientPostLogoutRedirectUris",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientProperties_ClientId",
+                schema: "identity",
                 table: "ClientProperties",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientRedirectUris_ClientId",
+                schema: "identity",
                 table: "ClientRedirectUris",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_ClientId",
+                schema: "identity",
                 table: "Clients",
                 column: "ClientId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientScopes_ClientId",
+                schema: "identity",
                 table: "ClientScopes",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientSecrets_ClientId",
+                schema: "identity",
                 table: "ClientSecrets",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResourceClaims_IdentityResourceId",
+                schema: "identity",
                 table: "IdentityResourceClaims",
                 column: "IdentityResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResourceProperties_IdentityResourceId",
+                schema: "identity",
                 table: "IdentityResourceProperties",
                 column: "IdentityResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResources_Name",
+                schema: "identity",
                 table: "IdentityResources",
                 column: "Name",
                 unique: true);
@@ -591,67 +653,88 @@ namespace IdentityService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ApiResourceClaims");
+                name: "ApiResourceClaims",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiResourceProperties");
+                name: "ApiResourceProperties",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiResourceScopes");
+                name: "ApiResourceScopes",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiResourceSecrets");
+                name: "ApiResourceSecrets",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiScopeClaims");
+                name: "ApiScopeClaims",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiScopeProperties");
+                name: "ApiScopeProperties",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientClaims");
+                name: "ClientClaims",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientCorsOrigins");
+                name: "ClientCorsOrigins",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientGrantTypes");
+                name: "ClientGrantTypes",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientIdPRestrictions");
+                name: "ClientIdPRestrictions",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientPostLogoutRedirectUris");
+                name: "ClientPostLogoutRedirectUris",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientProperties");
+                name: "ClientProperties",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientRedirectUris");
+                name: "ClientRedirectUris",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientScopes");
+                name: "ClientScopes",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ClientSecrets");
+                name: "ClientSecrets",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityResourceClaims");
+                name: "IdentityResourceClaims",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityResourceProperties");
+                name: "IdentityResourceProperties",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiResources");
+                name: "ApiResources",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "ApiScopes");
+                name: "ApiScopes",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "Clients");
+                name: "Clients",
+                schema: "identity");
 
             migrationBuilder.DropTable(
-                name: "IdentityResources");
+                name: "IdentityResources",
+                schema: "identity");
         }
     }
 }

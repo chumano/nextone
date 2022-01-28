@@ -72,8 +72,9 @@ namespace IdentityService
                     options.ConfigureDbContext = builder =>
                     {
                         //builder.UseSqlite(connectionString);
-                        builder.UseSqlServer(connectionString);
+                        builder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                     };
+                    options.DefaultSchema = ApplicationDbContext.DB_SCHEMA;
                 })
                 // this adds the operational data from DB (codes, tokens, consents)
                 .AddOperationalStore(options =>
@@ -81,8 +82,10 @@ namespace IdentityService
                     options.ConfigureDbContext = builder =>
                     {
                         //builder.UseSqlite(connectionString);
-                        builder.UseSqlServer(connectionString);
+                        builder.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
                     };
+
+                    options.DefaultSchema = ApplicationDbContext.DB_SCHEMA;
 
                     // this enables automatic token cleanup. this is optional.
                     options.EnableTokenCleanup = true;

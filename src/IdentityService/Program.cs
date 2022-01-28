@@ -40,6 +40,7 @@ namespace IdentityService
                 var seed = args.Contains("/seed");
                 if (seed)
                 {
+                    Console.WriteLine("Seeding...");
                     args = args.Except(new[] { "/seed" }).ToArray();
                 }
 

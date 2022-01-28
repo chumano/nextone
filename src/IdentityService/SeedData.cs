@@ -39,12 +39,16 @@ namespace IdentityService
                 options.ConfigureDbContext = db =>
                     //db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName)
                     db.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+
+                options.DefaultSchema = ApplicationDbContext.DB_SCHEMA;
             });
             services.AddConfigurationDbContext(options =>
             {
                 options.ConfigureDbContext = db =>
                     //db => db.UseSqlite(connectionString, sql => sql.MigrationsAssembly(typeof(SeedData).Assembly.FullName));
                     db.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+
+                options.DefaultSchema = ApplicationDbContext.DB_SCHEMA;
             });
 
             var serviceProvider = services.BuildServiceProvider();

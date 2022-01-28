@@ -16,3 +16,17 @@ src/ComService/bin
 src/ComService/obj
 src/.vs
 devvolumes
+src/Libs/NextOne.Infrastructure.OpenTelemetry/obj
+src/Libs/NextOne.Shared/bin
+src/Libs/NextOne.Shared/obj
+src/MapService/obj
+src/NextOne.Infrastructure.Core/obj
+src/NextOne.Infrastructure.MassTransit/obj
+src/NextOne.Infrastructure.Metrics/obj
+src/FileService/obj
+src/FileService/bin
+src/MapService/bin
+src/NextOne.Infrastructure.Core/bin
+src/NextOne.Infrastructure.MassTransit/bin
+src/NextOne.Infrastructure.Metrics/bin
+src/Libs/NextOne.Infrastructure.OpenTelemetry/bin

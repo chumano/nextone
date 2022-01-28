@@ -12,6 +12,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.20">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.20" />
@@ -21,6 +25,10 @@
   <ItemGroup>
     <Protobuf Include="..\_schema\proto\common\common.proto" Link="protobuf\common.proto" AdditionalImportDirs="..\_schema\proto\common" />
     <Protobuf Include="..\_schema\proto\master-service\master-service.proto" Link="protobuf\master-service.proto" AdditionalImportDirs="..\_schema\proto\master-service" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Infrastructure\DBEntityConfigurations\" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
 
