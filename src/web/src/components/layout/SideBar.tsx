@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.svg';
 import { MenuList } from "../../Route";
 import '../../styles/components/layout/sidebar.scss';
 
@@ -10,7 +10,7 @@ interface IProp {
 }
 const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
-
+    const [menuHasNotification, setMenuHasNotification] = useState<{[key:string]: boolean}>({ 30 : true })
     useEffect(() => {
         const path = window.location.pathname.toLowerCase();
         const index = MenuList.findIndex((menu)=>menu.path == path);
@@ -31,11 +31,15 @@ const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
                     {MenuList.map((item,index)=>(
                         <li key={item.id} className={"sidebar-menu__item"+ (selectedMenuIndex==index?" active":"")}> 
                             <Link to={item.path} >
-                                <div className="li-icon">
+                                <div className="li-icon" title={item.title}>
                                     {item.icon}
                                 </div>
-                                {item.title}
+
+                                { menuHasNotification[item.id] && 
+                                    <span className="item__notification"></span>
+                                }
                             </Link>
+                           
                         </li>  
                     ))}
                 </ul>

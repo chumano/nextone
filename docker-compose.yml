@@ -8,9 +8,11 @@ services:
     #         - db
     db:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
+        container_name: mssql
         environment:
             SA_PASSWORD: "NextOne@123456"
             ACCEPT_EULA: "Y"
+        restart: always
         ports:
             - "1433:1433"
         volumes:
@@ -39,6 +41,7 @@ services:
             - ./devvolumes/mongo/config:/data/configdb
     seq:
         image: datalust/seq:latest
+        container_name: seq
         environment:
             - ACCEPT_EULA=Y
             #- BASE_URI=https://seq.dptsprotrans.com

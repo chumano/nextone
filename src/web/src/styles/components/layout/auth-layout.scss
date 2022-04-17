@@ -10,7 +10,7 @@
     }
 
     &__container {
-        background-color: $color-white-3;
+        background-color: $color-white;
         flex-grow: 1;
 
         @include tablet-width{
@@ -23,7 +23,6 @@
     }
 
     &__main{
-        padding: 20px;
         min-height: calc(100vh - #{$header-height});
 
         @include tablet-width{

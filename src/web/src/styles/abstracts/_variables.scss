@@ -20,8 +20,14 @@ $color-grey-9: #cccccc;
 $color-blue: #0a12bf;
 $color-blue-2: #03002e;
 
-$color-primary-btn : #0a12bf;
-$color-primary-btn-hover : #03002e;
+$color-green: #28C345;
+
+$color-primary : #6B59CC ;
+
+$color-primary-btn : #6B59CC ;
+$color-primary-btn-hover : #8083A3;
+
+$color-line : #D8D8D8;
 
 // FONT
 $font-family: "Ubuntu";
@@ -34,5 +40,18 @@ $break-point-tablet : 900px;
 
 
 // SIZE
-$header-height : 80px;
+$header-height : 60px;
 $input-control-height:  40px;
+
+$font-size-1: 1rem;
+$font-size-2: 1.2rem;
+$font-size-3: 1.5rem;
+$font-size-4: 2rem;
+
+$font-weight-1 : 100;
+$font-weight-2 : 200;
+$font-weight-3 : 300;
+$font-weight-4 : 400;
+$font-weight-5 : 500;
+
+$border-radius : 6px;

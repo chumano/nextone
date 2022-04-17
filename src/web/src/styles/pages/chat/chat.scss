@@ -3,16 +3,27 @@
 
 .chat-page{
   display: flex;
-  height: calc(100vh - 120px);
+  height: calc(100vh - #{$header-height});
 
   @include mobile-width{
     flex-direction: column;
   }
   
   &__sidebar{
+      display:flex;
+      flex-direction: column;
       width: 300px;
       background-color: $color-white;
       border-right: 1px solid $color-grey-5;
+      height: 100%;
+
+      .search-container{
+        padding: 4px;
+        margin-top: 4px;
+        input {
+          border-radius: $border-radius;
+        }
+      }
   } 
 
   &__main{
@@ -23,21 +34,16 @@
       height: 100%;
   }
 
-
   /*-------------------*/
-  .chat-users-list{
-    height: 100%;
+  .chat-channel-list{
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 
     &__header{
-      padding: 10px;
-      .search-container{
-        padding: 5px;
-        input {
-          border-radius: 25px;
-        }
-      }
+      padding: 5px;
+      border-bottom: 2px solid  $color-primary;
+      font-weight: $font-weight-5;
     }
 
     .chat-list{
@@ -45,6 +51,24 @@
     }
 
   }
+  /*-------------------*/
+  .chat-users-list{
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &__header{
+      padding: 5px;
+      border-bottom: 2px solid  $color-primary;
+      font-weight: $font-weight-5;
+    }
+
+    .chat-list{
+      flex-grow: 1;
+    }
+
+  }
+
   /*-------------------*/
   .chat-box{
     display: flex;

@@ -30,13 +30,21 @@ const ChatPage: React.FC = () => {
     return (
         <div className="chat-page">
             <div className="chat-page__sidebar">
+                <div className="search-container">
+                    <input type="search" className="form-control" ></input>
+                </div>
+
+                <div className="chat-channel-list">
+                    <div className="chat-channel-list__header">
+                       Kênh
+                    </div>
+                    <ChatList className='channel-list'
+                        dataSource={chatList} />
+                </div>
+
                 <div className="chat-users-list">
                     <div className="chat-users-list__header">
-                        <h5>Người dùng</h5>
-                        <div className="search-container">
-                            <input type="search" className="form-control" ></input>
-                        </div>
-                        
+                       Tin nhắn
                     </div>
                     <ChatList className='chat-list'
                         dataSource={chatList} />
