@@ -5,28 +5,15 @@ using System.Threading.Tasks;
 
 namespace ComService.Domain
 {
-    public class Channel
+    public class Channel : Conversation
     {
-       public string Id { get;  set;}
-       public string Name { get; set; }
-       public bool IsActive { get; set; }
-       public bool IsDeleted { get; set; }
+        public Channel():base(ConversationTypeEnum.Channel)
+        {
 
-       public List<ChannelMember> Members { get; set; }
+        }
+
+        public IList<string> AllowedEventTypeCodes { get; set; }
+        public List<Event> RecentEvents { get; set; }
     }
 
-    public enum MemberRoleEnum
-    {
-        MANAGER = 0,
-        MEMBER = 1
-    }
-
-    public class ChannelMember
-    {
-        public string ChannelId { get; set; }
-        public string UserId { get; set; }
-        public MemberRoleEnum Role { get; set; }
-
-        public UserStatus User { get; set; }
-    }
 }

@@ -86,19 +86,19 @@ namespace ComService.Infrastructure
 
             //=============================
             //ChatRoom
-            modelBuilder.Entity<ChatRoom>(eb =>
+            modelBuilder.Entity<Conversation>(eb =>
             {
             });
 
-            modelBuilder.Entity<ChatRoomMember>(eb =>
+            modelBuilder.Entity<ConversationMember>(eb =>
             {
             });
 
-            modelBuilder.Entity<ChatMessage>(eb =>
+            modelBuilder.Entity<Message>(eb =>
             {
             });
 
-            modelBuilder.Entity<ChatMessageFile>(eb =>
+            modelBuilder.Entity<MessageFile>(eb =>
             {
             });
 

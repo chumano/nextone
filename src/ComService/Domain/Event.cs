@@ -27,16 +27,6 @@ namespace ComService.Domain
         public List<EventFile> Files { get; set; }
     }
 
-    public class EventResponse
-    {
-        public string EventResponseId { get; set; }
-        public string EventId { get; set; }
-        public string Content { get; set; }
-        public string UserSenderId { get; set; }
-        public DateTime CreatedDate { get; set; }
-
-        public List<EventFile> Files { get; set; }
-    }
 
     public class EventType
     {
@@ -47,8 +37,17 @@ namespace ComService.Domain
     public class EventFile
     {
         public string EventId { get; set; }
-        public string EventResponseId { get; set; }
         public string FileId { get; set; }
         public string FileType { get;  set; }
+    }
+
+
+    public class EventResponse
+    {
+        public string EventResponseId { get; set; }
+        public string EventId { get; set; }
+        public string Content { get; set; }
+        public string UserSenderId { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

@@ -30,3 +30,4 @@ src/NextOne.Infrastructure.Core/bin
 src/NextOne.Infrastructure.MassTransit/bin
 src/NextOne.Infrastructure.Metrics/bin
 src/Libs/NextOne.Infrastructure.OpenTelemetry/bin
+src/SharedDomain/obj

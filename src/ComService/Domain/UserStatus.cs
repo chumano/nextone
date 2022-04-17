@@ -17,6 +17,8 @@ namespace ComService.Domain
 
         public double? LastLat { get; set; }
         public double? LastLon { get; set; }
+
+        public IList<UserTrackingLocation> RecentTrackingLocations { get; set; } 
     }
 
     public enum StatusEnum
