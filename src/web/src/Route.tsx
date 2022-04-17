@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Channel from "./pages/channel/Channel";
+import ChannelPage from "./pages/channel/ChannelPage";
 import Home from "./pages/home/Home";
 import {
     faHome,
@@ -89,7 +89,7 @@ const routes: Array<IRouteConfig> = [
     },
     {
         path: "/channel",
-        component: Channel,
+        component: ChannelPage,
         useAuthLayout: true
     },
 
@@ -128,13 +128,19 @@ const MenuList = [
         icon: <FontAwesomeIcon icon={faHome} />
     },
     {
-        id: 1,
+        id: 10,
+        title: 'Giám sát kênh',
+        path: '/channel',
+        icon: <FontAwesomeIcon icon={faSnowflake} />
+    },
+    {
+        id: 20,
         title: 'Bản đồ',
         path: '/map',
         icon: <FontAwesomeIcon icon={faMap} />
     },
     {
-        id: 2,
+        id: 30,
         title: 'Tin nhắn',
         path: '/chat',
         icon: <FontAwesomeIcon icon={faComments} />

@@ -1,44 +1,73 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import '../../styles/pages/test-page/test-page.scss';
+import ChatItemsSample from './_ChatItemsSample';
+import PlaceHolderSample from './_PlaceHolderSample';
 
+const samples = [
+    {
+        id: 'placeholder',
+        title: 'Place holder',
+        component: PlaceHolderSample
+    },
+    {
+        id: 'chatitem',
+        title: 'Chat Items',
+        component: ChatItemsSample
+    }
+]
 const TestPage: React.FC = () => {
+    const [activeTab, setActiveTab] = useState('placeholder');
+    const toggle = (tab: string) => {
+        if (activeTab !== tab) setActiveTab(tab);
+    }
+
     return <>
         <div className="test-page">
             <div>
                 <span className="page-title">Test pages</span>
             </div>
 
-            {/* Placeholder */}
-            <div className="test-page__component">
-                <div className="component-title">
-                    Placeholder
-                </div>
-                <div className="card" aria-hidden="true">
-                    <svg className="bd-placeholder-img card-img-top" width="100%" height="180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-                        <title>Placeholder</title><rect width="100%" height="100%" fill="#868e96"></rect>
-                    </svg>
-                    <div className="card-body">
-                        <h5 className="card-title placeholder-glow">
-                            <span className="placeholder col-6"></span>
-                        </h5>
-                        <p className="card-text placeholder-glow">
-                            <span className="placeholder col-7"></span>
-                            <span className="placeholder col-4"></span>
-                            <span className="placeholder col-4"></span>
-                            <span className="placeholder col-6"></span>
-                            <span className="placeholder col-8"></span>
-                        </p>
-                        <a href="#" tabIndex={-1} className="btn btn-primary disabled placeholder col-6"></a>
-                    </div>
-                </div>
-            </div>
+            <Nav tabs>
+                {samples.map((item) => (
+                    <NavItem key={item.id}>
+                        <NavLink
+                            className={"clickable " + (activeTab === item.id ? "active" : "")}
+                            onClick={() => { toggle(item.id); }}
+                        >
+                            {item.title}
+                        </NavLink>
+                    </NavItem>
+                ))}
 
-            {/* Other */}
-            <div className="test-page__component">
-                <div className="component-title">
-                    Other
-                </div>
-            </div>
+                <NavItem>
+                    <NavLink
+                        className={"clickable " + (activeTab === 'other' ? "active" : "")}
+                        onClick={() => { toggle('other'); }}
+                    >
+                        Others
+                    </NavLink>
+                </NavItem>
+            </Nav>
+
+
+            <TabContent activeTab={activeTab}>
+                {samples.map((item) => (
+                     <TabPane tabId={item.id} key={item.id}>
+                     <item.component></item.component>
+                 </TabPane>
+                ))}
+               
+                <TabPane tabId="other">
+                    {/* Other */}
+                    <div className="test-page__component">
+                        <div className="component-title">
+                            Other
+                        </div>
+                    </div>
+                </TabPane>
+
+            </TabContent>
         </div>
     </>;
 }

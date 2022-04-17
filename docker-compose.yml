@@ -8,9 +8,11 @@ services:
     #         - db
     db:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
+        container_name: mssql
         environment:
             SA_PASSWORD: "NextOne@123456"
             ACCEPT_EULA: "Y"
+        restart: always
         ports:
             - "1433:1433"
         volumes:
@@ -21,8 +23,25 @@ services:
             resources:
                 limits:
                     memory: 4G
+    mongo:
+        image: mongo:latest
+        #restart: always
+        container_name: mongodb
+        ports:
+            - 27017:27017
+        environment:
+            MONGO_INITDB_DATABASE: test
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: "NextOne@123456"
+        volumes:
+            # seeding scripts
+            - ./devvolumes/mongo/entrypoint:/docker-entrypoint-initdb.d
+            # named volumes
+            - ./devvolumes/mongo/db:/data/db
+            - ./devvolumes/mongo/config:/data/configdb
     seq:
         image: datalust/seq:latest
+        container_name: seq
         environment:
             - ACCEPT_EULA=Y
             #- BASE_URI=https://seq.dptsprotrans.com

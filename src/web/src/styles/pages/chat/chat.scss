@@ -2,5 +2,124 @@
 @import "../../abstracts/mixins";
 
 .chat-page{
+  display: flex;
+  height: calc(100vh - #{$header-height});
 
+  @include mobile-width{
+    flex-direction: column;
+  }
+  
+  &__sidebar{
+      display:flex;
+      flex-direction: column;
+      width: 300px;
+      background-color: $color-white;
+      border-right: 1px solid $color-grey-5;
+      height: 100%;
+
+      .search-container{
+        padding: 4px;
+        margin-top: 4px;
+        input {
+          border-radius: $border-radius;
+        }
+      }
+  } 
+
+  &__main{
+      flex-grow: 1;
+      background-color: $color-grey-9;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+  }
+
+  /*-------------------*/
+  .chat-channel-list{
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &__header{
+      padding: 5px;
+      border-bottom: 2px solid  $color-primary;
+      font-weight: $font-weight-5;
+    }
+
+    .chat-list{
+      flex-grow: 1;
+    }
+
+  }
+  /*-------------------*/
+  .chat-users-list{
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &__header{
+      padding: 5px;
+      border-bottom: 2px solid  $color-primary;
+      font-weight: $font-weight-5;
+    }
+
+    .chat-list{
+      flex-grow: 1;
+    }
+
+  }
+
+  /*-------------------*/
+  .chat-box{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    
+    .chat-header{
+      background-color: $color-white;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+
+      &--name{
+        margin-left: 10px;
+        font-weight: 500;
+      }
+      &__tools{
+        display: flex;
+        align-items: center;
+        .tool{
+          padding: 2px;
+          margin-left: 20px;
+          font-size: 30px;
+        }
+      }
+    }
+
+    .chat-content{
+      flex-grow: 1;
+      height: 100%;
+      min-height: 300px;
+      .message-list{
+        height: 100%;
+      }
+    }
+
+    .chat-send-box{
+      .rce-input-textarea{
+        height: 41px;
+      }
+      .input-button {
+        padding: 5px;
+        margin-left: 5px;
+        font-size: 30px;
+      }
+    }
+  }
+   
+
+   /*-------------------*/
+   .chat-list,.message-list{
+    height: 100%;
+  }
 }

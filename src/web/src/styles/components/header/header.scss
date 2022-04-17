@@ -4,6 +4,7 @@
 .header{
     height: $header-height;
     background-color: $color-white;
+    border-bottom: 1px solid $color-line;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -35,11 +36,7 @@
     }
 
     &__profile{
-        width: 64px;
-        height: 64px;
         cursor: pointer;
-
-        
     }
 
 

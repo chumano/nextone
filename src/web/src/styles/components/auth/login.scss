@@ -2,11 +2,49 @@
 @import "../../abstracts/mixins";
 
 .login-page{
-    padding: 20px;
-    &__intro{
-        display : flex;
-        flex-direction: column;
+    &__header{
+        border-bottom: 1px solid $color-line;
+        display: flex;
+        flex-direction: row;
+        padding:5px;
         align-items: center;
+        height: $header-height;
+
+        .header{
+            &__appname{
+                margin-left: 10px;
+                font-size: $font-size-3;
+                font-weight: $font-weight-5;    
+            }
+
+
+        }
+    }
+
+    &__body{
+        padding: 20px;
+    }
+
+    &__intro{
+        padding: 10px;
+        display : flex;
+        flex-direction: row;
+        border-radius: 10px;
+        color: $color-white;
+        background-color: $color-primary-btn;
+        @include tablet-width{
+            flex-direction: column;
+        }
+
+        .intro{
+            &__text{
+                min-width: 400px;
+            }
+
+            &__img{
+                margin-left: auto;
+            }
+        }
     }
 
     &__login{
@@ -21,6 +59,7 @@
         flex-direction: column;
         align-items: center;
         margin-top: 50px;
+
     }
 
     &__bottom{

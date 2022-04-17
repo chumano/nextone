@@ -1,11 +1,13 @@
 @import "../../abstracts/variables";
 @import "../../abstracts/mixins";
 
-$sidebar-width : 230px;
+$sidebar-width : 80px;
 
 .sidebar{
-    background-color: black;
+    background-color: $color-white;
+    border-right: 1px solid $color-line;
     width: $sidebar-width;
+    min-width: $sidebar-width;
     position: relative;
     z-index: 200;
     flex-direction: column;
@@ -48,34 +50,54 @@ $sidebar-width : 230px;
         }
 
         &__item{
-            margin: 0 10px;
             height: 50px;
             display: flex;
             align-items: center;
-            padding: 19px 0 19px 10px;
+            justify-content: center;
 
             a{
                 text-decoration: none;
-                color: $color-white-2;
+                color: $color-grey;
                 display: flex;
                 align-items: center;
+                position: relative;
 
                 .li-icon{
-                    width: 24px;
-                    height: 24px;
-                    margin-right: 15px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 40px;
+                    height: 40px;
+                }
+
+                .item{
+                    &__notification{
+                        width: 8px;
+                        height: 8px;
+                        border-radius: 50%;
+                        background-color: $color-green;
+                        position: absolute;
+                        top:0px;
+                        right: 0px;
+                    }
                 }
             }
 
             &.active{
                 background-color: $color-white;
                 a{
-                    color: $color-dark-2;
+                    color: $color-primary-btn;
                     .li-icon svg{
-                        fill: $color-dark-2;
+                        fill: $color-primary-btn;
                     }
+                    border: 1px solid $color-line;
+                    border-radius: 8px;
+                    
+                    
                 }
             }
+
+            
         }
     }
 }

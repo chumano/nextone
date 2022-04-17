@@ -150,9 +150,7 @@ const Users: React.FC<IProp> = ({
                 okOptions={{
                     onOk: () => { setOpenCreateModal(false) }
                 }}
-            >
-
-            </ModalInfo>
+            />
         )}
 
         {openDetail && (

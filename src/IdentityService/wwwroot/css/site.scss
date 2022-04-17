@@ -58,9 +58,12 @@
             font-size: 2rem;
             display: flex;
             align-items: center;
-            .title{
+
+            .title {
                 margin-left: 10px;
             }
         }
+
+        border-bottom: 1px solid #D8D8D8;
     }
 }
