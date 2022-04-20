@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>SharpMap.Data.Providers</RootNamespace>
+        <Copyright>Copyright © CNL-Software 2014</Copyright>
+        <PackageTags>sharpmap kml kmz</PackageTags>
+        <Description>The package contains a base map layer solution based on BruTile.</Description>
+        <NoWarn>1063</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SharpKml.Core" Version="5.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -31,3 +31,11 @@ src/NextOne.Infrastructure.MassTransit/bin
 src/NextOne.Infrastructure.Metrics/bin
 src/Libs/NextOne.Infrastructure.OpenTelemetry/bin
 src/SharedDomain/obj
+src/Libs/NextOne.Infrastructure.Core/obj
+src/Libs/NextOne.Infrastructure.Core/bin
+src/Libs/NextOne.Infrastructure.MassTransit/bin
+src/Libs/NextOne.Infrastructure.MassTransit/obj
+src/Libs/NextOne.Infrastructure.Metrics/bin
+src/Libs/NextOne.Infrastructure.Metrics/obj
+src/Libs/SharpMap/.git_temp
+src/Libs/SharpMap/Examples

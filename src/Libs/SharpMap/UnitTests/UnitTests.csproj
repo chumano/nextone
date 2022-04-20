@@ -1,0 +1,105 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <Product>SharpMap NUnit Tests</Product>
+        <TargetFramework>net472</TargetFramework>
+        <Copyright>
+            Copyright © 2006 iter.dk
+            Copyright © 2008-2019 SharpMap - Team
+        </Copyright>
+        <Description>This package contains unit tests for SharpMap.</Description>
+        <GeneratePackage>false</GeneratePackage>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <Configurations>Debug;Release;ReleaseLinux</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)'=='ReleaseLinux'">
+      <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+    </PropertyGroup>
+
+    <PropertyGroup>
+      <NoWarn>1701;1702;1591;612;618</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="BruTile.MbTiles" Version="2.1.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+        <PackageReference Include="Npgsql" Version="4.0.10" />
+        <PackageReference Include="NUnit" Version="3.12.0" />
+        <PackageReference Include="Moq" Version="4.2.1312.1319" />
+        <PackageReference Include="NetTopologySuite" Version="1.15.3" />
+        <PackageReference Include="NetTopologySuite.Features" Version="1.15.1" />
+        <PackageReference Include="NetTopologySuite.IO.PostGis" Version="1.15.1" />
+        <PackageReference Include="NetTopologySuite.IO.GeoJson" Version="1.15.5" />
+        <PackageReference Include="NUnit3TestAdapter" Version="3.16.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="ProjNet4GeoAPI" Version="1.4.1" />
+        <PackageReference Include="System.Reactive.Core" Version="4.2" />
+        <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap.Converters.GeoJSON\SharpMap.Converters.GeoJSON.csproj" />
+        <ProjectReference Include="..\SharpMap.CoordinateSystems.DotSpatial\SharpMap.CoordinateSystems.DotSpatial.csproj" />
+        <ProjectReference Include="..\SharpMap.Data.Providers.GeoPackage\SharpMap.Data.Providers.GeoPackage.csproj" />
+        <ProjectReference Include="..\SharpMap.Data.Providers.Kml\SharpMap.Data.Providers.Kml.csproj" />
+        <ProjectReference Include="..\SharpMap.Extensions\SharpMap.Extensions.csproj" />
+        <ProjectReference Include="..\SharpMap.Layers.BruTile\SharpMap.Layers.BruTile.csproj" />
+        <ProjectReference Include="..\SharpMap.Layers.HeatLayer\SharpMap.Layers.HeatLayer.csproj" />
+        <ProjectReference Include="..\SharpMap.Serialization\SharpMap.Serialization.csproj" />
+        <ProjectReference Include="..\SharpMap.Utilities.Indexing.SbnTree\SharpMap.Utilities.Indexing.SbnTree.csproj" />
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(Configuration)' != 'ReleaseLinux' ">
+        <PackageReference Include="GDAL.Native" Version="2.4.2" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(Configuration)' != 'ReleaseLinux' ">
+        <ProjectReference Include="..\SharpMap.SqlServerSpatialObjects\SharpMap.SqlServerSpatialObjects.csproj" />
+        <ProjectReference Include="..\SharpMap.Web\SharpMap.Web.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="System.Design" />
+        <Reference Include="System.Web" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(Configuration)' == 'ReleaseLinux' ">
+        <Compile Remove="Converters\SqlServer2008.cs" />
+        <Compile Remove="Data\Providers\MsSqlServerSpatialTests.cs" />
+        <Compile Remove="Data\Providers\SQLServer2008Tests.cs" />
+        <Compile Remove="Data\Providers\OgrProviderTest.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="TestData\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Layers\wms.atlantedesertificazione.xml" />
+      <None Remove="Resources\Women.png" />
+    </ItemGroup>
+    <ItemGroup>
+      <EmbeddedResource Include="Layers\wms.atlantedesertificazione.xml" />
+      <EmbeddedResource Include="Resources\Women.png" />
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'ReleaseLinux' ">
+        <ItemGroup>
+            <LinuxInterop Include="$(MSBuildProjectDirectory)\..\packages\System.Data.SQLite.Core.1.0.112.0\runtimes\linux-x64\native\netstandard2.0\*.*" />
+            <LinuxInterop Include="$(MSBuildProjectDirectory)\..\packages\System.Data.SQLite.Core.1.0.112.0\lib\net46\*.config" />
+        </ItemGroup>
+        <Message Importance="high" Text="Copying Linux interop file to '$(OutDir)'" />
+        <Message Importance="high" Text="Files to copy: '@(LinuxInterop)'" />
+        
+        <Copy SourceFiles="@(LinuxInterop)" DestinationFolder="$(OutDir)" />
+    </Target>
+
+</Project>

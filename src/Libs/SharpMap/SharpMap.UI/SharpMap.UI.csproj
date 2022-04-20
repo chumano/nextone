@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <RootNamespace>SharpMap</RootNamespace>
+        <Product>SharpMap UI Compontents for System.Windows.Forms</Product>
+        <Copyright>Copyright © 2006 iter.dk
+            Copyright 2008-2019 SharpMap - Team</Copyright>
+        <PackageTags>sharpmap winforms</PackageTags>
+        <Description>This package contains UI Compontents for System.Windows.Forms.</Description>
+        <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Web\**" />
+      <EmbeddedResource Remove="Web\**" />
+      <None Remove="Web\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Forms\Icons\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="Forms\Icons\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GeoAPI.Core" Version="1.7.5" />
+        <PackageReference Include="System.Resources.Extensions" Version="4.7.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="System.Windows.Forms" />
+    </ItemGroup>
+
+</Project>

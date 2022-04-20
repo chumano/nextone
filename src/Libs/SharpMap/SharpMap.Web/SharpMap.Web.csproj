@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <RootNamespace>SharpMap</RootNamespace>
+        <Product>SharpMap UI Compontents for Ajax Web</Product>
+        <Copyright>Copyright © 2006 iter.dk
+            Copyright © 2008-2019 SharpMap - Team</Copyright>
+        <PackageTags>sharpmap ajax</PackageTags>
+        <Description>This package contains UI Compontents for Ajax Web.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap.Converters.GeoJSON\SharpMap.Converters.GeoJSON.csproj" />
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Reference Include="System.Design" />
+        <Reference Include="System.Web" />
+    </ItemGroup>
+
+
+</Project>

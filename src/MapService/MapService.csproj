@@ -9,5 +9,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\SharpMap\SharpMap.Converters.GeoJSON\SharpMap.Converters.GeoJSON.csproj" />
+    <ProjectReference Include="..\Libs\SharpMap\SharpMap.Layers.BruTile\SharpMap.Layers.BruTile.csproj" />
+    <ProjectReference Include="..\Libs\SharpMap\SharpMap\SharpMap.csproj" />
+  </ItemGroup>
+
 
 </Project>

@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <Product>SharpMap UI Compontents for Windows.Presentation.Foundation (WPF)</Product>
+        <Copyright>Copyright © 2014 Triona AB</Copyright>
+        <PackageTags>sharpmap wpf</PackageTags>
+        <Description>This package contains UI Compontents for Windows Presentation Foundation (WPF).</Description>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+        <ProjectReference Include="..\SharpMap.UI\SharpMap.UI.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="PresentationCore" />
+      <Reference Include="PresentationFramework" />
+      <Reference Include="System.Windows" />
+      <Reference Include="System.Windows.Forms" />
+      <Reference Include="WindowsBase" />
+      <Reference Include="WindowsFormsIntegration" />
+    </ItemGroup>
+
+
+</Project>

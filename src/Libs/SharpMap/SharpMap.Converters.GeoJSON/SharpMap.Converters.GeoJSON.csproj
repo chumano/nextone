@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--<Import Project="$(SolutionDir)SharpMap.Common.props" />-->
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <RootNamespace>SharpMap.Converters</RootNamespace>
+        <Product>SharpMap Converter for GeoJSON</Product>
+        <Copyright>Copyright 2008-2019 SharpMap - Team</Copyright>
+        <PackageTags>SharpMap GeoJson</PackageTags>
+        <Description>This package contains SharpMap components to work with GeoJSON.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="GeoAPI.Core" Version="1.7.5" />
+        <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <Product>SharpMap.Extensions</Product>
+        <Copyright>Copyright © 2006 - 2012 Christian Gräfe, Copyright 2012-$([System.DateTime]::UtcNow.Year) SharpMap - Team</Copyright>
+        <PackageTags>SharpMap GIS Map GeoSpatial</PackageTags>
+        <Description>Extensions for the SharpMap Engine</Description>
+        <!--<EnableApiCompat>true</EnableApiCompat>-->
+        <NoWarn>1701;1702;2100;2235</NoWarn>
+        <RootNamespace>SharpMap</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="GDAL" Version="2.4.2" />
+      <PackageReference Include="NetTopologySuite.Core" Version="1.15.3" />
+      <PackageReference Include="NetTopologySuite.Features" Version="1.15.1" />
+      <PackageReference Include="NetTopologySuite.IO.PostGis" Version="1.15.1" />
+      <PackageReference Include="NetTopologySuite.IO.SpatiaLite" Version="1.15.1" />
+      <PackageReference Include="Npgsql" Version="4.0.10" />
+      <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.90" />
+      <PackageReference Include="System.Data.SQLite.Core" Version="1.0.112" />
+    </ItemGroup>
+    
+    
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+        
+    </ItemGroup>
+
+</Project>

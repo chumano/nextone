@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="$(SolutionDir)SharpMap.Common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <RootNamespace>SharpMap.CoordinateSystems</RootNamespace>
+        <Product>SharpMap coordinate transformation using DotSpatial.Projections</Product>
+        <Copyright>Copyright 2008-2019 SharpMap - Team</Copyright>
+        <PackageTags>SharpMap Reprojection</PackageTags>
+        <Description>A coordinate transformation library for SharpMap using DotSpatial.Projections.</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="DotSpatial.Projections" Version="1.9.0.0" />
+        <PackageReference Include="GeoAPI.Core" Version="1.7.5" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\SharpMap\SharpMap.csproj" />
+    </ItemGroup>
+
+</Project>
