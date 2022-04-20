@@ -6,13 +6,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.2" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
+    <PackageReference Include="ProjNET4GeoAPI" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Libs\SharpMap\SharpMap.Converters.GeoJSON\SharpMap.Converters.GeoJSON.csproj" />
     <ProjectReference Include="..\Libs\SharpMap\SharpMap.Layers.BruTile\SharpMap.Layers.BruTile.csproj" />
     <ProjectReference Include="..\Libs\SharpMap\SharpMap\SharpMap.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\GoogleMap\" />
   </ItemGroup>
 
 

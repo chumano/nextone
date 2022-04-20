@@ -39,3 +39,5 @@ src/Libs/NextOne.Infrastructure.Metrics/bin
 src/Libs/NextOne.Infrastructure.Metrics/obj
 src/Libs/SharpMap/.git_temp
 src/Libs/SharpMap/Examples
+src/Tests/MapService.Tests/bin
+src/Tests/MapService.Tests/obj
