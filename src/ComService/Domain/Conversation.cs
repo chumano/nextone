@@ -28,7 +28,7 @@ namespace ComService.Domain
 
     public class ConversationMember
     {
-        public string ChatRoomId { get; set; }
+        public string ConversationId { get; set; }
         public string UserId { get; set; }
         public MemberRoleEnum Role { get; set; }
 

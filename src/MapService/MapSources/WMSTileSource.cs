@@ -27,9 +27,11 @@ namespace MapService.MapSources
 
             var schema = new GlobalSphericalMercator("image/png", YAxis.TMS, 0, 19);
             var url = this.configuration.Source.Replace(MapUtils.WMSTilesScheme, ""); //"https://localhost:5050/wms?"
-            var hostname = Dns.GetHostName(); // get container id
-            var ip = Dns.GetHostEntry(hostname).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
-            url = url.Replace("localhost", ip.ToString());
+
+            //var hostname = Dns.GetHostName(); // get container id
+            //var ip = Dns.GetHostEntry(hostname).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
+            //url = url.Replace("localhost", ip.ToString());
+
             wmscRequest = new WmscRequest(new Uri(url), 
                 schema, 
                 new[] { "states" }, new[] { "" }, 

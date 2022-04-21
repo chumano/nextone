@@ -1,0 +1,46 @@
+@import '../vars';
+
+$toolbar-height: 40px;
+
+$layout-list-width: 200px;
+$layout-editor-width: 370px;
+$layout-map-width: calc(100% - #{$layout-list-width + $layout-editor-width});
+
+.maputnik-layout{
+    height: calc(100vh - #{$main-header-height });
+    display: flex;
+    flex-direction: column;
+
+    &-toolbar{
+        height: $toolbar-height;
+        border-bottom: 1px solid $color-black;
+    }
+
+    &-body{
+        display: flex;
+        flex-direction: row;
+        flex-grow: 1;
+    }
+
+    &-list {
+        z-index: 3;
+        width: $layout-list-width;
+        border-right: 1px solid $color-black;
+    }
+
+    &-drawer {
+        z-index: 1;
+        width: $layout-editor-width;
+        border-right: 1px solid $color-black;
+    }
+
+    &-map{
+        flex-grow: 1;
+    }
+    
+    &-bottom {
+        z-index: 1;
+        color: $color-white;
+        background-color: $color-black;
+    }
+}

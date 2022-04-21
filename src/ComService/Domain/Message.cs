@@ -34,6 +34,7 @@ namespace ComService.Domain
         VideoFile, //single file
         OtherFile, //single file
         SystemMessage, // single text
+        CallMessage,
         Event
     }
 

@@ -33,4 +33,8 @@
     <Folder Include="Repositories\" />
     <Folder Include="Services\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
+  </ItemGroup>
 </Project>

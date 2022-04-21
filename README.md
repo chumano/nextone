@@ -1,4 +1,18 @@
 # nextone
+## Install
+
+dotnet tool install Excubo.WebCompiler --global
+
+dotnet tool install --global dotnet-ef
+
+Install tye via the following command:
+```
+dotnet tool install -g Microsoft.Tye --version "0.10.0-alpha.21420.1"
+```
+
+Run tye
+```
+```
 
 ## web
 - Setup route

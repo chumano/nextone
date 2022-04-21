@@ -8,17 +8,17 @@ services:
     #         - db
     db:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
-        container_name: mssql
+        container_name: nextone_mssql
         environment:
             SA_PASSWORD: "NextOne@123456"
             ACCEPT_EULA: "Y"
         restart: always
         ports:
-            - "1433:1433"
-        volumes:
-        - ./devvolumes/db/backup:/var/opt/mssql/backup
-        - ./devvolumes/db/data:/var/opt/mssql/data
-        - ./devvolumes/db/log:/var/opt/mssql/log
+            - "1435:1433"
+        #volumes:
+        #- ./devvolumes/db/backup:/var/opt/mssql/backup
+        #- ./devvolumes/db/data:/var/opt/mssql/data
+        #- ./devvolumes/db/log:/var/opt/mssql/log
         deploy:
             resources:
                 limits:
@@ -26,7 +26,7 @@ services:
     mongo:
         image: mongo:latest
         #restart: always
-        container_name: mongodb
+        container_name: nextone_mongodb
         ports:
             - 27017:27017
         environment:
@@ -41,7 +41,7 @@ services:
             - ./devvolumes/mongo/config:/data/configdb
     seq:
         image: datalust/seq:latest
-        container_name: seq
+        container_name: nextone_seq
         environment:
             - ACCEPT_EULA=Y
             #- BASE_URI=https://seq.dptsprotrans.com

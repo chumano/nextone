@@ -20,10 +20,10 @@ namespace ComService.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
-            //Channel
-            modelBuilder.Entity<Channel>(eb =>
+            //Conversation
+            modelBuilder.Entity<Conversation>(eb =>
             {
-                eb.ToTable("Channel", DB_SCHEMA)
+                eb.ToTable("T_App_Conversation", DB_SCHEMA)
                    .HasKey("Id");
 
                 eb.Property(o => o.Id)
@@ -42,19 +42,19 @@ namespace ComService.Infrastructure
                     .HasDefaultValue(false)
                     .IsRequired();
 
-                eb.HasMany<ChannelMember>(o => o.Members)
+                eb.HasMany<ConversationMember>(o => o.Members)
                     .WithOne()
-                    .HasForeignKey(o => o.ChannelId);
+                    .HasForeignKey(o => o.ConversationId);
             });
 
-            modelBuilder.Entity<ChannelMember>(eb =>
+            modelBuilder.Entity<ConversationMember>(eb =>
             {
-                eb.ToTable("ChannelMember", DB_SCHEMA)
+                eb.ToTable("T_App_ConversationMember", DB_SCHEMA)
                   .HasKey("ChannelId", "UserId");
 
                 eb.Property(o => o.UserId)
                     .HasColumnType("char(16)");
-                eb.Property(o => o.ChannelId)
+                eb.Property(o => o.ConversationId)
                     .HasColumnType("char(16)");
 
                 eb.Property(o => o.Role)
@@ -85,15 +85,7 @@ namespace ComService.Infrastructure
             });
 
             //=============================
-            //ChatRoom
-            modelBuilder.Entity<Conversation>(eb =>
-            {
-            });
-
-            modelBuilder.Entity<ConversationMember>(eb =>
-            {
-            });
-
+            //Message
             modelBuilder.Entity<Message>(eb =>
             {
             });

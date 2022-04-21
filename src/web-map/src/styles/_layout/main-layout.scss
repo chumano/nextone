@@ -1,0 +1,10 @@
+@import '../vars';
+
+.main-layout-container{
+    background-color: white;
+
+    .main-header{
+        height: 60px;
+        background-color: $color-gray;
+    }
+}
