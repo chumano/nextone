@@ -44,3 +44,5 @@ src/Tests/MapService.Tests/obj
 src/SharedDomain/bin
 src/.tye
 src/ComService/ComService.csproj.user
+src/IdentityService/IdentityService.csproj.user
+src/MasterService/MasterService.csproj.user
