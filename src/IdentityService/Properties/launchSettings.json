@@ -6,7 +6,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development",
         "ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation"
       },
-      "applicationUrl": "http://localhost:5102"
+      "applicationUrl": "https://localhost:5102"
     },
     "Docker": {
       "commandName": "Docker",

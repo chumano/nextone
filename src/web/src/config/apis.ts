@@ -1,5 +1,5 @@
 const API = {
-    ID_SERVICE : "http://localhost:5102",
+    ID_SERVICE : "https://localhost:5102",
 
     GATEWAY : "http://localhost:5101",
     MASTER_SERVICE: "http://localhost:5103",

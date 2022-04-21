@@ -20,6 +20,7 @@ services:
   replicas: 1
   bindings:
   - port: 5102
+    protocol: https
   env:
   - name: ASPNETCORE_ENVIRONMENT
     value: Development

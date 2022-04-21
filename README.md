@@ -37,16 +37,17 @@ manager/NextOne@123
 
 ### Services
 - Web :       http://localhost:5100
-- Gateway :   https://localhost:5101
+- Gateway :   http://localhost:5101
 
 - Identity :  https://localhost:5102
+-- Chú ý: Identity phải chạy ở https thì nới redirect oidc
 
-- Master :    https://localhost:5103
-- Com :       https://localhost:5104
+- Master :    http://localhost:5103
+- Com :       http://localhost:5104
 
-- Map :       https://localhost:5105
+- Map :       http://localhost:5105
 
-- File :       https://localhost:5106
+- File :       http://localhost:5106
 
 Infrastructures:
 - Seq :       http://localhost:5109
