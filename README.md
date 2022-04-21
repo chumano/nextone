@@ -1,18 +1,26 @@
 # nextone
 ## Install
+### Backend
 
+```
 dotnet tool install Excubo.WebCompiler --global
 
 dotnet tool install --global dotnet-ef
 
-Install tye via the following command:
-```
+#Install tye via the following command:
 dotnet tool install -g Microsoft.Tye --version "0.10.0-alpha.21420.1"
 ```
 
-Run tye
+Run projects using tye
 ```
+tye run --tags=core --watch
 ```
+### Frontend
+- node >= v14.17.6 , v16
+- npm  >= 6.14.15, v8
+
+## Account
+manager/NextOne@123
 
 ## web
 - Setup route
@@ -28,16 +36,27 @@ Run tye
 -- map config page
 
 ### Services
-Web :       http://localhost:5100
-Gateway :   https://localhost:5101
-Identity :  https://localhost:5102
-Master :    https://localhost:5103
-Com :       https://localhost:5104
-Map :       https://localhost:5105
-Seq :       http://localhost:5109
+- Web :       http://localhost:5100
+- Gateway :   https://localhost:5101
 
-DB :        localhost, 1433
+- Identity :  https://localhost:5102
 
+- Master :    https://localhost:5103
+- Com :       https://localhost:5104
+
+- Map :       https://localhost:5105
+
+- File :       https://localhost:5106
+
+Infrastructures:
+- Seq :       http://localhost:5109
+- DB :        localhost, 1433
+
+Gateway route:
+- /master
+- /com
+- /file - not
+- /map - not
 #### Seed identity data
 ```
 # run at ./src

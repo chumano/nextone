@@ -29,7 +29,7 @@ namespace ComService.Controllers
             {
                 Name = "loc"
             });
-            return Ok("reply: "+ reply.Message);
+            return Ok("ComService - reply: "+ reply.Message);
         }
     }
 }

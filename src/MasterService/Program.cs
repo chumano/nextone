@@ -31,8 +31,9 @@ namespace MasterService
                         }
 
                         options.Limits.MinRequestBodyDataRate = null;
-                        options.Listen(IPAddress.Any, 5003);
-                        options.Listen(IPAddress.Any, 15003, listenOptions =>
+                        options.Listen(IPAddress.Any, 5103);
+                        //options.Listen(IPAddress.Loopback, 5103);
+                        options.Listen(IPAddress.Any, 15103, listenOptions =>
                         {
                             listenOptions.Protocols = HttpProtocols.Http2;
                         });

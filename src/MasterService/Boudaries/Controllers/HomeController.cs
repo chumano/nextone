@@ -20,9 +20,9 @@ namespace MasterService.Controllers
         }
 
         [HttpGet]
-        public string Get()
+        public async Task<IActionResult> Get()
         {
-            return "Master Service";
+            return Ok("MasterService : " + DateTime.Now.ToString());
         }
 
         [HttpGet("redirect")]

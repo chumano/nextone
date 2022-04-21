@@ -40,7 +40,7 @@ namespace MapService.MapSources
                 {
                     Format ="png",
                     Name = "us_states",
-                    Source = "wms:///http://localhost:5050/wms?",
+                    Source = "wms:///http://localhost:5105/wms?",
                     Tms = true,
                     UseCoordinatesCache = false
                 }

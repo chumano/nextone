@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Gateway.Controllers
+namespace MapService.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class HomeController : ControllerBase
     {
-       
+
         private readonly ILogger<HomeController> _logger;
 
         public HomeController(ILogger<HomeController> logger)
@@ -22,7 +22,7 @@ namespace Gateway.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok("Gateway : " + DateTime.Now.ToString());
+            return Ok("MapService : " + DateTime.Now.ToString());
         }
     }
 }

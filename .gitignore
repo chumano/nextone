@@ -42,3 +42,5 @@ src/Libs/SharpMap/Examples
 src/Tests/MapService.Tests/bin
 src/Tests/MapService.Tests/obj
 src/SharedDomain/bin
+src/.tye
+src/ComService/ComService.csproj.user
