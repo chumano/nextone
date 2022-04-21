@@ -28,6 +28,21 @@ dotnet ef migrations remove --context PersistedGrantDbContext
 dotnet run /seed
 ```
 
+## Com Service
+```
+cd ComService
+#add
+dotnet ef migrations add Com_Init_ApplicationDB -c ComDbContext
+
+#update db migration
+dotnet ef database  update
+
+#remove db migration
+dotnet ef database update 0 --context ComDbContext
+
+#remove migration
+dotnet ef migrations remove --context ComDbContext
+```
 
 ## Master Service
 ```

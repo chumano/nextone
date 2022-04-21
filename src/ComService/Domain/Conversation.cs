@@ -7,6 +7,10 @@ namespace ComService.Domain
 {
     public class Conversation
     {
+        private Conversation() //use for EFCore
+        {
+        }
+
         public Conversation(ConversationTypeEnum conversationType)
         {
             Type = conversationType;
@@ -21,8 +25,6 @@ namespace ComService.Domain
 
         public List<ConversationMember> Members { get; set; }
 
-        public string LastMessageId { get; set; }
-        public Message LastMessage { get; set; }
         public IList<Message> RecentMessages { get; set; }
     }
 

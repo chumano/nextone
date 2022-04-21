@@ -25,15 +25,15 @@ manager/NextOne@123
 ## web
 - Setup route
 - Add empty pages
--- login page
--- home page
--- users page
--- chanels page
---- events page in chanel
---- members page in chanel
---- chat room page in page
--- map page
--- map config page
+    - login page
+    - home page
+    - users page
+    - chanels page
+        - events page in chanel
+        - members page in chanel
+        - chat room page in page
+- map page
+- map config page
 
 ### Services
 - Web :       http://localhost:5100

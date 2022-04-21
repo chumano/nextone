@@ -7,6 +7,10 @@ namespace ComService.Domain
 {
     public class Message
     {
+        private Message() //use for EFCore
+        {
+        }
+
         public Message(MessageTypeEnum messageType)
         {
             Type = messageType;

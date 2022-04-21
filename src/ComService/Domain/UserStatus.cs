@@ -11,6 +11,8 @@ namespace ComService.Domain
 
         public string UserName { get; set; }
 
+        public string UserAvatarUrl { get; set; }
+
         public StatusEnum Status { get; set; }
 
         public DateTime? LastUpdateDate { get; set; }
@@ -19,6 +21,14 @@ namespace ComService.Domain
         public double? LastLon { get; set; }
 
         public IList<UserTrackingLocation> RecentTrackingLocations { get; set; } 
+    }
+
+    public class UserTrackingLocation
+    {
+        public string UserId { get; set; }
+        public DateTime Date { get; set; }
+        public double Lat { get; set; }
+        public double Lon { get; set; }
     }
 
     public enum StatusEnum

@@ -23,7 +23,6 @@ namespace ComService.Domain
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
 
-        public EventType EventType { get; set; }
         public List<EventFile> Files { get; set; }
     }
 

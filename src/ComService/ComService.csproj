@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Boudaries\Grpc\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Repositories\" />
     <Folder Include="Services\" />
   </ItemGroup>

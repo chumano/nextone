@@ -1,7 +1,9 @@
+using ComService.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace ComService
@@ -31,8 +34,19 @@ namespace ComService
             //Grpc Clients
             services.AddGrpcClient<NextOne.Protobuf.Master.GrpcMasterService.GrpcMasterServiceClient>(o =>
             {
+                //TODO: setting grpc url in ComService
                 var grpcUrl = "http://localhost:15103";
                 o.Address = new Uri(grpcUrl);
+            });
+
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<ComDbContext>(options =>
+            {
+                options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                options.EnableDetailedErrors(true);
+                options.EnableSensitiveDataLogging(true);
+
             });
         }
 
