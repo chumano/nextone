@@ -22,7 +22,6 @@ const initialState = {
 };
 
 const mapSubject = new BehaviorSubject<MapState>(initialState);
-console.log("useMapObservable");
 
 export const useMapObservable = () => {
     const list = (maps: MapInfo[]) => {

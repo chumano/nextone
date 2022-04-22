@@ -7,10 +7,7 @@ import { useObservable } from "../../utils/hooks";
 
 
 const LayerListContainer : React.FC = ()=>{
-    const mapStore = useMapStore();
-    const mapObservable = mapStore.getMapObservable();
-    const mapState = useObservable<MapState>(mapObservable);
-
+    const {mapState, ...mapStore} = useMapStore();
     return <>
         LayerListContainer
         <b/>
@@ -21,7 +18,7 @@ const LayerListContainer : React.FC = ()=>{
                 Name : "New Map",
                 Layers : []
             }
-            mapStore.create(map)
+            mapStore.create(map);
         }}> add Map</Button>
     </>
 }

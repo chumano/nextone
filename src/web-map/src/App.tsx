@@ -11,10 +11,9 @@ import HomePage from './pages/HomePage';
 import withLayout from './utils/hoc/withLayout';
 import MainLayout from './components/_layouts/MainLayout';
 
-
-const MapEditorLayout = React.lazy(() => import('./components/_layouts/MapEditorLayout'));
 const MapEditorPage  = React.lazy(() => import('./pages/map-editor-page/MapEditorPage'));
 const MapsPage  = React.lazy(() => import('./pages/MapsPage'));
+const DataSourcePage  = React.lazy(() => import('./pages/data-source-page/DataSourcePage'));
 
 const HomePageWithLayout = withLayout(MainLayout, ()=>{
   return <HomePage />
@@ -26,6 +25,10 @@ const MapsPageWithLayout = withLayout(MainLayout, ()=>{
 
 const MapEditorPageWithLayout = withLayout(MainLayout, ()=>{
   return <MapEditorPage />
+});
+
+const DataSourcePageWithLayout = withLayout(MainLayout, ()=>{
+  return <DataSourcePage />
 });
 
 
@@ -44,7 +47,8 @@ function App() {
   return <>
     <Router>
       <Routes>
-        <Route path="/" element={<HomePageWithLayout />}/>
+        <Route path="/" element={<MapsPageWithLayout />}/>
+        <Route path="/data" element={<DataSourcePageWithLayout />}/>
         <Route path="/maps" element={<MapsPageWithLayout />}/>
         <Route path="/maps/:mapid" element={<MapEditorPageWithLayout />} />
       </Routes>

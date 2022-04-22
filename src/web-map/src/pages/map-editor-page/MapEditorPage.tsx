@@ -1,5 +1,6 @@
 import { Button } from "antd";
 import React, { useCallback } from "react";
+import { useParams } from "react-router-dom";
 import MapEditorLayout from "../../components/_layouts/MapEditorLayout";
 import { MapState, useMapStore } from "../../stores";
 import { useObservable } from "../../utils/hooks";
@@ -17,12 +18,13 @@ const modals = <>
 </>
 
 const MapEditorPage : React.FC = ()=>{
-    const mapStore = useMapStore();
-    const mapObservable = mapStore.getMapObservable();
-    const mapState = useObservable<MapState>(mapObservable);
-    
+    const {mapState, ...mapStore} = useMapStore();
+    let params = useParams();
+    console.log('MapEditorPage-params' , params)
+    const mapid = params['mapid'];
+
     const mapRenderer = useCallback(()=>{
-        return <>Map {mapState.maps.length}</>
+        return <>Map {mapState.maps.length} : {mapid}</>
     },[mapState])
 
     return <>

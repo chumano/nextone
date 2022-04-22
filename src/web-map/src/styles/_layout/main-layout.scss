@@ -5,6 +5,66 @@
 
     .main-header{
         height: 60px;
-        background-color: $color-gray;
+        padding: 0 10px;
+        color: $color-white !important;
+        background-color: $color-primary;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        &__logo-container{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            svg{
+                width: 40px;
+                height: auto;
+            }
+        }
+
+        &__app-title{
+            margin-left: 10px;
+            width: 200px;
+            font-size: $font-size-1;
+            font-weight: $font-weight-5;
+        }
+        &__nav{
+            margin-left: 20px;
+            font-size: $font-size-2;
+            a.link{
+                color: $color-white !important;
+                padding: 0 10px;
+                &:not(:last-child){
+                    border-right: 2px solid $color-white;
+                }
+            }
+            
+        }
+        &__right{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            .user-info{
+                margin: 0 $margin-3;
+                font-size: $font-size-2;
+                font-weight: $font-weight-4;
+            }
+
+            .nav-links-btn{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 50px;
+                height: 50px;
+                &:hover{
+                    border-radius: 25px;
+                    background-color: $color-grey-alpha;
+                    
+                }
+                svg{
+                    font-size: $font-size-1;
+                }
+            }
+        }
     }
 }

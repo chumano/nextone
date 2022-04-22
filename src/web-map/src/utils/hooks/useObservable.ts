@@ -9,7 +9,9 @@ export function useObservable<TState>(stateSubject: BehaviorSubject<TState>) {
       setState(currentState);
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    }
   }, []);
 
   return state;

@@ -1,7 +1,6 @@
 @import '../vars';
-@import '../utils';
 
-.maps-page{
+.datasource-page{
     &__header{
         display: flex;
         margin: $margin-3;
@@ -14,13 +13,13 @@
         margin: $margin-3;
     }
 
-    &__list-map{
+    &__list{
         display: flex;
         flex-wrap: wrap;
     }
    
 
-    .map-item{
+    .source-item{
         max-width: 15%;
         height: auto ;
         margin: 10px 7px;
