@@ -29,7 +29,7 @@ namespace MasterService.Infrastructure
                    .HasKey("Id");
 
                 eb.Property(o => o.Id)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
                 eb.Property(o => o.Name)
                     .HasColumnType("varchar(255)")
                     .IsRequired();
@@ -57,7 +57,7 @@ namespace MasterService.Infrastructure
                    .HasKey("UserId", "RoleCode");
 
                 eb.Property(o => o.UserId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
                 eb.Property(o => o.RoleCode)
                    .HasColumnType("varchar(20)");
 

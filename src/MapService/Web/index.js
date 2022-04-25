@@ -2,16 +2,16 @@
 
     // TODO: update Tile Grid overlay after base map change
     // TODO: get tilesets list from TMS capabilities response
-
+    var defaultBaseMap = 'osm';
     var baseMaps = {
+        'osm': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'OpenStreetMap'
+        }),
         'world-countries': L.tileLayer('/tms/1.0.0/world-countries/{z}/{x}/{y}.png', {
             attribution: 'world-countries',
             maxZoom: 5,
             tms: true //If true, inverses Y axis numbering for tiles (turn this on for TMS services, bottom left is orgin |__
             //https://alastaira.wordpress.com/2011/07/06/converting-tms-tile-coordinates-to-googlebingosm-tile-coordinates/
-        }),
-        'osm' : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'OpenStreetMap'
         })
     };
 
@@ -43,7 +43,7 @@
     var map = L.map('map', {
         inertia: false,
         doubleClickZoom: false,
-        layers: [baseMaps['world-countries'], overlayMaps['vn_map'], tileGrid] //
+        layers: [baseMaps[defaultBaseMap], overlayMaps['us_states'], tileGrid] //
     }).setView([0, 0], 0);
 
 

@@ -462,11 +462,9 @@ namespace MapService.Utils
 
     public class ShapeFileInfo
     {
-        public string ObjectName;// Shapefile name
         public string GeometryType;
         public List<string> Columns;
         public List<Dictionary<string, object>> AttributeData;
-        public int FileId;
 
         public ShapeFileInfo()
         {

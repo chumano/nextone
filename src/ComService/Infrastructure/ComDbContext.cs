@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using NextOne.Shared.Extenstions;
 
 namespace ComService.Infrastructure
 {
@@ -23,18 +24,18 @@ namespace ComService.Infrastructure
             base.OnModelCreating(modelBuilder);
             //Channel
             modelBuilder.Entity<Channel>(eb =>
-            {
-                eb.Property(o => o.AllowedEventTypeCodes)
-                .HasColumnType("nvarchar(max)")
-                .HasConversion(
-                    v => string.Join(',', v),
-                    v => v.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                ).IsRequired();
+              {
+                  eb.Property(o => o.AllowedEventTypeCodes)
+                  .HasColumnType("nvarchar(max)")
+                  .HasConversion(
+                      v => v.ToDBString(","),
+                      v => v.ToListFromDBString(",")
+                  ).IsRequired();
 
-                eb.HasMany(o => o.RecentEvents)
-                    .WithOne()
-                    .HasForeignKey(o=> o.ChannelId);
-            });
+                  eb.HasMany(o => o.RecentEvents)
+                      .WithOne()
+                      .HasForeignKey(o => o.ChannelId);
+              });
             //Conversation
             modelBuilder.Entity<Conversation>(eb =>
             {
@@ -48,7 +49,7 @@ namespace ComService.Infrastructure
                    .HasKey("Id");
 
                 eb.Property(o => o.Id)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
                 eb.Property(o => o.Name)
                     .HasColumnType("nvarchar(255)")
                     .IsRequired();
@@ -88,10 +89,10 @@ namespace ComService.Infrastructure
                   .HasKey("ConversationId", "UserId");
 
                 eb.Property(o => o.UserId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.ConversationId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.Role)
                     .HasColumnType("varchar(20)")
@@ -109,9 +110,9 @@ namespace ComService.Infrastructure
                    .HasKey("Id");
 
                 eb.Property(o => o.Id)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
                 eb.Property(o => o.ConversationId)
-                    .HasColumnType("char(16)")
+                    .HasColumnType("varchar(36)")
                     .IsRequired();
 
                 eb.Property(o => o.Type)
@@ -125,13 +126,13 @@ namespace ComService.Infrastructure
                    .HasColumnType("datetime");
 
                 eb.Property(o => o.UserSenderId)
-                   .HasColumnType("char(16)");
+                   .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.Content)
                   .HasColumnType("nvarchar(max)");
 
                 eb.Property(o => o.EventId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
 
                 eb.HasOne(o => o.Event)
@@ -155,9 +156,9 @@ namespace ComService.Infrastructure
                  .HasKey("MessageId","FileId");
 
                 eb.Property(o => o.MessageId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
                 eb.Property(o => o.FileId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.FileType)
                    .HasColumnType("varchar(50)");
@@ -172,7 +173,7 @@ namespace ComService.Infrastructure
                  .HasKey("Id");
 
                 eb.Property(o => o.Id)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.Content)
                     .HasColumnType("nvarchar(max)")
@@ -201,11 +202,11 @@ namespace ComService.Infrastructure
                     .HasColumnType("float");
 
                 eb.Property(o => o.ChannelId)
-                    .HasColumnType("char(16)")
+                    .HasColumnType("varchar(36)")
                     .IsRequired();
 
                 eb.Property(o => o.UserSenderId)
-                .HasColumnType("char(16)");
+                .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.IsActive)
                    .HasColumnType("bit")
@@ -239,9 +240,9 @@ namespace ComService.Infrastructure
                 .HasKey("EventId", "FileId");
 
                 eb.Property(o => o.EventId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
                 eb.Property(o => o.FileId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.FileType)
                    .HasColumnType("varchar(50)");
@@ -258,7 +259,7 @@ namespace ComService.Infrastructure
                   .HasKey("UserId");
 
                 eb.Property(o => o.UserId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.UserName)
                     .HasColumnType("nvarchar(255)")
@@ -294,7 +295,7 @@ namespace ComService.Infrastructure
                  .HasKey("UserId", "Date");
 
                 eb.Property(o => o.UserId)
-                    .HasColumnType("char(16)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.Date)
                 .HasColumnType("datetime");

@@ -46,3 +46,5 @@ src/.tye
 src/ComService/ComService.csproj.user
 src/IdentityService/IdentityService.csproj.user
 src/MasterService/MasterService.csproj.user
+src/MapService/Data/ShapeFiles
+src/MapService/MapService.csproj.user

@@ -8,6 +8,10 @@ dotnet ef migrations add Identity_Init_ApplicationDB -c ApplicationDbContext
 dotnet ef migrations add Identity_Init_ConfigurationDB -c ConfigurationDbContext
 dotnet ef migrations add Identity_Init_PersistedGrantDB -c PersistedGrantDbContext
 
+dotnet ef database  update --context ApplicationDbContext
+dotnet ef database  update --context ConfigurationDbContext
+dotnet ef database  update --context PersistedGrantDbContext
+
 dotnet run /seed
 
 //list
@@ -48,6 +52,7 @@ dotnet ef migrations remove --context ComDbContext
 ```
 cd MasterService
 dotnet ef migrations add Master_Init_DB
+
 dotnet ef database  update
 
 //remove all migrations
@@ -59,4 +64,15 @@ dotnet ef database update 0
 
 //list
 dotnet ef migrations list
+```
+
+## Map Service
+```
+cd MapService
+#add
+dotnet ef migrations add Map_Init_ApplicationDB -c ComDbContext
+
+#update db migration
+dotnet ef database  update
+
 ```

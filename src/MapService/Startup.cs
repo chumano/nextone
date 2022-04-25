@@ -1,15 +1,20 @@
+using MapService.Domain.Repositories;
+using MapService.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using NextOne.Shared.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace MapService
@@ -26,7 +31,22 @@ namespace MapService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson();
+
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddDbContext<MapDBContext>(options =>
+            {
+                options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));
+                options.EnableDetailedErrors(true);
+                options.EnableSensitiveDataLogging(true);
+
+            });
+
+            services.AddSingleton<IdGenerator, DefaultIdGenerator>();
+            services.AddScoped<IDataSourceRepository, DataSourceRepository>();
+            services.AddScoped<IMapRepository, MapRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

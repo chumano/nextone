@@ -27,7 +27,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpMap.Layers.BruTile", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharpMap.Converters.GeoJSON", "Libs\SharpMap\SharpMap.Converters.GeoJSON\SharpMap.Converters.GeoJSON.csproj", "{75E4AE55-8EFD-4E8B-8C8F-E2CC1468E57E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MapService.Tests", "Tests\MapService.Tests\MapService.Tests.csproj", "{E57AD649-BAAF-4A5A-82F8-8DCCED9C1359}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MapService.Tests", "Tests\MapService.Tests\MapService.Tests.csproj", "{E57AD649-BAAF-4A5A-82F8-8DCCED9C1359}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{1B144A8B-1F6F-4384-9FE2-095B29ABCBE2}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.md = ReadMe.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

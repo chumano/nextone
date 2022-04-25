@@ -36,6 +36,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
     <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
   </ItemGroup>
 </Project>

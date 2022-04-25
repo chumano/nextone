@@ -14,11 +14,12 @@ services:
             ACCEPT_EULA: "Y"
         restart: always
         ports:
-            - "1433:1433"
-        #volumes:
+            - "1435:1433"
+        volumes:
         #- ./devvolumes/db/backup:/var/opt/mssql/backup
         #- ./devvolumes/db/data:/var/opt/mssql/data
         #- ./devvolumes/db/log:/var/opt/mssql/log
+        - db-data:/var/opt/mssql/data
         deploy:
             resources:
                 limits:
@@ -57,3 +58,6 @@ services:
                     memory: 1G
                 reservations:
                     memory: 1G
+                    
+volumes:
+  db-data:

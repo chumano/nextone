@@ -2,6 +2,7 @@
 ## Install
 ### Backend
 
+dotnet core 3.1
 ```
 dotnet tool install Excubo.WebCompiler --global
 
@@ -86,3 +87,9 @@ SELECT TOP (1000) * from dbo.ApiResourceScopes
 SELECT TOP (1000) * from dbo.ApiResourceSecrets
 
 ```
+
+
+# Server
+CPU :  4 Cores, 8M Cache, 3.40 GHz 
+RAM : 8GB
+DISK : SSD 500GB
