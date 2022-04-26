@@ -1,5 +1,6 @@
 ﻿using MapService.Domain;
 using MapService.Domain.Repositories;
+using MapService.DTOs;
 using MapService.DTOs.DataSource;
 using MapService.Infrastructure;
 using MapService.Utils;
@@ -35,7 +36,10 @@ namespace MapService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetDataSources()
         {
-            var datasources = await _dataSourceRepository.DataSources.ToListAsync();
+            var datasources = await _dataSourceRepository.DataSources
+                    .OrderByDescending(o=>o.CreatedDate)
+                    .ToDto()
+                    .ToListAsync();
             return Ok(datasources);
         }
 
@@ -54,8 +58,18 @@ namespace MapService.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateDataSource([FromForm] CreateDataSourceDTO createDataSourceDTO)
         {
-            //Validate:
-            //1. File .zip : shapefile
+            if (createDataSourceDTO.File == null)
+            {
+                throw new Exception("File is not found");
+            }
+
+            var existNameObj = await _dataSourceRepository.DataSources.Where(o => o.Name == createDataSourceDTO.Name).FirstOrDefaultAsync();
+
+            if (existNameObj != null)
+            {
+                throw new Exception($"DataSource Name is in use");
+            }
+
             var ext = Path.GetExtension(createDataSourceDTO.File.FileName);
             if (ext.ToLower() != ".zip")
             {
@@ -70,28 +84,28 @@ namespace MapService.Controllers
             {
                 throw new Exception($"Can't found .shp in {createDataSourceDTO.File.FileName}");
             }
+
             var shapeFileInfo = ShapefileHelper.ReadShapeFile(shapefilePath);
 
-            var geoType = GeoTypeEnum.Point;
+            var geoType = shapeFileInfo.GeometryType.ToGeoType();
             var sourceFile = filePath;
             var props = new Dictionary<string, object>();
-            props.Add("shapfile", shapeFileInfo);
+            props.Add("ShapeFile_Columns", shapeFileInfo.Columns);
+            props.Add("ShapeFile_Data", shapeFileInfo.AttributeData);
 
             var newId = _idGenerator.GenerateNew();
-            var dataSource = new DataSource()
+            var dataSource = new DataSource(newId,
+                createDataSourceDTO.Name,
+                createDataSourceDTO.DataSourceType,
+                geoType,
+                sourceFile,
+                props
+                )
             {
-                Id = newId,
-                DataSourceType = createDataSourceDTO.DataSourceType,
-                Name = createDataSourceDTO.Name,
                 Tags = createDataSourceDTO.Tags,
-
-                GeoType = geoType,
-                SourceFile = sourceFile,
-                Properties = props
             };
             
             _dataSourceRepository.Add(dataSource);
-
 
             await _dataSourceRepository.SaveChangesAsync();
             //TODO: send DomainEvent DataSoruceCreated
@@ -125,8 +139,8 @@ namespace MapService.Controllers
                 throw new Exception($"DataSource {id} is not found");
             }
 
-            datasource.Name = updateDataSourceDTO.Name;
-            datasource.Tags = updateDataSourceDTO.Tags;
+            datasource.Update(updateDataSourceDTO.Name, updateDataSourceDTO.Tags);
+
             _dataSourceRepository.Update(datasource);
             await _dataSourceRepository.SaveChangesAsync();
 

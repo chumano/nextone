@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using MapService.Domain;
+using System.Collections.Generic;
 
 namespace MapService.DTOs.Map
 {
@@ -8,6 +9,9 @@ namespace MapService.DTOs.Map
         public string LayerGroup { get; set; }
 
         public string DataSourceId { get; set; }
+        public string DataSourceName { get; set; }
+
+        public GeoTypeEnum DataSourceGeoType { get; set; }
 
         public int? MinZoom { get; set; }
         public int? MaxZoom { get; set; }

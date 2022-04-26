@@ -1,15 +1,15 @@
-import { LayerSource, LayerSourceType } from "./LayerSource"
+import { DataSource, GeoType } from "./DataSource"
 
 export interface MapInfo {
-    Id: string;
+    Id?: string;
     Name: string;
-    Layers: MapLayer[]
+    Layers?: MapLayer[]
 }
 
 export interface MapLayer {
     Name: string;
-    SourceType: LayerSourceType;
-    Source: LayerSource;
+    SourceType: GeoType;
+    Source: DataSource;
     LayerGroup: string;
 
     PaintProperties: { [key: PaintPropertyKey]: any }

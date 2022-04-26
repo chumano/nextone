@@ -1,8 +1,12 @@
 ﻿using MapService.MapSources;
 using Microsoft.Extensions.Configuration;
+using NetTopologySuite;
+using ProjNet.CoordinateSystems;
+using ProjNet.CoordinateSystems.Transformations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MapService.Utils
@@ -67,6 +71,27 @@ namespace MapService.Utils
         public static int FromTmsY(int tmsY, int zoom)
         {
             return (1 << zoom) - tmsY - 1;
+        }
+
+
+        public static void InitSharpMap()
+        {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+            var gss = new NtsGeometryServices();
+            var css = new SharpMap.CoordinateSystems.CoordinateSystemServices(
+                new CoordinateSystemFactory(),
+                new CoordinateTransformationFactory(),
+                SharpMap.Converters.WellKnownText.SpatialReference.GetAllReferenceSystems());
+
+            var cs3405 = css.GetCoordinateSystem(3405);
+            var cs4326 = css.GetCoordinateSystem(4326);
+
+            GeoAPI.GeometryServiceProvider.Instance = gss;
+            SharpMap.Session.Instance
+                .SetGeometryServices(gss)
+                .SetCoordinateSystemServices(css)
+                .SetCoordinateSystemRepository(css);
         }
     }
 }

@@ -1,47 +1,82 @@
-import { Button } from 'antd';
-import { useEffect, useState } from 'react';
+import { Button, Modal as AntDModal } from 'antd';
+import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import { useCallback, useEffect, useState } from 'react';
 import Modal from '../../components/modals/Modal';
-import { LayerSource, LayerSourceType } from '../../interfaces';
+import { DataSource, DataSourceType, GeoType } from '../../interfaces';
 import { useDatasourceStore } from '../../stores/useDataSourceStore';
 import '../../styles/pages/data-source-page.scss';
 import ModalCreateDataSource from './ModalCreateDataSource';
+import ModalEditDataSource from './ModalEditDataSource';
 
-const DatasouceItem = ({ item, onClick }: { item: LayerSource, onClick: any }) => {
+const DatasouceItem = ({ item, onClick, onDelete }: { item: DataSource, onClick: any, onDelete: any }) => {
     return <>
         <div className="source-item clickable" title={item.Name} onClick={onClick}>
-            {item.Name}
+            <div>
+                <h3 className='source-item__title'>
+                    {item.Name}
+                </h3>
+                <Button className='delete-btn' onClick={onDelete}
+                    danger icon={<DeleteOutlined />} />
+            </div>
+            <div>
+                <span className='source-info'>
+                    {DataSourceType[item.DataSourceType]}
+                </span>
+                <span className='source-info'>
+                    {GeoType[item.GeoType]}
+                </span>
+            </div>
+
+
+            {item.Tags &&
+                <div className='tags__block'>
+                    Tags :
+                    <ul className='tags__list'>
+                        {item.Tags.map(tag =>
+                            <li className='tag-item' key={tag}> {tag} </li>
+                        )}
+                    </ul>
+                </div>
+            }
         </div>
     </>;
 }
 const DataSourcePage: React.FC = () => {
     const { datasourceState: sourceState, ...sourceStore } = useDatasourceStore();
-    const [visible, setVisible] = useState(false);
-    console.log('sourceState.datasources',sourceState.datasources)
-    const showModalCreate = () => {
-        //setVisible(true);
-        
-        sourceStore.create({
-            Id: 'aaa',
-            Name:'aaaaaaaaa',
-            SourceFile: '',
-            Properties:{},
-            Type: LayerSourceType.Fill
-        })
-    };
+    const [modalCreateVisible, setModalCreateVisible] = useState(false);
+    const [modalEditVisible, setModalEditVisible] = useState(false);
+    const [modalEditSource, setModalEditSource] = useState<any>(undefined);
 
     useEffect(() => {
         sourceStore.list();
     }, []);
 
     const handleCreateSource = async () => {
-        //TODO : show modal to input name 
-        showModalCreate();
+        setModalCreateVisible(true);
     }
 
-    const handleEditSource = (item: LayerSource) => {
+    const handleEditSource = (item: DataSource) => {
         return (e: any) => {
+            //TODO: open edit source modal
+            setModalEditVisible(true);
+            setModalEditSource(item);
         }
     }
+
+    const handleDeleteSource = useCallback((item: DataSource) => {
+        return (e: any) => {
+            AntDModal.confirm({
+                title: 'Do you Want to delete these items?',
+                icon: <ExclamationCircleOutlined />,
+                content: 'Some descriptions',
+                onOk() {
+                    sourceStore.remove(item.Id);
+                },
+                onCancel() {
+                },
+            });
+        }
+    }, [sourceStore])
 
     return <>
         <div className="datasource-page">
@@ -57,16 +92,26 @@ const DataSourcePage: React.FC = () => {
             <div className="datasource-page__body">
                 <div className="datasource-page__list">
                     {sourceState.datasources.map((item) => {
-                        return <DatasouceItem key={item.Id} item={item} onClick={handleEditSource(item)} />
+                        return <DatasouceItem key={item.Id} item={item}
+                            onClick={handleEditSource(item)}
+                            onDelete={handleDeleteSource(item)}
+                        />
                     })}
                 </div>
-            </div>  
+            </div>
         </div>
-        
-        {visible && <ModalCreateDataSource visible={visible} 
-            onToggle={(visible)=>{
-                setVisible(visible);
-            }}/>
+
+        {modalCreateVisible && <ModalCreateDataSource visible={modalCreateVisible}
+            onToggle={(visible) => {
+                setModalCreateVisible(visible);
+            }} />
+        }
+
+        {modalEditVisible && <ModalEditDataSource visible={modalEditVisible}
+            source={modalEditSource}
+            onToggle={(visible:boolean) => {
+                setModalEditVisible(visible);
+            }} />
         }
 
     </>

@@ -16,24 +16,20 @@
     &__list{
         display: flex;
         flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: space-between;
     }
    
 
     .source-item{
-        max-width: 15%;
-        height: auto ;
         margin: 10px 7px;
+        min-width: 48%;
+        max-width: 100%;
         background-color: $color-grey-8;
-        &__image-block{
-            img{
-                width: 100%;
-                border-top-left-radius: 4px;
-                border-top-right-radius: 4px;
-            }
-        }
-
+        padding: 10px;
+        position: relative;
         &__title{
-            font-size: $font-size-5;
+            font-size: $font-size-2;
             font-weight: $font-weight-5;
             margin: 0;
             overflow: hidden;
@@ -44,11 +40,40 @@
 
         transition:0.3s;
         &:hover{
-            transform: scale(1.1);
+            transform: scaleY(1.1);
             transform-origin: center;
-            .map-item__title{
-                color: $color-blue;
-            }
+        }
+
+        .source-info{
+            padding: 5px;
+            margin-left: 5px;
+            background-color: $color-grey-6;
+        }
+
+        .delete-btn{
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+    }
+
+    .tags__block{
+        padding: 5px;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+    }
+    .tags__list{
+        list-style: none;
+        display: flex;
+        margin: 0;
+        margin-block-start: 0;
+        padding-inline-start: 0;
+        .tag-item{
+            padding: 2px 8px;
+            margin-left: 5px;
+            border-radius: 4px;
+            background-color: $color-grey-9;
         }
     }
 }

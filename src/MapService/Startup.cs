@@ -1,5 +1,6 @@
 using MapService.Domain.Repositories;
 using MapService.Infrastructure;
+using MapService.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 using NextOne.Shared.Common;
 using System;
 using System.Collections.Generic;
@@ -21,6 +23,7 @@ namespace MapService
 {
     public class Startup
     {
+        private string AllowSpecificOrigins = "AllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -32,7 +35,15 @@ namespace MapService
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson((options) =>
+                {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver()
+                    {
+                        NamingStrategy = null
+                    };
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.DateFormatString = "dd/MM/yyyy HH:mm:ss";
+                });
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -44,9 +55,24 @@ namespace MapService
 
             });
 
+            var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithOrigins(CorsHosts.Split(";"))// * now allow in SignalR
+                            .AllowCredentials();
+                    });
+            });
+
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IDataSourceRepository, DataSourceRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
+
+            MapUtils.InitSharpMap();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +104,8 @@ namespace MapService
 
             app.UseRouting();
 
+            app.UseCors(AllowSpecificOrigins);
+
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -85,5 +113,6 @@ namespace MapService
                 endpoints.MapControllers();
             });
         }
+
     }
 }

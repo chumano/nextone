@@ -1,5 +1,5 @@
 import { useDatasourceApi, } from "../apis";
-import { LayerSource } from "../interfaces";
+import { DataSource } from "../interfaces";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { DatasourceState, useDatasourceObservable } from "./useDataSourceObservable";
@@ -13,7 +13,7 @@ export const useDatasourceStore = () => {
     const list = async () => {
       try {
         observable.listing(true);
-        const objs = await handleAxiosApi<LayerSource[]>(api.list());
+        const objs = await handleAxiosApi<DataSource[]>(api.list());
         observable.list(objs);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
@@ -22,24 +22,27 @@ export const useDatasourceStore = () => {
       }
     };
   
-    const create = async (obj: LayerSource) => {
+    const create = async (obj: any) => {
       try {
         observable.creating(true);
-        const createdObj = await handleAxiosApi<LayerSource>(api.create(obj));
+        const createdObj = await handleAxiosApi<DataSource>(api.create(obj));
         //await new Promise(f => setTimeout(f, 1000));
          
         observable.create(createdObj);
+
+        return createdObj;
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
         observable.creating(false);
       }
+      return undefined;
     };
   
-    const update = async (id: string, obj: LayerSource) => {
+    const update = async (id: string, obj: DataSource) => {
       try {
         observable.updating(true);
-        const updatedCustomer = await handleAxiosApi<LayerSource>(api.update(id, obj));
+        const updatedCustomer = await handleAxiosApi<DataSource>(api.update(id, obj));
         observable.update(id, updatedCustomer);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));

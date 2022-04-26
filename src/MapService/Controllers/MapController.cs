@@ -1,5 +1,6 @@
 ﻿using MapService.Domain;
 using MapService.Domain.Repositories;
+using MapService.DTOs;
 using MapService.DTOs.Map;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using NextOne.Shared.Common;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace MapService.Controllers
@@ -31,8 +34,13 @@ namespace MapService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMaps()
         {
-            var datasources = await _mapRepository.Maps.ToListAsync();
-            return Ok(datasources);
+            Expression<Func<MapInfo, MapDTO>> expression = o => new MapDTO();
+
+            var objs = await _mapRepository.Maps
+                .OrderByDescending(o => o.CreatedDate)
+                .ToDto()
+                .ToListAsync();
+            return Ok(objs);
         }
 
         [HttpGet("{id}")]
@@ -44,28 +52,31 @@ namespace MapService.Controllers
                 throw new Exception($"Map {id} is not found");
             }
 
-            return Ok(map);
+            var mapDto = MapDTO.From(map);
+
+            return Ok(mapDto);
         }
 
         [HttpPost("Create")]
         public async Task<IActionResult> CreateMap([FromBody] CreateMapDTO createMapDTO)
         {
-            var newId = _idGenerator.GenerateNew();
-            var map = new MapInfo()
+
+            var existNameObj = await _mapRepository.Maps.Where(o => o.Name == createMapDTO.Name).FirstOrDefaultAsync();
+
+            if (existNameObj != null)
             {
-                Id = newId,
-                Name = createMapDTO.Name,
-                Note = createMapDTO.Note,
-                Layers = new List<MapLayer>()
-            };
+                throw new Exception($"Map Name is in use");
+            }
+
+            var newId = _idGenerator.GenerateNew();
+            var map = new MapInfo(newId, createMapDTO.Name, createMapDTO.Note);
 
             _mapRepository.Add(map);
 
-
             await _mapRepository.SaveChangesAsync();
             //TODO: send DomainEvent MapCreated
-
-            return Ok(map);
+            var mapDto = MapDTO.From(map);
+            return Ok(mapDto);
         }
 
         [HttpPost("Update/{id}")]
@@ -97,6 +108,7 @@ namespace MapService.Controllers
                 });
             }
             map.Layers = layers;
+            map.UpdatedDate = DateTime.Now;
 
             _mapRepository.Update(map);
             await _mapRepository.SaveChangesAsync();
@@ -106,7 +118,8 @@ namespace MapService.Controllers
 
             //generate tiles
             //TODO: send DomainEvent MapUpdated
-            return Ok(map);
+            var mapDto = MapDTO.From(map);
+            return Ok(mapDto);
         }
 
         [HttpPost("Render/{id}")]
@@ -136,7 +149,8 @@ namespace MapService.Controllers
 
             //TODO: delete tiles
             //TODO: send DomainEvent MapDeleted
-            return Ok(map);
+            var mapDto = MapDTO.From(map);
+            return Ok(mapDto);
         }
     }
 }

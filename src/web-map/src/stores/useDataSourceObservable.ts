@@ -1,13 +1,13 @@
 import { BehaviorSubject } from "rxjs";
-import { ErrorPayload, ErrorState, FlagPayload, FlagState, LayerSource } from "../interfaces";
+import { ErrorPayload, ErrorState, FlagPayload, FlagState, DataSource } from "../interfaces";
 export type DatasourceState = {
-    datasources: LayerSource[];
+    datasources: DataSource[];
 } & FlagState & ErrorState;
 
 export type DatasourcePayload =
-  | { datasources: LayerSource[] }
-  | { source: LayerSource }
-  | { id: string; source: LayerSource }
+  | { datasources: DataSource[] }
+  | { source: DataSource }
+  | { id: string; source: DataSource }
   | { id: string }
   | ErrorPayload
   | FlagPayload;
@@ -24,7 +24,7 @@ const initialState = {
 const datasourceSubject = new BehaviorSubject<DatasourceState>(initialState);
 
 export const useDatasourceObservable = () => {
-    const list = (objs: LayerSource[]) => {
+    const list = (objs: DataSource[]) => {
         setNextState({ datasources: objs, error: '' });
     };
 
@@ -32,8 +32,8 @@ export const useDatasourceObservable = () => {
         setNextState({ listing: flag });
     };
 
-    const create = (obj: LayerSource) => {
-        const objs = [...datasourceSubject.getValue().datasources, obj];
+    const create = (obj: DataSource) => {
+        const objs = [obj,...datasourceSubject.getValue().datasources];
         setNextState({ datasources: objs, error: '' });
     };
 
@@ -41,7 +41,7 @@ export const useDatasourceObservable = () => {
         setNextState({ creating: flag });
     };
 
-    const update = (id: string, obj: LayerSource) => {
+    const update = (id: string, obj: DataSource) => {
         let objs = [...datasourceSubject.getValue().datasources];
         objs = objs.map((item) => {
             if (item.Id === id) {

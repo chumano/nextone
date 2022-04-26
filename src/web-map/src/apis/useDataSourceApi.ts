@@ -1,29 +1,38 @@
 import axios, { AxiosResponse } from 'axios';
-import { LayerSource, MapInfo } from '../interfaces';
+import {  DataSource, MapInfo } from '../interfaces';
 import mockDataSourceApi from './mock/MockDataSourceApi';
-import mockMapApi from './mock/MockMapApi';
 
 const baseApi = process.env.REACT_APP_MAP_API;
 const axiosInstance = axios.create({
   baseURL: `${baseApi}`
 });
 
-mockDataSourceApi(axiosInstance);
+//mockDataSourceApi(axiosInstance);
 
 export const useDatasourceApi = () => {
-  const list = (): Promise<AxiosResponse<LayerSource>> => {
+  const list = (): Promise<AxiosResponse<DataSource>> => {
     return axiosInstance.get(`/datasources`);
   };
 
-  const create = (source: LayerSource): Promise<AxiosResponse<LayerSource>> => {
-    return axiosInstance.post(`${baseApi}/datasources`, source);
+  const create = (source: any): Promise<AxiosResponse<DataSource>> => {
+    const formData = new FormData();
+    Object.keys(source).forEach((key) => {
+      if(source[key]!=undefined){
+        formData.append(key, source[key]);
+      }
+      
+    });
+  
+    return axiosInstance.post(`${baseApi}/datasources/create`, formData,  {
+      headers: { "Content-Type": "multipart/form-data" }
+    });
   };
 
-  const update = (id: string, source: LayerSource): Promise<AxiosResponse<LayerSource>> => {
-    return axiosInstance.put(`${baseApi}/datasources/${id}`, source);
+  const update = (id: string, source: DataSource): Promise<AxiosResponse<DataSource>> => {
+    return axiosInstance.post(`${baseApi}/datasources/update/${id}`, source);
   };
 
-  const remove = (id: string): Promise<AxiosResponse<LayerSource>> => {
+  const remove = (id: string): Promise<AxiosResponse<DataSource>> => {
     return axiosInstance.delete(`${baseApi}/datasources/${id}`);
   };
 

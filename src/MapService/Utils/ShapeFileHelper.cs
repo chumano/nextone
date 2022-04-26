@@ -410,7 +410,7 @@ namespace MapService.Utils
                 sf.ExecuteIntersectionQuery(ext, ds);
                 FeatureDataTable table = ds.Tables[0];
 
-                info.GeometryType = sf.ShapeType.ToString();
+                info.GeometryType = sf.ShapeType;
                 switch (sf.ShapeType)
                 {
                     case ShapeType.Polygon:
@@ -429,22 +429,29 @@ namespace MapService.Utils
                 for (int j = 0; j < table.Columns.Count; j++)
                 {
                     DataColumn col = table.Columns[j];
-                    info.Columns.Add(col.ColumnName);
+                    info.Columns.Add(new ShapeFileColumn()
+                    {
+                        Name = col.ColumnName,
+                        Type = col.DataType.Name
+                    });
                 }
 
                 //==========================================
-                foreach (FeatureDataRow row in table.Rows)
+                if(table.Rows.Count <= 1000)
                 {
-                    Dictionary<string, object> data = new Dictionary<string, object>();
-                    for (int j = 0; j < table.Columns.Count; j++)
+                    foreach (FeatureDataRow row in table.Rows)
                     {
-                        DataColumn col = table.Columns[j];
-                        var obj = row[col];
-                        data.Add(col.ColumnName, obj);
+                        Dictionary<string, object> data = new Dictionary<string, object>();
+                        for (int j = 0; j < table.Columns.Count; j++)
+                        {
+                            DataColumn col = table.Columns[j];
+                            var obj = row[col];
+                            data.Add(col.ColumnName, obj);
+                        }
+                        info.AttributeData.Add(data);
                     }
-                    //info.AttributeData.Add(data);
-
                 }
+               
                 #endregion
 
                 if (sf != null) sf.Close();
@@ -462,15 +469,21 @@ namespace MapService.Utils
 
     public class ShapeFileInfo
     {
-        public string GeometryType;
-        public List<string> Columns;
+        public ShapeType GeometryType;
+        public List<ShapeFileColumn> Columns;
         public List<Dictionary<string, object>> AttributeData;
 
         public ShapeFileInfo()
         {
-            this.Columns = new List<string>();
+            this.Columns = new List<ShapeFileColumn>();
             this.AttributeData = new List<Dictionary<string, object>>();
         }
+    }
+
+    public class ShapeFileColumn
+    {
+        public string Name { get; set; }
+        public string Type { get; set; }
     }
 
 }

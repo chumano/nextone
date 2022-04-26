@@ -30,11 +30,13 @@ export const useMapStore = () => {
         //await new Promise(f => setTimeout(f, 1000));
          
         observable.create(createdObj);
+        return createdObj;
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
         observable.creating(false);
       }
+      return undefined;
     };
   
     const update = async (id: string, obj: MapInfo) => {

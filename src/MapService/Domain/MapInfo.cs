@@ -1,14 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MapService.Domain
 {
     public class MapInfo
     {
-        public string Id { get; set; }
+        private MapInfo() { }
+
+        public MapInfo(string id, string name, string note)
+        {
+            Id = id;
+            Name = name;
+            Note = note;
+            Layers = new List<MapLayer>();
+            CreatedDate = DateTime.Now;
+        }
+        public string Id { get; private set; }
         public string Name { get; set; }
         public string Note { get; set; }
-        public IList<MapLayer> Layers { get; set; }
 
+        public ICollection<MapLayer> Layers { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+
+        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
     }
 
     public class MapLayer

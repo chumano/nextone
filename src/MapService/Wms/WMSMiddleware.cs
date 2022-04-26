@@ -66,23 +66,8 @@ namespace MapService
         }
 
         protected Map GetMap(HttpContext context)
-        //protected Map GetMap(IContextRequest request)
         {
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-
-            var gss = new NtsGeometryServices();
-            var css = new SharpMap.CoordinateSystems.CoordinateSystemServices(
-                new CoordinateSystemFactory(),
-                new CoordinateTransformationFactory(),
-                SharpMap.Converters.WellKnownText.SpatialReference.GetAllReferenceSystems());
-
-            var cs3405 = css.GetCoordinateSystem(3405);
-            var cs4326 = css.GetCoordinateSystem(4326);
-            GeoAPI.GeometryServiceProvider.Instance = gss;
-            SharpMap.Session.Instance
-                .SetGeometryServices(gss)
-                .SetCoordinateSystemServices(css)
-                .SetCoordinateSystemRepository(css);
+            
 
             NetTopologySuiteBootstrapper.Bootstrap();
             //request.RequestContext.HttpContext.Server.MapPath();

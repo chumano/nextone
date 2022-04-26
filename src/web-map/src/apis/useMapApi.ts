@@ -7,7 +7,7 @@ const axiosInstance = axios.create({
   baseURL: `${baseApi}`
 });
 
-mockMapApi(axiosInstance);
+// /mockMapApi(axiosInstance);
 
 export const useMapApi = () => {
   const list = (): Promise<AxiosResponse<MapInfo>> => {
@@ -15,11 +15,11 @@ export const useMapApi = () => {
   };
 
   const create = (map: MapInfo): Promise<AxiosResponse<MapInfo>> => {
-    return axiosInstance.post(`${baseApi}/maps`, map);
+    return axiosInstance.post(`${baseApi}/maps/create`, map);
   };
 
   const update = (id: string, map: MapInfo): Promise<AxiosResponse<MapInfo>> => {
-    return axiosInstance.put(`${baseApi}/maps/${id}`, map);
+    return axiosInstance.post(`${baseApi}/maps/update/${id}`, map);
   };
 
   const remove = (id: string): Promise<AxiosResponse<MapInfo>> => {

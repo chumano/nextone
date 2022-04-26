@@ -1,21 +1,54 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MapService.Domain
 {
     public class DataSource
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
+        private DataSource()
+        {
 
-        public DataSourceTypeEnum DataSourceType { get; set; }
+        }
+        public DataSource(string id, string name,
+            DataSourceTypeEnum dataSourceType, GeoTypeEnum geoType,
+            string sourceFile,
+            Dictionary<string, object> props)
+        {
+            CreatedDate = DateTime.Now;
+            Id = id;
+            Name = name;
+            DataSourceType = dataSourceType;
+            GeoType = geoType;
+            SourceFile = sourceFile;
+            Properties = props;
+        }
 
-        public GeoTypeEnum GeoType { get; set; }
+        public string Id { get; private set; }
+        public string Name { get; private set; }
 
-        public string SourceFile { get; set; }
+        public DataSourceTypeEnum DataSourceType { get; private set; }
 
-        public Dictionary<string, object> Properties { get; set; }
+        public GeoTypeEnum GeoType { get; private set; }
+
+        public string SourceFile { get; private set; }
+
+        public Dictionary<string, object> Properties { get; private set;}
+
 
         public IList<string> Tags { get; set; }
+
+        public DateTime? CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+
+        public string CreatedBy { get; set; }
+        public string UpdatedBy { get; set; }
+
+        public void Update(string name, IList<string> tags)
+        {
+            this.Name = name;
+            this.Tags = tags;
+            this.UpdatedDate = DateTime.Now;
+        }
     }
 
     public enum DataSourceTypeEnum

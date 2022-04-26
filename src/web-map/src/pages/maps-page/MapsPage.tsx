@@ -2,10 +2,11 @@ import { Button } from "antd";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { map } from "rxjs";
-import { MapInfo } from "../interfaces";
-import { MapState, useMapStore } from "../stores";
-import '../styles/pages/maps-page.scss';
-import { useObservable } from "../utils/hooks";
+import { MapInfo } from "../../interfaces";
+import { MapState, useMapStore } from "../../stores";
+import '../../styles/pages/maps-page.scss';
+import { useObservable } from "../../utils/hooks";
+import ModalCreateMap from "./ModalCreateMap";
 
 const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
     return <>
@@ -14,7 +15,7 @@ const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
                 <img src="https://cloud.maptiler.com/static/img/maps/basic.png?t=1634127409" />
             </div>
             <div  className="map-item__title">
-                {map.Id} : {map.Name}
+                {map.Name}
             </div>
         </div>
     </>
@@ -22,28 +23,26 @@ const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
 
 const MapsPage : React.FC = ()=>{
     const {mapState, ...mapStore} = useMapStore();
-    let navigate = useNavigate();
-    let location = useLocation();
-    let params = useParams();
-    
+    const navigate = useNavigate();
+    const location = useLocation();
+    const params = useParams();
+
     useEffect(() => {
         mapStore.list();
     }, []);
 
+    const [modalCreateVisible, setModalCreateVisible] = useState(false);
+    const showModalCreate = () => {
+        setModalCreateVisible(true);
+    };
+
     const createMap = async ()=>{
-        //TODO : show modal to input name 
-        //then go to mapeditor
-        const map :MapInfo = {
-            Id: '',
-            Name : "New Map",
-            Layers : []
-        }
-        navigate("/maps/" + 'new');
+        showModalCreate();
     }
+
 
     const editMap = (item: MapInfo) =>{
         return (e: any)=>{
-            console.info("Edit map", item);
             navigate("/maps/" + item.Id);
         }
     } 
@@ -70,7 +69,12 @@ const MapsPage : React.FC = ()=>{
             </div>
             
         </div>
-        
+
+        {modalCreateVisible && <ModalCreateMap visible={modalCreateVisible} 
+            onToggle={(visible)=>{
+                setModalCreateVisible(visible);
+            }}/>
+        }
     </>
 }
 

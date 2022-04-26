@@ -1,37 +1,33 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { LayerSource, LayerSourceType } from '../../interfaces';
+import { DataSource, DataSourceType, GeoType } from '../../interfaces';
 
 let lastId = 5;
-const datasources: LayerSource[] = [
+const datasources: DataSource[] = [
     {
         Id: "Source1",
         Name: "Bản đồ nền 1",
         SourceFile: "shapfile.zip",
-        Type: LayerSourceType.Fill,
+        DataSourceType: DataSourceType.ShapeFile,
+        GeoType: GeoType.Fill,
         Properties: {}
     },
     {
         Id: "Source2",
         Name: "Đường nội bộ",
         SourceFile: "shapfile1.zip",
-        Type: LayerSourceType.Line,
+        DataSourceType: DataSourceType.ShapeFile,
+        GeoType: GeoType.Line,
         Properties: {}
     }, 
     {
         Id: "Source3",
         Name: "Cơ quan hành chính",
         SourceFile: "shapfile2.zip",
-        Type: LayerSourceType.Point,
+        DataSourceType: DataSourceType.ShapeFile,
+        GeoType: GeoType.Point,
         Properties: {}
-    }, 
-    {
-        Id: "Source4",
-        Name: "Tên huyện",
-        SourceFile: "shapfile3.zip",
-        Type: LayerSourceType.Text,
-        Properties: {}
-    },
+    }
 ];
 const mockDataSourceApi = (axiosInstance: AxiosInstance) => {
     const mockApi = new MockAdapter(axiosInstance, { delayResponse: 500 });
