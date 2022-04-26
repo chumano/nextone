@@ -56,15 +56,15 @@ const DataSourcePage: React.FC = () => {
     }
 
     const handleEditSource = (item: DataSource) => {
-        return (e: any) => {
-            //TODO: open edit source modal
+        return (e: MouseEvent) => {
             setModalEditVisible(true);
             setModalEditSource(item);
         }
     }
 
     const handleDeleteSource = useCallback((item: DataSource) => {
-        return (e: any) => {
+        return (e: MouseEvent) => {
+            e.stopPropagation();
             AntDModal.confirm({
                 title: 'Do you Want to delete these items?',
                 icon: <ExclamationCircleOutlined />,
