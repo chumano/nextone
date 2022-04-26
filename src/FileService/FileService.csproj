@@ -6,11 +6,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.24" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.24" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.24">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.24" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <Folder Include="Data\" />
+    <Folder Include="Migrations\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
   </ItemGroup>
 
 

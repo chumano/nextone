@@ -14,13 +14,10 @@ namespace FileService.Domain
 
         public string FileType { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+        public string SystemFeature { get; set; }
 
+        public DateTime CreatedDate { get; set; }
         public string CreatedBy { get; set; }
 
-        public string System { get; set; }
-
-        public string Object { get; set; }
-        public string ObjectKey { get; set; }
     }
 }

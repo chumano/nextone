@@ -20,7 +20,7 @@
     "FileService": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "weatherforecast",
+      "launchUrl": "Home",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
@@ -29,7 +29,7 @@
     "Docker": {
       "commandName": "Docker",
       "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/weatherforecast",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Home",
       "publishAllPorts": true,
       "httpPort": 5105
     }
