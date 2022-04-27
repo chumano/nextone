@@ -13,7 +13,6 @@ interface ModalCreateDataSourceProps {
 }
 const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const [modalText, setModalText] = useState('');
     const { datasourceState: sourceState, ...sourceStore } = useDatasourceStore();
 
     const [uploadProps, setUploadProps] = useState<any>({
@@ -53,16 +52,16 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
     const childrenTags = [];
     childrenTags.push(<Select.Option key={'sample'}>{'sample'}</Select.Option>);
     const onTagsChange = (value: any) => {
-        console.log(`selected ${value}`);
+        
     }
 
     const [form] = Form.useForm();
     const onFormValuesChange = (values: any) => {
-        console.log('onFormValuesChange:', values);
+        
     };
 
     const onFormFinish = async (values: any) => {
-        console.log('onFinish:', values);
+        
         setConfirmLoading(true);
         const source = {
             Name: values['Name'],

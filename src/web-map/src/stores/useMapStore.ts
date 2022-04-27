@@ -22,6 +22,10 @@ export const useMapStore = () => {
         observable.listing(false);
       }
     };
+
+    const get = async (id: string,) => {
+      return await handleAxiosApi<MapInfo>(api.get(id));
+    };
   
     const create = async (obj: MapInfo) => {
       try {
@@ -68,6 +72,7 @@ export const useMapStore = () => {
     return {
       mapState,
       list,
+      get,
       create,
       update,
       remove,

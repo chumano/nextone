@@ -22,7 +22,6 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
 
     const handleOk = async () => {
         try{
-            console.log("form", form);
             //Hàm này sẽ throw error nếu có field ko hợp lệ
             await form.validateFields();
             form.submit();
@@ -38,10 +37,9 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
 
     const [form] = Form.useForm();
     const onFormValuesChange = (values:any) => {
-        console.log('onFormValuesChange:', values);
+        
     };
     const onFormFinish = async (values: any) => {
-        console.log('onFinish:', values);
         setConfirmLoading(true);
 
         const map: MapInfo = {

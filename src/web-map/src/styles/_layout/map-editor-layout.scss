@@ -2,7 +2,7 @@
 
 $toolbar-height: 40px;
 
-$layout-list-width: 200px;
+$layout-list-width: 250px;
 $layout-editor-width: 370px;
 $layout-map-width: calc(100% - #{$layout-list-width + $layout-editor-width});
 
@@ -20,6 +20,7 @@ $layout-map-width: calc(100% - #{$layout-list-width + $layout-editor-width});
         display: flex;
         flex-direction: row;
         flex-grow: 1;
+        height: 1px;
     }
 
     &-list {

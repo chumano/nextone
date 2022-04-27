@@ -10,8 +10,12 @@ const axiosInstance = axios.create({
 // /mockMapApi(axiosInstance);
 
 export const useMapApi = () => {
-  const list = (): Promise<AxiosResponse<MapInfo>> => {
+  const list = (): Promise<AxiosResponse<MapInfo[]>> => {
     return axiosInstance.get(`/maps`);
+  };
+
+  const get = (id: string): Promise<AxiosResponse<MapInfo>> => {
+    return axiosInstance.get(`/maps/${id}`);
   };
 
   const create = (map: MapInfo): Promise<AxiosResponse<MapInfo>> => {
@@ -26,5 +30,5 @@ export const useMapApi = () => {
     return axiosInstance.delete(`${baseApi}/maps/${id}`);
   };
 
-  return { list, create, update, remove };
+  return { list, get, create, update, remove };
 };

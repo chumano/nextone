@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl: iconShadow
 });
 
-const ResizeMap = () => {
+const MapController = () => {
     const map = useMap();
     useEffect(() => {
         setTimeout(() => {
@@ -54,7 +54,7 @@ const MapPage: React.FC = () => {
         <div className="map-page">
             <MapContainer center={defaultCenter} zoom={defaultZoom} scrollWheelZoom={true}
                 whenCreated={setMap}>
-                <ResizeMap />
+                <MapController />
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

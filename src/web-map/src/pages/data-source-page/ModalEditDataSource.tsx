@@ -2,15 +2,22 @@ import { Form, Input, Select } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { useEffect, useState } from "react";
 import Modal from "../../components/modals/Modal";
+import { DataSourceType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
 
 const ModalEditDataSource :React.FC<any> = (props)=>{
     const [confirmLoading, setConfirmLoading] = useState(false);
     const { datasourceState: sourceState, ...sourceStore } = useDatasourceStore();
-    const [formData,setFormData] = useState(props.source)
     useEffect(()=>{
-        setFormData(props.source);
+        const formData :any = {};
+        Object.keys(props.source).forEach((key:string) => {
+            if(props.source[key]!=undefined){
+              formData[key] = props.source[key];
+            }
+        });
+        form.setFieldsValue(formData);
     }, [props.source])
+
     const handleOk = async () => {
         await form.validateFields();
         form.submit();
@@ -22,11 +29,20 @@ const ModalEditDataSource :React.FC<any> = (props)=>{
     
     const [form] = Form.useForm();
     const onFormValuesChange = (values: any) => {
-        console.log('onFormValuesChange:', values);
+        
     };
 
     const onFormFinish = async (values: any) => {
-        console.log('onFinish:', values);
+        setConfirmLoading(true);
+        const source : any = {
+            Name: values['Name'],
+            Tags : values['Tags']
+            
+        };
+        await sourceStore.update(props.source.Id, source);
+
+        setConfirmLoading(false);
+        props.onToggle(false);
     }
     
     return <>
@@ -41,9 +57,7 @@ const ModalEditDataSource :React.FC<any> = (props)=>{
                 labelCol={{ span: 4 }}
                 wrapperCol={{ span: 14 }}
                 layout="horizontal"
-                initialValues={{ size: 'default', requiredMarkValue: 'required', 
-                    ...formData
-                }}
+                initialValues={{ size: 'default', requiredMarkValue: 'required'}}
                 onValuesChange={onFormValuesChange}
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
@@ -54,7 +68,7 @@ const ModalEditDataSource :React.FC<any> = (props)=>{
                 </Form.Item>
 
                 <Form.Item name="Tags" label="Tags" tooltip="This is a optional field">
-                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode" >
+                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode">
                     </Select>
                 </Form.Item>
             </Form>

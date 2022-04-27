@@ -42,8 +42,6 @@ const envInfo = <ul>
 
 function App() {
   console.log("App rendering...");
-  const params = useParams();
-  console.log("params", params);
 
   return <>
     <GlobalModal>

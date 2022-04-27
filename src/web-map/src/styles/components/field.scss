@@ -1,0 +1,31 @@
+@import '../vars';
+
+.input-block{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px;
+
+    &-label{
+        width: 30%;
+    }
+
+    &-content{
+        width: auto;
+        flex-grow: 1;
+    }
+
+    &-action{
+
+    }
+
+    .ant-input[disabled], .ant-input-disabled{
+        color: $color-black !important;
+        cursor: auto !important;
+    }
+}
+
+.input-slider{
+    display: flex;
+    flex-direction: row;
+}

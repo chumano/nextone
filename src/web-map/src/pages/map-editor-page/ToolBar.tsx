@@ -1,8 +1,10 @@
 
 const ToolBar = (props:any)=>{
     return <>
-        <div className="maputnik-toolbar ">
-            Tool bar
+        <div className="map-editor-toolbar">
+            <h3>
+                Maps/{props?.map?.Name}
+            </h3>
         </div>
     </>
 }

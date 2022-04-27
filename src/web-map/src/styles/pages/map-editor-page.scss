@@ -1,0 +1,101 @@
+@import '../vars';
+
+.map-editor-toolbar {
+    padding: 5px;
+}
+
+.layer-list {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &__header {
+        padding: $margin-2 $margin-2 $margin-3;
+
+        display: flex;
+        flex-direction: row;
+        flex: 0 0;
+
+        >* {
+            vertical-align: middle;
+            margin-bottom: 0;
+        }
+    }
+
+    &__container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        height: 1px;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+}
+
+.layer-list-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    font-size: $font-size-4;
+    background-color: lighten($color-black, 2);
+    color: $color-white;
+    user-select: none;
+    border-top: solid 1px #36383e;
+}
+
+.layer-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    border: solid 1px transparent;
+    font-weight: $font-weight-3;
+    font-size: $font-size-5;
+    border-bottom-color: lighten($color-black, 0.1);
+    user-select: none;
+    list-style: none;
+    z-index: 2000;
+    position: relative;
+    padding: 5px;
+    line-height: 1.3;
+    max-height: 50px;
+
+    &-title {
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
+        svg {
+            margin-right: 5px;
+        }
+    }
+
+    &--selected {
+        font-weight: $font-weight-9;
+        color: $color-primary;
+    }
+}
+
+/*----------------------------*/
+/* layer-editor */
+.layer-editor {
+    .ant-collapse-header {
+        padding: 5px 10px !important;
+    }
+
+    &__header {
+        display: flex;
+        padding: 6px;
+        background-color: lighten($color-black, 2);
+        font-size: $font-size-3;
+        color: $color-white;
+    }
+}
+
+/*---------------------------*/
+/*map*/
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+}
