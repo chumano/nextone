@@ -1,4 +1,5 @@
 import { DndContext } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 import { Button } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { SampleLayers } from "./layerData";
@@ -6,6 +7,7 @@ import LayerListGroup from "./LayerListGroup";
 import LayerListItem from "./LayerListItem";
 import ModalAddLayer from "./ModalAddLayer";
 import { LayerStyle, useMapEditor } from "./useMapEditor";
+import {CSS} from '@dnd-kit/utilities';
 
 const groupLayers = (layers: LayerStyle[])=>{
     const groups = []
@@ -28,6 +30,27 @@ const groupLayers = (layers: LayerStyle[])=>{
       }
     }
     return groups
+}
+
+function SortableItem(props:any) {
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
+      transition,
+    } = useSortable({id: props.id});
+    
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    };
+    
+    return (
+      <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+        {props.children}
+      </div>
+    );
 }
 
 const LayerListContainer: React.FC = () => {
