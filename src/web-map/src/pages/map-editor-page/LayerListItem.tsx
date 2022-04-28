@@ -1,12 +1,15 @@
-import { useCallback } from "react";
+import React, { useCallback } from "react";
 import { CopyOutlined, EyeOutlined, EyeInvisibleOutlined, DeleteOutlined } from '@ant-design/icons';
 import {IconLayer} from "../../components/icons";
 import { LayerType } from "../../interfaces";
 import classnames from "classnames";
+import { useMapEditor } from "./useMapEditor";
 interface LayerListItemProps {
     name: string;
+    layerIndex: number;
     layerType: LayerType;
     isSelected?: boolean;
+    visibility?: boolean
 }
 
 const IconAction: React.FC<any> = (props) => {
@@ -23,16 +26,16 @@ const IconAction: React.FC<any> = (props) => {
 
     let classAdditions = '';
     if (classBlockName) {
-        classAdditions = `maputnik-layer-list-icon-action__${classBlockName}`;
+        classAdditions = `layer-list-icon-action__${classBlockName}`;
 
         if (classBlockModifier) {
-            classAdditions += ` maputnik-layer-list-icon-action__${classBlockName}--${classBlockModifier}`;
+            classAdditions += ` layer-list-icon-action__${classBlockName}--${classBlockModifier}`;
         }
     }
 
     return <button
         title={props.action}
-        className={`maputnik-layer-list-icon-action ${classAdditions}`}
+        className={`clickable layer-list-icon-action ${classAdditions}`}
         onClick={props.onClick}
         aria-hidden="true"
     >
@@ -40,7 +43,19 @@ const IconAction: React.FC<any> = (props) => {
     </button>
 }
 
-const LayerListItem: React.FC<LayerListItemProps> = (props) => {
+const LayerListItemContainer: React.FC<LayerListItemProps> = (props) => {
+    const {toggleLayerVisibility} = useMapEditor();
+    const visibilityAction = props.visibility ? 'show' : 'hide';
+    {console.log('LayerListItem', props)}
+
+    const actionHanlder = useCallback((action:string)=>{
+        return (e:any)=>{
+            if(action =='visibility'){
+                toggleLayerVisibility(props.layerIndex)
+            }
+        }
+    },[props])
+
     return <>
         <div
             className={classnames({
@@ -63,21 +78,38 @@ const LayerListItem: React.FC<LayerListItemProps> = (props) => {
             <IconAction
                 action={'delete'}
                 classBlockName="delete"
-                onClick={() => { }}
+                onClick={actionHanlder('delete')}
             />
-            <IconAction
+            {/* <IconAction
                 action={'duplicate'}
                 classBlockName="duplicate"
                 onClick={() => { }}
-            />
+            /> */}
             <IconAction
-                action={'show'}
+                action={visibilityAction}
                 classBlockName="visibility"
-                classBlockModifier={'show'}
-                onClick={() => { }}
+                classBlockModifier={visibilityAction}
+                onClick={actionHanlder('visibility')}
             />
         </div>
     </>
 }
+const LayerListItem = React.memo(LayerListItemContainer, (prevProps:any, nexProps:any)=>{
+    let isSame = true;
+    let difKey = '';
+    Object.keys(nexProps).forEach(key=>{
+        let prevV = prevProps[key];
+        let nextV = nexProps[key]
+        if(prevV!= nextV){
+            difKey = key;
+            isSame = false;
+            return;
+        }
+    })
 
+    // if(!isSame){
+    //     console.warn(`${prevProps.layerIndex} is not Same at key ${difKey}` )
+    // }
+    return isSame;
+});
 export default LayerListItem;

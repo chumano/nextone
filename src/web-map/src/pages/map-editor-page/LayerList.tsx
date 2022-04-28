@@ -1,36 +1,46 @@
 import { DndContext } from "@dnd-kit/core";
 import { Button } from "antd";
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import { MapInfo } from "../../interfaces";
 import { MapState, useMapStore } from "../../stores";
-import { useObservable } from "../../utils/hooks";
+import { layerGroups } from "./layerData";
 import LayerListGroup from "./LayerListGroup";
 import LayerListItem from "./LayerListItem";
+import { useMapEditor } from "./useMapEditor";
 
 const LayerListContainer: React.FC = () => {
-    const { mapState, ...mapStore } = useMapStore();
-    
-
-    
+    const mapEditor = useMapEditor();
     const [listItems,setListItems] = useState<JSX.Element[]>();
+   
     useEffect(()=>{
+        console.log('mapEditor.mapEditorState.layers', mapEditor.mapEditorState.layers)
+        if(mapEditor.mapEditorState.layers.length==0) return;
         var index = 0;
         const items : JSX.Element[]= [];
         layerGroups.forEach(g =>{
-            let key = index++;
+            let key = 'group-'+ index.toString();
             items.push(
-                <LayerListGroup key={'group-'+key.toString()} {...g}/>
+                <LayerListGroup key={key} {...g}/>
             )
             g.layers.forEach(l =>{
-                let key = index++;
+                let key = 'item-'+ index.toString();
+                const layerProps = mapEditor.mapEditorState.layers[index];
                 items.push(
-                    <LayerListItem key={'item-'+key.toString()}  isSelected={l.name=='sông'} {...l}/>
+                    <LayerListItem key={key} 
+                        layerIndex={index} 
+                        layerType={layerProps.layerType}
+                        name={layerProps.name}
+                        isSelected={layerProps.name=='sông'} 
+                        visibility={layerProps.visibility}
+                        />
                 )
+                index++;
             })
+           
         })
 
         setListItems(items);
-    },[])
+    },[mapEditor.mapEditorState.layers])
     
 
     return <>
@@ -63,7 +73,7 @@ const SortableContainer = (Component: React.FC<any>) => {
         </DndContext>
     };
 }
-const LayerListContainerSortable = SortableContainer((props: any) => <LayerListContainer {...props} />)
+const LayerListContainerSortable = SortableContainer(LayerListContainer)
 
 const LayerList: React.FC = (props: any) => {
     return <LayerListContainerSortable
@@ -72,127 +82,4 @@ const LayerList: React.FC = (props: any) => {
         useDragHandle={true}
     />
 }
-
 export default LayerList;
-
-const layerGroups = [
-    {
-        name : 'basemap',
-        layers: [
-            {
-                name: 'basemap 1',
-                layerType: 'fill'
-            },
-            {
-                name: 'basemap 2',
-                layerType: 'fill'
-            }
-        ]
-    },
-    {
-        name : 'hạ tầng',
-        layers: [
-            {
-                name: 'đường quốc lộ',
-                layerType: 'line'
-            },
-            {
-                name: 'đường nội tỉnh',
-                layerType: 'circle'
-            },
-            {
-                name: 'đường nội tỉnh',
-                layerType: ''
-            },
-        ]
-    },
-    {
-        name : 'thủy hệ',
-        layers: [
-            {
-                name: 'sông',
-                layerType: 'line'
-            },
-            {
-                name: 'suối',
-                layerType: 'circle'
-            },
-            {
-                name: 'kênh/ rạch',
-                layerType: ''
-            },
-        ]
-    },
-    {
-        name : 'thực vật',
-        layers: [
-            {
-                name: 'cây lâu năm',
-                layerType: 'line'
-            },
-            {
-                name: 'cây công viên',
-                layerType: 'circle'
-            },
-            {
-                name: 'cây ven đường',
-                layerType: ''
-            },
-        ]
-    },
-    {
-        name : 'nhà ở',
-        layers: [
-            {
-                name: 'chưng cư',
-                layerType: 'line'
-            },
-            {
-                name: 'nhà dân',
-                layerType: 'circle'
-            },
-            {
-                name: 'cơ quan',
-                layerType: ''
-            },
-        ]
-    },
-    {
-        name : 'điểm du lịch',
-        layers: [
-            {
-                name: 'cấp 1',
-                layerType: 'line'
-            },
-            {
-                name: 'cấp 2',
-                layerType: 'circle'
-            },
-            {
-                name: 'cấp 3',
-                layerType: ''
-            },
-        ]
-    },
-    {
-        name : 'điểm khác',
-        layers: [
-            {
-                name: 'điểm khác 1',
-                layerType: 'line'
-            },
-            {
-                name: 'điểm khác 2',
-                layerType: 'circle'
-            },
-            {
-                name: 'điểm khác 3',
-                layerType: ''
-            },
-            {
-                name: 'điểm khác 4',
-                layerType: ''
-            },
-        ]
-    }
-]

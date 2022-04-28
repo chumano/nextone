@@ -1,5 +1,5 @@
 import { Button, Modal as AntDModal } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import MapEditorLayout from "../../components/_layouts/MapEditorLayout";
 import { MapInfo } from "../../interfaces";
@@ -8,27 +8,20 @@ import LayerList from "./LayerList";
 import ToolBar from "./ToolBar";
 import '../../styles/pages/map-editor-page.scss';
 import LayerEditor from "./LayerEditor";
-import { LayersControl, MapContainer, Marker, Popup, TileLayer, useMap, ZoomControl } from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import MapView from "./MapView";
+import { layerGroups } from "./layerData";
+import { useMapEditor } from "./useMapEditor";
+
 
 const bottomPanel = <>Map@2022</>
 const modals = <>
 </>
-const MapController = () => {
-    const map = useMap();
-    useEffect(() => {
-        setTimeout(() => {
-            console.log(" map.invalidateSize")
-            map.invalidateSize();
-        }, 500)
-    }, []);
-    return null;
-};
 
 const MapEditorPage: React.FC = () => {
-
     const { mapState, ...mapStore } = useMapStore();
+    const mapEditor = useMapEditor();
+    
     const [mapInfo, setMapInfo] = useState<MapInfo>();
     let params = useParams();
     const mapid = params['mapid'] as string;
@@ -51,53 +44,29 @@ const MapEditorPage: React.FC = () => {
             })
     }, [mapid]);
 
-    const mapRenderer = useCallback(() => {
-        const defaultCenter: L.LatLngTuple = [51.505, -0.09];
-        const defaultZoom = 13
-
-        return <>
-            <MapContainer center={[51.505, -0.09]} zoom={13} 
-                zoomControl={false}
-                doubleClickZoom={false}
-                dragging={true}
-                scrollWheelZoom={true}
-                attributionControl={false}
-            >
-                <MapController />
-                <ZoomControl position="topright" />
-
-                <LayersControl position="topright">
-                    <LayersControl.BaseLayer name="OSM" checked >
-                        <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                    </LayersControl.BaseLayer>
-                    <LayersControl.Overlay name="Marker with popup">
-                        <Marker position={defaultCenter}>
-                            <Popup>
-                                A pretty CSS3 popup. <br /> Easily customizable.
-                            </Popup>
-                        </Marker>
-                    </LayersControl.Overlay>
-                </LayersControl>
-
-            </MapContainer>
-        </>
-    }, [mapInfo])
-
+    useEffect(()=>{
+        var index = 0;
+        const layers : any[] =[];
+        layerGroups.forEach(g =>{
+            g.layers.forEach(l =>{
+                layers.push({...l});
+                index++;
+            })
+           
+        })
+        mapEditor.setLayers(layers);
+    },[])
     return <>
         <MapEditorLayout
             toolbar={<ToolBar map={mapInfo} />}
             layerList={<LayerList />}
             layerEditor={<LayerEditor />}
-            map={mapRenderer()}
+            map={<MapView />}
             bottom={bottomPanel}
             modals={modals}
             onItemClick={() => { }}
         />
     </>
-        ;
 }
 
 export default MapEditorPage;
