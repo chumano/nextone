@@ -13,29 +13,29 @@ interface MapEditorLayoutProp{
 }
 const MapEditorLayout : React.FC<MapEditorLayoutProp> = (props)=>{
     return (
-      <div className="maputnik-layout">
-        <div className="maputnik-layout-toolbar">
+      <div className="map-editor-layout">
+        <div className="map-editor-layout-toolbar">
           {props.toolbar}
         </div>
         
-        <div className="maputnik-layout-body">
-          <div className="maputnik-layout-list">
+        <div className="map-editor-layout-body">
+          <div className="map-editor-layout-list">
             {props.layerList}
           </div>
 
-          <div className="maputnik-layout-drawer">
+          <div className="map-editor-layout-drawer">
             <ScrollContainer>
               {props.layerEditor}
             </ScrollContainer>
           </div>
 
-          <div className="maputnik-layout-map">
+          <div className="map-editor-layout-map">
             {props.map}
           </div>
 
         </div>
         
-        {props.bottom && <div className="maputnik-layout-bottom">
+        {props.bottom && <div className="map-editor-layout-bottom">
             {props.bottom}
           </div>
         }

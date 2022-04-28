@@ -3,13 +3,13 @@ import { CopyOutlined, EyeOutlined, EyeInvisibleOutlined, DeleteOutlined } from 
 import {IconLayer} from "../../components/icons";
 import { LayerType } from "../../interfaces";
 import classnames from "classnames";
-import { useMapEditor } from "./useMapEditor";
 interface LayerListItemProps {
     name: string;
     layerIndex: number;
     layerType: LayerType;
     isSelected?: boolean;
-    visibility?: boolean
+    visibility?: boolean;
+    onLayerAction: (layerIndex:number, action:string)=> void;
 }
 
 const IconAction: React.FC<any> = (props) => {
@@ -44,26 +44,24 @@ const IconAction: React.FC<any> = (props) => {
 }
 
 const LayerListItemContainer: React.FC<LayerListItemProps> = (props) => {
-    const {toggleLayerVisibility} = useMapEditor();
     const visibilityAction = props.visibility ? 'show' : 'hide';
-    {console.log('LayerListItem', props)}
 
     const actionHanlder = useCallback((action:string)=>{
         return (e:any)=>{
-            if(action =='visibility'){
-                toggleLayerVisibility(props.layerIndex)
-            }
+            props.onLayerAction(props.layerIndex, action);
         }
     },[props])
 
+    console.log('LayerListItem render', props.name);
+    
     return <>
         <div
             className={classnames({
                 "layer-list-item": true,
                 "layer-list-item--selected": props.isSelected,
             })}>
-            <div
-                className="layer-list-item-title"
+            <div className="layer-list-item-title clickable"
+                onClick={actionHanlder('select')}
                 title={props.name}
             >
                 <IconLayer

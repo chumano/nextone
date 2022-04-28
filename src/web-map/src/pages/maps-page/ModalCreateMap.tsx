@@ -1,10 +1,8 @@
 import { Form, Input, Modal as AntDModal } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import TextArea from "antd/lib/input/TextArea";
-import { title } from "process";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { MODAL_TYPES, useGlobalModalContext } from "../../components/common/GlobalModals";
 import Modal from "../../components/modals/Modal";
 import { MapInfo } from "../../interfaces";
 import { useMapStore } from "../../stores/useMapStore";
@@ -15,8 +13,7 @@ interface ModalCreateMapProps {
 }
 const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
     const [confirmLoading, setConfirmLoading] = useState(false);
-    const { mapState, ...mapStore } = useMapStore();
-    const { showModal } = useGlobalModalContext();
+    const { ...mapStore } = useMapStore();
 
     const navigate = useNavigate();
 
@@ -52,12 +49,6 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
         setConfirmLoading(false);
 
         if (!createdMap) {
-            //Show modal
-            // showModal(MODAL_TYPES.INFO_MODAL, {
-            //     title: 'Có lỗi',
-            //     content: `Không thể tạo map ${map.Name}`
-                
-            // })
             AntDModal.error({
                 title: 'Có lỗi',
                 content:  <>

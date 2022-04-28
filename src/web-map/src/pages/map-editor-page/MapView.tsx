@@ -1,9 +1,10 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { LayersControl, MapContainer, Marker, Popup,
      TileLayer, useMap, ZoomControl } from "react-leaflet";
 import L from 'leaflet';
 import MapDisplayPosition from "./MapDisplayPosition";
 import React from "react";
+import { useMapEditor } from "./useMapEditor";
 
 const MapController = () => {
     const map = useMap();
@@ -17,12 +18,14 @@ const MapController = () => {
 };
 
 const MapViewContainer : React.FC<any> = (props)=>{
+    //const mapEditor = useMapEditor();
     const defaultCenter: L.LatLngTuple = [51.505, -0.09];
     const defaultZoom = 13;
     const mapRef = useRef<any>()
-    console.log("display map")
-    return <>
-        <MapContainer center={[51.505, -0.09]} zoom={13} 
+    console.log("display map : MapViewContainer")
+    const displayMap = useMemo(()=>{
+        console.log("display map")
+        return <MapContainer center={[51.505, -0.09]} zoom={13} 
             ref={mapRef}
             zoomControl={false}
             doubleClickZoom={false}
@@ -52,7 +55,9 @@ const MapViewContainer : React.FC<any> = (props)=>{
             <MapDisplayPosition></MapDisplayPosition>
             
         </MapContainer>
-       
+    },[]);
+    return <>
+        {displayMap}
     </>
 }
 

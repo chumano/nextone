@@ -1,47 +1,75 @@
 import { DndContext } from "@dnd-kit/core";
 import { Button } from "antd";
-import React, { useEffect, useMemo, useState } from "react"
-import { MapInfo } from "../../interfaces";
-import { MapState, useMapStore } from "../../stores";
-import { layerGroups } from "./layerData";
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { SampleLayers } from "./layerData";
 import LayerListGroup from "./LayerListGroup";
 import LayerListItem from "./LayerListItem";
-import { useMapEditor } from "./useMapEditor";
+import ModalAddLayer from "./ModalAddLayer";
+import { LayerStyle, useMapEditor } from "./useMapEditor";
+
+const groupLayers = (layers: LayerStyle[])=>{
+    const groups = []
+    const groupBy = (layer:LayerStyle)=>{
+        return layer.layerGroup;
+    }
+
+    for (let i = 0; i <layers.length; i++) {
+      const origLayer = layers[i];
+      const previousLayer = layers[i-1]
+      const layer = {
+        ...origLayer
+      }
+
+      if(previousLayer && groupBy(previousLayer) == groupBy(layer)) {
+        const lastGroup = groups[groups.length - 1]
+        lastGroup.push(layer)
+      } else {
+        groups.push([layer])
+      }
+    }
+    return groups
+}
 
 const LayerListContainer: React.FC = () => {
     const mapEditor = useMapEditor();
+    
     const [listItems,setListItems] = useState<JSX.Element[]>();
-   
+    const [modalAddLayerVisible, setModalAddLayerVisible] = useState(false);
+
     useEffect(()=>{
         console.log('mapEditor.mapEditorState.layers', mapEditor.mapEditorState.layers)
-        if(mapEditor.mapEditorState.layers.length==0) return;
-        var index = 0;
+        let idx = 0;
         const items : JSX.Element[]= [];
-        layerGroups.forEach(g =>{
-            let key = 'group-'+ index.toString();
+        const groups = groupLayers(mapEditor.mapEditorState.layers);
+        groups.forEach(g =>{
+            const firstLayerInGroup = g[0];
+            let key = 'group-'+ idx;
             items.push(
-                <LayerListGroup key={key} {...g}/>
+                <LayerListGroup key={key} name={firstLayerInGroup.layerGroup} />
             )
-            g.layers.forEach(l =>{
-                let key = 'item-'+ index.toString();
-                const layerProps = mapEditor.mapEditorState.layers[index];
+            const gLayers = g;
+            gLayers.forEach(l =>{
+                let key = 'item-'+ idx;;
                 items.push(
                     <LayerListItem key={key} 
-                        layerIndex={index} 
-                        layerType={layerProps.layerType}
-                        name={layerProps.name}
-                        isSelected={layerProps.name=='sông'} 
-                        visibility={layerProps.visibility}
+                        layerIndex={idx} 
+                        layerType={l.layerType}
+                        name={l.name}
+                        isSelected={idx == mapEditor.mapEditorState.selectedLayerIndex} 
+                        visibility={l.visibility}
+                        onLayerAction={mapEditor.onLayerAction}
                         />
                 )
-                index++;
+                idx++;
             })
-           
         })
 
         setListItems(items);
-    },[mapEditor.mapEditorState.layers])
+    },[mapEditor.mapEditorState.layers, mapEditor.mapEditorState.selectedLayerIndex])
     
+    const onLayerAdded = useCallback((layerStyle: LayerStyle)=>{
+        mapEditor.addLayer(layerStyle);
+    },[])
 
     return <>
         <div className="layer-list">
@@ -53,8 +81,10 @@ const LayerListContainer: React.FC = () => {
                     {"Expand"}
                 </button>
 
-                <button
-                    className="maputnik-button ">
+                <button onClick={()=>{
+                    setModalAddLayerVisible(true);
+                }}
+                    className="maputnik-button">
                     Add Layer
                 </button>
             </div>
@@ -63,6 +93,14 @@ const LayerListContainer: React.FC = () => {
                 {listItems}
             </div>
         </div>
+
+        {modalAddLayerVisible 
+        && <ModalAddLayer onLayerAdded={onLayerAdded}
+                visible={modalAddLayerVisible} 
+                onToggle={(visible:boolean)=>{
+                    setModalAddLayerVisible(visible);
+                }}/>
+        }
     </>
 }
 
