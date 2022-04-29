@@ -9,6 +9,7 @@ interface LayerListItemProps {
     layerType: LayerType;
     isSelected?: boolean;
     visibility?: boolean;
+    className: string;
     onLayerAction: (layerIndex:number, action:string)=> void;
 }
 
@@ -48,6 +49,7 @@ const LayerListItemContainer: React.FC<LayerListItemProps> = (props) => {
 
     const actionHanlder = useCallback((action:string)=>{
         return (e:any)=>{
+            e.stopPropagation();
             props.onLayerAction(props.layerIndex, action);
         }
     },[props])
@@ -59,6 +61,7 @@ const LayerListItemContainer: React.FC<LayerListItemProps> = (props) => {
             className={classnames({
                 "layer-list-item": true,
                 "layer-list-item--selected": props.isSelected,
+                [props.className]: true,
             })}>
             <div className="layer-list-item-title clickable"
                 onClick={actionHanlder('select')}

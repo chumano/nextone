@@ -67,10 +67,6 @@ namespace MapService
 
         protected Map GetMap(HttpContext context)
         {
-            
-
-            NetTopologySuiteBootstrapper.Bootstrap();
-            //request.RequestContext.HttpContext.Server.MapPath();
             var map = new SharpMap.Map();
             map.BackColor = System.Drawing.Color.Transparent;
 
@@ -83,10 +79,6 @@ namespace MapService
             lay.DataSource = new SharpMap.Data.Providers.ShapeFile(ds,true,true)
             {
                 Encoding = System.Text.Encoding.UTF8
-            };
-            lay.Style = new VectorStyle()
-            {
-
             };
 
             lay.SRID = 4326;

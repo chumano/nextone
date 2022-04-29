@@ -101,6 +101,7 @@ namespace MapService.Controllers
                     LayerName = l.LayerName,
                     LayerGroup = l.LayerGroup,
                     DataSourceId = l.DataSourceId,
+                    Active = l.Active,
                     MinZoom = l.MinZoom,
                     MaxZoom = l.MaxZoom,
                     PaintProperties = l.PaintProperties,

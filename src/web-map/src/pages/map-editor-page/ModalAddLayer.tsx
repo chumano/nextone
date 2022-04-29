@@ -4,19 +4,9 @@ import TextArea from "antd/lib/input/TextArea";
 import Modal from "../../components/modals/Modal";
 import { GeoType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
+import { geo2LayerType } from "../../utils/functions";
 import { LayerStyle } from "./useMapEditor";
-//LayerType :'line' | 'fill' | 'point' | 'symbol' | string;
-const geo2LayerType = (geoType? : GeoType)=> {
-    switch(geoType){
-        case GeoType.Point:
-            return 'point';
-        case GeoType.Line:
-            return 'line';
-        case GeoType.Fill:
-            return 'fill';
-    }
-    return '';
-}
+
 
 interface ModalAddLayerProps{
     onLayerAdded: (layer: LayerStyle) =>void;
@@ -31,12 +21,17 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
     const onFormFinish = async (values: any) => {
         //onLayerAdded
         const source = datasources.find(o=> o.Id == values['Source'])
+        if(!source){
+            return;
+        }
 
         const layerStyle : LayerStyle = {
             name: values['Name'],
             layerGroup:  values['GroupName'],
             layerType: geo2LayerType(source?.GeoType),
-            visibility: true
+            sourceId: source.Id,
+            visibility: true,
+            note:  values['Note'],
         }
 
         props.onLayerAdded(layerStyle)
@@ -62,13 +57,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
             >
                 <Form.Item name="Name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' },
-                            {min: 5, message: 'Name\'s length >= 5'}]}>
-                    <Input placeholder="input placeholder" autoComplete="newpassword" />
-                </Form.Item>
-
-                <Form.Item name="GroupName" label="GroupName" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'GroupName is required' },
-                            {min: 5, message: 'GroupName\'s length >= 5'}]}>
+                            {min: 4, message: 'Name\'s length >= 4'}]}>
                     <Input placeholder="input placeholder" autoComplete="newpassword" />
                 </Form.Item>
 
@@ -81,6 +70,11 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
                     </Select>
                 </Form.Item>
 
+                <Form.Item name="GroupName" label="Group Name"  tooltip="This is a required field"
+                    rules={[{min: 4, message: 'GroupName\'s length >= 4'}]}>
+                    <Input placeholder="input placeholder" autoComplete="newpassword" />
+                </Form.Item>
+
                 <Form.Item name="Note" label="Note" tooltip="This is a optional field">
                     <TextArea rows={4} placeholder="maxLength is 255" maxLength={255} />
                 </Form.Item>
@@ -90,3 +84,4 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
 }
 
 export default ModalAddLayer;
+

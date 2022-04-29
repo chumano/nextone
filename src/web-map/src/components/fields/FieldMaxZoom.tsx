@@ -1,11 +1,15 @@
 import { Col, Input, InputNumber, Row, Slider } from 'antd'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Block from './Block'
 
 const FieldMaxZoom: React.FC<any> = (props) => {
 
   const [value, setValue] = useState(props.value);
+  useEffect(()=>{
+    setValue(props.value);
+  },[props.value])
+
   const onChange = (value: any) => {
     setValue(value);
     props.onChange(value);

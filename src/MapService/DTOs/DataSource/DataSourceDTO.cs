@@ -13,6 +13,8 @@ namespace MapService.DTOs.DataSource
         public GeoTypeEnum GeoType { get;  set; }
 
         public string SourceFile { get;  set; }
+        public byte[] ImageData { get; set; }
+        public string ImageUrl { get; set; }
 
         public Dictionary<string, object> Properties { get;  set; }
 

@@ -13,6 +13,7 @@ namespace MapService.DTOs.Map
 
         public GeoTypeEnum DataSourceGeoType { get; set; }
 
+        public bool? Active { get; set; }
         public int? MinZoom { get; set; }
         public int? MaxZoom { get; set; }
 

@@ -4,16 +4,19 @@ import { PaintPropertyKey } from "./PaintProperty";
 export interface MapInfo {
     Id?: string;
     Name: string;
-    Layers?: MapLayer[]
+    Layers: MapLayer[]
 }
 
 export interface MapLayer {
-    Name: string;
-    SourceType: GeoType;
-    Source: DataSource;
+    LayerName: string;
     LayerGroup: string;
+    DataSourceId: string;
+    DataSourceName?: string;
+    DataSourceGeoType?: GeoType;
 
-    PaintProperties: { [key: PaintPropertyKey]: any }
+    PaintProperties?: { [key: PaintPropertyKey]: any }
+
+    Active?: boolean;
     MinZoom?: number;
     MaxZoom?: number;
     Note?: string;

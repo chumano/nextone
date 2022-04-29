@@ -39,6 +39,7 @@ namespace MapService.Domain
         public string DataSourceId { get; set; }
         public DataSource DataSource { get; set; }
 
+        public bool? Active { get; set; }
         public int? MinZoom { get; set; }
         public int? MaxZoom { get; set; }
         public Dictionary<string, object>  PaintProperties { get; set; }

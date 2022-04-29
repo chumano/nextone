@@ -5,10 +5,10 @@ import Block from './Block'
 
 const FieldId: React.FC<any> = (props) => {
 
-  return <Block label={"ID"}>
+  return <Block label={"Name"}>
     <Input
       value={props.value}
-      onInput={props.onChange}
+      onChange={props.onChange}
     />
   </Block>
 

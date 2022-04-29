@@ -65,6 +65,10 @@ namespace MapService.Infrastructure
                    .HasColumnType("varchar(36)")
                   .IsRequired();
 
+                eb.Property(o => o.Active)
+                  .HasColumnType("bit")
+                  ;
+
                 eb.Property(o => o.MinZoom)
                    .HasColumnType("int")
                    ;
@@ -132,6 +136,27 @@ namespace MapService.Infrastructure
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<Dictionary<string, object>>(v)
                  );
+
+
+                eb.Property(o=> o.ImageData)
+                .HasColumnType("varbinary(max)");
+
+
+                eb.Property("_bbMinX")
+                .HasColumnType("float");
+
+                eb.Property("_bbMixY")
+                .HasColumnType("float");
+
+                eb.Property("_bbMaxX")
+                .HasColumnType("float");
+
+                eb.Property("_bbMaxY")
+                .HasColumnType("float");
+
+                eb.HasIndex(e => e.DataSourceType)
+                .IsClustered(false);
+
             });
         }
     }

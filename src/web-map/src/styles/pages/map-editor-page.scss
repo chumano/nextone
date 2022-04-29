@@ -1,6 +1,10 @@
 @import '../vars';
 
-.map-editor-toolbar {
+
+.map-editor-toolbar{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     padding: 5px;
 }
 
@@ -15,6 +19,8 @@
         display: flex;
         flex-direction: row;
         flex: 0 0;
+        border: solid 1px transparent;
+        border-bottom-color: lighten($color-black, 0.1);
 
         >* {
             vertical-align: middle;
@@ -36,6 +42,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    padding: 0 4px;
 
     font-size: $font-size-4;
     background-color: lighten($color-black, 2);
@@ -49,9 +56,10 @@
     flex-direction: row;
     align-items: center;
 
-    border: solid 1px transparent;
+
     font-weight: $font-weight-3;
     font-size: $font-size-5;
+    border: solid 1px transparent;
     border-bottom-color: lighten($color-black, 0.1);
     user-select: none;
     list-style: none;
@@ -75,6 +83,27 @@
         font-weight: $font-weight-9;
         color: $color-primary;
     }
+
+    &--collapsed {
+        visibility: hidden;
+    }
+}
+.wrap-layer-list-item.collapsed{
+    position: absolute;
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.layer-item-draggle {
+    display: flex;
+    align-items: center;
+    padding: 0 4px;
+    border: solid 1px transparent;
+    border-bottom-color: lighten($color-black, 0.1);
+    cursor: move;
 }
 
 /*----------------------------*/

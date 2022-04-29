@@ -10,10 +10,11 @@ import '../../styles/pages/map-editor-page.scss';
 import LayerEditor from "./LayerEditor";
 import 'leaflet/dist/leaflet.css';
 import MapView from "./MapView";
-import { useMapEditor } from "./useMapEditor";
+import { LayerStyle, useMapEditor } from "./useMapEditor";
 import { SampleLayers } from "./layerData";
 import { useDatasourceApi } from "../../apis";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
+import { geo2LayerType } from "../../utils/functions";
 
 
 const bottomPanel = <>Map@2022</>
@@ -26,8 +27,6 @@ const MapEditorPage: React.FC = () => {
     const sourceStore = useDatasourceStore();
     const mapEditor = useMapEditor();
     
-    const [mapInfo, setMapInfo] = useState<MapInfo>();
-
     useEffect(()=>{
         sourceStore.list()
     },[])
@@ -37,7 +36,28 @@ const MapEditorPage: React.FC = () => {
         if (!mapid) return;
         const fetchMapInfo = async () => {
             const map = await mapStore.get(mapid);
-            setMapInfo(map);
+            
+            const layers : LayerStyle[] =[];
+            map.Layers.forEach(l =>{
+                const layerStyle : LayerStyle = {
+                    name : l.LayerName,
+                    layerGroup : l.LayerGroup,
+
+                    sourceId : l.DataSourceId,
+                    layerType : geo2LayerType(l.DataSourceGeoType),
+                    visibility : l.Active,
+                    minZoom : l.MinZoom,
+                    maxZoom: l.MaxZoom,
+                    note: l.Note,
+                    style: l.PaintProperties
+                };
+                layers.push(layerStyle);
+            })
+
+            mapEditor.setMapInfo({
+                id: map.Id??'',
+                name: map.Name
+            }, layers);
         }
 
         fetchMapInfo()
@@ -51,19 +71,9 @@ const MapEditorPage: React.FC = () => {
             })
     }, [params]);
 
-    
-    useEffect(()=>{
-        var index = 0;
-        const layers : any[] =[];
-        SampleLayers.forEach(l =>{
-            layers.push({...l, layerIndex: index});
-            index++;
-        })
-        mapEditor.setLayers(layers);
-    },[])
     return <>
         <MapEditorLayout
-            toolbar={<ToolBar map={mapInfo} />}
+            toolbar={<ToolBar map={mapEditor.mapEditorState.mapInfo} />}
             layerList={<LayerList />}
             layerEditor={ mapEditor.mapEditorState.selectedLayerIndex!=undefined && <LayerEditor />}
             map={<MapView />}

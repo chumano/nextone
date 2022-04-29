@@ -1,30 +1,57 @@
 import { BehaviorSubject } from "rxjs";
-import { LayerType } from "../../interfaces";
-import { findLastIndex } from "../../utils/functions";
+import { useMapApi } from "../../apis";
+import { LayerType, MapInfo, MapLayer, PaintPropertyKey } from "../../interfaces";
+import { findLastIndex, layerType2Geo } from "../../utils/functions";
 import { useObservable } from "../../utils/hooks";
 
 export interface LayerStyle {
     name: string;
     layerGroup: string;
-
     layerType: LayerType;
-    visibility?: boolean;
+    sourceId: string;
 
+    visibility?: boolean;
     isSelected?: boolean;
+
+    minZoom?: number;
+    maxZoom?:number;
+    note?: string;
+
+    style?:{
+        [key: PaintPropertyKey] : any
+    }
+}
+
+export interface MapInfoState{
+    id: string;
+     name: string;
 }
 
 interface MapEditorState {
+    mapInfo?: MapInfoState;
     layers: LayerStyle[];
     selectedLayerIndex?: number;
+    collapsedGroups: {[key:string]: boolean};
 }
 const initialState = {
     layers: [],
+    collapsedGroups: {}
 };
 
 const subject = new BehaviorSubject<MapEditorState>(initialState);
 
+const setMapInfo = (mapInfo:{id:string, name: string} ,layers: LayerStyle[])=>{
+    setNextState({ 
+        mapInfo: {...mapInfo},
+        layers: [...layers] 
+    });
+}
 const setLayers = (layers: LayerStyle[]) => {
     setNextState({ layers: [...layers] });
+}
+
+const setCollapsedGroups = (collapsedGroups:  {[key:string]: boolean}) => {
+    setNextState({ collapsedGroups: {...collapsedGroups} });
 }
 
 const onLayerAction = (layerIndex: number, action: string) => {
@@ -43,7 +70,7 @@ const onLayerAction = (layerIndex: number, action: string) => {
 
                 return item;
             });
-            onLayersChange(layers);
+            setNextState({ layers: layers });
             break;
 
         case 'delete':
@@ -59,6 +86,17 @@ const onLayerAction = (layerIndex: number, action: string) => {
     }
 };
 
+
+const onLayerPropertyChange = (layerIndex: number, property: string, newValue: any ) =>{
+    let { layers} = subject.getValue();
+    const layer = layers[layerIndex];
+    const newLayer = {
+        ...layer,
+          [property]: newValue
+    }
+    layers[layerIndex] = newLayer;
+    setNextState({ layers: [...layers] });
+} 
 
 const addLayer = (layer: LayerStyle) => {
     let { layers } = subject.getValue();
@@ -77,10 +115,6 @@ const addLayer = (layer: LayerStyle) => {
     setNextState({ layers: layers, selectedLayerIndex: layerIndex });
 }
 
-const onLayersChange = (layers: LayerStyle[]) => {
-    setNextState({ layers: layers });
-}
-
 const setNextState = (payload: any) => {
     const state = subject.getValue();
     subject.next({ ...state, ...payload });
@@ -92,13 +126,45 @@ const getObservable = () => {
 
 
 export const useMapEditor = () => {
+    const api = useMapApi();
+    const saveMap = async ()=>{
+        let { mapInfo, layers } = subject.getValue();
+        if(!mapInfo) return;
+
+        const id = mapInfo.id;
+        const mapLayers : MapLayer[] = layers.map(o=>{
+            return {
+                LayerName : o.name,
+                LayerGroup : o.layerGroup,
+                PaintProperties : o.style,
+                DataSourceId : o.sourceId || '',
+                MinZoom : o.minZoom,
+                MaxZoom: o.maxZoom,
+                Active: o.visibility,
+                Note : o.note
+            }
+        });
+        const mapUpdate :MapInfo =  {
+            Name : mapInfo.name,
+            Layers : mapLayers
+        }
+        await api.update(id, mapUpdate);
+    }
+
     const observable = getObservable();
     const mapEditorState = useObservable<MapEditorState>(observable);
     return {
         mapEditorState,
+        setMapInfo,
         setLayers,
+        setCollapsedGroups,
         addLayer,
+
+        onLayerPropertyChange,
         onLayerAction,
+        
+        saveMap,
+        
         getObservable,
     };
 }

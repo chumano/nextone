@@ -21,6 +21,8 @@ namespace MapService.DTOs
                     DataSourceId = l.DataSourceId,
                     DataSourceName = l.DataSource.Name,
                     DataSourceGeoType = l.DataSource.GeoType,
+
+                    Active = l.Active,
                     MinZoom = l.MinZoom,
                     MaxZoom = l.MaxZoom,
                     Note = l.Note,

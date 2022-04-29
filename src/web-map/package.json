@@ -4,11 +4,12 @@
   "private": true,
   "dependencies": {
     "@dnd-kit/core": "^5.0.3",
+    "@dnd-kit/modifiers": "^5.0.0",
     "@dnd-kit/sortable": "^6.0.1",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
-    "antd": "^4.19.5",
+    "antd": "^4.20.1",
     "axios": "^0.26.1",
     "axios-mock-adapter": "^1.20.0",
     "classnames": "^2.3.1",

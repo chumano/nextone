@@ -9,7 +9,7 @@ const FieldType: React.FC<any> = (props) => {
     <Input
       disabled={true}
       value={props.value}
-      onInput={props.onChange}
+      onChange={props.onChange}
     />
   </Block>
 

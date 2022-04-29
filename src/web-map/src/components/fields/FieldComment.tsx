@@ -5,12 +5,13 @@ import Block from './Block'
 
 const FieldComment: React.FC<any> = (props) => {
   const fieldSpec = {
-    doc: "Comments for the current layer. This is non-standard and not in the spec."
+    doc: "Comments for the current layer."
   };
-  return <Block label={"Comment"} fieldSpec={fieldSpec} style={{alignItems:'flex-start'}}>
+  return <Block label={"Comment"} fieldSpec={fieldSpec}
+      style={{alignItems:'flex-start'}}>
     <Input.TextArea
       value={props.value}
-      onInput={props.onChange}
+      onChange={props.onChange}
       placeholder={'Comment..'}
       showCount maxLength={200} style={{ height: 80 }}
     />

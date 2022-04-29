@@ -1,5 +1,5 @@
 import { Collapse } from "antd";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import {
   FieldId, FieldType, FieldSource,
   FieldMinZoom, FieldMaxZoom, FieldComment
@@ -11,94 +11,103 @@ import { LayerStyle, useMapEditor } from "./useMapEditor";
 const AntDCollapse: any = Collapse;
 
 
-const renderGroupType = (type: string, props: any, fields: any, datasources: DataSource[]) => {
-  let comment = ""
-  const layerSources = datasources.map(o=>{
-    return  { 
-      key: o.Id,
-      name: `${o.Name} - ${GeoType[o.GeoType]}`
-    }
-  });
-  if (!props.layer) {
-    props.layer = {
-      id: 'id',
-      name: 'name',
-      type: 'fill',
-      source: 'source1'
-    }
-  }
-  if (!props.sources) {
-    props.sources = {};
-  }
-  switch (type) {
-    case 'layer': return <div>
-      <FieldId
-        value={props.layer.id}
-        onChange={() => { }}
-      />
-      <FieldType
-        disabled={true}
-        value={props.layer.type}
-        onChange={() => { }}
-      />
-      {props.layer.type !== 'background'
-        && <FieldSource
-          sources={layerSources}
-          value={props.layer.source}
-          onChange={(key) => { }}
-        />
-      }
-
-      <FieldMinZoom
-        value={props.layer.minzoom}
-        onChange={() => { }}
-      />
-      <FieldMaxZoom
-        value={props.layer.maxzoom}
-        onChange={() => { }}
-      />
-      <FieldComment
-        value={comment}
-        onChange={() => { }}
-      />
-    </div>
-
-    //   case 'properties':
-    //     return <PropertyGroup
-    //       errors={errorData}
-    //       layer={this.props.layer}
-    //       groupFields={fields}
-    //       spec={this.props.spec}
-    //       onChange={this.changeProperty.bind(this)}
-    //     />
-    //   case 'jsoneditor':
-    //     return <FieldJson
-    //       layer={this.props.layer}
-    //       onChange={(layer) => {
-    //         this.props.onLayerChanged(
-    //           this.props.layerIndex,
-    //           layer
-    //         );
-    //       }}
-    //     />
-  }
-}
-
 const LayerEditor: React.FC = () => {
   const mapEditor = useMapEditor();
   const sourceStore = useDatasourceStore();
 
   const [layer, setLayer] = useState<LayerStyle>();
-  const {datasources} = sourceStore.datasourceState;
+  const { datasources } = sourceStore.datasourceState;
 
-  useEffect(()=>{
+  useEffect(() => {
     const selectedIndex = mapEditor.mapEditorState.selectedLayerIndex || 0;
-    const selectedLayer =  mapEditor.mapEditorState.layers[selectedIndex];
+    const selectedLayer = mapEditor.mapEditorState.layers[selectedIndex];
     setLayer(selectedLayer);
 
   }, [mapEditor.mapEditorState.layers, mapEditor.mapEditorState.selectedLayerIndex])
 
-  if(!layer)
+  const changeProperty = useCallback((property: string, newValue: any) => {
+    const selectedIndex = mapEditor.mapEditorState.selectedLayerIndex || 0;
+    mapEditor.onLayerPropertyChange(selectedIndex,
+      property, newValue)
+  },[ mapEditor.mapEditorState.selectedLayerIndex]);
+
+  const renderGroupType = useCallback((type: string, layerProps: LayerStyle, fields: any) => {
+    const layerSources = datasources.map(o => {
+      return {
+        key: o.Id,
+        name: `${o.Name} - ${GeoType[o.GeoType]}`
+      }
+    });
+
+    switch (type) {
+      case 'layer': return <div>
+        <FieldId
+          value={layerProps.name}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => { 
+            changeProperty('name', e.target.value);
+          }}
+        />
+
+        <FieldType
+          disabled={true}
+          value={layerProps.layerType}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => {
+            changeProperty('layerType', e.target.value);
+          }}
+        />
+
+        <FieldSource
+          disabled={true}
+          sources={layerSources}
+          value={layerProps.sourceId || ''}
+          onChange={(sourceId) => {
+            changeProperty('sourceId', sourceId);
+           }}
+        />
+
+        <FieldMinZoom
+          value={layerProps.minZoom}
+          onChange={(val:any) => {
+            changeProperty('minZoom', val);
+          }}
+        />
+        <FieldMaxZoom
+          value={layerProps.maxZoom}
+          onChange={(val:any) => {
+            changeProperty('maxZoom', val);
+          }}
+        />
+        <FieldComment
+          value={layerProps.note}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => { 
+            changeProperty('note', e.target.value);
+          }}
+        />
+      </div>
+
+      //   case 'properties':
+      //     return <PropertyGroup
+      //       errors={errorData}
+      //       layer={this.props.layer}
+      //       groupFields={fields}
+      //       spec={this.props.spec}
+      //       onChange={this.changeProperty.bind(this)}
+      //     />
+      //   case 'jsoneditor':
+      //     return <FieldJson
+      //       layer={this.props.layer}
+      //       onChange={(layer) => {
+      //         this.props.onLayerChanged(
+      //           this.props.layerIndex,
+      //           layer
+      //         );
+      //       }}
+      //     />
+    }
+  }, [layer, datasources]);
+
+
+  if (!layer)
     return null;
 
   return <>
@@ -114,7 +123,7 @@ const LayerEditor: React.FC = () => {
       >
         <AntDCollapse.Panel header="Layer" key="1" >
           <div>
-            {renderGroupType('layer', { id: 'abc' }, {}, datasources)}
+            {renderGroupType('layer', { ...layer }, {})}
           </div>
         </AntDCollapse.Panel>
         <AntDCollapse.Panel header="Paint properties" key="2">

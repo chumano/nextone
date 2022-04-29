@@ -43,6 +43,34 @@ namespace MapService.Domain
         public string CreatedBy { get; set; }
         public string UpdatedBy { get; set; }
 
+        public byte[] ImageData { get; set; }
+
+        private MapBoudingBox _bb;
+        public MapBoudingBox BoudingBox {
+            get
+            {
+                if(_bb == null)
+                {
+                    _bb = new MapBoudingBox(_bbMinX ?? 0, _bbMixY ?? 0, _bbMaxX ?? 0, _bbMaxY ?? 0);
+                }
+                return _bb;
+            }
+        }
+
+        public void SetBoudingBox(MapBoudingBox bb)
+        {
+            _bbMinX = bb.MinX;
+            _bbMixY = bb.MinY;
+            _bbMaxX = bb.MaxX;
+            _bbMaxY = bb.MaxY;
+            _bb = new MapBoudingBox(_bbMinX ?? 0, _bbMixY ?? 0, _bbMaxX ?? 0, _bbMaxY ?? 0);
+        }
+
+        private double? _bbMinX;
+        private double? _bbMixY;
+        private double? _bbMaxX;
+        private double? _bbMaxY;
+
         public void Update(string name, IList<string> tags)
         {
             this.Name = name;

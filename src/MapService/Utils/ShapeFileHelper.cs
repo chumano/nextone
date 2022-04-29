@@ -1,5 +1,6 @@
 ﻿using GeoAPI.CoordinateSystems;
 using GeoAPI.CoordinateSystems.Transformations;
+using GeoAPI.Geometries;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 using SharpMap.Data;
@@ -17,10 +18,10 @@ namespace MapService.Utils
 {
     public static class ShapefileHelper
     {
-        private static readonly ICoordinateTransformation Transformation;
+        private static readonly ICoordinateTransformation VietNamTransformation;
 
-        static int SourceSRID = 3405; //VN2000
-        static int TargetSRID = 4326; //chuan latlng
+        static readonly int SourceSRID = 3405; //VN2000
+        static readonly int TargetSRID = 4326; //chuan latlng
                                       //l.SRID = 4326;
                                       //l.TargetSRID = 900913; 
 
@@ -41,11 +42,7 @@ namespace MapService.Utils
             transformation = factory.CreateFromCoordinateSystems(vn2000, wgs84); //vn->latlng
 
             //transformation = factory.CreateFromCoordinateSystems(wgs84, google); //latlng->google
-            Transformation = transformation;
-
-            //======================================
-
-
+            VietNamTransformation = transformation;
 
         }
 
@@ -65,8 +62,7 @@ namespace MapService.Utils
                 l.SRID = SourceSRID; //viet nam
                 l.TargetSRID = TargetSRID; //chuan latlng
 
-
-                l.CoordinateTransformation = Transformation;
+                l.CoordinateTransformation = VietNamTransformation;
 
                 map.Layers.Add(myVector);
 
@@ -80,7 +76,6 @@ namespace MapService.Utils
 
         public static List<ILayer> GetLayersFromDB()
         {
-
             //==================================
             List<ILayer> myList = new List<ILayer>();
             List<ILayer> labelList = new List<ILayer>();
@@ -154,7 +149,7 @@ namespace MapService.Utils
                 {
                     ShapeFile shpfile = new ShapeFile(sharpfilepath, true, true, SourceSRID);
                     string layername = layertitle;// sharpfilename.Trim().Replace(" ", "");
-
+                    
                     //--------------------------------------
                     //--------------------------------------
                     //--------------------------------------
@@ -388,9 +383,9 @@ namespace MapService.Utils
                 //////////end for///////////////////////
             }
             //====================
-            //===================
+
             myList.AddRange(labelList);
-            ///
+
             return myList;
         }
 
@@ -409,7 +404,7 @@ namespace MapService.Utils
                 FeatureDataSet ds = new FeatureDataSet();
                 sf.ExecuteIntersectionQuery(ext, ds);
                 FeatureDataTable table = ds.Tables[0];
-
+                info.Extents = ext;
                 info.GeometryType = sf.ShapeType;
                 switch (sf.ShapeType)
                 {
@@ -437,7 +432,8 @@ namespace MapService.Utils
                 }
 
                 //==========================================
-                if(table.Rows.Count <= 1000)
+                info.FeatureCount = table.Rows.Count;
+                if (table.Rows.Count <= 1000)
                 {
                     foreach (FeatureDataRow row in table.Rows)
                     {
@@ -472,6 +468,8 @@ namespace MapService.Utils
         public ShapeType GeometryType;
         public List<ShapeFileColumn> Columns;
         public List<Dictionary<string, object>> AttributeData;
+        public Envelope Extents { get; set; }
+        public int FeatureCount { get; set; }
 
         public ShapeFileInfo()
         {

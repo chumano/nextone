@@ -1,4 +1,5 @@
-﻿using MapService.MapSources;
+﻿using GeoAPI;
+using MapService.MapSources;
 using Microsoft.Extensions.Configuration;
 using NetTopologySuite;
 using ProjNet.CoordinateSystems;
@@ -76,6 +77,8 @@ namespace MapService.Utils
 
         public static void InitSharpMap()
         {
+            NetTopologySuiteBootstrapper.Bootstrap();
+
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
             var gss = new NtsGeometryServices();

@@ -1,2 +1,2 @@
-export type LayerType = 'line' | 'fill' | 'point' | 'symbol' | string;
+export type LayerType = 'point' | 'line' | 'fill' | 'symbol' | string;
 

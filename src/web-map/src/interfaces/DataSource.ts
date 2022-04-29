@@ -11,7 +11,8 @@ export interface DataSource{
 export enum GeoType{
     Point,
     Line,
-    Fill
+    Fill,
+    Other
 }
 
 export enum DataSourceType{

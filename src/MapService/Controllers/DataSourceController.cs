@@ -40,7 +40,18 @@ namespace MapService.Controllers
                     .OrderByDescending(o=>o.CreatedDate)
                     .ToDto()
                     .ToListAsync();
-            return Ok(datasources);
+
+            return Ok(datasources.Select(o =>
+            {
+                if (o.ImageData != null)
+                {
+                    string imageBase64Data = Convert.ToBase64String(o.ImageData);
+                    string imageDataURL = string.Format("data:image/jpg;base64,{0}", imageBase64Data);
+                    o.ImageUrl = imageDataURL;
+                    o.ImageData = null;
+                }
+                return o;
+            }));
         }
 
         [HttpGet("{id}")]
@@ -104,7 +115,14 @@ namespace MapService.Controllers
             {
                 Tags = createDataSourceDTO.Tags,
             };
-            
+
+            dataSource.SetBoudingBox(
+                new MapBoudingBox(shapeFileInfo.Extents.MinX, 
+                shapeFileInfo.Extents.MinY, 
+                shapeFileInfo.Extents.MaxX, 
+                shapeFileInfo.Extents.MaxY));
+
+
             _dataSourceRepository.Add(dataSource);
 
             await _dataSourceRepository.SaveChangesAsync();
