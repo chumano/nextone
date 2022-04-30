@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedDomain.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,24 +12,48 @@ namespace ComService.Domain
         {
         }
 
-        public Message(MessageTypeEnum messageType)
+        public Message(
+            string id,
+            MessageTypeEnum messageType,
+            string userSenderId,
+            string content, List<MessageFile> files)
         {
+            Id = id;
             Type = messageType;
+            UserSenderId = userSenderId;
+            SentDate = DateTime.Now;
+            Content = content;
+            Files = files;
         }
 
-        public string Id { get; set; }
-        public string ConversationId { get; set; }
-        public MessageTypeEnum Type { get; set; }
+        public Message(
+            string id,
+            MessageTypeEnum messageType,
+            string userSenderId,
+            Event evt)
+        {
+            Id = id;
+            Type = messageType;
+            UserSenderId = userSenderId;
+            SentDate = DateTime.Now;
+            Content = null;
+            EventId = evt.Id;
+            Event = evt;
+        }
 
-        public DateTime SentDate { get; set; }
-        public string UserSenderId { get; set; }
-        public UserStatus UserSender { get; set; }
+        public string Id { get; private set; }
+        public string ConversationId { get; private set; }
+        public MessageTypeEnum Type { get; private set; }
 
-        public string Content { get; set; }
+        public DateTime SentDate { get; private set; }
+        public string UserSenderId { get; private set; }
+        public UserStatus UserSender { get; private set; }
+
+        public string Content { get; private set; }
         public List<MessageFile> Files { get; set; }
 
-        public string EventId { get; set; }
-        public Event Event { get; set; } 
+        public string EventId { get; private set; }
+        public Event Event { get; private set; } 
     }
 
     public enum MessageTypeEnum
@@ -44,9 +69,9 @@ namespace ComService.Domain
 
     public class MessageFile
     {
-        public string MessageId { get; set; }
+        public string MessageId { get; private set; }
         public string FileId { get; set; }
-        public string FileType { get; set; }
+        public FileTypeEnum FileType { get; set; }
         public string FileUrl { get; set; }
     }
 }

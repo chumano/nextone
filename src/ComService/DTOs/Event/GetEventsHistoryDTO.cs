@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace ComService.DTOs.Conversation
+namespace ComService.DTOs.Event
 {
-    public class GetListConversationDTO
+    public class GetEventsHistoryDTO
     {
+        public string ChannelId { get; set; }
+        public DateTime BeforeDate { get; set; }
+
         public int Offset { get; set; }
         public int PageSize { get; set; }
     }

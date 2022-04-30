@@ -22,6 +22,8 @@ namespace ComService.Infrastructure
         //}
 
         public DbSet<Message> Messages { get; set; }
+        public DbSet<Event> Events { get; set; }
+        public DbSet<UserStatus> Users { get; set; }
 
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
@@ -81,6 +83,17 @@ namespace ComService.Infrastructure
                     .HasColumnType("bit")
                     .HasDefaultValue(false)
                     .IsRequired();
+
+                eb.Property(o => o.CreatedBy)
+                 .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.UpdatedBy)
+                     .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.CreatedDate)
+                    .HasColumnType("datetime");
+                eb.Property(o => o.UpdatedDate)
+                  .HasColumnType("datetime");
 
                 eb.HasMany<ConversationMember>(o => o.Members)
                     .WithOne()
@@ -177,7 +190,7 @@ namespace ComService.Infrastructure
                    .HasColumnType("nvarchar(255)");
 
                 eb.Property(o => o.FileType)
-                   .HasColumnType("varchar(50)");
+                   .HasColumnType("int");
             });
 
             

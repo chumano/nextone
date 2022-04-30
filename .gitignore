@@ -50,3 +50,5 @@ src/MapService/Data/ShapeFiles
 src/MapService/MapService.csproj.user
 src/FileService/Data/Uploads
 src/FileService/FileService.csproj.user
+src/Libs/NextOne.Infrastructure.MessageBus/obj
+src/Libs/NextOne.Infrastructure.MessageBus/bin

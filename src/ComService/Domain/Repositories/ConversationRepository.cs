@@ -57,7 +57,7 @@ namespace ComService.Domain.Repositories
 
         public async Task<Conversation> Get(string id)
         {
-            return await _dbContext.Conversations.FirstOrDefaultAsync(o => o.Id == id);
+            return await this.Conversations.FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public Task SaveChangesAsync()

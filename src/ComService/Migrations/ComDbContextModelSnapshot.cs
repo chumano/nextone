@@ -23,7 +23,13 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.Conversation", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -42,6 +48,12 @@ namespace ComService.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<DateTime>("UpdatedDate")
+                        .HasColumnType("datetime");
+
                     b.HasKey("Id");
 
                     b.ToTable("T_App_Conversation","com");
@@ -52,10 +64,10 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.ConversationMember", b =>
                 {
                     b.Property<string>("ConversationId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("Role")
                         .IsRequired()
@@ -63,20 +75,22 @@ namespace ComService.Migrations
 
                     b.HasKey("ConversationId", "UserId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("T_App_ConversationMember","com");
                 });
 
             modelBuilder.Entity("ComService.Domain.Event", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("ChannelId")
                         .IsRequired()
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -109,11 +123,13 @@ namespace ComService.Migrations
                         .HasColumnType("datetime");
 
                     b.Property<string>("UserSenderId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChannelId");
+
+                    b.HasIndex("UserSenderId");
 
                     b.ToTable("T_App_Event","com");
                 });
@@ -121,13 +137,16 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.EventFile", b =>
                 {
                     b.Property<string>("EventId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("FileId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("FileType")
                         .HasColumnType("varchar(50)");
+
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("EventId", "FileId");
 
@@ -151,17 +170,17 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.Message", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConversationId")
                         .IsRequired()
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("EventId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("SentDate")
                         .HasColumnType("datetime");
@@ -170,7 +189,7 @@ namespace ComService.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserSenderId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.HasKey("Id");
 
@@ -188,13 +207,16 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.MessageFile", b =>
                 {
                     b.Property<string>("MessageId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<string>("FileId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
-                    b.Property<string>("FileType")
-                        .HasColumnType("varchar(50)");
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FileUrl")
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("MessageId", "FileId");
 
@@ -204,7 +226,7 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.UserStatus", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<double?>("LastLat")
                         .HasColumnType("float");
@@ -233,7 +255,7 @@ namespace ComService.Migrations
             modelBuilder.Entity("ComService.Domain.UserTrackingLocation", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("char(16)");
+                        .HasColumnType("varchar(36)");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime");
@@ -267,6 +289,12 @@ namespace ComService.Migrations
                         .HasForeignKey("ConversationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ComService.Domain.UserStatus", "UserMember")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ComService.Domain.Event", b =>
@@ -276,6 +304,10 @@ namespace ComService.Migrations
                         .HasForeignKey("ChannelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("ComService.Domain.UserStatus", "UserSender")
+                        .WithMany()
+                        .HasForeignKey("UserSenderId");
                 });
 
             modelBuilder.Entity("ComService.Domain.EventFile", b =>

@@ -1,7 +1,11 @@
-﻿using ComService.DTOs.Conversation;
-using ComService.Services;
+﻿using ComService.Domain;
+using ComService.Domain.Services;
+using ComService.DTOs.Conversation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NextOne.Infrastructure.Core;
+using NextOne.Shared.Common;
+using NextOne.Shared.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,61 +18,165 @@ namespace ComService.Boudaries.Controllers
     public class ConversationController : ControllerBase
     {
         private readonly ILogger<ConversationController> _logger;
+        private readonly IUserContext _userContext;
+        private readonly IUserService _userService;
+        private readonly IdGenerator _idGenerator;
         private readonly IConversationService _conversationService;
         public ConversationController(
-             ILogger<ConversationController> logger,
+            ILogger<ConversationController> logger,
+            IUserContext userContext,
+            IdGenerator idGenerator,
+            IUserService userService,
             IConversationService conversationService)
         {
             _logger = logger;
+            _userContext = userContext;
+            _idGenerator = idGenerator;
+            _userService = userService;
             _conversationService = conversationService;
         }
 
         [HttpGet("GetList")]
-        public IActionResult GetList()
+        public async Task<IActionResult> GetList([FromQuery] GetListConversationDTO getListConversationDTO)
         {
-            throw new NotImplementedException();
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversations = await _conversationService.GetConversationsByUser(user,
+                new PageOptions()
+                {
+                    Offset = getListConversationDTO.Offset,
+                    PageSize = getListConversationDTO.PageSize > 0 ? getListConversationDTO.PageSize : PageOptions.DefaultPageSize
+                });
+            return Ok(ApiResult.Success(conversations));
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(string id)
+        public async Task<IActionResult> Get(string id)
         {
-            throw new NotImplementedException();
+            var conversation = await _conversationService.Get(id);
+
+            return Ok(ApiResult.Success(conversation));
         }
 
-        [HttpGet("GetMessageHistory")]
-        public IActionResult GetMessageHistory(string id)
-        {
-            throw new NotImplementedException();
-        }
 
         [HttpPost("CreateConversation")]
-        public IActionResult CreateConversation(CreateConverationDTO createConverationDTO)
+        public async Task<IActionResult> CreateConversation(CreateConverationDTO createConverationDTO)
         {
-            throw new NotImplementedException();
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversationId = await _conversationService.Create(user,
+                createConverationDTO.Name,
+                createConverationDTO.Type,
+                createConverationDTO.MemberIds);
+
+            return Ok(ApiResult.Success(conversationId));
         }
 
-        [HttpPost("CreateMessage")]
-        public IActionResult CreateMessage(CreateMessageDTO createMessageDTO)
+        //member 
+        [HttpPost("AddMembers")]
+        public async Task<IActionResult> AddMembers(AddMembersDTO addMembersDTO)
         {
-            throw new NotImplementedException();
-        }
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversation = await _conversationService.Get(addMembersDTO.ConversationId);
 
-        [HttpPost("AddMember")]
-        public IActionResult AddMember()
-        {
-            throw new NotImplementedException();
+            //TODO: check user have permission to addMembers 
+            await _conversationService.AddMembers(conversation, addMembersDTO.MemberIds);
+
+            return Ok(ApiResult.Success(null));
         }
 
         [HttpPost("RemoveMember")]
-        public IActionResult RemoveMember()
+        public async Task<IActionResult> RemoveMember(RemoveMemberDTO removeMemberDTO)
         {
-            throw new NotImplementedException();
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversation = await _conversationService.Get(removeMemberDTO.ConversationId);
+
+            //TODO: check user have permission to remove member 
+
+            var removedUser = await _userService.GetUser(removeMemberDTO.UserMemberId);
+            await _conversationService.RemoveMember(conversation, removedUser);
+
+            return Ok(ApiResult.Success(null));
         }
 
         [HttpPost("UpdateMemberRole")]
-        public IActionResult UpdateMemberRole()
+        public async  Task<IActionResult> UpdateMemberRole(UpdateMemberRoleDTO updateMemberRoleDTO)
         {
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversation = await _conversationService.Get(updateMemberRoleDTO.ConversationId);
+
+            //TODO: check user have permission to UpdateMemberRole
+
+            var updatedUser = await _userService.GetUser(updateMemberRoleDTO.UserMemberId);
+            await _conversationService.UpdateMemberRole(conversation, updatedUser, updateMemberRoleDTO.Role);
+            return Ok(ApiResult.Success(null));
+        }
+
+        //message
+        [HttpGet("GetMessagesHistory")]
+        public async Task<IActionResult> GetMessagesHistory(GetMessagesHistoryDTO getMessageHistoryDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversation = await _conversationService.Get(getMessageHistoryDTO.ConversationId);
+
+            //TODO: check user have permission to GetMessageHistory
+            var messages = await _conversationService.GetMessagesHistory(conversation,
+                getMessageHistoryDTO.BeforeDate,
+                new PageOptions()
+                {
+                    Offset = getMessageHistoryDTO.Offset,
+                    PageSize = getMessageHistoryDTO.PageSize > 0 ? getMessageHistoryDTO.PageSize : PageOptions.DefaultPageSize
+                });
+
+            return Ok(ApiResult.Success(messages));
+        }
+
+        [HttpPost("CreateFirstMessage")]
+        public Task<IActionResult> CreateFirstMessage(CreateFirstMessageDTO createMessageDTO)
+        {
+            //TODO: CreateFirstMessage
             throw new NotImplementedException();
         }
+
+        [HttpPost("SendMessage")]
+        public  async Task<IActionResult> SendMessage(SendMessageDTO sendMessageDTO)
+        {
+            if(string.IsNullOrWhiteSpace(sendMessageDTO.Content)
+                && (sendMessageDTO.Files == null || sendMessageDTO.Files.Count == 0))
+            {
+                throw new Exception("SendMessage parameters is invalid");
+            }
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var conversation = await _conversationService.Get(sendMessageDTO.ConversationId);
+
+            //TODO: check user have permission to SendMessage into the Conversation
+
+            var messageType = MessageTypeEnum.Text;
+            var messageId = _idGenerator.GenerateNew();
+            var messageFiles = new List<MessageFile>();
+            if (sendMessageDTO.Files != null)
+            {
+                messageFiles = sendMessageDTO.Files.Select(o => new MessageFile()
+                {
+                    FileId = o.FileId,
+                    FileType = o.FileType,
+                    FileUrl = o.FileUrl
+                }).ToList();
+            }
+
+            Message message = new Message(messageId, messageType,user.UserId, 
+                sendMessageDTO.Content,
+                messageFiles);
+            await _conversationService.AddMessage(conversation, message);
+
+            return Ok(ApiResult.Success(null));
+        }
+
+
     }
 }

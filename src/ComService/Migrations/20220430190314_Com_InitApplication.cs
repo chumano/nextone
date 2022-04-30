@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ComService.Migrations
 {
-    public partial class Com_Init_ApplicationDB : Migration
+    public partial class Com_InitApplication : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,11 +15,15 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "char(16)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(36)", nullable: true),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(36)", nullable: true),
                     AllowedEventTypeCodes = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
@@ -45,7 +49,7 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "char(16)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(36)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     UserAvatarUrl = table.Column<string>(type: "nvarchar(255)", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
@@ -63,8 +67,8 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    ConversationId = table.Column<string>(type: "char(16)", nullable: false),
-                    UserId = table.Column<string>(type: "char(16)", nullable: false),
+                    ConversationId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(36)", nullable: false),
                     Role = table.Column<string>(type: "varchar(20)", nullable: false)
                 },
                 constraints: table =>
@@ -77,6 +81,13 @@ namespace ComService.Migrations
                         principalTable: "T_App_Conversation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_T_App_ConversationMember_T_App_UserStatus_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "com",
+                        principalTable: "T_App_UserStatus",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,7 +95,7 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "char(16)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     EventTypeCode = table.Column<string>(type: "nvarchar(50)", nullable: false),
                     OccurDate = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -92,8 +103,8 @@ namespace ComService.Migrations
                     Address = table.Column<string>(type: "nvarchar(255)", nullable: true),
                     Lat = table.Column<double>(type: "float", nullable: false),
                     Lon = table.Column<double>(type: "float", nullable: false),
-                    ChannelId = table.Column<string>(type: "char(16)", nullable: false),
-                    UserSenderId = table.Column<string>(type: "char(16)", nullable: true),
+                    ChannelId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    UserSenderId = table.Column<string>(type: "varchar(36)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
                     IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
@@ -107,6 +118,13 @@ namespace ComService.Migrations
                         principalTable: "T_App_Conversation",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_T_App_Event_T_App_UserStatus_UserSenderId",
+                        column: x => x.UserSenderId,
+                        principalSchema: "com",
+                        principalTable: "T_App_UserStatus",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,7 +132,7 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "char(16)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(36)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime", nullable: false),
                     Lat = table.Column<double>(type: "float", nullable: false),
                     Lon = table.Column<double>(type: "float", nullable: false)
@@ -136,9 +154,10 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    EventId = table.Column<string>(type: "char(16)", nullable: false),
-                    FileId = table.Column<string>(type: "char(16)", nullable: false),
-                    FileType = table.Column<string>(type: "varchar(50)", nullable: true)
+                    EventId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    FileId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    FileType = table.Column<string>(type: "varchar(50)", nullable: true),
+                    FileUrl = table.Column<string>(type: "nvarchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -157,13 +176,13 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "char(16)", nullable: false),
-                    ConversationId = table.Column<string>(type: "char(16)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    ConversationId = table.Column<string>(type: "varchar(36)", nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     SentDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UserSenderId = table.Column<string>(type: "char(16)", nullable: true),
+                    UserSenderId = table.Column<string>(type: "varchar(36)", nullable: true),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    EventId = table.Column<string>(type: "char(16)", nullable: true)
+                    EventId = table.Column<string>(type: "varchar(36)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -196,9 +215,10 @@ namespace ComService.Migrations
                 schema: "com",
                 columns: table => new
                 {
-                    MessageId = table.Column<string>(type: "char(16)", nullable: false),
-                    FileId = table.Column<string>(type: "char(16)", nullable: false),
-                    FileType = table.Column<string>(type: "varchar(50)", nullable: true)
+                    MessageId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    FileId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    FileType = table.Column<int>(type: "int", nullable: false),
+                    FileUrl = table.Column<string>(type: "nvarchar(255)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -213,10 +233,22 @@ namespace ComService.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_T_App_ConversationMember_UserId",
+                schema: "com",
+                table: "T_App_ConversationMember",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_T_App_Event_ChannelId",
                 schema: "com",
                 table: "T_App_Event",
                 column: "ChannelId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_T_App_Event_UserSenderId",
+                schema: "com",
+                table: "T_App_Event",
+                column: "UserSenderId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_T_App_Message_ConversationId",
@@ -270,11 +302,11 @@ namespace ComService.Migrations
                 schema: "com");
 
             migrationBuilder.DropTable(
-                name: "T_App_UserStatus",
+                name: "T_App_Conversation",
                 schema: "com");
 
             migrationBuilder.DropTable(
-                name: "T_App_Conversation",
+                name: "T_App_UserStatus",
                 schema: "com");
         }
     }

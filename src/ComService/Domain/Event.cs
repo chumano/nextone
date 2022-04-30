@@ -7,15 +7,37 @@ namespace ComService.Domain
 {
     public class Event
     {
-        public string Id { get; set; }
-        public string Content { get; set; }
-        public string EventTypeCode { get; set; }
-        public DateTime OccurDate { get; set; }
-        public DateTime CreatedDate { get; set; }
+        private Event() { }
+        public Event(string id, 
+            string content, 
+            string eventCode,
+            string userSenderId,
+            DateTime dateTime,
+            string address,
+            double lat, double lon,
+            List<EventFile> files)
+        {
+            Id = id;
+            Content = content;
+            EventTypeCode = eventCode;
+            UserSenderId = userSenderId;
+            OccurDate = dateTime;
+            Address = address;
+            Lat = lat;
+            Lon = lon;
+            Files = files;
+            CreatedDate = DateTime.Now;
+        }
 
-        public string Address { get; set; }
-        public double Lat { get; set; }
-        public double Lon { get; set; }
+        public string Id { get; private set; }
+        public string Content { get; private set; }
+        public string EventTypeCode { get; private set; }
+        public DateTime OccurDate { get; private set; }
+        public DateTime CreatedDate { get; private set; }
+
+        public string Address { get; private set; }
+        public double Lat { get; private set; }
+        public double Lon { get; private set; }
 
         public string ChannelId { get; set; }
         public string UserSenderId { get; set; }

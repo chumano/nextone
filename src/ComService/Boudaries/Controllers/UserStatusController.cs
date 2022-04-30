@@ -1,6 +1,8 @@
-﻿using ComService.DTOs.UserStatus;
+﻿using ComService.Domain.Services;
+using ComService.DTOs.UserStatus;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NextOne.Infrastructure.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +14,16 @@ namespace ComService.Boudaries.Controllers
     [ApiController]
     public class UserStatusController : ControllerBase
     {
-        [HttpGet("{id}")]
-        public IActionResult GetCurrentUserStatus()
+        private readonly IUserService _userService;
+        public UserStatusController(IUserService userService)
         {
-            throw new NotImplementedException();
+            _userService = userService;
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCurrentUserStatus(string id)
+        {
+            var user = await _userService.GetUser(id);
+            return Ok(ApiResult.Success(user));
         }
 
         [HttpGet("GetHistoryUserLocation")]
@@ -25,9 +33,12 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpPost("UpdateUserLocation")]
-        public IActionResult UpdateUserLocation(UpdateUserLocationDTO updateUserLocationDTO)
+        public async Task<IActionResult> UpdateUserLocationAsync(UpdateUserLocationDTO updateUserLocationDTO)
         {
-            throw new NotImplementedException();
+            await _userService.AddOrUpdateUserStatus(updateUserLocationDTO.UserId,
+                updateUserLocationDTO.Lat,
+                updateUserLocationDTO.Lon);
+            return Ok(ApiResult.Success(null));
         }
     }
 }

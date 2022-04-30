@@ -7,5 +7,8 @@ namespace ComService.DTOs.Conversation
 {
     public class AddMembersDTO
     {
+        public string ConversationId { get; set; }
+        public List<string> MemberIds { get; set; }
     }
+
 }

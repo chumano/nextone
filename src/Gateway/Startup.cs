@@ -45,16 +45,17 @@ namespace Gateway
                     .AddConsul();
             services.AddControllers();
 
-            var authenticationProviderKey = "Bearer";
-            Action<JwtBearerOptions> options = o =>
-            {
-                o.Authority = "https://localhost:5102";
-                o.Audience = "gateway"; // ApiResources
-                // etc
-            };
+            services.AddHttpContextAccessor();
 
-            services.AddAuthentication()//IdentityServerAuthenticationDefaults.AuthenticationScheme
-                .AddJwtBearer(authenticationProviderKey, options);
+            services.AddAuthentication(options=>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", jwtOptions=>
+            {
+                jwtOptions.Authority = "https://localhost:5102";
+                jwtOptions.Audience = "gateway"; // ApiResources
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

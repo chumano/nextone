@@ -1,4 +1,9 @@
-﻿using NextOne.Shared.Common;
+﻿using ComService.Domain.DomainEvents;
+using ComService.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
+using NextOne.Shared.Bus;
+using NextOne.Shared.Common;
+using NextOne.Shared.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,20 +13,221 @@ namespace ComService.Domain.Services
 {
     public interface IConversationService
     {
-        Task<IEnumerable<Conversation>> GetConversationsByUser(PageOptions pageOptions);
+        Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions);
         Task<Conversation> Get(string id);
-        Task Add(Conversation conversation);
+        Task<string> Create(UserStatus createdUser, string name, ConversationTypeEnum type, IList<string> memberIds);
         Task Delete(Conversation conversation);
 
         //message
         Task AddMessage(Conversation conversation, Message message);
         Task<Message> GetMessageById(string messageId);
-        Task<IEnumerable<Message>> GetOldMessages(DateTime beforeDate, PageOptions pageOptions);
-        Task<IEnumerable<Message>> GetMessagesNearBy(string messageId);
+        Task<IEnumerable<Message>> GetMessagesHistory(Conversation conversation, DateTime beforeDate, PageOptions pageOptions);
+        Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10 );
 
         //members
-        Task AddMember(Conversation conversation, UserStatus user, MemberRoleEnum role);
+        Task AddMembers(Conversation conversation, List<string> memberIds);
         Task UpdateMemberRole(Conversation conversation, UserStatus user, MemberRoleEnum role);
-        Task DeleteMember(Conversation conversation, UserStatus user);
+        Task RemoveMember(Conversation conversation, UserStatus user);
+    }
+
+    public class ConversationService : IConversationService
+    {
+        protected readonly IConversationRepository _conversationRepository;
+        protected readonly IMessageRepository _messageRepository;
+        protected readonly IUserService _userService;
+        protected readonly IdGenerator _idGenerator;
+        protected readonly IBus _bus;
+        public ConversationService(
+            IConversationRepository conversationRepository,
+            IMessageRepository messageRepository,
+            IUserService userService,
+            IBus bus, IdGenerator idGenerator)
+        {
+            _conversationRepository = conversationRepository;
+            _messageRepository = messageRepository;
+            _bus = bus;
+            _idGenerator = idGenerator;
+        }
+
+        public async Task<string> Create(UserStatus createdUser,string name, ConversationTypeEnum type, IList<string> memberIds)
+        {
+            var id = _idGenerator.GenerateNew();
+            var conversation = new Conversation(id, name, type);
+            if(type == ConversationTypeEnum.Peer2Peer
+                || type == ConversationTypeEnum.Private
+                || type == ConversationTypeEnum.Group)
+            {
+                if (!memberIds.Contains(createdUser.UserId))
+                {
+                    memberIds.Add(createdUser.UserId);
+                }
+            }
+
+            if(type == ConversationTypeEnum.Peer2Peer)
+            {
+                if (memberIds.Count != 2)
+                {
+                    throw new DomainException("", "");
+                }
+
+                //check conversation exist
+                var existConversation = await GetP2PConversation(memberIds[0], memberIds[1]);
+                if (existConversation != null)
+                {
+                    throw new DomainException("", "");
+                }
+            }
+
+            //get users
+            var users = await _userService.GetUsersByIds(memberIds);
+
+            foreach(var user in users)
+            {
+                var role = MemberRoleEnum.MEMBER;
+                if(user.UserId == createdUser.UserId && 
+                       (type == ConversationTypeEnum.Group || type == ConversationTypeEnum.Channel))
+                {
+                    role = MemberRoleEnum.MANAGER;
+                }
+
+                conversation.AddMember(new ConversationMember()
+                {
+                    UserId = user.UserId,
+                    Role = role
+                });
+            }
+           
+            _conversationRepository.Add(conversation);
+
+            await _conversationRepository.SaveChangesAsync();
+
+            //TODO: send ConversationCreated
+            await _bus.Publish(new ConversationCreated());
+
+            return conversation.Id;
+        }
+
+        public Task<Conversation> Get(string id)
+        {
+            return _conversationRepository.Get(id);
+        }
+
+        public Task<Conversation> GetP2PConversation(string userId1, string userId2)
+        {
+            return _conversationRepository.Conversations
+                .Where(o => o.Type == ConversationTypeEnum.Peer2Peer)
+                .Where(o=> (
+                    o.Members.Any(o=>o.UserId == userId1) 
+                    && o.Members.Any(o => o.UserId == userId2))
+                )
+                .FirstOrDefaultAsync();
+        }
+        public async Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions)
+        {
+            var items = await  _conversationRepository.Conversations
+                .Where(o => o.Members.Exists(m => m.UserId == user.UserId))
+                .OrderByDescending(o=>o.UpdatedDate)
+                .Skip(pageOptions.Offset)
+                .Take(pageOptions.PageSize)
+                .ToListAsync();
+
+            return items;
+        }
+
+        public async Task Delete(Conversation conversation)
+        {
+            _conversationRepository.Delete(conversation);
+
+            await _conversationRepository.SaveChangesAsync();
+            // TODO: send ConvesationDeleted
+            await _bus.Publish(new ConversationDeleted());
+        }
+
+        //member
+        public async Task AddMembers(Conversation conversation, List<string> memberIds)
+        {
+            var users = await _userService.GetUsersByIds(memberIds);
+
+            foreach (var user in users)
+            {
+                var role = MemberRoleEnum.MEMBER;
+                conversation.AddMember(new ConversationMember()
+                {
+                    UserId = user.UserId,
+                    Role = role
+                });
+            }
+
+            await _conversationRepository.SaveChangesAsync();
+
+            // TODO: send ConversationMemberAdded
+            await _bus.Publish(new ConversationMembersAdded());
+        }
+
+        public async Task UpdateMemberRole(Conversation conversation, UserStatus user, MemberRoleEnum role)
+        {
+            conversation.UpdateMemberRole(user, role);
+
+            await _conversationRepository.SaveChangesAsync();
+
+            // TODO: send ConversationMemberRoleUpdated
+            await _bus.Publish(new ConversationMemberRoleUpdated());
+        }
+
+        public async Task RemoveMember(Conversation conversation, UserStatus user)
+        {
+            conversation.RemoveMember(user);
+
+            await _conversationRepository.SaveChangesAsync();
+
+            // TODO: send ConversationMemberDeleted
+            await _bus.Publish(new ConversationMemberDeleted());
+        }
+
+        //message
+        public async Task AddMessage(Conversation conversation, Message message)
+        {
+            _messageRepository.Add(message);
+
+            await _messageRepository.SaveChangesAsync();
+
+            // TODO: send ConversationMessageAdded
+            await _bus.Publish(new ConversationMessageAdded());
+        }
+
+        public Task<Message> GetMessageById(string messageId)
+        {
+            return _messageRepository.Messages.FirstOrDefaultAsync(o=> o.Id == messageId);
+        }
+
+        public async Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10)
+        {
+            var message = await _messageRepository.Messages.FirstOrDefaultAsync(o => o.Id == messageId);
+
+            var prevMessages = _messageRepository.Messages
+                                .Where(o => o.SentDate <= message.SentDate && o.Id != message.Id)
+                                .OrderByDescending(o => o.SentDate)
+                                
+                                .Take(prevNum);
+            var nextMessages = _messageRepository.Messages
+                                .OrderByDescending(o => o.SentDate)
+                                .Where(o => o.SentDate >= message.SentDate && o.Id != message.Id)
+                                .Take(nextNum);
+
+            return await nextMessages.Union(prevMessages).ToListAsync();
+        }
+
+        public async Task<IEnumerable<Message>> GetMessagesHistory(Conversation conversation, DateTime beforeDate, PageOptions pageOptions)
+        {
+            var query = _messageRepository.Messages
+                               .Where(o=>o.ConversationId == conversation.Id
+                                        && o.SentDate < beforeDate)
+                               .OrderByDescending(o => o.SentDate)
+                               .Skip(pageOptions.Offset)
+                               .Take(pageOptions.PageSize);
+
+            return await query.ToListAsync();
+        }
+
     }
 }

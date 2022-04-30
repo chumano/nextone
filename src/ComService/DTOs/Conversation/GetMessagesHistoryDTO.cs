@@ -5,13 +5,12 @@ using System.Threading.Tasks;
 
 namespace ComService.DTOs.Conversation
 {
-    public class CreateMessageDTO
+    public class GetMessagesHistoryDTO
     {
         public string ConversationId { get; set; }
-        public string UserReceiverId { get; set; }
+        public DateTime BeforeDate { get; set; }
 
-        public string Content { get; set; }
-
-        public IList<FileDTO> Files { get; set; }
+        public int Offset { get; set; }
+        public int PageSize { get; set; }
     }
 }

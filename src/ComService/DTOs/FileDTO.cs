@@ -8,8 +8,11 @@ namespace ComService.DTOs
 {
     public class FileDTO
     {
-        public string Id { get; set; }
-        public FileTypeEnum Type { get; set; }
+      
+        public string FileId { get; set; }
+        public FileTypeEnum FileType { get; set; }
+
+        public string FileUrl { get; set; }
     }
 
 }
