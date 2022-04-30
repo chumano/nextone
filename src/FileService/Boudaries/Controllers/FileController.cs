@@ -91,7 +91,7 @@ namespace FileService.Boudaries.Controllers
         [HttpGet]
         [Route("/image/{key}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetImages([FromRoute] string key)
+        public async Task<IActionResult> GetImage([FromRoute] string key)
         {
             var relativePath = key.UrlDecodeBase64String();
             var objectStream = await _fileStorage.GetStreamAsync(relativePath);

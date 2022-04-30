@@ -19,6 +19,7 @@ namespace ComService.Domain
 
         public string ChannelId { get; set; }
         public string UserSenderId { get; set; }
+        public UserStatus UserSender { get; set; }
 
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
@@ -38,6 +39,7 @@ namespace ComService.Domain
         public string EventId { get; set; }
         public string FileId { get; set; }
         public string FileType { get;  set; }
+        public string FileUrl { get; set; }
     }
 
 

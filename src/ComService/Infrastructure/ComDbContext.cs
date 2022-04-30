@@ -13,6 +13,15 @@ namespace ComService.Infrastructure
         public const string DB_SCHEMA = "com";
         public DbSet<Conversation> Conversations { get; set; }
 
+        public DbSet<Channel> Channels { get; set; }
+        //{
+        //    get
+        //    {
+        //        return Conversations.OfType<Channel>();
+        //    }
+        //}
+
+        public DbSet<Message> Messages { get; set; }
 
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
@@ -101,6 +110,10 @@ namespace ComService.Infrastructure
                         v => (MemberRoleEnum)Enum.Parse(typeof(MemberRoleEnum), v)
                     )
                     .IsRequired();
+
+                eb.HasOne(o => o.UserMember)
+                 .WithMany()
+                 .HasForeignKey(o => o.UserId);
             });
             //=============================
             //Message
@@ -159,6 +172,9 @@ namespace ComService.Infrastructure
                     .HasColumnType("varchar(36)");
                 eb.Property(o => o.FileId)
                     .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.FileUrl)
+                   .HasColumnType("nvarchar(255)");
 
                 eb.Property(o => o.FileType)
                    .HasColumnType("varchar(50)");
@@ -243,6 +259,9 @@ namespace ComService.Infrastructure
                     .HasColumnType("varchar(36)");
                 eb.Property(o => o.FileId)
                     .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.FileUrl)
+                  .HasColumnType("nvarchar(255)");
 
                 eb.Property(o => o.FileType)
                    .HasColumnType("varchar(50)");

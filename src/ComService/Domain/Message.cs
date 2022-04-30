@@ -47,5 +47,6 @@ namespace ComService.Domain
         public string MessageId { get; set; }
         public string FileId { get; set; }
         public string FileType { get; set; }
+        public string FileUrl { get; set; }
     }
 }
