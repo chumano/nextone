@@ -25,7 +25,7 @@ namespace ComService.Domain
         }
 
         public string Id { get; private set; }
-        public string Name { get; private set; }
+        public string Name { get; protected set; }
 
         public ConversationTypeEnum Type { get; private set; }
         public List<ConversationMember> Members { get; private set; }

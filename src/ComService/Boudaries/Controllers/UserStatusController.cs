@@ -14,8 +14,8 @@ namespace ComService.Boudaries.Controllers
     [ApiController]
     public class UserStatusController : ControllerBase
     {
-        private readonly IUserService _userService;
-        public UserStatusController(IUserService userService)
+        private readonly IUserStatusService _userService;
+        public UserStatusController(IUserStatusService userService)
         {
             _userService = userService;
         }

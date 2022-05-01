@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Grpc.Net.ClientFactory;
 namespace MasterService
 {
     public class Startup
@@ -56,6 +56,14 @@ namespace MasterService
             });
 
             //Grpc Clients
+            services.AddGrpcClient<NextOne.Protobuf.Identity.GrpcIdentityService.GrpcIdentityServiceClient>(o =>
+            {
+                //TODO: setting grpc url in for identityservice
+                var grpcUrl = "http://localhost:15102";
+                o.Address = new Uri(grpcUrl);
+            });
+            
+            //=======================
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

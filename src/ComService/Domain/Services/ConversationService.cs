@@ -34,13 +34,13 @@ namespace ComService.Domain.Services
     {
         protected readonly IConversationRepository _conversationRepository;
         protected readonly IMessageRepository _messageRepository;
-        protected readonly IUserService _userService;
+        protected readonly IUserStatusService _userService;
         protected readonly IdGenerator _idGenerator;
         protected readonly IBus _bus;
         public ConversationService(
             IConversationRepository conversationRepository,
             IMessageRepository messageRepository,
-            IUserService userService,
+            IUserStatusService userService,
             IBus bus, IdGenerator idGenerator)
         {
             _conversationRepository = conversationRepository;

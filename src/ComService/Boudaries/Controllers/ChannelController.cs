@@ -1,5 +1,6 @@
 ﻿using ComService.Domain;
 using ComService.Domain.Services;
+using ComService.DTOs.Channel;
 using ComService.DTOs.Event;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -16,33 +17,60 @@ namespace ComService.Boudaries.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class EventController : ControllerBase
+    public class ChannelController : ControllerBase
     {
-
-        private readonly ILogger<EventController> _logger;
+        private readonly ILogger<ChannelController> _logger;
         private readonly IUserContext _userContext;
-        private readonly IUserService _userService;
+        private readonly IUserStatusService _userService;
         private readonly IdGenerator _idGenerator;
         private readonly IChannelService _channelService;
-        private readonly IConversationService _conversationService;
-        public EventController(
-            ILogger<EventController> logger,
+        public ChannelController(
+            ILogger<ChannelController> logger,
             IUserContext userContext,
             IdGenerator idGenerator,
-            IUserService userService,
-            IChannelService channelService,
-            IConversationService conversationService)
+            IUserStatusService userService,
+            IChannelService channelService)
         {
             _logger = logger;
             _userContext = userContext;
             _idGenerator = idGenerator;
             _userService = userService;
             _channelService = channelService;
-            _conversationService = conversationService;
         }
 
+
+        //channel
+        [HttpPost("CreateChannel")]
+        public async Task<IActionResult> CreateChannel([FromBody] CreateChannelDTO createChannelDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var channelId = await _channelService.Create(user,
+                createChannelDTO.Name,
+                ConversationTypeEnum.Channel,
+                createChannelDTO.MemberIds);
+
+            return Ok(ApiResult.Success(channelId));
+        }
+
+        [HttpPost("UpdateEventTypes")]
+        public async Task<IActionResult> UpdateEventTypes([FromBody] UpdateEventTypesChannelDTO updateDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+
+            var channel = await _channelService.Get(updateDTO.ChannelId);
+
+            await _channelService.UpdateEventTypes(channel,
+                updateDTO.Name,
+                updateDTO.EventTypeCodes);
+
+            return Ok(ApiResult.Success(null));
+        }
+
+        //events
         [HttpPost("SendEvent")]
-        public async Task<IActionResult> SendEvent(SendEventDTO sendEventDTO)
+        public async Task<IActionResult> SendEvent([FromBody] SendEventDTO sendEventDTO)
         {
             var userId = _userContext.User.UserId;
             var user = await _userService.GetUser(userId);
@@ -53,9 +81,9 @@ namespace ComService.Boudaries.Controllers
             {
                 throw new Exception($"{sendEventDTO.EventTypeCode} is invalid");
             }
-            
+
             //create event for each channel
-            foreach(var channel in channels)
+            foreach (var channel in channels)
             {
                 var evtId = _idGenerator.GenerateNew();
                 var files = sendEventDTO.Files.Select(o => new EventFile()

@@ -17,6 +17,7 @@ using IdentityService.Data;
 using IdentityServer4.Services;
 using IdentityServer4.AspNetIdentity;
 using IdentityService.Services;
+using IdentityService.Boundaries.Grpc;
 
 namespace IdentityService
 {
@@ -130,6 +131,7 @@ namespace IdentityService
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGrpcService<GrpcIdentityService>();
                 endpoints.MapDefaultControllerRoute();
             });
         }

@@ -111,7 +111,8 @@ namespace ComService
 
             services.AddScoped<IConversationService, ConversationService>();
             services.AddScoped<IChannelService, ChannelService>();
-            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserStatusService, UserStatusService>();
+            services.AddScoped<IMasterService, MasterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

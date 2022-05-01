@@ -13,6 +13,9 @@ namespace ComService.Domain.Services
     public interface IChannelService : IConversationService
     {
         new Task<Channel> Get(string id);
+        Task<string> Create(UserStatus createdUser, string name,  IList<string> memberIds, IList<string> eventTypeCodes);
+        Task UpdateEventTypes(Channel channel, string name,
+            IList<string> eventTypeCodes);
         Task AddEvent(Channel channel, Event evt);
         Task<IEnumerable<Channel>> GetChannelsByEventCode(string evtCode);
 
@@ -27,12 +30,60 @@ namespace ComService.Domain.Services
            IConversationRepository conversationRepository,
            IMessageRepository messageRepository,
            IEventRepository eventRepository,
-           IUserService userService,
+           IUserStatusService userService,
            IBus bus, IdGenerator idGenerator)
             :base(conversationRepository, messageRepository, userService, bus, idGenerator)
         {
             _channelRepository = channelRepository;
             _eventRepository = eventRepository;
+        }
+        public async Task<string> Create(UserStatus createdUser, string name, 
+            IList<string> memberIds, 
+            IList<string> eventTypeCodes)
+        {
+            var id = _idGenerator.GenerateNew();
+            var type = ConversationTypeEnum.Channel;
+            var channel = new Channel(id, name, eventTypeCodes);
+            
+            //get users
+            var users = await _userService.GetUsersByIds(memberIds);
+
+            foreach (var user in users)
+            {
+                var role = MemberRoleEnum.MEMBER;
+                if (user.UserId == createdUser.UserId &&
+                       (type == ConversationTypeEnum.Group || type == ConversationTypeEnum.Channel))
+                {
+                    role = MemberRoleEnum.MANAGER;
+                }
+
+                channel.AddMember(new ConversationMember()
+                {
+                    UserId = user.UserId,
+                    Role = role
+                });
+            }
+
+            _channelRepository.Add(channel);
+
+            await _channelRepository.SaveChangesAsync();
+
+            //TODO: send Channel ConversationCreated
+            await _bus.Publish(new ConversationCreated());
+
+            return channel.Id;
+        }
+
+        public async Task UpdateEventTypes(Channel channel, string name,
+            IList<string> eventTypeCodes)
+        {
+            channel.SetName(name);
+            channel.UpdateAllowedEventTypeCodes(eventTypeCodes);
+
+            await _channelRepository.SaveChangesAsync();
+
+            // TODO: send ChannelUpdateEventTypesUpdated
+            await _bus.Publish(new ChannelUpdateEventTypesUpdated());
         }
 
         public new Task<Channel> Get(string id)
@@ -80,5 +131,7 @@ namespace ComService.Domain.Services
 
             return await query.ToListAsync();
         }
+
+     
     }
 }

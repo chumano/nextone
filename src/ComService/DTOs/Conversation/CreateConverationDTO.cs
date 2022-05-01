@@ -11,6 +11,7 @@ namespace ComService.DTOs.Conversation
         public string Name { get; set; }
         public ConversationTypeEnum Type { get; set; }
         public List<string> MemberIds { get; set; }
+
     }
 
     public class CreateP2PConverationDTO

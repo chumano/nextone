@@ -19,14 +19,14 @@ namespace ComService.Boudaries.Controllers
     {
         private readonly ILogger<ConversationController> _logger;
         private readonly IUserContext _userContext;
-        private readonly IUserService _userService;
+        private readonly IUserStatusService _userService;
         private readonly IdGenerator _idGenerator;
         private readonly IConversationService _conversationService;
         public ConversationController(
             ILogger<ConversationController> logger,
             IUserContext userContext,
             IdGenerator idGenerator,
-            IUserService userService,
+            IUserStatusService userService,
             IConversationService conversationService)
         {
             _logger = logger;
@@ -117,7 +117,7 @@ namespace ComService.Boudaries.Controllers
 
         //message
         [HttpGet("GetMessagesHistory")]
-        public async Task<IActionResult> GetMessagesHistory(GetMessagesHistoryDTO getMessageHistoryDTO)
+        public async Task<IActionResult> GetMessagesHistory([FromQuery]GetMessagesHistoryDTO getMessageHistoryDTO)
         {
             var userId = _userContext.User.UserId;
             var user = await _userService.GetUser(userId);

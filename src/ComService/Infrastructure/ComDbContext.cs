@@ -24,6 +24,7 @@ namespace ComService.Infrastructure
         public DbSet<Message> Messages { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<UserStatus> Users { get; set; }
+        public DbSet<EventType> EventTypes { get; set; }
 
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
@@ -253,7 +254,7 @@ namespace ComService.Infrastructure
             modelBuilder.Entity<EventType>(eb =>
             {
                 eb.ToTable("T_App_EventType", DB_SCHEMA)
-               .HasKey("Code");
+                 .HasKey("Code");
 
                 eb.Property(o => o.Code)
                     .HasColumnType("nvarchar(50)");
@@ -261,6 +262,12 @@ namespace ComService.Infrastructure
                 eb.Property(o => o.Name)
                     .HasColumnType("nvarchar(255)")
                     .IsRequired();
+
+                eb.Property(o => o.IconUrl)
+                    .HasColumnType("nvarchar(255)");
+
+                eb.Property(o => o.Note)
+                  .HasColumnType("nvarchar(255)");
             });
 
             modelBuilder.Entity<EventFile>(eb =>

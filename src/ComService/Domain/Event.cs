@@ -54,6 +54,10 @@ namespace ComService.Domain
     {
         public string Code { get; set; }
         public string Name { get; set; }
+
+        public string IconUrl { get; set; }
+
+        public string Note { get; set; }
     }
 
     public class EventFile

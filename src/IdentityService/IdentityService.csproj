@@ -9,6 +9,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.45.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.45.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="4.0.0" />
     <PackageReference Include="IdentityServer4.EntityFramework.Storage" Version="4.1.2" />
@@ -34,9 +39,12 @@
 
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="3.1.5" />
   </ItemGroup>
-
   <ItemGroup>
-    <Folder Include="Boundaries\Grpc\" />
+    <Protobuf Include="..\_schema\proto\common\common.proto" Link="protobuf\common.proto" AdditionalImportDirs="..\_schema\proto\common" />
+    <Protobuf Include="..\_schema\proto\identity-service\identity-service.proto" Link="protobuf\identity-service.proto" AdditionalImportDirs="..\_schema\proto\identity-service" />
+    <Protobuf Include="..\_schema\proto\master-service\master-service.proto" Link="protobuf\master-service.proto" AdditionalImportDirs="..\_schema\proto\master-service" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Migrations\" />
   </ItemGroup>
 

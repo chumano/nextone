@@ -19,6 +19,16 @@ namespace ComService.Domain
 
         public IList<string> AllowedEventTypeCodes { get; private set; }
         public List<Event> RecentEvents { get; private set; }
+
+        public void SetName(string name)
+        {
+            Name = name;
+        }
+
+        public void UpdateAllowedEventTypeCodes(IList<string> eventTypeCodes)
+        {
+            AllowedEventTypeCodes = eventTypeCodes;
+        }
     }
 
 }

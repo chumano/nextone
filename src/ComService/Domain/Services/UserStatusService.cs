@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ComService.Domain.Services
 {
-    public interface IUserService
+    public interface IUserStatusService
     {
         Task<UserStatus> GetUser(string userId);
 
@@ -14,10 +14,10 @@ namespace ComService.Domain.Services
 
         Task AddOrUpdateUserStatus(string userId, double? lat, double? lon);
     }
-    public class UserService : IUserService
+    public class UserStatusService : IUserStatusService
     {
         private readonly IUserStatusRepository _userStatusRepository;
-        public UserService(IUserStatusRepository userStatusRepository)
+        public UserStatusService(IUserStatusRepository userStatusRepository)
         {
             _userStatusRepository = userStatusRepository;
         }

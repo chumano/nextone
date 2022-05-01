@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace ComService.DTOs.Channel
 {
-    public class CreateChannelDTO
+    public class UpdateEventTypesChannelDTO
     {
+        public string ChannelId { get; set; }
         public string Name { get; set; }
-        public List<string> MemberIds { get; set; }
-
         public List<string> EventTypeCodes { get; set; }
     }
 }

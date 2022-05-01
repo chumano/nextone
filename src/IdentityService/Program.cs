@@ -3,14 +3,17 @@
 
 
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 using System;
 using System.Linq;
+using System.Net;
 
 namespace IdentityService
 {
@@ -76,6 +79,22 @@ namespace IdentityService
                 .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
+                    webBuilder.ConfigureKestrel((ctx, options) =>
+                    {
+                        if (ctx.HostingEnvironment.IsDevelopment())
+                        {
+                            IdentityModelEventSource.ShowPII = true;
+                        }
+
+                        options.Limits.MinRequestBodyDataRate = null;
+                        options.Listen(IPAddress.Any, 5102);
+                        //options.Listen(IPAddress.Loopback, 5102);
+                        options.Listen(IPAddress.Any, 15102, listenOptions =>
+                        {
+                            listenOptions.Protocols = HttpProtocols.Http2;
+                        });
+                    });
+
                     webBuilder.UseStartup<Startup>();
                 });
     }
