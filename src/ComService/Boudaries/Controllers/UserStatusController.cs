@@ -37,6 +37,7 @@ namespace ComService.Boudaries.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCurrentUserStatus(string id)
         {
+            var actionsUser = _userContext.User;
             var user = await _userService.GetUser(id);
             return Ok(ApiResult.Success(user));
         }

@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using MasterService.Utils;
 using NextOne.Protobuf.Identity;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,8 @@ namespace MasterService.Domain.Services
         Task UpdateIdentityUser(string userId, string userName, string email);
         Task ActiveIdentityUser(string userId, bool isActive);
         Task UpdateIdentityUserRoles(string userId, IList<string> roleNames);
+
+        Task<string> ResetPassword(string userId, string newPassword);
 
         Task CreateIdentityRole(string roleName, string displayName);
         Task UpdateIdentityRole(string roleName, string displayName);
@@ -95,6 +98,21 @@ namespace MasterService.Domain.Services
             {
                 throw new Exception("UpdateIdentityUserRoles: " + response.Error.Message);
             }
+        }
+
+        public async Task<string> ResetPassword(string userId, string newPassword)
+        {
+            var response = await _grpcServiceClient.ResetPasswordAsync(new ResetPasswordRequest()
+            {
+                UserId = userId,
+                NewPassword = newPassword
+            });
+            if (!response.IsSuccess)
+            {
+                throw new Exception("ResetPassword: " + response.Error.Message);
+            }
+
+            return newPassword;
         }
 
         public async Task CreateIdentityRole(string roleName, string displayName)

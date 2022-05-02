@@ -23,6 +23,8 @@ namespace Gateway
 {
     public class Startup
     {
+        private string AllowSpecificOrigins = "AllowSpecificOrigins";
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -39,8 +41,6 @@ namespace Gateway
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            
-
             services.AddOcelot()
                     .AddConsul();
             services.AddControllers();
@@ -56,6 +56,22 @@ namespace Gateway
                 jwtOptions.Authority = "https://localhost:5102";
                 jwtOptions.Audience = "gateway"; // ApiResources
             });
+
+            var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithOrigins(CorsHosts.Split(";"))// * now allow in SignalR
+                            .AllowCredentials();
+                    });
+            });
+
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +87,10 @@ namespace Gateway
             app.UseHttpsRedirection();
 
             app.UseRouting();
-           
+
+            app.UseCors(AllowSpecificOrigins);
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseMiddleware<RequestLogContextMiddleware>();

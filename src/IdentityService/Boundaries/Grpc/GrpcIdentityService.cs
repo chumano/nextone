@@ -200,6 +200,41 @@ namespace IdentityService.Boundaries.Grpc
             };
         }
 
+        public override async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            var errMessage = "";
+            using (var transation = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    await _userManager.RemovePasswordAsync(user);
+                    await _userManager.AddPasswordAsync(user, request.NewPassword);
+
+                    await transation.CommitAsync();
+
+                    return new ResetPasswordResponse()
+                    {
+                        IsSuccess = true
+                    };
+                }
+                catch (Exception ex)
+                {
+                    errMessage = ex.Message;
+                    await transation.RollbackAsync();
+                }
+            }
+
+            return new ResetPasswordResponse()
+            {
+                IsSuccess = false,
+                Error = new Error()
+                {
+                    Message = errMessage
+                }
+            };
+        }
+
         public override async Task<UpdateIdentityRoleResponse> UpdateIdentityRole(UpdateIdentityRoleRequest request, ServerCallContext context)
         {
             var role = await _roleManager.FindByNameAsync(request.RoleName);

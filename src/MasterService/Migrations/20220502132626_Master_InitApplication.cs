@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MasterService.Migrations
 {
-    public partial class Master_Init_DB : Migration
+    public partial class Master_InitApplication : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,16 +41,37 @@ namespace MasterService.Migrations
                 schema: "master",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "char(16)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
                     Name = table.Column<string>(type: "varchar(255)", nullable: false),
                     Email = table.Column<string>(type: "varchar(255)", nullable: true),
                     Phone = table.Column<string>(type: "varchar(20)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
-                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    CreatedBy = table.Column<string>(type: "varchar(36)", nullable: true),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UpdatedBy = table.Column<string>(type: "varchar(36)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserActivity",
+                schema: "master",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
+                    UserName = table.Column<string>(type: "varchar(255)", nullable: false),
+                    System = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Action = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Data = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserActivity", x => new { x.UserId, x.CreatedDate });
                 });
 
             migrationBuilder.CreateTable(
@@ -84,7 +106,7 @@ namespace MasterService.Migrations
                 schema: "master",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "char(16)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(36)", nullable: false),
                     RoleCode = table.Column<string>(type: "varchar(20)", nullable: false)
                 },
                 constraints: table =>
@@ -123,6 +145,10 @@ namespace MasterService.Migrations
         {
             migrationBuilder.DropTable(
                 name: "RolePermission",
+                schema: "master");
+
+            migrationBuilder.DropTable(
+                name: "UserActivity",
                 schema: "master");
 
             migrationBuilder.DropTable(

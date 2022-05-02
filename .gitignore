@@ -52,3 +52,4 @@ src/FileService/Data/Uploads
 src/FileService/FileService.csproj.user
 src/Libs/NextOne.Infrastructure.MessageBus/obj
 src/Libs/NextOne.Infrastructure.MessageBus/bin
+src/obj

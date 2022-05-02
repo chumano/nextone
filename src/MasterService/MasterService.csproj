@@ -13,6 +13,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.20">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +23,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.20" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.18" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="..\_schema\proto\common\common.proto" Link="protobuf\common.proto" AdditionalImportDirs="..\_schema\proto\common" />
@@ -39,6 +41,7 @@
     <ProjectReference Include="..\Libs\NextOne.Infrastructure.Core\NextOne.Infrastructure.Core.csproj" />
     <ProjectReference Include="..\Libs\NextOne.Infrastructure.MessageBus\NextOne.Infrastructure.MessageBus.csproj" />
     <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
+    <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
   </ItemGroup>
 
 

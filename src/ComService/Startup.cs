@@ -20,6 +20,7 @@ using NextOne.Infrastructure.MessageBus.Notification;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
 using NextOne.Shared.Security;
+using SharedDomain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace ComService
 {
     public class Startup
     {
+        private string AllowSpecificOrigins = "AllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -40,7 +42,12 @@ namespace ComService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson((options) =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.DateFormatString = Constants.DateTimeFormat;
+                });
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             //Grpc Clients
@@ -69,7 +76,7 @@ namespace ComService
             })
             .AddJwtBearer("Bearer", jwtOptions =>
             {
-                jwtOptions.Authority = identityServerOptions.Authority;// "https://localhost:5102";
+                jwtOptions.Authority = identityServerOptions.Authority;
                 jwtOptions.Audience = "gateway"; // ApiResources
                 jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
@@ -92,6 +99,20 @@ namespace ComService
                     }
                 };
             });
+
+            var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithOrigins(CorsHosts.Split(";"))// * now allow in SignalR
+                            .AllowCredentials();
+                    });
+            });
+
 
             services.AddSignalR(options =>
             {
@@ -130,6 +151,10 @@ namespace ComService
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors(AllowSpecificOrigins);
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

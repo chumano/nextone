@@ -59,10 +59,33 @@ Gateway route:
 - /com
 - /file - not
 - /map - not
-#### Seed identity data
+#### Migrations and Seed identity data
+Migrations
+```
+dotnet ef database update --project .\IdentityService -c ApplicationDbContext
+dotnet ef database update --project .\IdentityService -c ConfigurationDbContext
+dotnet ef database update --project .\IdentityService -c PersistedGrantDbContext
+
+dotnet ef database update --project .\FileService
+dotnet ef database update --project .\MasterService
+dotnet ef database update --project .\ComService
+dotnet ef database update --project .\MapService
+```
+
+
+Identity Seed
 ```
 # run at ./src
 dotnet run --project .\IdentityService /seed
+```
+
+Master Users Seed
+
+```sql
+INSERT INTO  [master].[User] (Id,Name,Email,Phone,IsActive,IsDeleted, CreatedDate, UpdatedDate)
+SELECT  [Id],[UserName],[Email],PhoneNumber, 1,0, getdate(), getdate()
+FROM [NextOne].[identity].[AspNetUsers]
+
 ```
 
 ### font-awesome 
@@ -87,7 +110,20 @@ SELECT TOP (1000) * from dbo.ApiResourceScopes
 SELECT TOP (1000) * from dbo.ApiResourceSecrets
 
 ```
-
+Identity Clients
+- m2m.client : system client. 
+	- grant_type: client_credentials
+	- AccessTokenLifetime: 1 day
+- web-spa : web app. 
+	- grant_type: authorization_code
+	- AccessTokenLifetime: 1 hour
+- postman :  test. 
+	- grant_type: authorization_code
+	- AccessTokenLifetime: 30 days
+- native-app : mobile app. 
+	- grant_type: password. refresh token
+	- AccessTokenLifetime: 14 days
+```
 
 # Server
 CPU :  4 Cores, 8M Cache, 3.40 GHz 

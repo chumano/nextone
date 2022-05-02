@@ -17,7 +17,7 @@ namespace NextOne.Infrastructure.Core.Logging
                 var loggingOptions = context.Configuration.GetSection("Logging").Get<LoggingOptions>() ;
 
                 loggerConfiguration
-                    .ReadFrom.Configuration(context.Configuration, "Logging")
+                    .ReadFrom.Configuration(context.Configuration, "Serilog")
                     .Enrich.FromLogContext()
                     .Enrich.WithProperty("Environment", context.HostingEnvironment.EnvironmentName)
                     .Enrich.WithProperty("AppName", applicationName);

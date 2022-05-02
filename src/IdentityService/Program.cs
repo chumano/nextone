@@ -84,8 +84,13 @@ namespace IdentityService
                         }
 
                         options.Limits.MinRequestBodyDataRate = null;
-                        options.Listen(IPAddress.Any, 5102);
-                        //options.Listen(IPAddress.Loopback, 5102);
+                        options.Listen(IPAddress.Any, 5102, listenOptions=>
+                        {
+                            listenOptions.UseHttps();
+                        });
+                        //options.Listen(IPAddress.Loopback, 5102, listenOptions =>
+                        //{
+                        //});
                         options.Listen(IPAddress.Any, 15102, listenOptions =>
                         {
                             listenOptions.Protocols = HttpProtocols.Http2;

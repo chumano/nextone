@@ -36,6 +36,11 @@ namespace ComService.Domain.Services
             
             var user = await _masterService.GetUserAsync(userId);
 
+            if(user == null)
+            {
+                throw new Exception($"{userId} is not found");
+            }
+
             return new UserStatus()
             {
                 UserId = userId,

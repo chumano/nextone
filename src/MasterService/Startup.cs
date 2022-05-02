@@ -23,11 +23,16 @@ using NextOne.Shared.Bus;
 using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using NextOne.Infrastructure.MessageBus.Bus;
+using Microsoft.IdentityModel.Tokens;
+using NextOne.Infrastructure.Core.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SharedDomain;
 
 namespace MasterService
 {
     public class Startup
     {
+        private string AllowSpecificOrigins = "AllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -38,7 +43,12 @@ namespace MasterService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson((options) =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.DateFormatString = Constants.DateTimeFormat;
+                });
 
             //DBContext
             var connString = Configuration.GetConnectionString("DefaultConnection");
@@ -71,12 +81,43 @@ namespace MasterService
                 o.Address = new Uri(grpcUrl);
             });
 
-            //=======================
-
-            services.AddSignalR(options =>
+            var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();
+            services.AddAuthentication(options =>
             {
-                options.EnableDetailedErrors = true;
-            }).AddNewtonsoftJsonProtocol();
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", jwtOptions =>
+            {
+                jwtOptions.Authority = identityServerOptions.Authority;
+                jwtOptions.Audience = "gateway"; // ApiResources
+                jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
+                jwtOptions.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
+                jwtOptions.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        return Task.CompletedTask;
+                    }
+                };
+            });
+
+            var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: AllowSpecificOrigins,
+                    policy =>
+                    {
+                        policy.AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithOrigins(CorsHosts.Split(";"))// * now allow in SignalR
+                            .AllowCredentials();
+                    });
+            });
 
             services.AddMediatR(typeof(Startup).Assembly);
 
@@ -106,6 +147,8 @@ namespace MasterService
 
             app.UseRouting();
 
+            app.UseCors(AllowSpecificOrigins);
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

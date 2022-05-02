@@ -1,6 +1,7 @@
 using MapService.Domain.Repositories;
 using MapService.Infrastructure;
 using MapService.Utils;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -10,8 +11,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using NextOne.Infrastructure.Core.Identity;
 using NextOne.Shared.Common;
+using SharedDomain;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -37,12 +41,8 @@ namespace MapService
             services.AddControllers()
                 .AddNewtonsoftJson((options) =>
                 {
-                    options.SerializerSettings.ContractResolver = new DefaultContractResolver()
-                    {
-                        NamingStrategy = null
-                    };
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.DateFormatString = "dd/MM/yyyy HH:mm:ss";
+                    options.SerializerSettings.DateFormatString = Constants.DateTimeFormat;
                 });
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
@@ -53,6 +53,31 @@ namespace MapService
                 options.EnableDetailedErrors(true);
                 options.EnableSensitiveDataLogging(true);
 
+            });
+
+            var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", jwtOptions =>
+            {
+                jwtOptions.Authority = identityServerOptions.Authority;
+                jwtOptions.Audience = "gateway"; // ApiResources
+                jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
+                jwtOptions.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
+                jwtOptions.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
@@ -68,6 +93,8 @@ namespace MapService
                     });
             });
 
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IDataSourceRepository, DataSourceRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
@@ -105,7 +132,7 @@ namespace MapService
             app.UseRouting();
 
             app.UseCors(AllowSpecificOrigins);
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

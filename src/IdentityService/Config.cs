@@ -5,6 +5,7 @@
 using IdentityServer4.Models;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 
 namespace IdentityService
@@ -39,6 +40,7 @@ namespace IdentityService
             {
                 var admin = new ApplicationUser()
                 {
+                    Id = "afbd3f0a-a999-4b67-a8c7-1a4a19347507",
                     UserName = "admin",
                     Email = "admin@nomail.com",
                     LockoutEnabled = false,
@@ -50,6 +52,7 @@ namespace IdentityService
 
                 var manager = new ApplicationUser()
                 {
+                    Id = "05d5ce08-6a51-4c90-9f73-163e2bb136ee",
                     UserName = "manager",
                     Email = "manager@nomail.com",
                     LockoutEnabled = false,
@@ -59,6 +62,7 @@ namespace IdentityService
 
                 var member = new ApplicationUser()
                 {
+                    Id = "5b256826-3074-4ce6-bb0a-bc6d2885e274",
                     UserName = "member",
                     Email = "member@nomail.com",
                     LockoutEnabled = false,
@@ -111,7 +115,8 @@ namespace IdentityService
                     AllowedGrantTypes = GrantTypes.ClientCredentials,
                     ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
 
-                    AllowedScopes = { "scope1" }
+                    AllowedScopes = { "scope1" },
+                    AccessTokenLifetime = 1*24*60*60  //1 ngay
                 },
 
                 // interactive client using code flow + pkce
@@ -132,7 +137,8 @@ namespace IdentityService
                     PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" }
+                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AccessTokenLifetime = 1*60*60  //1 hour
                 },
 
                  new Client
@@ -150,7 +156,23 @@ namespace IdentityService
                     PostLogoutRedirectUris = { },
 
                     AllowOfflineAccess = false,
-                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" }
+                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AccessTokenLifetime = 30*24*60*60   //30 days
+                },
+
+                  new Client
+                {
+                    ClientId = "native-app",
+                    ClientName = "Native app",
+                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                    RequireClientSecret = false,
+                    RequirePkce = false,
+
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AccessTokenLifetime = 14*24*60*60  //4 ngay
                 },
             };
     }

@@ -1,6 +1,7 @@
 using FileService.Infrastructure;
 using FileService.Infrastructure.AppSettings;
 using FileService.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using NextOne.Infrastructure.Core.Identity;
 using NextOne.Shared.Common;
+using SharedDomain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,15 +36,16 @@ namespace FileService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers().AddNewtonsoftJson((options) =>
-            {
-                options.SerializerSettings.ContractResolver = new DefaultContractResolver()
+            services.AddControllers()
+                .AddNewtonsoftJson((options) =>
                 {
-                    NamingStrategy = null
-                };
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                options.SerializerSettings.DateFormatString = "dd/MM/yyyy HH:mm:ss";
-            });
+                    //options.SerializerSettings.ContractResolver = new DefaultContractResolver()
+                    //{
+                    //    NamingStrategy = null
+                    //};
+                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.DateFormatString = Constants.DateTimeFormat;
+                });
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
@@ -50,6 +55,31 @@ namespace FileService
                 options.EnableDetailedErrors(true);
                 options.EnableSensitiveDataLogging(true);
 
+            });
+
+            var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer("Bearer", jwtOptions =>
+            {
+                jwtOptions.Authority = identityServerOptions.Authority;
+                jwtOptions.Audience = "gateway"; // ApiResources
+                jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
+                jwtOptions.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                };
+                jwtOptions.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
             var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
@@ -64,6 +94,9 @@ namespace FileService
                             .AllowCredentials();
                     });
             });
+
+            services.AddHttpContextAccessor();
+            services.AddHttpClient();
 
             services.Configure<LocalFileSettings>(Configuration.GetSection("LocalFileSettings"));
 
@@ -82,7 +115,7 @@ namespace FileService
             app.UseRouting();
 
             app.UseCors(AllowSpecificOrigins);
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

@@ -1,12 +1,14 @@
 ﻿using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using MasterService.DTOs.User;
+using MasterService.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Domain;
+using NextOne.Shared.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,14 +22,20 @@ namespace MasterService.Controllers
     {
         private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
+        private readonly IIdentityService _identityService;
         private readonly IUserActivityRepository _activityRepository;
+        private readonly IUserContext _userContext;
         public UserController(ILogger<UserController> logger,
             IUserService userService,
-            IUserActivityRepository activityRepository)
+            IIdentityService identityService,
+            IUserActivityRepository activityRepository,
+            IUserContext userContext)
         {
             _logger = logger;
             _userService = userService;
+            _identityService = identityService;
             _activityRepository = activityRepository;
+            _userContext = userContext;
         }
 
         [HttpGet]
@@ -39,8 +47,9 @@ namespace MasterService.Controllers
         }
 
         [HttpGet("GetList")]
-        public async Task<IActionResult> GetList([FromBody] GetUserListDTO getUserListDTO)
+        public async Task<IActionResult> GetList([FromQuery] GetUserListDTO getUserListDTO)
         {
+            var actionUser =_userContext.User;
             var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize));
             return Ok(ApiResult.Success(items));
         }
@@ -85,6 +94,21 @@ namespace MasterService.Controllers
             await _userService.Active(user, userDTO.IsActive);
 
             return Ok(ApiResult.Success(null));
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassowrd(ResetUserPasswordDTO userDTO)
+        {
+            var user = await _userService.Get(userDTO.UserId);
+            if (user == null)
+            {
+                throw new DomainException("", "");
+            }
+            var passwordGenerator = new PasswordGenerator();
+            var newPassword = passwordGenerator.GenerateRandomPassword();
+            await _identityService.ResetPassword(user.Id, newPassword);
+
+            return Ok(ApiResult.Success(newPassword));
         }
 
         [HttpDelete("{id}")]

@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.24" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.24">
@@ -22,7 +23,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Libs\NextOne.Infrastructure.Core\NextOne.Infrastructure.Core.csproj" />
     <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
+    <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
   </ItemGroup>
 
 
