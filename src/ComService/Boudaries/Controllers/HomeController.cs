@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NextOne.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace ComService.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var reply = await _grpcMasterServiceClient.SayHelloAsync(new NextOne.Protobuf.Master.HelloRequest()
+            var reply = await _grpcMasterServiceClient.SayHelloAsync(new HelloRequest()
             {
                 Name = "loc"
             });

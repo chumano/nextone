@@ -25,12 +25,20 @@
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="..\_schema\proto\common\common.proto" Link="protobuf\common.proto" AdditionalImportDirs="..\_schema\proto\common" />
-    <Protobuf Include="..\_schema\proto\identity-service\identity-service.proto" Link="protobuf\identity-service.proto" AdditionalImportDirs="..\_schema\proto\identity-service" />
-    <Protobuf Include="..\_schema\proto\master-service\master-service.proto" Link="protobuf\master-service.proto" AdditionalImportDirs="..\_schema\proto\master-service" />
+    <Protobuf Include="..\_schema\proto\identity-service\identity-service.proto" Link="protobuf\identity-service.proto" AdditionalImportDirs="..\_schema\proto" />
+    <Protobuf Include="..\_schema\proto\master-service\master-service.proto" Link="protobuf\master-service.proto" AdditionalImportDirs="..\_schema\proto" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Boudaries\IntegrationEvents\Handlers\" />
     <Folder Include="Infrastructure\DBEntityConfigurations\" />
     <Folder Include="Migrations\" />
+    <Folder Include="UseCases\Commands\" />
+    <Folder Include="UseCases\Queries\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\NextOne.Infrastructure.Core\NextOne.Infrastructure.Core.csproj" />
+    <ProjectReference Include="..\Libs\NextOne.Infrastructure.MessageBus\NextOne.Infrastructure.MessageBus.csproj" />
+    <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
   </ItemGroup>
 
 

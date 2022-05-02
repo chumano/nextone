@@ -1,10 +1,11 @@
-﻿using System;
+﻿using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace NextOne.Shared.Bus
 {
-    public interface IEvent
+    public interface IEvent : INotification
     {
     }
 }

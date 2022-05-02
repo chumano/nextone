@@ -2,6 +2,7 @@ using ComService.Boudaries.Hubs;
 using ComService.Domain.Repositories;
 using ComService.Domain.Services;
 using ComService.Infrastructure;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NextOne.Infrastructure.Core.Identity;
+using NextOne.Infrastructure.MessageBus.Bus;
 using NextOne.Infrastructure.MessageBus.Notification;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
@@ -92,15 +94,17 @@ namespace ComService
                 };
             });
 
-            services.AddSignalR((hubOptions) =>
+            services.AddSignalR(options =>
             {
-                hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(30);
-            });
+                options.EnableDetailedErrors = true;
+            }).AddNewtonsoftJsonProtocol();
+
+            services.AddMediatR(typeof(Startup).Assembly);
 
             services.AddHttpClient();
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IUserContext, HttpUserContext>();
-            services.AddSingleton<IBus, LocalBus>();
+            services.AddSingleton<IBus, LocalMediatRBus>();
             services.AddSingleton<INotificationService, NotificationService>();
 
             services.AddScoped<IConversationRepository, ConversationRepository>();

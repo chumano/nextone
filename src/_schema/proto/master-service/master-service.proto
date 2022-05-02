@@ -3,20 +3,27 @@ syntax = "proto3";
 package nextone.master;
 option csharp_namespace = "NextOne.Protobuf.Master";
 
-import "google/protobuf/wrappers.proto";
+import "common/common.proto";
+//import "google/protobuf/wrappers.proto";
 
 service GrpcMasterService {
-  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc SayHello (nextone.common.HelloRequest) returns (nextone.common.HelloReply);
+
+  rpc GetUsersByIds (GetUsersByIdsRequest) returns (GetUsersByIdsResponse);
 }
 
-message HelloRequest {
-  string name = 1;
+message UserDto{
+	string userId = 1;
+	string userName = 2;
+	string userEmail = 3;
+	bool isActive = 4;
 }
 
-message HelloReply {
-  string message = 1;
+message GetUsersByIdsRequest{
+	repeated string userIds = 1;
 }
 
-message Error {
-	string message = 1;
+message GetUsersByIdsResponse{
+	repeated UserDto Users = 1;
 }
+

@@ -5,6 +5,14 @@ option csharp_namespace = "NextOne.Common";
 
 import "google/protobuf/wrappers.proto";
 
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+
 message Error {
 	string message = 1;
 }

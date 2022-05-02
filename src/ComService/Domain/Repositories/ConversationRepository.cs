@@ -38,7 +38,11 @@ namespace ComService.Domain.Repositories
                 .Include(o => o.RecentMessages)
                     .ThenInclude(o => o.UserSender)
                 .AsQueryable();
-                
+
+        public async Task<Conversation> Get(string id)
+        {
+            return await this.Conversations.FirstOrDefaultAsync(o => o.Id == id);
+        }
 
         public void Add(Conversation conversation)
         {
@@ -55,11 +59,7 @@ namespace ComService.Domain.Repositories
             _dbContext.Conversations.Remove(conversation);
         }
 
-        public async Task<Conversation> Get(string id)
-        {
-            return await this.Conversations.FirstOrDefaultAsync(o => o.Id == id);
-        }
-
+  
         public Task SaveChangesAsync()
         {
             return _dbContext.SaveChangesAsync();

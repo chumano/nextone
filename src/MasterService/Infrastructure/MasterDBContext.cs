@@ -13,7 +13,7 @@ namespace MasterService.Infrastructure
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-
+        public DbSet<UserActivity> UserActivities { get; set; }
         public MasterDBContext(DbContextOptions<MasterDBContext> options) : base(options)
         {
             System.Diagnostics.Debug.WriteLine("MasterDBContext::ctor ->" + this.GetHashCode());
@@ -23,8 +23,11 @@ namespace MasterService.Infrastructure
         {
             base.OnModelCreating(modelBuilder);
 
+            //user
             modelBuilder.Entity<User>(eb =>
             {
+                eb.HasQueryFilter(p => !p.IsDeleted);
+
                 eb.ToTable("User", DB_SCHEMA)
                    .HasKey("Id");
 
@@ -37,18 +40,33 @@ namespace MasterService.Infrastructure
                     .HasColumnType("varchar(255)");
                 eb.Property(o => o.Phone)
                     .HasColumnType("varchar(20)");
+             
+
+                eb.HasMany<UserRole>(o => o.Roles)
+                    .WithOne()
+                    .HasForeignKey(o => o.UserId);
+
                 eb.Property(o => o.IsActive)
-                    .HasColumnType("bit")
-                    .HasDefaultValue(true)
-                    .IsRequired();
+                 .HasColumnType("bit")
+                 .HasDefaultValue(true)
+                 .IsRequired();
+
                 eb.Property(o => o.IsDeleted)
                     .HasColumnType("bit")
                     .HasDefaultValue(false)
                     .IsRequired();
 
-                eb.HasMany<UserRole>(o => o.Roles)
-                    .WithOne()
-                    .HasForeignKey(o => o.UserId);
+                eb.Property(o => o.CreatedBy)
+                    .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.UpdatedBy)
+                     .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.CreatedDate)
+                    .HasColumnType("datetime");
+
+                eb.Property(o => o.UpdatedDate)
+                  .HasColumnType("datetime");
             });
 
             modelBuilder.Entity<UserRole>(eb =>
@@ -66,6 +84,7 @@ namespace MasterService.Infrastructure
                     .HasForeignKey(o => o.RoleCode);
             });
 
+            //role
             modelBuilder.Entity<Role>(eb =>
             {
                 eb.ToTable("Role", DB_SCHEMA)
@@ -108,6 +127,37 @@ namespace MasterService.Infrastructure
                    .HasColumnType("varchar(255)")
                    .IsRequired();
 
+            });
+
+            //user activity
+
+            modelBuilder.Entity<UserActivity>(eb =>
+            {
+                eb.ToTable("UserActivity", DB_SCHEMA)
+                   .HasKey(nameof(UserActivity.UserId), nameof(UserActivity.CreatedDate));
+
+                eb.Property(o => o.UserId)
+                  .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.UserName)
+                   .HasColumnType("varchar(255)")
+                   .IsRequired();
+
+                eb.Property(o => o.System)
+                   .HasColumnType("varchar(255)")
+                   .IsRequired();
+
+                eb.Property(o => o.Action)
+                   .HasColumnType("varchar(255)")
+                   .IsRequired();
+
+                eb.Property(o => o.Data)
+                   .HasColumnType("nvarchar(max)")
+                   .IsRequired();
+
+                eb.Property(o => o.CreatedDate)
+                   .HasColumnType("datetime")
+                   .IsRequired();
             });
         }
 

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
+using NextOne.Shared.Domain;
 using NextOne.Shared.Security;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace ComService.Boudaries.Controllers
     {
         private readonly ILogger<ConversationController> _logger;
         private readonly IUserContext _userContext;
-        private readonly IUserStatusService _userService;
+        private readonly IUserStatusService _userStatusService;
         private readonly IdGenerator _idGenerator;
         private readonly IConversationService _conversationService;
         public ConversationController(
@@ -32,7 +33,7 @@ namespace ComService.Boudaries.Controllers
             _logger = logger;
             _userContext = userContext;
             _idGenerator = idGenerator;
-            _userService = userService;
+            _userStatusService = userService;
             _conversationService = conversationService;
         }
 
@@ -40,7 +41,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> GetList([FromQuery] GetListConversationDTO getListConversationDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversations = await _conversationService.GetConversationsByUser(user,
                 new PageOptions()
                 {
@@ -63,7 +64,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> CreateConversation(CreateConverationDTO createConverationDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversationId = await _conversationService.Create(user,
                 createConverationDTO.Name,
                 createConverationDTO.Type,
@@ -72,12 +73,26 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(conversationId));
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            var conversation = await _conversationService.Get(id);
+            if (conversation == null)
+            {
+                throw new DomainException("", "");
+            }
+
+            await _conversationService.Delete(conversation);
+
+            return Ok(ApiResult.Success(null));
+        }
+
         //member 
         [HttpPost("AddMembers")]
         public async Task<IActionResult> AddMembers(AddMembersDTO addMembersDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversation = await _conversationService.Get(addMembersDTO.ConversationId);
 
             //TODO: check user have permission to addMembers 
@@ -90,12 +105,12 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> RemoveMember(RemoveMemberDTO removeMemberDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversation = await _conversationService.Get(removeMemberDTO.ConversationId);
 
             //TODO: check user have permission to remove member 
 
-            var removedUser = await _userService.GetUser(removeMemberDTO.UserMemberId);
+            var removedUser = await _userStatusService.GetUser(removeMemberDTO.UserMemberId);
             await _conversationService.RemoveMember(conversation, removedUser);
 
             return Ok(ApiResult.Success(null));
@@ -105,12 +120,12 @@ namespace ComService.Boudaries.Controllers
         public async  Task<IActionResult> UpdateMemberRole(UpdateMemberRoleDTO updateMemberRoleDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversation = await _conversationService.Get(updateMemberRoleDTO.ConversationId);
 
             //TODO: check user have permission to UpdateMemberRole
 
-            var updatedUser = await _userService.GetUser(updateMemberRoleDTO.UserMemberId);
+            var updatedUser = await _userStatusService.GetUser(updateMemberRoleDTO.UserMemberId);
             await _conversationService.UpdateMemberRole(conversation, updatedUser, updateMemberRoleDTO.Role);
             return Ok(ApiResult.Success(null));
         }
@@ -120,7 +135,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> GetMessagesHistory([FromQuery]GetMessagesHistoryDTO getMessageHistoryDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversation = await _conversationService.Get(getMessageHistoryDTO.ConversationId);
 
             //TODO: check user have permission to GetMessageHistory
@@ -151,7 +166,7 @@ namespace ComService.Boudaries.Controllers
                 throw new Exception("SendMessage parameters is invalid");
             }
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var conversation = await _conversationService.Get(sendMessageDTO.ConversationId);
 
             //TODO: check user have permission to SendMessage into the Conversation

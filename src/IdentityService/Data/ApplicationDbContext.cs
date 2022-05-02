@@ -16,6 +16,8 @@ namespace IdentityService.Data
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema(DB_SCHEMA);
+
+            //https://github.com/dotnet/EntityFramework.Docs/blob/main/samples/core/Modeling/DataSeeding/DataSeedingContext.cs
         }
     }
 }

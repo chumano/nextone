@@ -45,12 +45,12 @@ namespace ComService.Boudaries.Hubs
             }
         }
 
-        public async Task OnConnectedAsync()
+        public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
         }
         //
-        public async Task OnDisconnectedAsync(Exception exception)
+        public override async Task OnDisconnectedAsync(Exception exception)
         {
             await base.OnDisconnectedAsync(exception);
         }

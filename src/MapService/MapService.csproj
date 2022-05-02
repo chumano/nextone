@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Libs\NextOne.Infrastructure.Core\NextOne.Infrastructure.Core.csproj" />
     <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
     <ProjectReference Include="..\Libs\SharpMap\SharpMap.Converters.GeoJSON\SharpMap.Converters.GeoJSON.csproj" />
     <ProjectReference Include="..\Libs\SharpMap\SharpMap.Layers.BruTile\SharpMap.Layers.BruTile.csproj" />

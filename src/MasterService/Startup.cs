@@ -16,6 +16,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Net.ClientFactory;
+using MediatR;
+using NextOne.Shared.Common;
+using NextOne.Shared.Security;
+using NextOne.Shared.Bus;
+using MasterService.Domain.Repositories;
+using MasterService.Domain.Services;
+using NextOne.Infrastructure.MessageBus.Bus;
+
 namespace MasterService
 {
     public class Startup
@@ -62,8 +70,27 @@ namespace MasterService
                 var grpcUrl = "http://localhost:15102";
                 o.Address = new Uri(grpcUrl);
             });
-            
+
             //=======================
+
+            services.AddSignalR(options =>
+            {
+                options.EnableDetailedErrors = true;
+            }).AddNewtonsoftJsonProtocol();
+
+            services.AddMediatR(typeof(Startup).Assembly);
+
+
+            services.AddHttpClient();
+            services.AddSingleton<IdGenerator, DefaultIdGenerator>();
+            services.AddScoped<IUserContext, HttpUserContext>();
+            services.AddSingleton<IBus, LocalMediatRBus>();
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IIdentityService, IdentityService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

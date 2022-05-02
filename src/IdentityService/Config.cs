@@ -42,7 +42,8 @@ namespace IdentityService
                     UserName = "admin",
                     Email = "admin@nomail.com",
                     LockoutEnabled = false,
-                    PhoneNumber = "1234567890"
+                    PhoneNumber = "1234567890",
+                    ApplicationSystem = "NextOne"
                 };
                 //PasswordHasher<ApplicationUser> passwordHasher = new PasswordHasher<ApplicationUser>();
                 //passwordHasher.HashPassword(admin, "Nextone@123");
@@ -52,18 +53,18 @@ namespace IdentityService
                     UserName = "manager",
                     Email = "manager@nomail.com",
                     LockoutEnabled = false,
-                    PhoneNumber = "1234567890"
+                    PhoneNumber = "1234567890",
+                    ApplicationSystem = "NextOne"
                 };
-                //passwordHasher.HashPassword(manager, "Nextone@123");
 
                 var member = new ApplicationUser()
                 {
                     UserName = "member",
                     Email = "member@nomail.com",
                     LockoutEnabled = false,
-                    PhoneNumber = "1234567890"
+                    PhoneNumber = "1234567890",
+                    ApplicationSystem = "NextOne"
                 };
-                //passwordHasher.HashPassword(member, "Nextone@123");
 
                 var users = new ApplicationUser[]
                 {

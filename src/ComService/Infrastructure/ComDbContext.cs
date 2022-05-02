@@ -93,6 +93,7 @@ namespace ComService.Infrastructure
 
                 eb.Property(o => o.CreatedDate)
                     .HasColumnType("datetime");
+
                 eb.Property(o => o.UpdatedDate)
                   .HasColumnType("datetime");
 

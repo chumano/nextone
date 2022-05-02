@@ -18,6 +18,7 @@ using IdentityServer4.Services;
 using IdentityServer4.AspNetIdentity;
 using IdentityService.Services;
 using IdentityService.Boundaries.Grpc;
+using NextOne.Shared.Security;
 
 namespace IdentityService
 {
@@ -110,10 +111,12 @@ namespace IdentityService
             });
 
 
-            // not recommended for production - you need to store your key material somewhere secure
+            //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
 
             var authBuilder = services.AddAuthentication();
+
+            services.AddScoped<IUserContext, HttpUserContext>();
         }
 
         public void Configure(IApplicationBuilder app)

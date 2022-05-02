@@ -10,6 +10,8 @@ namespace ComService.Domain.Repositories
     public interface IUserStatusRepository
     {
         IQueryable<UserStatus> Users { get; }
+
+        IQueryable<UserTrackingLocation> UserTrackingLocations { get; }
         Task<UserStatus> Get(string userId);
 
         void Add(UserStatus userStatus);
@@ -25,13 +27,11 @@ namespace ComService.Domain.Repositories
         {
             _dbContext = comDbContext;
         }
-        public IQueryable<UserStatus> Users
-        {
-            get
-            {
-                return _dbContext.Users.AsQueryable();
-            }
-        }
+        public IQueryable<UserStatus> Users => _dbContext.Users.AsQueryable();
+        public IQueryable<UserTrackingLocation> UserTrackingLocations =>
+            _dbContext.Set<UserTrackingLocation>().AsQueryable();
+            
+
 
         public Task<UserStatus> Get(string userId)
         {

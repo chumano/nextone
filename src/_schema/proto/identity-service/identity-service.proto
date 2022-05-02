@@ -3,20 +3,94 @@ syntax = "proto3";
 package nextone.identity;
 option csharp_namespace = "NextOne.Protobuf.Identity";
 
+import "common/common.proto";
 import "google/protobuf/wrappers.proto";
 
 service GrpcIdentityService {
-  rpc SayHello (HelloRequest) returns (HelloReply);
+  rpc SayHello (nextone.common.HelloRequest) returns (nextone.common.HelloReply);
+ 
+  rpc CreateIdentityUser(CreateIdentityUserRequest) returns(CreateIdentityUserResponse);
+  rpc ActiveIdentityUser(ActiveIdentityUserRequest) returns(ActiveIdentityUserResponse);
+  rpc UpdateIdentityUser(UpdateIdentityUserRequest) returns(UpdateIdentityUserResponse);
+  rpc UpdateIdentityUserRoles(UpdateIdentityUserRolesRequest) returns(UpdateIdentityUserRolesResponse);
+
+  rpc CreateIdentityRole(CreateIdentityRoleRequest) returns(CreateIdentityRoleResponse);
+  rpc UpdateIdentityRole(UpdateIdentityRoleRequest) returns(UpdateIdentityRoleResponse);
+  rpc DeleteIdentityRole(DeleteIdentityRoleRequest) returns(DeleteIdentityRoleResponse);
 }
 
-message HelloRequest {
-  string name = 1;
+message CreateIdentityUserRequest{
+  string userId = 1;
+  google.protobuf.StringValue email = 2;
+  string userName = 3;
+  repeated string roleNames = 4;
+
 }
 
-message HelloReply {
-  string message = 1;
+message CreateIdentityUserResponse{
+  bool isSuccess = 1;
+  google.protobuf.StringValue IdentityUserId = 2;
+  nextone.common.Error error = 3; 
 }
 
-message Error {
-	string message = 1;
+message ActiveIdentityUserRequest{
+ string userId = 1;
+ bool active = 2;
+}
+
+message ActiveIdentityUserResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
+}
+
+message UpdateIdentityUserRequest{
+  string userId = 1;
+  google.protobuf.StringValue email = 2;
+  string userName = 3;
+}
+
+message UpdateIdentityUserResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
+}
+
+message UpdateIdentityUserRolesRequest{
+  string userId = 1;
+  repeated string roleNames = 2;
+}
+
+message UpdateIdentityUserRolesResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
+}
+
+
+//role
+message CreateIdentityRoleRequest{
+  string roleName = 1;
+  string roleDisplayName = 2;
+}
+
+message CreateIdentityRoleResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
+}
+
+message UpdateIdentityRoleRequest{
+  string roleName = 1;
+  string roleDisplayName = 2;
+}
+
+message UpdateIdentityRoleResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
+}
+
+message DeleteIdentityRoleRequest{
+  string roleName = 1;
+}
+
+message DeleteIdentityRoleResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
 }

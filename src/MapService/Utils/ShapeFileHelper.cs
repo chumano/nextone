@@ -180,7 +180,7 @@ namespace MapService.Utils
                             }
                             catch (Exception eex)
                             {
-                                throw new Exception("Không tồn tại symbol: " + symbolPath);
+                                throw new Exception("Không tồn tại symbol: " + symbolPath, eex);
                             }
 
                             labelList.Add(symbolLayer);

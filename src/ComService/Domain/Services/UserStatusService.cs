@@ -1,4 +1,5 @@
 ﻿using ComService.Domain.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,27 +18,63 @@ namespace ComService.Domain.Services
     public class UserStatusService : IUserStatusService
     {
         private readonly IUserStatusRepository _userStatusRepository;
-        public UserStatusService(IUserStatusRepository userStatusRepository)
+        private readonly IMasterService _masterService;
+
+        public UserStatusService(IUserStatusRepository userStatusRepository,
+            IMasterService masterService)
         {
             _userStatusRepository = userStatusRepository;
+            _masterService = masterService;
         }
         public async Task<UserStatus> GetUser(string userId)
         {
+            var userStatus = await _userStatusRepository.Get(userId);
+            if (userStatus != null)
+            {
+                return userStatus;
+            }
+            
+            var user = await _masterService.GetUserAsync(userId);
+
             return new UserStatus()
             {
-                UserId = userId
+                UserId = userId,
+                UserName = user.UserName,
+                UserAvatarUrl = "",
+                LastLat = null,
+                LastLon = null,
+                LastUpdateDate = DateTime.Now,
+                Status = StatusEnum.Offline
             };
         }
 
         public async Task<IList<UserStatus>> GetUsersByIds(IList<string> userIds)
         {
-            return userIds.Select(userId =>
+            var userStatuses = await _userStatusRepository.Users
+                .Where(o => userIds.Contains(o.UserId))
+                .ToListAsync();
+
+            var notFoundUserIds = userIds.Where(userId => !userStatuses.Any(s => s.UserId == userId))
+                .ToList();
+
+            if (notFoundUserIds.Any())
             {
-                return new UserStatus()
+                var users = await _masterService.GetUsersAsync(notFoundUserIds);
+                var notFoundUserStatuses = users.Select(user => new UserStatus()
                 {
-                    UserId = userId
-                };
-            }).ToList();
+                    UserId = user.UserId,
+                    UserName = user.UserName,
+                    UserAvatarUrl = "",
+                    LastLat = null,
+                    LastLon = null,
+                    LastUpdateDate = DateTime.Now,
+                    Status = StatusEnum.Offline
+                });
+
+                userStatuses.AddRange(notFoundUserStatuses);
+            }
+
+            return userStatuses;
         }
 
         public async Task AddOrUpdateUserStatus(string userId, double? lat, double? lon)
@@ -45,9 +82,12 @@ namespace ComService.Domain.Services
             var userStatus = await _userStatusRepository.Get(userId);
             if(userStatus == null)
             {
+                var user = await _masterService.GetUserAsync(userId);
                 _userStatusRepository.Add(new UserStatus()
                 {
                     UserId = userId,
+                    UserName = user.UserName,
+                    UserAvatarUrl = "",
                     LastLat = lat,
                     LastLon = lon,
                     LastUpdateDate = DateTime.Now,
