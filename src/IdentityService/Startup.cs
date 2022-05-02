@@ -19,6 +19,7 @@ using IdentityServer4.AspNetIdentity;
 using IdentityService.Services;
 using IdentityService.Boundaries.Grpc;
 using NextOne.Shared.Security;
+using System;
 
 namespace IdentityService
 {
@@ -116,6 +117,17 @@ namespace IdentityService
 
             var authBuilder = services.AddAuthentication();
 
+
+            //Grpc Service
+            AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
+            services.AddGrpc(options =>
+            {
+                options.EnableDetailedErrors = true;
+            });
+
+
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
             services.AddScoped<IUserContext, HttpUserContext>();
         }
 

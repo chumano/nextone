@@ -28,13 +28,13 @@ namespace MasterService.Domain.Services
 
     public class UserService : IUserService
     {
-        private readonly UserRepository _userRepository;
-        private readonly RoleRepository _roleRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IIdentityService _identityService;
         private readonly IdGenerator _idGenerator;
         private readonly IBus _bus;
-        public UserService(UserRepository userRepository,
-            RoleRepository roleRepository,
+        public UserService(IUserRepository userRepository,
+            IRoleRepository roleRepository,
             IIdentityService identityService,
             IdGenerator idGenerator,
             IBus bus)

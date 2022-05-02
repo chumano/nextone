@@ -80,7 +80,7 @@ namespace MasterService
 
             services.AddMediatR(typeof(Startup).Assembly);
 
-
+            services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IUserContext, HttpUserContext>();
@@ -88,6 +88,7 @@ namespace MasterService
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
+            services.AddScoped<IUserActivityRepository, UserActivityRepository>();
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IIdentityService, IdentityService>();

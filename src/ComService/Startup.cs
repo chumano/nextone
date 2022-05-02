@@ -61,7 +61,6 @@ namespace ComService
 
             });
 
-            services.AddHttpContextAccessor();
 
             var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();
             services.AddAuthentication(options =>
@@ -101,6 +100,7 @@ namespace ComService
 
             services.AddMediatR(typeof(Startup).Assembly);
 
+            services.AddHttpContextAccessor();
             services.AddHttpClient();
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IUserContext, HttpUserContext>();
