@@ -9,7 +9,8 @@ import { useContext, useEffect, useState } from "react";
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import '../../styles/components/header/user-profile-menu.scss'
-import { AppContext } from "../../utils/contexts/AppContext";
+import { useDispatch } from "react-redux";
+import { authActions } from "../../store";
 
 
 const ProfileMenus:any[] = [
@@ -33,13 +34,14 @@ const ProfileMenus:any[] = [
 const UserProfileMenu: React.FC = () => {
     const history = useHistory();
     const [isOpen, setIsOpen] = useState(false);
-    const appContext = useContext(AppContext);
+    const dispatch = useDispatch();
     useEffect(() => {
-        //appContext.userLogIn({name :"loc"}) 
+       
+        
     }, []);
     
     const logoutClick = ()=>{
-        appContext.userLogOut();
+        dispatch(authActions.logout)
         history.push("/auth/redirect");
     }
 

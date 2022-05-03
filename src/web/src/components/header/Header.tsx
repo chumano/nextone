@@ -5,18 +5,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { 
     faBars
 } from "@fortawesome/free-solid-svg-icons";
-import { AppContext } from '../../utils/contexts/AppContext';
 import { useContext, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { AuthState, getIsLoggedIn } from '../../store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AuthState,  getAuthState, getCallState, callActions, IAppStore, CallStatus } from '../../store';
 
 interface IProp {
     toggleDrawer: ()=> void
 }
 const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
-    const {user} = useContext(AppContext);
-    const isLoggedIn = useSelector(getIsLoggedIn);
-    const [userName, setUserName] = useState('Guest')
+    const {user} = useSelector(getAuthState);
+    const [userName, setUserName] = useState('Guest');
+    const dispatch = useDispatch();
+    const {status: callStatus} = useSelector(getCallState);
     useEffect(() => {
         const name:string  = user?.profile?.name || user?.profile?.email || user?.profile?.sub || 'NoName';
         setUserName( name as string )
@@ -32,7 +32,13 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
                 
             </div>
 
-            <div className="header__space" style={{textAlign:'center'}}>{process.env.NODE_ENV}</div>
+            <div className="header__space clickable" 
+                onClick={()=>{
+                    dispatch(callActions.toggleCall())
+                }}
+                style={{textAlign:'center'}}>
+                {process.env.NODE_ENV} : {CallStatus[callStatus]}
+            </div>
 
             <div className="header__notification">
                 <HeaderNotification />

@@ -5,7 +5,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { createNewUser, IUser, useEnvDev } from "../../../utils";
 import { useEffect, useState } from "react";
-import { getIsLoggedIn } from "../../../store";
 import { useSelector } from "react-redux";
 import { Col, Form, FormGroup, Input, Label, Row } from "reactstrap";
 import ReactJson from "react-json-view";
@@ -27,7 +26,6 @@ const UserDetail: React.FC<IProp> = ({
     const [data, setData] = useState<IUser>(userData || newData);
     const [isAdd, _] = useState<boolean>(!data.id);
     const isDev = useEnvDev();
-    const isLoggedIn = useSelector(getIsLoggedIn);
     //https://react-hook-form.com/api/useform/setFocus
     const { register, handleSubmit, formState: { errors , isDirty , dirtyFields, isSubmitted, isValid, submitCount}, setError,
         getValues, clearErrors, control, reset, setValue, setFocus, watch, trigger, unregister } = useForm({

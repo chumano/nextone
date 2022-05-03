@@ -5,7 +5,6 @@ import logo from '../../assets/logo.png';
 import { ReactComponent as LogoSVG } from '../../assets/logo.svg';
 import { ReactComponent as IntroSVG } from '../../assets/intro_img.svg';
 import { useContext, useEffect } from "react";
-import { AppContext } from "../../utils/contexts/AppContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faSignInAlt

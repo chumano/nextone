@@ -14,11 +14,9 @@ import withLayout from './utils/hoc/withLayout';
 import Loadable from 'react-loadable';
 import Loading from './components/controls/loading/Loading';
 import { axiosSetup } from './utils';
-import { AppContext, AppContextProvider } from './utils/contexts/AppContext';
+import { AppContextProvider } from './utils/contexts/AppContext';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import { UserContext, userStore } from './store/users/userStore';
-
 
 //=================================
 //=================================
@@ -51,8 +49,6 @@ const App = () => {
   return <>
     <Router>
       <Provider store={store}>
-      {/* this userStore for users page : need to remove*/}
-      <Provider context={UserContext} store={userStore}>
         <AppContextProvider>
           <div className="App">
             <Switch>
@@ -106,8 +102,6 @@ const App = () => {
                 )
               })}
 
-              
-
               <Route path={'/'} exact={true}
                 component={withLayout((props) => {
                   const Layout = NoAuthLayout
@@ -129,7 +123,6 @@ const App = () => {
             </Switch>
           </div>
         </AppContextProvider>
-      </Provider>
       </Provider>
     </Router>
 

@@ -1,0 +1,95 @@
+@import "../../abstracts/variables";
+@import "../../abstracts/mixins";
+.layout__main{
+    position: relative;
+}
+
+.call-session{
+    background-color: $color-grey-8;
+    position: absolute;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    &__video-container{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        img{
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    &__voice-container{
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        .user-view{
+            width: 200px;
+            height: 200px;
+            svg{
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+
+    &__overlay{
+        top: 0;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+
+        .top-bar{
+            position: absolute;
+            top:0;
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .bottom-bar{
+            position: absolute;
+            bottom:0;
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            flex-direction: row;
+        }
+    }
+
+    .call-title{
+        font-size: $font-size-2;
+        font-weight: $font-weight-4;
+    }
+
+}
+.group-buttons{
+    display: flex;
+    flex-direction: row;
+}
+.button-action{
+    background-color: $color-white;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 5px;
+    border-radius: 5px;
+    svg{
+        width: 20px;
+        height: auto;
+        max-height: 20px;
+    }
+    &.off{
+        background-color: $color-red;
+    }
+}
+

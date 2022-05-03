@@ -12,7 +12,6 @@ import { Dispatch, useContext, useEffect, useState } from 'react';
 import ModalInfo from '../../../components/modal/ModalInfo';
 import PaginationInfo from '../../../components/pagination/PaginationInfo';
 import UserDetail from './UserDetail';
-import { AppContext } from '../../../utils/contexts/AppContext';
 import { connect, Provider, useDispatch, useSelector } from 'react-redux';
 import { AuthState } from '../../../store';
 import { fetchUsers, IUserStore, UserContext, userStore } from '../../../store/users/userStore';
@@ -31,8 +30,7 @@ const Users: React.FC<IProp> = ({
     users,
     totalUser,
     getUsers
-}) => {  
-    const appContext = useContext(AppContext);
+}) => {
     const [openDetail, setOpenDetail] = useState(false);
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [dataFilter, setDataFilter] = useState<any>({});
@@ -44,9 +42,9 @@ const Users: React.FC<IProp> = ({
         getUsers(dataFilter)
     }, 500);
 
-    useEffect(()=>{
+    useEffect(() => {
         console.log("new datas")
-    },[users, totalUser]);
+    }, [users, totalUser]);
 
     useEffect(() => {
         //if(loading=='pending') return;
@@ -54,7 +52,7 @@ const Users: React.FC<IProp> = ({
     }, [dataFilter, getUsers]);
 
 
-    const onPagingChange = (pagingData: {page:number, pageSize:number}) => {
+    const onPagingChange = (pagingData: { page: number, pageSize: number }) => {
         setDataFilter({
             ...dataFilter,
             ...pagingData
@@ -172,6 +170,14 @@ const mapDispatchToProps = (dispatch: any) => {
         getUsers: fetchUsers,
     }, dispatch);
 }
-export default connect(mapStateToProps, mapDispatchToProps, undefined, {
+const ConnectedUsers = connect(mapStateToProps, mapDispatchToProps, undefined, {
     context: UserContext
 })(Users);
+
+export default () => {
+    return <>
+        <Provider context={UserContext} store={userStore}>
+            <ConnectedUsers />
+        </Provider>
+    </>
+}
