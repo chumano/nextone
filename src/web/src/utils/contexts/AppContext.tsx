@@ -1,7 +1,9 @@
+import { constant } from "lodash";
 import { User } from "oidc-client";
 import { createContext,  useCallback, useEffect} from "react";
 import { useDispatch } from "react-redux";
 import { AuthenticationService } from "../../services";
+import { SignalR } from "../../services/SignalRService";
 import { IAppStore, authActions } from "../../store";
 
 export const GlobalContext = createContext<any>({});
@@ -10,12 +12,26 @@ interface IContextProviderProp {
     children: React.ReactNode;
 }
 
+SignalR.connect('/hubChat');
+
+const registerHub = async ()=>{
+    const accessToken = await AuthenticationService.getAccessToken()
+    if(!accessToken)  return;
+    const hubRegisterResult =await SignalR.invoke('register',accessToken);
+    console.log('hubRegisterResult', hubRegisterResult)
+}
+const singalRSubsription =SignalR.subscription('connected',()=>{
+    registerHub();
+});
+singalRSubsription.subscribe();
+
 const AppContextProvider = (props: IContextProviderProp) => {
     const dispatch = useDispatch();
     
    const logIn = useCallback(
         (user: User) => {
             dispatch(authActions.login(user));
+            registerHub();
     }, [dispatch]);
 
     const handleUserOnLoaded = ()=> (user: User)=>{

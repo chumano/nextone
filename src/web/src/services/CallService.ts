@@ -1,7 +1,7 @@
 import { WebrtcUtils } from "./WebRTCUtils";
 
 interface ISignaling {
-    connect(hubPath: string): Promise<void>;
+    connect(): Promise<void>;
     isConnected(): boolean;
     invoke(room: string, action: string,  ...args: any[]): void;
     listen(eventName: string, handler: (...args: any[]) => void): Promise<void>;
@@ -33,17 +33,12 @@ class CallService {
         this.room = room;
     }
 
-    ngOnInit(): void {
-        this.start();
-    }
-
-    start(): void {
+     start = async () => {
         // #1 connect to signaling server
-        this.signaling.connect('/signaling').then(() => {
-            if (this.signaling.isConnected()) {
-                this.signaling.invoke('CreateOrJoinRoom', this.room);
-            }
-        });
+        await this.signaling.connect();
+        if (this.signaling.isConnected()) {
+            this.signaling.invoke('CreateOrJoinRoom', this.room);
+        }
 
         // #2 define signaling communication
         this.defineSignaling();
@@ -86,6 +81,14 @@ class CallService {
                 this.handleRemoteHangup();
             }
         });
+    }
+
+    muteMic() {
+        this.localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+      }
+      
+    muteCam() {
+    this.localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
     }
 
     getUserMedia(): void {
