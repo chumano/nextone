@@ -44,7 +44,7 @@ export const useMapObservable = () => {
     const update = (id: string, map: MapInfo) => {
         let maps = [...mapSubject.getValue().maps];
         maps = maps.map((item) => {
-            if (item.Id === id) {
+            if (item.id === id) {
                 return { ...item, ...map };
             }
 
@@ -59,7 +59,7 @@ export const useMapObservable = () => {
     };
 
     const remove = (id: string) => {
-        const maps = [...mapSubject.getValue().maps].filter((map) => map.Id !== id);
+        const maps = [...mapSubject.getValue().maps].filter((map) => map.id !== id);
         setNextState({ maps, error: '' });
     };
 

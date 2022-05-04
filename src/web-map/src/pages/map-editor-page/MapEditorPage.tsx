@@ -38,25 +38,25 @@ const MapEditorPage: React.FC = () => {
             const map = await mapStore.get(mapid);
             
             const layers : LayerStyle[] =[];
-            map.Layers.forEach(l =>{
+            map.layers.forEach(l =>{
                 const layerStyle : LayerStyle = {
-                    name : l.LayerName,
-                    layerGroup : l.LayerGroup,
+                    name : l.layerName,
+                    layerGroup : l.layerGroup,
 
-                    sourceId : l.DataSourceId,
-                    layerType : geo2LayerType(l.DataSourceGeoType),
-                    visibility : l.Active,
-                    minZoom : l.MinZoom,
-                    maxZoom: l.MaxZoom,
-                    note: l.Note,
-                    style: l.PaintProperties
+                    sourceId : l.dataSourceId,
+                    layerType : geo2LayerType(l.dataSourceGeoType),
+                    visibility : l.active,
+                    minZoom : l.minZoom,
+                    maxZoom: l.maxZoom,
+                    note: l.note,
+                    style: l.paintProperties
                 };
                 layers.push(layerStyle);
             })
 
             mapEditor.setMapInfo({
-                id: map.Id??'',
-                name: map.Name
+                id: map.id??'',
+                name: map.name
             }, layers);
         }
 

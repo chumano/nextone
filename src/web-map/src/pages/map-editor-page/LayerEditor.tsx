@@ -4,12 +4,35 @@ import {
   FieldId, FieldType, FieldSource,
   FieldMinZoom, FieldMaxZoom, FieldComment
 } from "../../components/fields";
-import { DataSource, GeoType } from "../../interfaces";
+import { getPropertiesConfigForType } from "../../config/paintPropertiesConfig";
+import { DataSource, GeoType, LayerType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
+import { useDebounce } from "../../utils/hooks";
+import PaintPropertyGroup from "./PaintPropertyGroup";
 import { LayerStyle, useMapEditor } from "./useMapEditor";
 
 const AntDCollapse: any = Collapse;
 
+const  getLayoutGroups = (layerType:LayerType)=> {
+  const layerGroup = {
+    name: 'Layer',
+    type: 'layer',
+    properties : [] as string[]
+  }
+
+  const groupsOfType = getPropertiesConfigForType(layerType);
+  const painGroups = groupsOfType.groups.map(
+    o => {
+      return {
+        ...o,
+        type:'properties'
+      }
+    }
+  );
+  
+  return [layerGroup,]
+    .concat(painGroups)
+}
 
 const LayerEditor: React.FC = () => {
   const mapEditor = useMapEditor();
@@ -23,19 +46,32 @@ const LayerEditor: React.FC = () => {
     const selectedLayer = mapEditor.mapEditorState.layers[selectedIndex];
     setLayer(selectedLayer);
 
-  }, [mapEditor.mapEditorState.layers, mapEditor.mapEditorState.selectedLayerIndex])
+  }, [mapEditor.mapEditorState.layers,
+     mapEditor.mapEditorState.selectedLayerIndex])
 
-  const changeProperty = useCallback((property: string, newValue: any) => {
+  
+  const changePropertyFunc = useCallback((property: string, newValue: any) => {
     const selectedIndex = mapEditor.mapEditorState.selectedLayerIndex || 0;
     mapEditor.onLayerPropertyChange(selectedIndex,
       property, newValue)
-  },[ mapEditor.mapEditorState.selectedLayerIndex]);
+  }, [mapEditor.mapEditorState.selectedLayerIndex]);
 
-  const renderGroupType = useCallback((type: string, layerProps: LayerStyle, fields: any) => {
+  const changeProperty = useDebounce(changePropertyFunc, 300);
+
+  const changeStylePropertyFunc = useCallback((property: string, newValue: any) => {
+    const selectedIndex = mapEditor.mapEditorState.selectedLayerIndex || 0;
+    mapEditor.onLayerStyleChange(selectedIndex,
+      property, newValue)
+  }, [mapEditor.mapEditorState.selectedLayerIndex]);
+
+  const changeStyleProperty =  useDebounce(changeStylePropertyFunc, 300);
+
+  const renderGroupType = useCallback((type: 'layer' | 'properties' | string, 
+    layerProps: LayerStyle, fields: any) => {
     const layerSources = datasources.map(o => {
       return {
-        key: o.Id,
-        name: `${o.Name} - ${GeoType[o.GeoType]}`
+        key: o.id,
+        name: `${o.name} - ${GeoType[o.geoType]}`
       }
     });
 
@@ -43,16 +79,16 @@ const LayerEditor: React.FC = () => {
       case 'layer': return <div>
         <FieldId
           value={layerProps.name}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => { 
-            changeProperty('name', e.target.value);
+          onChange={(val: any) => {
+            changeProperty('name', val);
           }}
         />
 
         <FieldType
           disabled={true}
           value={layerProps.layerType}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            changeProperty('layerType', e.target.value);
+          onChange={(val:any) => {
+            changeProperty('layerType',val);
           }}
         />
 
@@ -62,53 +98,53 @@ const LayerEditor: React.FC = () => {
           value={layerProps.sourceId || ''}
           onChange={(sourceId) => {
             changeProperty('sourceId', sourceId);
-           }}
+          }}
         />
 
         <FieldMinZoom
           value={layerProps.minZoom}
-          onChange={(val:any) => {
+          onChange={(val: any) => {
             changeProperty('minZoom', val);
           }}
         />
         <FieldMaxZoom
           value={layerProps.maxZoom}
-          onChange={(val:any) => {
+          onChange={(val: any) => {
             changeProperty('maxZoom', val);
           }}
         />
         <FieldComment
           value={layerProps.note}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => { 
-            changeProperty('note', e.target.value);
+          onChange={(val:any) => {
+            changeProperty('note', val);
           }}
         />
       </div>
 
-      //   case 'properties':
-      //     return <PropertyGroup
-      //       errors={errorData}
-      //       layer={this.props.layer}
-      //       groupFields={fields}
-      //       spec={this.props.spec}
-      //       onChange={this.changeProperty.bind(this)}
-      //     />
-      //   case 'jsoneditor':
-      //     return <FieldJson
-      //       layer={this.props.layer}
-      //       onChange={(layer) => {
-      //         this.props.onLayerChanged(
-      //           this.props.layerIndex,
-      //           layer
-      //         );
-      //       }}
-      //     />
+    case 'properties':
+          return <PaintPropertyGroup
+            layerStyle={layer!.style || {}}
+            paintProperties={fields}
+            onChange={changeStyleProperty}
+           />
+
+    //   case 'jsoneditor':
+    //     return <FieldJson
+    //       layer={this.props.layer}
+    //       onChange={(layer) => {
+    //         this.props.onLayerChanged(
+    //           this.props.layerIndex,
+    //           layer
+    //         );
+    //       }}
+    //     />
     }
   }, [layer, datasources]);
 
-
   if (!layer)
     return null;
+
+  const layoutGroups = getLayoutGroups(layer.layerType);
 
   return <>
     <div className="layer-editor">
@@ -116,22 +152,29 @@ const LayerEditor: React.FC = () => {
         <span> Layer: '{layer.name}'</span>
       </div>
 
-      <AntDCollapse
-        defaultActiveKey={['1', '2',]}
-        onChange={(key: string | string[]) => { }}
-        expandIconPosition={'right' as any}
-      >
-        <AntDCollapse.Panel header="Layer" key="1" >
-          <div>
-            {renderGroupType('layer', { ...layer }, {})}
-          </div>
-        </AntDCollapse.Panel>
-        <AntDCollapse.Panel header="Paint properties" key="2">
-          <div>
-            Panel2
-          </div>
-        </AntDCollapse.Panel>
-      </AntDCollapse>
+      <div className="layer-editor__body">
+        <AntDCollapse
+          defaultActiveKey={['0',]}
+          onChange={(key: string | string[]) => { }}
+          expandIconPosition={'right' as any}
+        >
+          {/* <AntDCollapse.Panel header="Layer">
+            <div>
+              {renderGroupType('layer', { ...layer }, [])}
+            </div>
+          </AntDCollapse.Panel> */}
+          {layoutGroups.map( (group, index)=>{
+            return <AntDCollapse.Panel key={index} header={group.name}>
+              <div>
+                {renderGroupType(group.type, { ...layer }, group.properties)}
+              </div>
+            </AntDCollapse.Panel>
+          })}
+
+        </AntDCollapse>
+      </div>
+      
+
     </div>
   </>
 }

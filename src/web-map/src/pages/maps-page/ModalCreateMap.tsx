@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../../components/modals/Modal";
 import { MapInfo } from "../../interfaces";
+import { CreateMapDTO } from "../../interfaces/dtos";
 import { useMapStore } from "../../stores/useMapStore";
 
 interface ModalCreateMapProps {
@@ -39,9 +40,8 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
     const onFormFinish = async (values: any) => {
         setConfirmLoading(true);
 
-        const map: MapInfo = {
-            Name: values['Name'],
-            Layers: []
+        const map: CreateMapDTO = {
+            name: values['name'],
         }
         const createdMap = await mapStore.create(map);
 
@@ -53,13 +53,13 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
                 title: 'Có lỗi',
                 content:  <>
                     {`Không thể tạo map `}
-                    <b>{map.Name}</b>
+                    <b>{map.name}</b>
                 </>,
             });
             return;
         }
 
-        const id = createdMap.Id || '';
+        const id = createdMap.id || '';
         navigate("/maps/" + id);
     };
     return <>
@@ -74,17 +74,17 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
                 labelCol={{ span: 4 }}
                 wrapperCol={{ span: 14 }}
                 layout="horizontal"
-                initialValues={{ size: 'default' , requiredMarkValue: 'required' , Note :'dd'}}
+                initialValues={{ size: 'default' , requiredMarkValue: 'required'}}
                 onValuesChange={onFormValuesChange}
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="Name" label="Name" required tooltip="This is a required field"
+                <Form.Item name="name" label="Name" required tooltip="This is a required field"
                      rules={[{ required: true, message: 'Name is required' }]}>
                     <Input placeholder="input placeholder"  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="Note" label="Note" tooltip="This is a optional field">
+                <Form.Item name="note" label="Note" tooltip="This is a optional field">
                     <TextArea rows={4} placeholder="maxLength is 255" maxLength={255} />
                 </Form.Item>
             </Form>

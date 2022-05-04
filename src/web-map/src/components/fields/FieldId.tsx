@@ -1,14 +1,24 @@
 import { Input } from 'antd'
-import React from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 
 import Block from './Block'
 
 const FieldId: React.FC<any> = (props) => {
+  const [value, setValue] = useState(props.value);
+  useEffect(()=>{
+    setValue(props.value);
+  },[props.value])
 
+  const onChange = (e: ChangeEvent<any>) => {
+    const value = e.target.value;
+    setValue(value);
+    props.onChange(value);
+  };
+  
   return <Block label={"Name"}>
     <Input
-      value={props.value}
-      onChange={props.onChange}
+      value={value}
+      onChange={onChange}
     />
   </Block>
 

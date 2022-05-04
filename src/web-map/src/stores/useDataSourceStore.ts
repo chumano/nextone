@@ -1,5 +1,6 @@
 import { useDatasourceApi, } from "../apis";
 import { DataSource } from "../interfaces";
+import { CreateDataSourceDTO, UpdateDataSourceDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { DatasourceState, useDatasourceObservable } from "./useDataSourceObservable";
@@ -22,7 +23,7 @@ export const useDatasourceStore = () => {
       }
     };
   
-    const create = async (obj: any) => {
+    const create = async (obj: CreateDataSourceDTO) => {
       try {
         observable.creating(true);
         const createdObj = await handleAxiosApi<DataSource>(api.create(obj));
@@ -39,7 +40,7 @@ export const useDatasourceStore = () => {
       return undefined;
     };
   
-    const update = async (id: string, obj: DataSource) => {
+    const update = async (id: string, obj: UpdateDataSourceDTO) => {
       try {
         observable.updating(true);
         const updatedCustomer = await handleAxiosApi<DataSource>(api.update(id, obj));

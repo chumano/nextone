@@ -1,20 +1,12 @@
+import { DataSourceType, GeoType } from "./Types";
+
 export interface DataSource{
-    Id: string;
-    Name: string;
-    DataSourceType: DataSourceType;
-    GeoType : GeoType
-    Properties : any;
-    SourceFile : string;
-    Tags?: string[];
+    id: string;
+    name: string;
+    dataSourceType: DataSourceType;
+    geoType : GeoType
+    properties : any;
+    pourceFile : string;
+    tags?: string[];
 }
 
-export enum GeoType{
-    Point,
-    Line,
-    Fill,
-    Other
-}
-
-export enum DataSourceType{
-    ShapeFile,
-}

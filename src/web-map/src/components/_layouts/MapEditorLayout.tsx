@@ -24,9 +24,9 @@ const MapEditorLayout : React.FC<MapEditorLayoutProp> = (props)=>{
           </div>
 
           <div className="map-editor-layout-drawer">
-            <ScrollContainer>
+            {/* <ScrollContainer> */}
               {props.layerEditor}
-            </ScrollContainer>
+            {/* </ScrollContainer> */}
           </div>
 
           <div className="map-editor-layout-map">

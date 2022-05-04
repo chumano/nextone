@@ -2,19 +2,28 @@ import { Form, Input, Select } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { useEffect, useState } from "react";
 import Modal from "../../components/modals/Modal";
-import { DataSourceType } from "../../interfaces";
+import { DataSource, DataSourceType } from "../../interfaces";
+import { UpdateDataSourceDTO } from "../../interfaces/dtos";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
 
-const ModalEditDataSource :React.FC<any> = (props)=>{
+interface ModalEditDataSourceProps{
+    source: DataSource;
+    visible : boolean;
+    onToggle: (visible: boolean) => void;
+}
+const ModalEditDataSource :React.FC<ModalEditDataSourceProps> = (props)=>{
     const [confirmLoading, setConfirmLoading] = useState(false);
     const { datasourceState: sourceState, ...sourceStore } = useDatasourceStore();
     useEffect(()=>{
         const formData :any = {};
-        Object.keys(props.source).forEach((key:string) => {
-            if(props.source[key]!=undefined){
-              formData[key] = props.source[key];
+        const data = props.source as any;
+
+        Object.keys(data).forEach((key:string) => {
+            if(data[key]!=undefined){
+              formData[key] =data[key];
             }
         });
+
         form.setFieldsValue(formData);
     }, [props.source])
 
@@ -34,12 +43,11 @@ const ModalEditDataSource :React.FC<any> = (props)=>{
 
     const onFormFinish = async (values: any) => {
         setConfirmLoading(true);
-        const source : any = {
-            Name: values['Name'],
-            Tags : values['Tags']
-            
+        const source : UpdateDataSourceDTO = {
+            name: values['name'],
+            tags : values['tags']
         };
-        await sourceStore.update(props.source.Id, source);
+        await sourceStore.update(props.source.id, source);
 
         setConfirmLoading(false);
         props.onToggle(false);
@@ -62,12 +70,12 @@ const ModalEditDataSource :React.FC<any> = (props)=>{
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="Name" label="Name" required tooltip="This is a required field"
+                <Form.Item name="name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' }]}>
                     <Input placeholder="input placeholder"  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="Tags" label="Tags" tooltip="This is a optional field">
+                <Form.Item name="tags" label="Tags" tooltip="This is a optional field">
                     <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode">
                     </Select>
                 </Form.Item>

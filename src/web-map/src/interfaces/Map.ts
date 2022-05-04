@@ -1,23 +1,22 @@
-import { DataSource, GeoType } from "./DataSource"
-import { PaintPropertyKey } from "./PaintProperty";
+import { GeoType, PaintPropertyKey } from "./Types";
 
 export interface MapInfo {
-    Id?: string;
-    Name: string;
-    Layers: MapLayer[]
+    id: string;
+    name: string;
+    layers: MapLayer[]
 }
 
 export interface MapLayer {
-    LayerName: string;
-    LayerGroup: string;
-    DataSourceId: string;
-    DataSourceName?: string;
-    DataSourceGeoType?: GeoType;
+    layerName: string;
+    layerGroup: string;
+    dataSourceId: string;
+    dataSourceName?: string;
+    dataSourceGeoType?: GeoType;
 
-    PaintProperties?: { [key: PaintPropertyKey]: any }
+    paintProperties?: { [key: PaintPropertyKey]: any }
 
-    Active?: boolean;
-    MinZoom?: number;
-    MaxZoom?: number;
-    Note?: string;
+    active?: boolean;
+    minZoom?: number;
+    maxZoom?: number;
+    note?: string;
 }

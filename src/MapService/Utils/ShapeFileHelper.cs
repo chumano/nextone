@@ -167,6 +167,8 @@ namespace MapService.Utils
                             symbolLayer.Style = new SharpMap.Styles.VectorStyle();
                             symbolLayer.Style.Fill = new SolidBrush(Color.White);
                             symbolLayer.Style.Outline = System.Drawing.Pens.Black;
+                            symbolLayer.Style.Outline = new Pen(Color.Black, 1);
+                            symbolLayer.Style.Outline.DashStyle = DashStyle.Solid;
                             symbolLayer.Style.EnableOutline = true;
                             symbolLayer.Style.SymbolScale = 1;
                             symbolLayer.MinVisible = MinVisibleLabel;

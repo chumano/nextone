@@ -2,10 +2,11 @@ import { Button, Form, Input, Modal as AntDModal, Select, Upload } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { UploadOutlined } from '@ant-design/icons';
 import TextArea from "antd/lib/input/TextArea";
-import { useState } from "react";
+import React, { useState } from "react";
 import Modal from "../../components/modals/Modal";
 import { DataSourceType, GeoType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
+import { CreateDataSourceDTO } from "../../interfaces/dtos";
 
 interface ModalCreateDataSourceProps {
     visible: boolean,
@@ -49,26 +50,18 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
         props.onToggle(false);
     };
 
-    const childrenTags = [];
-    childrenTags.push(<Select.Option key={'sample'}>{'sample'}</Select.Option>);
-    const onTagsChange = (value: any) => {
-        
-    }
+    const childrenTags :React.ReactElement[]= [];
+    //childrenTags.push(<Select.Option key={'sample'}>{'sample'}</Select.Option>);
 
     const [form] = Form.useForm();
-    const onFormValuesChange = (values: any) => {
-        
-    };
-
     const onFormFinish = async (values: any) => {
         
         setConfirmLoading(true);
-        const source = {
-            Name: values['Name'],
-            DataSourceType: DataSourceType.ShapeFile,
-            File : values['File'].file, //.fileList
-            Tags : values['Tags']
-            
+        const source : CreateDataSourceDTO= {
+            name: values['name'],
+            dataSourceType: DataSourceType.shapeFile,
+            file : values['file'].file, //.fileList
+            tags : values['tags']
         };
         
         const createdSource = await sourceStore.create(source);
@@ -79,7 +72,7 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
                 title: 'Có lỗi',
                 content: <>
                     {`Không thể upload `}
-                    <b>{source.Name}</b>
+                    <b>{source.name}</b>
                 </>,
             });
             return;
@@ -101,24 +94,23 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
                 wrapperCol={{ span: 14 }}
                 layout="horizontal"
                 initialValues={{ size: 'default', requiredMarkValue: 'required', Note: 'dd' }}
-                onValuesChange={onFormValuesChange}
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="File" label="File" required tooltip="This is a required field"
+                <Form.Item name="file" label="File" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'File is required' }]}>
                     <Upload {...uploadProps}>
                         <Button icon={<UploadOutlined />}>Select File</Button>
                     </Upload>
                 </Form.Item>
 
-                <Form.Item name="Name" label="Name" required tooltip="This is a required field"
+                <Form.Item name="name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' }]}>
                     <Input placeholder="input placeholder"  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="Tags" label="Tags" tooltip="This is a optional field">
-                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode" onChange={onTagsChange}>
+                <Form.Item name="tags" label="Tags" tooltip="This is a optional field">
+                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode">
                         {childrenTags}
                     </Select>
                 </Form.Item>

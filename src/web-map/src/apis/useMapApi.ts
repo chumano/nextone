@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MapInfo } from '../interfaces';
+import { CreateMapDTO } from '../interfaces/dtos';
 import mockMapApi from './mock/MockMapApi';
 
 const baseApi = process.env.REACT_APP_MAP_API;
@@ -18,7 +19,7 @@ export const useMapApi = () => {
     return axiosInstance.get(`/maps/${id}`);
   };
 
-  const create = (map: MapInfo): Promise<AxiosResponse<MapInfo>> => {
+  const create = (map: CreateMapDTO): Promise<AxiosResponse<MapInfo>> => {
     return axiosInstance.post(`${baseApi}/maps/create`, map);
   };
 

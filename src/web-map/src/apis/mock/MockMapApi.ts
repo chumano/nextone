@@ -5,29 +5,29 @@ import { MapInfo } from '../../interfaces';
 let lastId = 5;
 const maps: MapInfo[] = [
     {
-        Id: "Map1",
-        Name: "Map Khu vực 1",
-        Layers: []
+        id: "Map1",
+        name: "Map Khu vực 1",
+        layers: []
     },
     {
-        Id: "Map2",
-        Name: "Map Tp. HCM",
-        Layers: []
+        id: "Map2",
+        name: "Map Tp. HCM",
+        layers: []
     },
     {
-        Id: "Map3",
-        Name: "Map Tỉnh Đồng Tháp",
-        Layers: []
+        id: "Map3",
+        name: "Map Tỉnh Đồng Tháp",
+        layers: []
     },
     {
-        Id: "Map4",
-        Name: "Map 4",
-        Layers: []
+        id: "Map4",
+        name: "Map 4",
+        layers: []
     },
     {
-        Id: "Map5",
-        Name: "Map 5",
-        Layers: []
+        id: "Map5",
+        name: "Map 5",
+        layers: []
     }
 ];
 

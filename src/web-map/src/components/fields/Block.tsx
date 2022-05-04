@@ -63,7 +63,6 @@ export default class Block extends React.Component<any, any> {
 
         return <>
             <label style={this.props.style}
-                data-wd-key={this.props["data-wd-key"]}
                 className={classnames({
                     "input-block": true,
                     "input-block--wide": this.props.wideMode,
@@ -81,7 +80,7 @@ export default class Block extends React.Component<any, any> {
                     </div>
                 }
                 {!this.props.fieldSpec &&
-                    <div className="input-block-label">
+                    <div className="input-block-label" title={this.props.label}>
                         {this.props.label}
                     </div>
                 }

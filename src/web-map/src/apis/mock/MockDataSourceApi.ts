@@ -5,28 +5,28 @@ import { DataSource, DataSourceType, GeoType } from '../../interfaces';
 let lastId = 5;
 const datasources: DataSource[] = [
     {
-        Id: "Source1",
-        Name: "Bản đồ nền 1",
-        SourceFile: "shapfile.zip",
-        DataSourceType: DataSourceType.ShapeFile,
-        GeoType: GeoType.Fill,
-        Properties: {}
+        id: "Source1",
+        name: "Bản đồ nền 1",
+        pourceFile: "shapfile.zip",
+        dataSourceType: DataSourceType.shapeFile,
+        geoType: GeoType.fill,
+        properties: {}
     },
     {
-        Id: "Source2",
-        Name: "Đường nội bộ",
-        SourceFile: "shapfile1.zip",
-        DataSourceType: DataSourceType.ShapeFile,
-        GeoType: GeoType.Line,
-        Properties: {}
+        id: "Source2",
+        name: "Đường nội bộ",
+        pourceFile: "shapfile1.zip",
+        dataSourceType: DataSourceType.shapeFile,
+        geoType: GeoType.line,
+        properties: {}
     }, 
     {
-        Id: "Source3",
-        Name: "Cơ quan hành chính",
-        SourceFile: "shapfile2.zip",
-        DataSourceType: DataSourceType.ShapeFile,
-        GeoType: GeoType.Point,
-        Properties: {}
+        id: "Source3",
+        name: "Cơ quan hành chính",
+        pourceFile: "shapfile2.zip",
+        dataSourceType: DataSourceType.shapeFile,
+        geoType: GeoType.point,
+        properties: {}
     }
 ];
 const mockDataSourceApi = (axiosInstance: AxiosInstance) => {

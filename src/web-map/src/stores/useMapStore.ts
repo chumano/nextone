@@ -1,5 +1,6 @@
 import { useMapApi } from "../apis";
 import { MapInfo } from "../interfaces";
+import { CreateMapDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { MapState, useMapObservable } from "./useMapObservable";
@@ -27,7 +28,7 @@ export const useMapStore = () => {
       return await handleAxiosApi<MapInfo>(api.get(id));
     };
   
-    const create = async (obj: MapInfo) => {
+    const create = async (obj: CreateMapDTO) => {
       try {
         observable.creating(true);
         const createdObj = await handleAxiosApi<MapInfo>(api.create(obj));

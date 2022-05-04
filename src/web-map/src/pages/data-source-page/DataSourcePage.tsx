@@ -10,29 +10,29 @@ import ModalEditDataSource from './ModalEditDataSource';
 
 const DatasouceItem = ({ item, onClick, onDelete }: { item: DataSource, onClick: any, onDelete: any }) => {
     return <>
-        <div className="source-item clickable" title={item.Name} onClick={onClick}>
+        <div className="source-item clickable" title={item.name} onClick={onClick}>
             <div>
                 <h3 className='source-item__title'>
-                    {item.Name}
+                    {item.name}
                 </h3>
                 <Button className='delete-btn' onClick={onDelete}
                     danger icon={<DeleteOutlined />} />
             </div>
             <div>
                 <span className='source-info'>
-                    {DataSourceType[item.DataSourceType]}
+                    {DataSourceType[item.dataSourceType]}
                 </span>
                 <span className='source-info'>
-                    {GeoType[item.GeoType]}
+                    {GeoType[item.geoType]}
                 </span>
             </div>
 
 
-            {item.Tags &&
+            {item.tags &&
                 <div className='tags__block'>
                     Tags :
                     <ul className='tags__list'>
-                        {item.Tags.map(tag =>
+                        {item.tags.map(tag =>
                             <li className='tag-item' key={tag}> {tag} </li>
                         )}
                     </ul>
@@ -70,7 +70,7 @@ const DataSourcePage: React.FC = () => {
                 icon: <ExclamationCircleOutlined />,
                 content: 'Some descriptions',
                 onOk() {
-                    sourceStore.remove(item.Id);
+                    sourceStore.remove(item.id);
                 },
                 onCancel() {
                 },
@@ -92,7 +92,7 @@ const DataSourcePage: React.FC = () => {
             <div className="datasource-page__body">
                 <div className="datasource-page__list">
                     {sourceState.datasources.map((item) => {
-                        return <DatasouceItem key={item.Id} item={item}
+                        return <DatasouceItem key={item.id} item={item}
                             onClick={handleEditSource(item)}
                             onDelete={handleDeleteSource(item)}
                         />

@@ -20,7 +20,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
 
     const onFormFinish = async (values: any) => {
         //onLayerAdded
-        const source = datasources.find(o=> o.Id == values['Source'])
+        const source = datasources.find(o=> o.id == values['Source'])
         if(!source){
             return;
         }
@@ -28,8 +28,8 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
         const layerStyle : LayerStyle = {
             name: values['Name'],
             layerGroup:  values['GroupName'],
-            layerType: geo2LayerType(source?.GeoType),
-            sourceId: source.Id,
+            layerType: geo2LayerType(source?.geoType),
+            sourceId: source.id,
             visibility: true,
             note:  values['Note'],
         }
@@ -65,7 +65,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
                     rules={[{ required: true, message: 'Source is required' }]}>
                     <Select placeholder="Source" >
                         {datasources.map(o=>
-                            <Select.Option key={o.Id} value={o.Id}>{o.Name} - {GeoType[o.GeoType]}</Select.Option>
+                            <Select.Option key={o.id} value={o.id}>{o.name} - {GeoType[o.geoType]}</Select.Option>
                         )}
                     </Select>
                 </Form.Item>

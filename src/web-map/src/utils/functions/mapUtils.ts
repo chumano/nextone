@@ -4,11 +4,11 @@ import { GeoType } from "../../interfaces";
 
 export const geo2LayerType = (geoType? : GeoType)=> {
     switch(geoType){
-        case GeoType.Point:
+        case GeoType.point:
             return 'point';
-        case GeoType.Line:
+        case GeoType.line:
             return 'line';
-        case GeoType.Fill:
+        case GeoType.fill:
             return 'fill';
     }
     return '';
@@ -18,11 +18,11 @@ export const geo2LayerType = (geoType? : GeoType)=> {
 export  const layerType2Geo = (layerType : string)=> {
     switch(layerType){
         case 'point':
-            return GeoType.Point;
+            return GeoType.point;
         case 'line':
-            return GeoType.Line ;
+            return GeoType.line ;
         case 'fill':
-            return GeoType.Fill;
+            return GeoType.fill;
     }
-    return GeoType.Other;
+    return GeoType.other;
 }

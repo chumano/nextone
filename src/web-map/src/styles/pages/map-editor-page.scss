@@ -8,6 +8,7 @@
     padding: 5px;
 }
 
+
 .layer-list {
     height: 100%;
     display: flex;
@@ -109,6 +110,9 @@
 /*----------------------------*/
 /* layer-editor */
 .layer-editor {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
     .ant-collapse-header {
         padding: 5px 10px !important;
     }
@@ -119,6 +123,11 @@
         background-color: lighten($color-black, 2);
         font-size: $font-size-3;
         color: $color-white;
+    }
+
+    &__body{
+        flex-grow: 1;
+        overflow-y: auto;
     }
 }
 

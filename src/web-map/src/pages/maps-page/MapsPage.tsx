@@ -18,12 +18,12 @@ import {
 
 const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
     return <>
-        <div className="map-item clickable" title={map.Name} onClick={onClick}> 
+        <div className="map-item clickable" title={map.name} onClick={onClick}> 
             <div className="map-item__image-block">
                 <img src="https://cloud.maptiler.com/static/img/maps/basic.png?t=1634127409" />
             </div>
             <div  className="map-item__title">
-                {map.Name}
+                {map.name}
             </div>
         </div>
     </>
@@ -46,7 +46,7 @@ const MapsPage : React.FC = ()=>{
 
     const editMap = (item: MapInfo) =>{
         return (e: any)=>{
-            navigate("/maps/" + item.Id);
+            navigate("/maps/" + item.id);
         }
     } 
 
@@ -65,7 +65,7 @@ const MapsPage : React.FC = ()=>{
             <div  className="maps-page__body">
                 <div className="maps-page__list-map">
                     {mapState.maps.map( (map_item) =>{
-                        return <MapItem key={map_item.Id} map={map_item} onClick={editMap(map_item)} />
+                        return <MapItem key={map_item.id} map={map_item} onClick={editMap(map_item)} />
                     })}
                 </div>
 

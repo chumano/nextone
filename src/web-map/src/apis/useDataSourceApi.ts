@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import {  DataSource, MapInfo } from '../interfaces';
+import { UpdateDataSourceDTO } from '../interfaces/dtos';
 import mockDataSourceApi from './mock/MockDataSourceApi';
 
 const baseApi = process.env.REACT_APP_MAP_API;
@@ -28,7 +29,7 @@ export const useDatasourceApi = () => {
     });
   };
 
-  const update = (id: string, source: DataSource): Promise<AxiosResponse<DataSource>> => {
+  const update = (id: string, source: UpdateDataSourceDTO): Promise<AxiosResponse<DataSource>> => {
     return axiosInstance.post(`${baseApi}/datasources/update/${id}`, source);
   };
 

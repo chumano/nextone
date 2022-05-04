@@ -98,6 +98,21 @@ const onLayerPropertyChange = (layerIndex: number, property: string, newValue: a
     setNextState({ layers: [...layers] });
 } 
 
+const onLayerStyleChange = (layerIndex: number, property: string, newValue: any ) =>{
+    let { layers} = subject.getValue();
+    const layer = layers[layerIndex];
+    const newLayer = {
+        ...layer,
+        style : {
+            ...layer.style,
+            [property]: newValue
+        }   
+    }
+    layers[layerIndex] = newLayer;
+    setNextState({ layers: [...layers] });
+} 
+
+
 const addLayer = (layer: LayerStyle) => {
     let { layers } = subject.getValue();
     //find lastLayer has same group
@@ -134,19 +149,20 @@ export const useMapEditor = () => {
         const id = mapInfo.id;
         const mapLayers : MapLayer[] = layers.map(o=>{
             return {
-                LayerName : o.name,
-                LayerGroup : o.layerGroup,
-                PaintProperties : o.style,
-                DataSourceId : o.sourceId || '',
-                MinZoom : o.minZoom,
-                MaxZoom: o.maxZoom,
-                Active: o.visibility,
-                Note : o.note
+                layerName : o.name,
+                layerGroup : o.layerGroup,
+                paintProperties : o.style,
+                dataSourceId : o.sourceId || '',
+                minZoom : o.minZoom,
+                maxZoom: o.maxZoom,
+                active: o.visibility,
+                note : o.note
             }
         });
         const mapUpdate :MapInfo =  {
-            Name : mapInfo.name,
-            Layers : mapLayers
+            id: id,
+            name : mapInfo.name,
+            layers : mapLayers
         }
         await api.update(id, mapUpdate);
     }
@@ -161,6 +177,7 @@ export const useMapEditor = () => {
         addLayer,
 
         onLayerPropertyChange,
+        onLayerStyleChange,
         onLayerAction,
         
         saveMap,

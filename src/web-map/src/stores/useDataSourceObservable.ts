@@ -44,7 +44,7 @@ export const useDatasourceObservable = () => {
     const update = (id: string, obj: DataSource) => {
         let objs = [...datasourceSubject.getValue().datasources];
         objs = objs.map((item) => {
-            if (item.Id === id) {
+            if (item.id === id) {
                 return { ...item, ...obj };
             }
 
@@ -59,7 +59,7 @@ export const useDatasourceObservable = () => {
     };
 
     const remove = (id: string) => {
-        const objs = [...datasourceSubject.getValue().datasources].filter((obj) => obj.Id !== id);
+        const objs = [...datasourceSubject.getValue().datasources].filter((obj) => obj.id !== id);
         setNextState({ datasources: objs, error: '' });
     };
 

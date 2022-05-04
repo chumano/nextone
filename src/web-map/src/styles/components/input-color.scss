@@ -1,0 +1,22 @@
+.input-color{
+
+    &-wrapper{
+
+    }
+
+    &-group{
+        display: flex;
+        flex-direction: row;
+        border: 1px solid #000;
+        .input-color{
+            flex-grow: 1;
+        }
+    }
+
+    &-swatch{
+        width: 14px;
+        flex-shrink: 0;
+        flex-grow: 0;
+        border-right: 1px solid #000;
+    }
+}
