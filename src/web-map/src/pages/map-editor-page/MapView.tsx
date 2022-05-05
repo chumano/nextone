@@ -45,7 +45,10 @@ const MapViewContainer : React.FC<any> = (props)=>{
                     />
                 </LayersControl.BaseLayer>
                 <LayersControl.BaseLayer name="Google"  checked>
-                    <LayerGoogleLeaflet apiKey='AIzaSyDHCY13CNFQE8V6VEzQSEpo0ssyD0xp5g8' type={'roadmap'} />
+                    <LayerGoogleLeaflet apiKey='AIzaSyDHCY13CNFQE8V6VEzQSEpo0ssyD0xp5g8' 
+                    type={'roadmap'} 
+                    // googleMapsAddLayers={[{name:'BicyclingLayer'},{name:'TrafficLayer'},{name:'TransitLayer'}]}
+                    />
                 </LayersControl.BaseLayer>
 
                 <LayersControl.Overlay name="us_states" checked={true}> 

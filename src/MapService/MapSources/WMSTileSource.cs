@@ -17,7 +17,6 @@ namespace MapService.MapSources
         private readonly TileSetConfiguration configuration;
         private readonly string contentType;
 
-        public string ContentType => throw new NotImplementedException();
         WmscRequest wmscRequest;
 
         public WMSTileSource(TileSetConfiguration configuration)
@@ -53,6 +52,24 @@ namespace MapService.MapSources
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(uri);
             return FetchImageAsync(httpWebRequest);
         }
+
+        //public Uri GetUri(TileInfo info)
+        //{
+        //    var url = new StringBuilder(_baseUrl.AbsoluteUri);
+        //    url.Append(string.IsNullOrWhiteSpace(_baseUrl.Query) ? "?SERVICE=WMS" : "&SERVICE=WMS");
+        //    if (!string.IsNullOrEmpty(_version)) url.AppendFormat("&VERSION={0}", _version);
+        //    url.Append("&REQUEST=GetMap");
+        //    url.AppendFormat("&BBOX={0}", TileTransform.TileToWorld(new TileRange(info.Index.Col, info.Index.Row), info.Index.Level, _schema));
+        //    url.AppendFormat("&FORMAT={0}", _schema.Format);
+        //    url.AppendFormat("&WIDTH={0}", _schema.GetTileWidth(info.Index.Level));
+        //    url.AppendFormat("&HEIGHT={0}", _schema.GetTileHeight(info.Index.Level));
+        //    var crsFormat = !string.IsNullOrEmpty(_version) && string.CompareOrdinal(_version, "1.3.0") >= 0 ? "&CRS={0}" : "&SRS={0}";
+        //    url.AppendFormat(crsFormat, _schema.Srs);
+        //    url.AppendFormat("&LAYERS={0}", ToCommaSeparatedValues(_layers));
+        //    if (_styles != null && _styles.Count > 0) url.AppendFormat("&STYLES={0}", ToCommaSeparatedValues(_styles));
+        //    AppendCustomParameters(url);
+        //    return new Uri(url.ToString());
+        //}
 
         private async Task<byte[]> FetchImageAsync(HttpWebRequest httpWebRequest)
         {

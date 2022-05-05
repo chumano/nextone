@@ -67,6 +67,7 @@ const LayerEditor: React.FC = () => {
 
   const changeStyleProperty =  useDebounce(changeStylePropertyFunc, 300);
 
+
   const renderGroupType = useCallback((type: 'layer' | 'properties' | string, 
     layerProps: LayerStyle, fields: any) => {
     const layerSources = datasources.map(o => {
@@ -75,6 +76,8 @@ const LayerEditor: React.FC = () => {
         name: `${o.name} - ${GeoType[o.geoType]}`
       }
     });
+
+    const dataSource = datasources.find(o=>o.id == layer?.sourceId);
 
     switch (type) {
       case 'layer': return <div>
@@ -126,6 +129,7 @@ const LayerEditor: React.FC = () => {
           return <PaintPropertyGroup
             layerStyle={layer!.style || {}}
             paintProperties={fields}
+            dataSource={dataSource}
             onChange={changeStyleProperty}
            />
 

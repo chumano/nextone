@@ -1,10 +1,11 @@
-import { Button, Modal, notification, Modal as AntDModal } from "antd";
+import { Button, Modal, notification, Modal as AntDModal, Typography } from "antd";
 import { SaveOutlined,DeleteOutlined ,ExclamationCircleOutlined} from '@ant-design/icons';
 import { MapInfoState, useMapEditor } from "./useMapEditor";
 import { getResponseErrorMessage } from "../../utils/functions";
 import { useMapApi } from "../../apis";
 import { Link, useNavigate } from "react-router-dom";
-
+import { useEffect, useState } from "react";
+const { Paragraph } = Typography;
 interface ToolBarProps {
     map? : MapInfoState;
 }
@@ -12,6 +13,12 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
     const mapApi = useMapApi();
     const navigate = useNavigate();
     const mapEditor = useMapEditor();
+
+    const [name, setName] = useState(props.map?.name);
+    useEffect(()=>{
+        setName(props.map?.name);
+    },[props.map?.name])
+
     const onSave = async () => {
         try{
             await mapEditor.saveMap();
@@ -67,6 +74,12 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             <h3 style={{ width: '600px' }}>
                 <Link className="link" to="/maps">Maps</Link>
                 /{props.map?.name}
+                {/* <div style={{display:'inline-block', maxWidth:'300px'}}>
+                    <Paragraph editable={{ onChange: setName }} style={{display:'inline-block'}}>
+                        {name}
+                    </Paragraph>
+                </div> */}
+                
             </h3>
             
             <div>

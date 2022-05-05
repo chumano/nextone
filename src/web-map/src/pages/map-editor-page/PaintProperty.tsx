@@ -2,11 +2,12 @@ import { Input, InputNumber, Select, Switch } from "antd";
 import React from "react";
 import Block from "../../components/fields/Block";
 import InputColor from "../../components/ui-inputs/InputColor";
-import { DashStyle } from "../../interfaces";
+import { DashStyle, DataSource, ShapeFileProps } from "../../interfaces";
 import { capitalize } from "../../utils/functions";
 
 interface PaintPropertyProps {
     property: string;
+    dataSource?: DataSource;
     value: any;
     onChange: (val: any) => void;
 }
@@ -21,7 +22,7 @@ const getPropertyName = (property: string) => {
     return name;
 }
 
-const renderPropertyInput = (property: string, value: any, onChange: (val: any) => void) => {
+const renderPropertyInput = (property: string, value: any ,dataSource: DataSource | undefined, onChange: (val: any) => void) => {
 
     if (property.indexOf('symbol-image') !== -1) {
         const symbols = ['default', 'marker']
@@ -47,9 +48,28 @@ const renderPropertyInput = (property: string, value: any, onChange: (val: any) 
             value={value || 100}
             onChange={onChange} />
     } else if (property.indexOf('column') !== -1) {
-        return <Input name={property}
-            value={value}
-            onChange={(e) => onChange(e.target.value)} />
+        let columns :string[]= [];
+        if(dataSource && dataSource.properties && dataSource.properties[ShapeFileProps.COLUMNS]){
+            const dataTypeColumns =  dataSource.properties[ShapeFileProps.COLUMNS];
+            try{
+                columns = dataTypeColumns.map( (o:any)=>o.Name);
+            }catch{}
+        }
+        if(columns.length==0){
+            return <Input name={property}
+                value={value}
+                onChange={(e) => onChange(e.target.value)} />
+        }
+        return <Select value={value}
+                style={{ width: '100%' }}
+                onChange={onChange}>
+                {columns.map((col) => {
+                    return <Select.Option key={col} value={col}  >
+                        {col}
+                    </Select.Option>
+                })}
+            </Select>;
+
     } else if (property.indexOf('font') !== -1) {
         return <Input name={property}
             value={value || 'Arial'}
@@ -84,7 +104,7 @@ const renderPropertyInput = (property: string, value: any, onChange: (val: any) 
     return property;
 }
 
-const InternalPaintProperty: React.FC<PaintPropertyProps> = ({ property, value, onChange }) => {
+const InternalPaintProperty: React.FC<PaintPropertyProps> = ({ property, value, dataSource, onChange }) => {
     const name = getPropertyName(property);
 
     const handleChange = (val: any) => {
@@ -93,7 +113,7 @@ const InternalPaintProperty: React.FC<PaintPropertyProps> = ({ property, value, 
     }
     return <>
         <Block label={name}>
-            {renderPropertyInput(property, value, handleChange)}
+            {renderPropertyInput(property, value, dataSource, handleChange)}
         </Block>
     </>
 }

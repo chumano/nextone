@@ -21,6 +21,10 @@ namespace MapService.Controllers
             {
                 var tileSource = TileSources.GetTileSource(tilesetName);
                 // TODO: check formatExtension == tileset.Configuration.Format
+
+                //kiểm tra tile này đã vẽ chửa
+                //Check file exists trong thư mục quy định
+                // vẽ rồi nhưng có thể styles đã update, thì style update thì tăng version của map lên
                 var data = await tileSource.GetTileAsync(x, y, z);
                 if (data != null)
                 {
