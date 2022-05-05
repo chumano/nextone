@@ -15,7 +15,7 @@ namespace MapService.DTOs
                 DataSourceType = o.DataSourceType,
                 GeoType = o.GeoType,
                 SourceFile = o.SourceFile,
-                ImageData = o.ImageData,
+                ImageUrl = "",//o.ImageData,
                 Tags = o.Tags,
                 Properties = o.Properties
             });

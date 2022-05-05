@@ -1,6 +1,7 @@
 ﻿using GeoAPI.CoordinateSystems;
 using GeoAPI.CoordinateSystems.Transformations;
 using GeoAPI.Geometries;
+using ProjNet.Converters.WellKnownText;
 using ProjNet.CoordinateSystems;
 using ProjNet.CoordinateSystems.Transformations;
 using SharpMap.Data;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.IO;
 
 namespace MapService.Utils
 {
@@ -391,76 +393,80 @@ namespace MapService.Utils
             return myList;
         }
 
-
-        //===========================================
-        public static ShapeFileInfo ReadShapeFile(string filePath)
+        public static ShapeFileInfo ReadShapeFile(string filePath, 
+            bool readImage = true,
+            bool readFeatureData = true)
         {
             ShapeFileInfo info = new ShapeFileInfo();
             ShapeFile sf = null;
             try
             {
-                //============================
-                sf = new ShapeFile(filePath, true);
-                sf.Open();
+                sf = new ShapeFile(filePath, true);              
                 var ext = sf.GetExtents();
-                FeatureDataSet ds = new FeatureDataSet();
-                sf.ExecuteIntersectionQuery(ext, ds);
-                FeatureDataTable table = ds.Tables[0];
                 info.Extents = ext;
                 info.GeometryType = sf.ShapeType;
-                switch (sf.ShapeType)
+                info.SRID = sf.SRID;
+                info.FeatureCount = sf.GetFeatureCount();
+
+                if (readFeatureData)
                 {
-                    case ShapeType.Polygon:
-
-                        break;
-                    case ShapeType.Point:
-                        break;
-                    case ShapeType.PolyLine:
-                        break;
-                    case ShapeType.Multipoint:
-                        break;
+                    ReadFeatureData(sf, info);
                 }
-
-                //=================================================
-                #region Read the .dbf data from the row.
-                for (int j = 0; j < table.Columns.Count; j++)
+                if (readImage)
                 {
-                    DataColumn col = table.Columns[j];
-                    info.Columns.Add(new ShapeFileColumn()
-                    {
-                        Name = col.ColumnName,
-                        Type = col.DataType.Name
-                    });
+                    var render = new MapRender();
+                    var image = render.RenderImage(sf);
+                    info.Image = image;
                 }
-
-                //==========================================
-                info.FeatureCount = table.Rows.Count;
-                if (table.Rows.Count <= 1000)
-                {
-                    foreach (FeatureDataRow row in table.Rows)
-                    {
-                        Dictionary<string, object> data = new Dictionary<string, object>();
-                        for (int j = 0; j < table.Columns.Count; j++)
-                        {
-                            DataColumn col = table.Columns[j];
-                            var obj = row[col];
-                            data.Add(col.ColumnName, obj);
-                        }
-                        info.AttributeData.Add(data);
-                    }
-                }
-               
-                #endregion
-
-                if (sf != null) sf.Close();
+                sf.Dispose();
             }
             catch (Exception ex)
             {
                 if (sf != null) sf.Close();
                 throw ex;
             }
-
+           
             return info;
+        }
+
+        private static void ReadFeatureData(ShapeFile sf, ShapeFileInfo info)
+        {
+            var columns = new List<ShapeFileColumn>();
+            var featureData = new List<Dictionary<string, object>>();
+
+            var ext = sf.GetExtents();
+            sf.Open();
+            FeatureDataSet ds = new FeatureDataSet();
+            sf.ExecuteIntersectionQuery(ext, ds);
+            FeatureDataTable table = ds.Tables[0];
+            for (int j = 0; j < table.Columns.Count; j++)
+            {
+                DataColumn col = table.Columns[j];
+                columns.Add(new ShapeFileColumn()
+                {
+                    Name = col.ColumnName,
+                    Type = col.DataType.Name
+                });
+            }
+
+            if (table.Rows.Count <= 1000)
+            {
+                foreach (FeatureDataRow row in table.Rows)
+                {
+                    Dictionary<string, object> data = new Dictionary<string, object>();
+                    for (int j = 0; j < table.Columns.Count; j++)
+                    {
+                        DataColumn col = table.Columns[j];
+                        var obj = row[col];
+                        data.Add(col.ColumnName, obj);
+                    }
+                    featureData.Add(data);
+                }
+            }
+
+            sf.Close();
+            info.Columns = columns;
+            info.AttributeData = featureData;
         }
     }
 
@@ -470,11 +476,14 @@ namespace MapService.Utils
         public ShapeType GeometryType;
         public List<ShapeFileColumn> Columns;
         public List<Dictionary<string, object>> AttributeData;
+        public int SRID { get; set; }
         public Envelope Extents { get; set; }
         public int FeatureCount { get; set; }
+        public Image Image { get; set; }
 
         public ShapeFileInfo()
         {
+            SRID = 0;
             this.Columns = new List<ShapeFileColumn>();
             this.AttributeData = new List<Dictionary<string, object>>();
         }

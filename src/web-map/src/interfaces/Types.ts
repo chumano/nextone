@@ -22,3 +22,9 @@ export enum DashStyle
     dashDotDot,
     custom
 }
+
+export const ShapeFileProps = {
+    COLUMNS : "ShapeFile_Columns",
+    SRID : "ShapeFile_SRID",
+    FEATURECOUNT: "ShapeFile_FeatureCount",
+}

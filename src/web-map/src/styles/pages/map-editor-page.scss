@@ -6,6 +6,7 @@
     flex-direction: row;
     align-items: center;
     padding: 5px;
+    width: 100%;
 }
 
 
@@ -120,7 +121,7 @@
     &__header {
         display: flex;
         padding: 6px;
-        background-color: lighten($color-black, 2);
+        background-color: lighten($color-grey, 2);
         font-size: $font-size-3;
         color: $color-white;
     }

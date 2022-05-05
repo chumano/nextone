@@ -2,7 +2,7 @@ import { Button, Modal as AntDModal } from 'antd';
 import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { useCallback, useEffect, useState } from 'react';
 import Modal from '../../components/modals/Modal';
-import { DataSource, DataSourceType, GeoType } from '../../interfaces';
+import { DataSource, DataSourceType, GeoType, ShapeFileProps } from '../../interfaces';
 import { useDatasourceStore } from '../../stores/useDataSourceStore';
 import '../../styles/pages/data-source-page.scss';
 import ModalCreateDataSource from './ModalCreateDataSource';
@@ -11,33 +11,51 @@ import ModalEditDataSource from './ModalEditDataSource';
 const DatasouceItem = ({ item, onClick, onDelete }: { item: DataSource, onClick: any, onDelete: any }) => {
     return <>
         <div className="source-item clickable" title={item.name} onClick={onClick}>
-            <div>
-                <h3 className='source-item__title'>
-                    {item.name}
-                </h3>
-                <Button className='delete-btn' onClick={onDelete}
-                    danger icon={<DeleteOutlined />} />
+            <div className='source-item-image'>
+                <img src={item.imageUrl} alt="default image"/>
             </div>
-            <div>
-                <span className='source-info'>
-                    {DataSourceType[item.dataSourceType]}
-                </span>
-                <span className='source-info'>
-                    {GeoType[item.geoType]}
-                </span>
-            </div>
-
-
-            {item.tags &&
-                <div className='tags__block'>
-                    Tags :
-                    <ul className='tags__list'>
-                        {item.tags.map(tag =>
-                            <li className='tag-item' key={tag}> {tag} </li>
-                        )}
-                    </ul>
+            <div  className='source-item-info'>
+                <div>
+                    <h3 className='source-item-title'>
+                        {item.name}
+                    </h3>
+                    <Button className='delete-btn' onClick={onDelete}
+                        danger icon={<DeleteOutlined />} />
                 </div>
-            }
+
+                <div>
+                    <span className='source-info'>
+                        {DataSourceType[item.dataSourceType]}
+                    </span>
+                    <span className='source-info'>
+                        {GeoType[item.geoType]}
+                    </span>
+                    
+                </div>
+
+                {item.dataSourceType ===DataSourceType.shapeFile &&
+                    <div className='source-item-shapefile'>
+                        <label>Shapfile :</label>
+                        <div>
+                            <span className='source-info'>
+                                Feature Count: {item.properties[ShapeFileProps.FEATURECOUNT]}
+                            </span>
+                        </div>
+                    </div>
+                }
+
+
+                {item.tags &&
+                    <div className='tags__block'>
+                        Tags :
+                        <ul className='tags__list'>
+                            {item.tags.map(tag =>
+                                <li className='tag-item' key={tag}> {tag} </li>
+                            )}
+                        </ul>
+                    </div>
+                }
+            </div>
         </div>
     </>;
 }
@@ -109,7 +127,7 @@ const DataSourcePage: React.FC = () => {
 
         {modalEditVisible && <ModalEditDataSource visible={modalEditVisible}
             source={modalEditSource}
-            onToggle={(visible:boolean) => {
+            onToggle={(visible: boolean) => {
                 setModalEditVisible(visible);
             }} />
         }

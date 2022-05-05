@@ -7,6 +7,7 @@ import {
 import { getPropertiesConfigForType } from "../../config/paintPropertiesConfig";
 import { DataSource, GeoType, LayerType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
+import { capitalize } from "../../utils/functions";
 import { useDebounce } from "../../utils/hooks";
 import PaintPropertyGroup from "./PaintPropertyGroup";
 import { LayerStyle, useMapEditor } from "./useMapEditor";
@@ -154,17 +155,12 @@ const LayerEditor: React.FC = () => {
 
       <div className="layer-editor__body">
         <AntDCollapse
-          defaultActiveKey={['0',]}
+          defaultActiveKey={['0','1']}
           onChange={(key: string | string[]) => { }}
           expandIconPosition={'right' as any}
         >
-          {/* <AntDCollapse.Panel header="Layer">
-            <div>
-              {renderGroupType('layer', { ...layer }, [])}
-            </div>
-          </AntDCollapse.Panel> */}
           {layoutGroups.map( (group, index)=>{
-            return <AntDCollapse.Panel key={index} header={group.name}>
+            return <AntDCollapse.Panel key={index} header={ capitalize(group.name) }>
               <div>
                 {renderGroupType(group.type, { ...layer }, group.properties)}
               </div>

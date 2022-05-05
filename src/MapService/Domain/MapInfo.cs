@@ -19,6 +19,8 @@ namespace MapService.Domain
         public string Name { get; set; }
         public string Note { get; set; }
 
+        public byte[] ImageData { get; set; }
+
         public ICollection<MapLayer> Layers { get; set; }
 
         public DateTime? CreatedDate { get; set; }

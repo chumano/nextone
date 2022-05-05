@@ -7,6 +7,7 @@ export interface DataSource{
     geoType : GeoType
     properties : any;
     pourceFile : string;
+    imageUrl?: string;
     tags?: string[];
 }
 

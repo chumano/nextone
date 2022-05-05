@@ -19,13 +19,13 @@ const MapController = () => {
 
 const MapViewContainer : React.FC<any> = (props)=>{
     //const mapEditor = useMapEditor();
-    const defaultCenter: L.LatLngTuple = [51.505, -0.09];
-    const defaultZoom = 13;
+    const defaultCenter: L.LatLngTuple = [40.26,  -102.91];
+    const defaultZoom = 5;
     const mapRef = useRef<any>()
     console.log("display map : MapViewContainer")
     const displayMap = useMemo(()=>{
         console.log("display map")
-        return <MapContainer center={[51.505, -0.09]} zoom={13} 
+        return <MapContainer center={defaultCenter} zoom={defaultZoom} 
             ref={mapRef}
             zoomControl={false}
             doubleClickZoom={false}
@@ -36,14 +36,20 @@ const MapViewContainer : React.FC<any> = (props)=>{
             <MapController />
             <ZoomControl position="topright" />
 
-            <LayersControl position="topright">
+            <LayersControl position="topright" collapsed={false} >
                 <LayersControl.BaseLayer name="OSM" checked >
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                 </LayersControl.BaseLayer>
+                <LayersControl.Overlay name="us_states" checked={true}> 
+                    <TileLayer tms={true}
+                            url="http://localhost:5105/tms/1.0.0/us_states/{z}/{x}/{y}.png"
+                        />
+                </LayersControl.Overlay>
                 <LayersControl.Overlay name="Marker with popup">
+                   
                     <Marker position={defaultCenter}>
                         <Popup>
                             A pretty CSS3 popup. <br /> Easily customizable.

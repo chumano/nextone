@@ -40,7 +40,7 @@ const MainHeader: React.FC = (props: any) => {
 
                 <Link className="link" to="/data">Data Sources</Link>
 
-                <Link className="link" to="/maps/new">Map Editor</Link>
+                {/* <Link className="link" to="/maps/new">Map Editor</Link> */}
             </div>
 
             <div className="flex-spacer"></div>

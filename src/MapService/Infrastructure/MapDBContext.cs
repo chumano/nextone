@@ -34,8 +34,10 @@ namespace MapService.Infrastructure
                     .IsRequired();
 
                 eb.Property(o => o.Note)
-                 .HasColumnType("nvarchar(max)")
-                 ;
+                    .HasColumnType("nvarchar(max)");
+
+                eb.Property(o => o.ImageData)
+                    .HasColumnType("varbinary(max)");
 
                 eb.HasMany(o => o.Layers)
                     .WithOne()
@@ -137,6 +139,8 @@ namespace MapService.Infrastructure
                     v => JsonConvert.DeserializeObject<Dictionary<string, object>>(v)
                  );
 
+                eb.Property(o => o.FeatureData)
+                .HasColumnType("nvarchar(max)");
 
                 eb.Property(o=> o.ImageData)
                 .HasColumnType("varbinary(max)");

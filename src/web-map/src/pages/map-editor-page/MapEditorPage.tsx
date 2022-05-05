@@ -1,6 +1,6 @@
 import { Button, Modal as AntDModal } from "antd";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import MapEditorLayout from "../../components/_layouts/MapEditorLayout";
 import { MapInfo } from "../../interfaces";
 import { MapState, useMapStore } from "../../stores";
@@ -22,6 +22,7 @@ const modals = <>
 </>
 
 const MapEditorPage: React.FC = () => {
+    const navigate = useNavigate();
     const params = useParams();
     const { mapState, ...mapStore } = useMapStore();
     const sourceStore = useDatasourceStore();
@@ -67,6 +68,9 @@ const MapEditorPage: React.FC = () => {
                     content: <>
                         {`Không thể lấy thông tin map ${mapid} `}
                     </>,
+                    onOk(){
+                        navigate("/maps");
+                    }
                 });
             })
     }, [params]);

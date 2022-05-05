@@ -5,6 +5,11 @@ namespace MapService.Domain
 {
     public class DataSource
     {
+        public const string SHAPE_FILE_PROP_COLUMNS = "ShapeFile_Columns";
+        public const string SHAPE_FILE_PROP_SRID = "ShapeFile_SRID";
+        public const string SHAPE_FILE_PROP_FEATURECOUNT= "ShapeFile_FeatureCount";
+
+
         private DataSource()
         {
 
@@ -12,7 +17,8 @@ namespace MapService.Domain
         public DataSource(string id, string name,
             DataSourceTypeEnum dataSourceType, GeoTypeEnum geoType,
             string sourceFile,
-            Dictionary<string, object> props)
+            Dictionary<string, object> props,
+            string featureData = "")
         {
             CreatedDate = DateTime.Now;
             Id = id;
@@ -21,6 +27,7 @@ namespace MapService.Domain
             GeoType = geoType;
             SourceFile = sourceFile;
             Properties = props;
+            FeatureData = featureData;
         }
 
         public string Id { get; private set; }
@@ -33,6 +40,7 @@ namespace MapService.Domain
         public string SourceFile { get; private set; }
 
         public Dictionary<string, object> Properties { get; private set;}
+        public string FeatureData { get; private set; }
 
 
         public IList<string> Tags { get; set; }

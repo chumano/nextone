@@ -2,6 +2,7 @@
 using MapService.Domain.Repositories;
 using MapService.DTOs;
 using MapService.DTOs.Map;
+using MapService.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -38,9 +39,8 @@ namespace MapService.Controllers
 
             var objs = await _mapRepository.Maps
                 .OrderByDescending(o => o.CreatedDate)
-                .ToDto()
                 .ToListAsync();
-            return Ok(objs);
+            return Ok(objs.Select(o=> MapDTO.From(o)));
         }
 
         [HttpGet("{id}")]
@@ -117,7 +117,15 @@ namespace MapService.Controllers
 
             map = await _mapRepository.Get(id);
 
-            //generate tiles
+            //generate map image
+            var mapRender = new MapRender(500);
+            var img = mapRender.RenderImage(map);
+            var imgBytes = ImageHelper.ImageToByteArray(img);
+            map.ImageData = imgBytes;
+            _mapRepository.Update(map);
+
+            await _mapRepository.SaveChangesAsync();
+
             //TODO: send DomainEvent MapUpdated
             var mapDto = MapDTO.From(map);
             return Ok(mapDto);

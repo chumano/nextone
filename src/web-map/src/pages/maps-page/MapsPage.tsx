@@ -7,20 +7,19 @@ import { MapState, useMapStore } from "../../stores";
 import '../../styles/pages/maps-page.scss';
 import { useObservable } from "../../utils/hooks";
 import ModalCreateMap from "./ModalCreateMap";
-import {
-    arrayMove,
-    SortableContext,
-    sortableKeyboardCoordinates,
-    useSortable,
-    verticalListSortingStrategy,
-  } from '@dnd-kit/sortable';
-  
+import defaultMapImg from  '../../assets/images/default_map.png';
 
 const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
     return <>
         <div className="map-item clickable" title={map.name} onClick={onClick}> 
             <div className="map-item__image-block">
-                <img src="https://cloud.maptiler.com/static/img/maps/basic.png?t=1634127409" />
+                {map.imageUrl &&
+                    <img src={map.imageUrl} alt="map image" />
+                }
+                {!map.imageUrl &&
+                    <img src={defaultMapImg} />
+                }
+                
             </div>
             <div  className="map-item__title">
                 {map.name}

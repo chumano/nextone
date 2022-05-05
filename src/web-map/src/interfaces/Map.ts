@@ -3,6 +3,8 @@ import { GeoType, PaintPropertyKey } from "./Types";
 export interface MapInfo {
     id: string;
     name: string;
+    note?: string;
+    imageUrl?: string;
     layers: MapLayer[]
 }
 

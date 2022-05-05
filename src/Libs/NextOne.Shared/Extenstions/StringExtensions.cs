@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Web;
 
 namespace NextOne.Shared.Extenstions
@@ -29,6 +31,23 @@ namespace NextOne.Shared.Extenstions
             var valueDecodedUrl = HttpUtility.UrlDecode(value);
             var valueBytes = System.Convert.FromBase64String(valueDecodedUrl);
             return Encoding.UTF8.GetString(valueBytes);
+        }
+
+        public  static string ToOnlyAlphaNumbericChars(this string value)
+        {
+            Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+            value = rgx.Replace(value, "");
+            return value;
+        }
+
+        public static string ToSafeFileName(this string value)
+        {
+            foreach (var c in Path.GetInvalidFileNameChars())
+            {
+                value = value.Replace(c, '_');
+            }
+
+            return value;
         }
     }
 }
