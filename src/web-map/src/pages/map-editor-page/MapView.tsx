@@ -5,6 +5,7 @@ import L from 'leaflet';
 import MapDisplayPosition from "./MapDisplayPosition";
 import React from "react";
 import { useMapEditor } from "./useMapEditor";
+import LayerGoogleLeaflet from "../../components/map/LayerGoogleLeaflet";
 
 const MapController = () => {
     const map = useMap();
@@ -37,12 +38,16 @@ const MapViewContainer : React.FC<any> = (props)=>{
             <ZoomControl position="topright" />
 
             <LayersControl position="topright" collapsed={false} >
-                <LayersControl.BaseLayer name="OSM" checked >
+                <LayersControl.BaseLayer name="OSM"  >
                     <TileLayer
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                 </LayersControl.BaseLayer>
+                <LayersControl.BaseLayer name="Google"  checked>
+                    <LayerGoogleLeaflet apiKey='AIzaSyDHCY13CNFQE8V6VEzQSEpo0ssyD0xp5g8' type={'roadmap'} />
+                </LayersControl.BaseLayer>
+
                 <LayersControl.Overlay name="us_states" checked={true}> 
                     <TileLayer tms={true}
                             url="http://localhost:5105/tms/1.0.0/us_states/{z}/{x}/{y}.png"

@@ -7,6 +7,10 @@ buid:
 ```
 npm run build
 ```
+serve build
+```
+serse -s build
+```
 
 # libraries
 - antd: ui library
