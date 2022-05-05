@@ -1,14 +1,23 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectionOptions } from "@microsoft/signalr";
+import Pubsub from "../utils/pubSub";
 
 class SignalRService {
     private baseUrl: string = '';
 
     private hubConnection: HubConnection | undefined;
-    public SignalRService(){
-        this.baseUrl = '';
+    private pubSub : Pubsub = new Pubsub();
+    public constructor(){
+        this.baseUrl = process.env.REACT_APP_COM_API || '';
+    }
+    public subscription(evt: 'connected' | string , callback: (...args: any[])=>void){
+      return this.pubSub.subscription(evt, callback);
     }
 
-    async connect(path: string, withToken: boolean): Promise<void> {
+    private onConnected = () =>{
+      this.pubSub.publish('connected');
+    }
+
+    async connect(path: string, withToken: boolean= false): Promise<void> {
         const url = this.baseUrl + path;
     
         const builder = new HubConnectionBuilder();
@@ -27,6 +36,7 @@ class SignalRService {
         return this.hubConnection.start()
           .then(() => {
             if (this.isConnected()) {
+              this.onConnected();
               console.log('SignalR: Connected to the server: ' + url);
             }
           })
@@ -41,10 +51,11 @@ class SignalRService {
         }
       }
     
-      async invoke(methodName: string, ...args: any[]): Promise<any> {
+      invoke(methodName: string, ...args: any[]): Promise<any> {
         if (this.isConnected()) {
-          return this.hubConnection?.invoke(methodName, ...args);
+          return this.hubConnection!.invoke(methodName, ...args);
         }
+        return Promise.resolve()
       }
     
       disconnect(): void {
@@ -60,5 +71,7 @@ class SignalRService {
         return this.hubConnection.state === HubConnectionState.Connected;
       }
 }
+
+export const SignalR = new SignalRService();
 
 export default SignalRService;

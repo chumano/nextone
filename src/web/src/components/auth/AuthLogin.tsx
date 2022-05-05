@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faSignInAlt
 } from "@fortawesome/free-solid-svg-icons";
+
 const AuthLogin: React.FC = () => {
     const history = useHistory();
     const location = useLocation();
@@ -16,8 +17,9 @@ const AuthLogin: React.FC = () => {
 
     useEffect(() => {
         AuthenticationService.isAuthenticated().then((authenticated)=>{
-            if(authenticated) 
+            if(authenticated) {
                 history.push("/home");
+            }
         });
     }, [])
     const login = () => {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { Suspense } from "react";
 import { RouteComponentProps, useHistory, useParams } from "react-router";
 import { AuthenticationService } from "../../services";
@@ -30,6 +30,7 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
         }else{
             setAuthenticated(true);
         }
+        
     }, [isLoggedIn,location])
 
     const toggleDrawer = ()=>{

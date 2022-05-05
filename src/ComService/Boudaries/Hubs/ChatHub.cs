@@ -12,7 +12,7 @@ namespace ComService.Boudaries.Hubs
     public class ChatHub : Hub
     {
         private readonly ILogger<ChatHub> _logger;
-        public ChatHub(Logger<ChatHub> logger)
+        public ChatHub(ILogger<ChatHub> logger)
         {
             _logger = logger;
            
@@ -97,31 +97,33 @@ namespace ComService.Boudaries.Hubs
             await Clients.Group(roomName).SendAsync("log", "[Server]: " + message);
         }
 
-        public async Task Register(string accessToken)
+        public async Task<string> Register(string accessToken)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
             var jwtToken = jwtHandler.ReadJwtToken(accessToken);
             if (jwtToken == null)
             {
-                return;
+                return "";
             }
             var claims = jwtToken.Claims;
             if (claims == null || !claims.Any())
             {
-                return;
+                return "";
             }
            
-            Guid.TryParse(claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value, out var userId);
+            Guid.TryParse(claims.FirstOrDefault(x => x.Type == "sub")?.Value, out var userId);
             if (userId == Guid.Empty )
             {
-                return;
+                return "";
             }
 
             var expirTime = jwtToken.ValidTo - jwtToken.ValidFrom;
             if (expirTime.TotalSeconds <= 0)
             {
-                return;
+                return "";
             }
+
+            return userId.ToString();
         }
 
         public override async Task OnConnectedAsync()
