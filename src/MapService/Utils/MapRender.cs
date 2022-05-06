@@ -1,4 +1,6 @@
-﻿using MapService.Domain;
+﻿using GeoAPI.Geometries;
+using MapService.Domain;
+using MapService.Domain.Services;
 using ProjNet.CoordinateSystems.Transformations;
 using SharpMap;
 using SharpMap.Data.Providers;
@@ -9,127 +11,108 @@ using System.IO;
 
 namespace MapService.Utils
 {
-    public class MapRender
+    public class MapRenderOptions
     {
-        const int TargetSRID = 3857;
-        private readonly int _width;
-        public MapRender(int width = 200)
+        public int PixelWidth { get; set; }
+        public int? PixelHeight { get; set; }
+        public int TargetSRID { get; set; }
+
+        public double? MinX { private get; set; }
+        public double? MinY { private get; set; }
+        public double? MaxX { private get; set; }
+        public double? MaxY { private get; set; }
+
+        public Color BackgroundColor { get; set; }
+        public MapRenderOptions()
         {
-            _width = width;
+            PixelWidth = 512;
+            PixelHeight = null;
+            TargetSRID = 3857;
+            BackgroundColor = Color.Transparent;
         }
 
-        public Image RenderImage(MapInfo mapInfo)
-        {
-            Map map = new Map(new Size(1, 1));
-            foreach (var mapLayer in mapInfo.Layers)
+        public Envelope Envelope { 
+            get
             {
-                try
-                {
-                    if (!mapLayer.Active ?? false)
-                    {
-                        continue;
-                    }
-                    var vectorLayer = createLayer(mapLayer);
-                    vectorLayer.Enabled = true;
-                    map.Layers.Add(vectorLayer);
-                }
-                catch
-                {
+                if(!MinX.HasValue 
+                    || !MinY.HasValue
+                    || !MaxX.HasValue
+                    || !MaxY.HasValue)
+                    return null;
 
-                }
-            }
+                var flipXY = TargetSRID == 4326;
 
-            var bbox = map.GetExtents();
-            var width = _width;
-            var height = (int)(width * bbox.Height / bbox.Width);
-            map.BackColor = Color.White;
-            map.Size = new Size(width, height);
-            map.PixelAspectRatio = (width / (double)height) / (bbox.Width / bbox.Height);
-            map.Center = bbox.Centre;
-            map.Zoom = bbox.Width;
-            map.SRID = TargetSRID;
-
-            var img = map.GetMap();
-            return img;
+                return flipXY
+                   ? new Envelope(MinY.Value, MaxY.Value,  MinX.Value, MaxX.Value)
+                   : new Envelope(MinX.Value, MaxX.Value,  MinY.Value, MaxY.Value);
+            } 
         }
+    }
 
-        private VectorLayer createLayer(MapLayer mapLayer)
+    public interface IMapRender
+    {
+        Image RenderImage(MapInfo mapInfo, MapRenderOptions renderOptions);
+        Image RenderImage(DataSource dataSource, MapRenderOptions renderOptions);
+        Image RenderImage(ShapeFile dataProvider, MapRenderOptions renderOptions);
+
+        Image RenderImage(Map map, MapRenderOptions renderOptions);
+    }
+    public class MapRender : IMapRender
+    {
+        private readonly ISharpMapFactory _mapFactory;
+        public MapRender(ISharpMapFactory mapFactory)
         {
-            ShapeFile dataProvider = new ShapeFile(mapLayer.DataSource.SourceFile, true, true);
-
-            var geoType = dataProvider.ShapeType.ToGeoType();
-            var style = GetDefaultVectorStyle(geoType);
-
-            var css = Session.Instance.CoordinateSystemServices;
-            CoordinateTransformationFactory factory = new CoordinateTransformationFactory();
-            var targetCoordinateSystem = css.GetCoordinateSystem(TargetSRID);
-            var transform = factory.CreateFromCoordinateSystems(dataProvider.CoordinateSystem, targetCoordinateSystem);
-            var reverseTransform = factory.CreateFromCoordinateSystems(targetCoordinateSystem, dataProvider.CoordinateSystem); ;
-
-            var layer = new VectorLayer(mapLayer.LayerName, dataProvider);
-            layer.Style = style;
-            layer.CoordinateTransformation = transform;
-            layer.ReverseCoordinateTransformation = reverseTransform;
-
-            return layer;
+            _mapFactory = mapFactory;
         }
 
-        public Image RenderImage(DataSource dataSource)
+        public Image RenderImage(MapInfo mapInfo, MapRenderOptions renderOptions)
+        {
+            Map map = _mapFactory.GenerateMap(mapInfo, renderOptions.TargetSRID);
+            return RenderImage(map, renderOptions);
+        }
+
+        public Image RenderImage(DataSource dataSource, MapRenderOptions renderOptions)
         {
             Image img;
             using (var dataProvider = new ShapeFile(dataSource.SourceFile, true))
             {
-                img = RenderImage(dataProvider);
+                img = RenderImage(dataProvider, renderOptions);
             }
 
             return img;
         }
 
-        public Image RenderImage(ShapeFile dataProvider)
+        public Image RenderImage(ShapeFile dataProvider, MapRenderOptions renderOptions)
         {
-            var geoType = dataProvider.ShapeType.ToGeoType();
-            var style = GetDefaultVectorStyle(geoType);
-         
-            var css = Session.Instance.CoordinateSystemServices;
-            CoordinateTransformationFactory factory = new CoordinateTransformationFactory();
-            var targetCoordinateSystem = css.GetCoordinateSystem(TargetSRID);
-            var transform = factory.CreateFromCoordinateSystems(dataProvider.CoordinateSystem, targetCoordinateSystem);
-            var reverseTransform = factory.CreateFromCoordinateSystems(targetCoordinateSystem, dataProvider.CoordinateSystem); ;
+            Map map = _mapFactory.GenerateMap(dataProvider, renderOptions.TargetSRID);
+            return RenderImage(map, renderOptions);
+        }
 
-            var layer = new VectorLayer("default", dataProvider);
-            layer.Style = style;
-            layer.CoordinateTransformation = transform;
-            layer.ReverseCoordinateTransformation = reverseTransform;
-            layer.Enabled = true;
+        public Image RenderImage(Map  map, MapRenderOptions renderOptions)
+        {
+            var bbox = renderOptions.Envelope;
+            if (bbox == null)
+            {
+                bbox = map.GetExtents();
+            }
 
-            //set view
-            Map map = new Map(new Size(1, 1));
-            map.Layers.Add(layer);
-
-            var bbox = layer.Envelope;
-            var width = _width;
+            var width = renderOptions.PixelWidth;
             var height = (int)(width * bbox.Height / bbox.Width);
-            map.BackColor = Color.White;
+            if (renderOptions.PixelHeight.HasValue)
+            {
+                height = renderOptions.PixelHeight.Value;
+            }
+            map.BackColor = renderOptions.BackgroundColor; //Color.Transparent; //Color.FromArgb(192, Color.Black)
             map.Size = new Size(width, height);
             map.PixelAspectRatio = (width / (double)height) / (bbox.Width / bbox.Height);
-            map.Center = bbox.Centre; 
+            map.Center = bbox.Centre;
             map.Zoom = bbox.Width;
-            map.SRID = TargetSRID;
+            map.SRID = renderOptions.TargetSRID;
 
             var img = map.GetMap();
             //var imageName = Path.ChangeExtension(dataSource.SourceFile, ".jpg");
             //img.Save(imageName, System.Drawing.Imaging.ImageFormat.Jpeg);
             return img;
-        }
-
-        private VectorStyle GetDefaultVectorStyle(GeoTypeEnum dataSource)
-        {
-            var style = new VectorStyle();
-            style.Fill = new SolidBrush(Color.Black);
-            style.Line = new Pen(new SolidBrush(Color.Black), 5);
-            style.PointColor = new SolidBrush(Color.Black);
-            style.PointSize = 10;
-            return style;
         }
     }
 }

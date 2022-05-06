@@ -6,11 +6,11 @@ namespace MapService.Utils
 {
     public class ImageHelper
     {
-        public static byte[] ImageToByteArray(System.Drawing.Image imageIn)
+        public static byte[] ImageToByteArray(System.Drawing.Image imageIn, ImageFormat imageFormat =null)
         {
             using (var ms = new MemoryStream())
             {
-                imageIn.Save(ms, ImageFormat.Jpeg);
+                imageIn.Save(ms, imageFormat??ImageFormat.Jpeg);
                 return ms.ToArray();
             }
 

@@ -72,7 +72,7 @@ namespace MapService
 
             //Load vector layer
             VectorLayer lay = new VectorLayer("states");
-            string ds = "Data/states.shp";
+            string ds = "Data/Sample/states.shp";
             if (!Path.IsPathRooted(ds))
                 ds = ds.Trim();// Server.MapPath(ds);
 

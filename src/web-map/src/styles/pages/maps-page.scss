@@ -21,12 +21,12 @@
    
 
     .map-item{
-        max-width: 15%;
+        width: 200px;
         height: auto ;
         margin: 10px 7px;
         background-color: $color-grey-8;
         &__image-block{
-            width: 200px;
+            
             height: 200px;
             display: flex;
             align-items: center;

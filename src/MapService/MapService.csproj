@@ -31,8 +31,8 @@
 
   <ItemGroup>
     <Folder Include="Data\GoogleMap\" />
+    <Folder Include="Data\MapTiles\" />
     <Folder Include="Domain\Events\" />
-    <Folder Include="Domain\Services\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 

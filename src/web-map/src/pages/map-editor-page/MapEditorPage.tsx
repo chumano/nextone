@@ -80,7 +80,11 @@ const MapEditorPage: React.FC = () => {
             toolbar={<ToolBar map={mapEditor.mapEditorState.mapInfo} />}
             layerList={<LayerList />}
             layerEditor={ mapEditor.mapEditorState.selectedLayerIndex!=undefined && <LayerEditor />}
-            map={<MapView />}
+            map={
+                mapEditor.mapEditorState.mapInfo?.id ? 
+                <MapView mapId={mapEditor.mapEditorState.mapInfo.id}/> 
+                :null
+                }
             bottom={bottomPanel}
             modals={modals}
             onItemClick={() => { }}

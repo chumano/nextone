@@ -1,5 +1,7 @@
 using MapService.Domain.Repositories;
+using MapService.Domain.Services;
 using MapService.Infrastructure;
+using MapService.Infrastructure.AppSettings;
 using MapService.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -13,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json.Serialization;
+using NextOne.Infrastructure.Core;
 using NextOne.Infrastructure.Core.Identity;
 using NextOne.Shared.Common;
 using SharedDomain;
@@ -93,11 +96,19 @@ namespace MapService
                     });
             });
 
+            services.AddMemoryCacheStore();
+
             services.AddHttpContextAccessor();
             services.AddHttpClient();
+
+            services.Configure<MapSettings>(Configuration.GetSection("MapSettings"));
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IDataSourceRepository, DataSourceRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
+
+            services.AddTransient<IMapService, MapService.Domain.Services.MapService>();
+            services.AddTransient<ISharpMapFactory, SharpMapFactory>();
+            services.AddTransient<IMapRender, MapRender>();
 
             MapUtils.InitSharpMap();
         }

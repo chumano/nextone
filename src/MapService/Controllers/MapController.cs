@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NextOne.Infrastructure.Core.Caching;
 using NextOne.Shared.Common;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -23,13 +25,20 @@ namespace MapService.Controllers
         private readonly ILogger<MapController> _logger;
         private readonly IMapRepository _mapRepository;
         private readonly IdGenerator _idGenerator;
+        private readonly IMapRender _mapRender;
+        private readonly ICacheStore _cacheStore;
+
         public MapController(ILogger<MapController> logger,
             IdGenerator idGenerator,
-            IMapRepository mapRepository)
+            IMapRepository mapRepository,
+            IMapRender mapRender,
+            ICacheStore cacheStore)
         {
             _logger = logger;
             _idGenerator = idGenerator;
             _mapRepository = mapRepository;
+            _mapRender = mapRender;
+            _cacheStore = cacheStore;
         }
 
         [HttpGet]
@@ -118,13 +127,19 @@ namespace MapService.Controllers
             map = await _mapRepository.Get(id);
 
             //generate map image
-            var mapRender = new MapRender(500);
-            var img = mapRender.RenderImage(map);
+            var img = _mapRender.RenderImage(map, new MapRenderOptions()
+            {
+                PixelWidth = 500,
+                BackgroundColor = Color.White
+            }); 
             var imgBytes = ImageHelper.ImageToByteArray(img);
             map.ImageData = imgBytes;
             _mapRepository.Update(map);
 
             await _mapRepository.SaveChangesAsync();
+
+            //clear Map Cache
+            await _cacheStore.Remove<SharpMap.Map>(map.Id, out var _);
 
             //TODO: send DomainEvent MapUpdated
             var mapDto = MapDTO.From(map);
@@ -155,6 +170,9 @@ namespace MapService.Controllers
             _mapRepository.Delete(map);
 
             await _mapRepository.SaveChangesAsync();
+
+            //clear Map Cache
+            await _cacheStore.Remove<SharpMap.Map>(map.Id, out var _);
 
             //TODO: delete tiles
             //TODO: send DomainEvent MapDeleted

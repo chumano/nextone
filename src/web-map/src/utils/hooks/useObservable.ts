@@ -12,7 +12,7 @@ export function useObservable<TState>(stateSubject: BehaviorSubject<TState>) {
     return () => {
       subscription.unsubscribe();
     }
-  }, []);
+  }, [stateSubject]);
 
   return state;
 }

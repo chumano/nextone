@@ -394,6 +394,7 @@ namespace MapService.Utils
         }
 
         public static ShapeFileInfo ReadShapeFile(string filePath, 
+            IMapRender mapRender = null,
             bool readImage = true,
             bool readFeatureData = true)
         {
@@ -412,10 +413,12 @@ namespace MapService.Utils
                 {
                     ReadFeatureData(sf, info);
                 }
-                if (readImage)
+                if (readImage && mapRender!=null)
                 {
-                    var render = new MapRender();
-                    var image = render.RenderImage(sf);
+                    var image = mapRender.RenderImage(sf, new MapRenderOptions()
+                    {
+                        PixelWidth = 512
+                    });
                     info.Image = image;
                 }
                 sf.Dispose();

@@ -27,13 +27,16 @@ namespace MapService.Controllers
         private readonly ILogger<DataSourceController> _logger;
         private readonly IDataSourceRepository _dataSourceRepository;
         private readonly IdGenerator _idGenerator;
+        private readonly IMapRender _mapRender;
         public DataSourceController(ILogger<DataSourceController> logger,
             IdGenerator idGenerator,
-            IDataSourceRepository dataSourceRepository)
+            IDataSourceRepository dataSourceRepository,
+            IMapRender mapRender)
         {
             _logger = logger;
             _idGenerator = idGenerator;
             _dataSourceRepository = dataSourceRepository;
+            _mapRender = mapRender;
         }
 
         [HttpGet]
@@ -96,7 +99,7 @@ namespace MapService.Controllers
             }
 
             //TODO: delete files if have something wrong
-            var shapeFileInfo = ShapefileHelper.ReadShapeFile(shapefilePath);
+            var shapeFileInfo = ShapefileHelper.ReadShapeFile(shapefilePath, _mapRender);
 
             var geoType = shapeFileInfo.GeometryType.ToGeoType();
 

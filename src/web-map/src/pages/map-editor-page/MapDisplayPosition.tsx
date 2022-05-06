@@ -7,14 +7,16 @@ interface DisplayPositionProps {
 const MapDisplayPosition: React.FC<DisplayPositionProps> = ({  }) => {
     const map = useMap();
     const [position, setPosition] = useState(() => map.getCenter())
+    const [zoom, setZoom] = useState(() => map.getZoom())
     const center: L.LatLngTuple = [51.505, -0.09]
-    const zoom = 13;
+    const defaultzoom = 13;
     const onClick = useCallback(() => {
-        map.setView(center, zoom)
+        map.setView(center, defaultzoom)
     }, [map])
 
     const onMove = useCallback(() => {
         setPosition(map.getCenter())
+        setZoom( map.getZoom());
     }, [map])
 
     useEffect(() => {
@@ -27,7 +29,10 @@ const MapDisplayPosition: React.FC<DisplayPositionProps> = ({  }) => {
     return <>
         <p className='leaflet-top leaflet-left' >
             <span className='leaflet-control' style={{ backgroundColor: 'white', padding: '5px' }}>
-                latitude: {position.lat.toFixed(4)}, longitude: {position.lng.toFixed(4)}{' '}
+                lat: {position.lat.toFixed(2)}, 
+                lon: {position.lng.toFixed(2)},
+                zoom: {zoom}
+                {' '}
                 <button onClick={onClick}>reset</button>
             </span>
         </p>
