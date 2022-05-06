@@ -38,6 +38,8 @@ manager/NextOne@123
 
 ### Services
 - Web :       http://localhost:5100
+- Web-map :   http://localhost:5107
+
 - Gateway :   http://localhost:5101
 
 - Identity :  https://localhost:5102

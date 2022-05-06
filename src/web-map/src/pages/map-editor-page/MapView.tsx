@@ -18,6 +18,8 @@ const MapController = () => {
     return null;
 };
 
+const GoogleApiKey = process.env.REACT_APP_GOOGLE_APIKEY;
+
 const MapViewContainer : React.FC<any> = (props)=>{
     //const mapEditor = useMapEditor();
     const defaultCenter: L.LatLngTuple = [40.26,  -102.91];
@@ -45,7 +47,7 @@ const MapViewContainer : React.FC<any> = (props)=>{
                     />
                 </LayersControl.BaseLayer>
                 <LayersControl.BaseLayer name="Google"  checked>
-                    <LayerGoogleLeaflet apiKey='AIzaSyDHCY13CNFQE8V6VEzQSEpo0ssyD0xp5g8' 
+                    <LayerGoogleLeaflet apiKey={GoogleApiKey} 
                     type={'roadmap'} 
                     // googleMapsAddLayers={[{name:'BicyclingLayer'},{name:'TrafficLayer'},{name:'TransitLayer'}]}
                     />
