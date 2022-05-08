@@ -17,8 +17,6 @@ import { axiosSetup } from './utils';
 import { AppContextProvider } from './utils/contexts/AppContext';
 import { Provider } from 'react-redux';
 import { store } from './store';
-import SignalRService, { SignalR } from './services/SignalRService';
-import { AuthenticationService } from './services';
 
 //=================================
 //=================================

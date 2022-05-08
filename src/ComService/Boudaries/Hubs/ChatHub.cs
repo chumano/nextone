@@ -9,16 +9,114 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Hubs
 {
+    class CallSignalingActions
+    {
+        public const string SEND_CALL_REQUEST = "call-send-request";
+        public const string SEND_CALL_REQUEST_RESPONSE = "call-send-request-response";
+        public const string SEND_SESSION_DESCRIPTION = "call-send-session-description";
+        public const string SEND_ICE_CANDIDATE = "call-send-ice-cadidate";
+        public const string SEND_HANG_UP = "call-send-hangup";
+    }
+
     public class ChatHub : Hub
     {
+        const string CallMessage = "call-message";
         private readonly ILogger<ChatHub> _logger;
         public ChatHub(ILogger<ChatHub> logger)
         {
             _logger = logger;
-           
+
         }
         public static Dictionary<string, List<string>> ConnectedClients = new Dictionary<string, List<string>>();
 
+        public async Task SendCallMessage(string action, object data)
+        {
+            
+            switch (action)
+            {
+                case CallSignalingActions.SEND_CALL_REQUEST:
+                    {
+                        //data is receiver name
+                        //find client by receiver
+
+                        //create  room
+                        var room = Guid.NewGuid().ToString();
+                        var emitData = CreateEventData("call-request", room);
+                        await EmitData(Clients.Others, emitData);
+                    }
+                    break;
+
+                case CallSignalingActions.SEND_CALL_REQUEST_RESPONSE:
+                    {
+                        //data is room, accepted
+                        var response = (dynamic)data;
+                        var room = response.room;
+                        var accepted = response.accepted;
+
+                        //find clients by room
+                        var emitData = CreateEventData(CallMessage, new
+                        {
+                            type = "call-request-response",
+                            data = new
+                            {
+                                accepted
+                            }
+                        });
+                        await EmitData(Clients.Others, emitData);
+                    }
+                    break;
+                case CallSignalingActions.SEND_SESSION_DESCRIPTION:
+                    {
+                        //data is room, sdp
+                        var sdp = data;
+                        //find clients by room
+                        var emitData = CreateEventData(CallMessage, new
+                        {
+                            type = "other-session-description",
+                            data = sdp
+                        });
+                        await EmitData(Clients.Others, emitData);
+                    }
+                    break;
+                case CallSignalingActions.SEND_ICE_CANDIDATE:
+                    {
+                        //data is room, ice-candidate
+                        var iceCandidate = data;
+                        //find clients by room
+                        var emitData = CreateEventData(CallMessage, new
+                        {
+                            type = "other-ice-candidate",
+                            data = iceCandidate
+                        });
+                        await EmitData(Clients.Others, emitData);
+                    }
+                    break;
+                case CallSignalingActions.SEND_HANG_UP:
+                    {
+                        //data is room
+                        //find clients by room
+                        var emitData = CreateEventData(CallMessage, new
+                        {
+                            type = "other-hangup",
+                        });
+                        await EmitData(Clients.Others, emitData);
+                    }
+                    break;
+            }
+        }
+
+        private object CreateEventData(string eventKey, object eventData)
+        {
+            return new
+            {
+                eventKey = eventKey,
+                eventData = eventData
+            };
+        }
+        private async Task EmitData(IClientProxy clientProxy, object data)
+        {
+            await clientProxy.SendAsync("data", data);
+        }
         public async Task SendMessage(object message, string roomName)
         {
             await EmitLog("Client " + Context.ConnectionId + " said: " + message, roomName);
@@ -77,6 +175,8 @@ namespace ComService.Boudaries.Hubs
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
         }
 
+
+
         private async Task EmitJoinRoom(string roomName)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
@@ -97,6 +197,7 @@ namespace ComService.Boudaries.Hubs
             await Clients.Group(roomName).SendAsync("log", "[Server]: " + message);
         }
 
+
         public async Task<string> Register(string accessToken)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
@@ -110,9 +211,9 @@ namespace ComService.Boudaries.Hubs
             {
                 return "";
             }
-           
+
             Guid.TryParse(claims.FirstOrDefault(x => x.Type == "sub")?.Value, out var userId);
-            if (userId == Guid.Empty )
+            if (userId == Guid.Empty)
             {
                 return "";
             }

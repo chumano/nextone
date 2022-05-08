@@ -1,16 +1,20 @@
+import { Icon, Modal } from "antd";
 import { constant } from "lodash";
 import { User } from "oidc-client";
 import { createContext,  useCallback, useEffect} from "react";
 import { useDispatch } from "react-redux";
 import { AuthenticationService } from "../../services";
+import { CallEvents } from "../../services/CallBase";
+import CallService from "../../services/CallService";
 import { SignalR } from "../../services/SignalRService";
-import { IAppStore, authActions } from "../../store";
+import { IAppStore, authActions, callActions } from "../../store";
 
 export const GlobalContext = createContext<any>({});
 
 interface IContextProviderProp {
     children: React.ReactNode;
 }
+
 
 SignalR.connect('/hubChat');
 
@@ -20,14 +24,36 @@ const registerHub = async ()=>{
     const hubRegisterResult =await SignalR.invoke('register',accessToken);
     console.log('hubRegisterResult', hubRegisterResult)
 }
-const singalRSubsription =SignalR.subscription('connected',()=>{
-    registerHub();
-});
-singalRSubsription.subscribe();
+
 
 const AppContextProvider = (props: IContextProviderProp) => {
     const dispatch = useDispatch();
     
+    useEffect(()=>{
+        const singalRSubsription =SignalR.subscription('connected', async ()=>{
+            await registerHub();
+            CallService.init();
+            const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, (room)=>{
+                //show user confirm
+                Modal.confirm({
+                    title: 'Do you Want to accept the call',
+                    icon: <Icon type="question" />,
+                    content: null,
+                    onOk : async ()=> {
+                        dispatch(callActions.receiveCall())
+                        await CallService.acceptCallRequest(room);
+                    },
+                    onCancel : async ()=> {
+                        await CallService.ignoreCallRequest(room);
+                    },
+                });
+            });
+            callrequestSubscription.subscribe();
+        });
+        
+        singalRSubsription.subscribe();
+    },[dispatch]);
+
    const logIn = useCallback(
         (user: User) => {
             dispatch(authActions.login(user));

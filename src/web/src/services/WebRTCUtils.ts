@@ -1,7 +1,3 @@
-export interface MessageSender {
-    sendMessage(message: any): void;
-}
-
 export class WebrtcUtils {
 
     public static readonly OPUS = 'opus';
@@ -23,21 +19,18 @@ export class WebrtcUtils {
         } as RTCConfiguration);
     }
 
-    public static doIceRestart(peerConnection: RTCPeerConnection | any, 
-        messageSender: MessageSender): void {
+    public static doIceRestart = async (peerConnection: RTCPeerConnection | any,
+        sdpCallback: (sdp: RTCSessionDescriptionInit) =>any) =>{
         console.log('doIceRestart');
         try {
             // try using new restartIce method
             peerConnection.restartIce();
         } catch (error) {
             // if it is not supported, use the old implementation
-            peerConnection.createOffer({
+            const sdp: RTCSessionDescriptionInit = await peerConnection.createOffer({
                 iceRestart: true
             })
-                .then((sdp: RTCSessionDescriptionInit) => {
-                    peerConnection.setLocalDescription(sdp);
-                    messageSender.sendMessage(sdp);
-                });
+            sdpCallback(sdp);
         }
     }
 
@@ -49,16 +42,16 @@ export class WebrtcUtils {
                 switch (type) {
                     case 'inbound':
                         if (report.type === 'inbound-rtp') {
-                            console.log(report);
+                            console.log('logStats-inbound',report);
                         }
                         break;
                     case 'outbound':
                         if (report.type === 'outbound-rtp') {
-                            console.log(report);
+                            console.log('logStats-outbound',report);
                         }
                         break;
                     default:
-                        console.log(report);
+                        console.log('logStats-default',report);
                 }
             });
         });

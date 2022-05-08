@@ -1,286 +1,161 @@
-import { WebrtcUtils } from "./WebRTCUtils";
-
-interface ISignaling {
-    connect(): Promise<void>;
-    isConnected(): boolean;
-    invoke(room: string, action: string,  ...args: any[]): void;
-    listen(eventName: string, handler: (...args: any[]) => void): Promise<void>;
-    disconnect():void;
-}
-
-const useWebrtcUtils = true;
+import Pubsub from "../utils/pubSub";
+import { CallEvents, CallMessage, CallSignalingActions, CallSignalingEvents, ISignaling, useWebrtcUtils } from "./CallBase";
+import { CallReciver as CallReceiver } from "./CallReceiver";
+import { CallSender } from "./CallSender";
+import { DeviceManager } from "./DeviceManager";
+import { SignalR } from "./SignalRService";
 
 class CallService {
-    private localStream!: MediaStream;
-    private remoteStream!: MediaStream;
+    private signaling: ISignaling;
+    private deviceManager: DeviceManager;
+    private callSender: CallSender;
+    private callReceiver: CallReceiver;
 
-    private room: string;
-    private peerConnection!: RTCPeerConnection;
+    private isSender: boolean = false;
+    private callUnsubcrideFunc? : ()=>void;
+    private pubSub: Pubsub = new Pubsub();
 
-    private isInitiator: boolean = false;
-    private isChannelReady: boolean = false;
-    private isStarted: boolean = false;
-
-    private iceServers: RTCIceServer[] = [
-        { urls: 'stun:stun.1.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-    ];
-
-    constructor(
-        private signaling: ISignaling,
-        room: string
-    ) {
-        this.room = room;
+    constructor() {
+        this.signaling = new SignalRSignaling();
+        this.deviceManager = new DeviceManager();
+        this.callSender = new CallSender(this.signaling,  this.deviceManager, this.pubSub,'');
+        this.callReceiver = new CallReceiver(this.signaling, this.deviceManager, this.pubSub,'');
     }
 
-     start = async () => {
-        // #1 connect to signaling server
-        await this.signaling.connect();
-        if (this.signaling.isConnected()) {
-            this.signaling.invoke('CreateOrJoinRoom', this.room);
-        }
-
-        // #2 define signaling communication
-        this.defineSignaling();
-
-        // #3 get media from current client
-        this.getUserMedia();
-    }
-
-    defineSignaling(): void {
-        this.signaling.listen('log', (message: any) => {
-            console.log(message);
+    
+    public init = async () => {
+        this.signaling.listen(CallSignalingEvents.CALL_REQUEST, (room) => {
+            //TODO: receive call-request , wait user accept
+            console.log("receiving a call...")
+            this.isSender = false;
+            this.pubSub.publish(CallEvents.RECEIVE_CALL_REQUEST, room);
         });
 
-        this.signaling.listen('created', () => {
-            this.isInitiator = true;
-        });
-
-        this.signaling.listen('joined', () => {
-            this.isChannelReady = true;
-        });
-
-        this.signaling.listen('message', (message: any) => {
-            if (message === 'got user media') {
-                this.initiateCall();
-
-            } else if (message.type === 'offer') {
-                if (!this.isStarted) {
-                    this.initiateCall();
-                }
-                this.peerConnection.setRemoteDescription(new RTCSessionDescription(message));
-                this.sendAnswer();
-
-            } else if (message.type === 'answer' && this.isStarted) {
-                this.peerConnection.setRemoteDescription(new RTCSessionDescription(message));
-
-            } else if (message.type === 'candidate' && this.isStarted) {
-                this.addIceCandidate(message);
-
-            } else if (message === 'bye' && this.isStarted) {
-                this.handleRemoteHangup();
-            }
-        });
-    }
-
-    muteMic() {
-        this.localStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-      }
-      
-    muteCam() {
-    this.localStream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
-    }
-
-    getUserMedia(): void {
-        navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: true
-        })
-            .then((stream: MediaStream) => {
-                this.addLocalStream(stream);
-                this.sendMessage('got user media');
-                if (this.isInitiator) {
-                    this.initiateCall();
-                }
-            })
-            .catch((e) => {
-                alert('getUserMedia() error: ' + e.name + ': ' + e.message);
-            });
-    }
-
-    initiateCall(): void {
-        console.log('Initiating a call.');
-        if (!this.isStarted && this.localStream && this.isChannelReady) {
-            this.createPeerConnection();
-
-            this.peerConnection.addTrack(this.localStream.getVideoTracks()[0], this.localStream);
-            this.peerConnection.addTrack(this.localStream.getAudioTracks()[0], this.localStream);
-
-            this.isStarted = true;
-            if (this.isInitiator) {
-                this.sendOffer();
-            }
-        }
-    }
-
-    createPeerConnection(): void {
-        console.log('Creating peer connection.');
-        try {
-            if (useWebrtcUtils) {
-                this.peerConnection = WebrtcUtils.createPeerConnection(this.iceServers,
-                     'unified-plan', 'balanced', 'all', 'require',
-                      null, [], 0);
-            } else {
-                this.peerConnection = new RTCPeerConnection({
-                    iceServers: this.iceServers,
-                    sdpSemantics: 'unified-plan'
-                } as RTCConfiguration);
-            }
-
-            if(!this.peerConnection){
-                return;
-            }
-
-            this.peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-                if (event.candidate) {
-                    this.sendIceCandidate(event);
-                } else {
-                    console.log('End of candidates.');
-                }
-            };
-
-            this.peerConnection.ontrack = (event: RTCTrackEvent) => {
-                if (event.streams[0]) {
-                    this.addRemoteStream(event.streams[0]);
-                }
-            };
-
-            if (useWebrtcUtils) {
-                this.peerConnection.oniceconnectionstatechange = () => {
-                    if (this.peerConnection?.iceConnectionState === 'connected') {
-                        WebrtcUtils.logStats(this.peerConnection, 'all');
-                    } else if (this.peerConnection?.iceConnectionState === 'failed') {
-                        WebrtcUtils.doIceRestart(this.peerConnection, this);
-                    }
-                }
-            }
-        } catch (e :any) {
-            console.log('Failed to create PeerConnection.', e.message);
-            return;
-        }
-    }
-
-    sendOffer(): void {
-        console.log('Sending offer to peer.');
-        this.addTransceivers();
-        
-        this.peerConnection.createOffer()
-            .then((sdp: RTCSessionDescriptionInit) => {
-                let finalSdp = sdp;
-                if (useWebrtcUtils) {
-                    finalSdp = WebrtcUtils.changeBitrate(sdp, '1000', '500', '6000');
-                    if (WebrtcUtils.getCodecs('audio').find(c => c.indexOf(WebrtcUtils.OPUS) !== -1)) {
-                        finalSdp = WebrtcUtils.setCodecs(finalSdp, 'audio', WebrtcUtils.OPUS);
-                    }
-                    if (WebrtcUtils.getCodecs('video').find(c => c.indexOf(WebrtcUtils.H264) !== -1)) {
-                        finalSdp = WebrtcUtils.setCodecs(finalSdp, 'video', WebrtcUtils.H264);
-                    }
-                }
-                this.peerConnection.setLocalDescription(finalSdp);
-                this.sendMessage(sdp);
-            });
-    }
-
-    async sendAnswer() {
-        console.log('Sending answer to peer.');
-        this.addTransceivers();
-        const sdp = await this.peerConnection.createAnswer();
-        this.peerConnection.setLocalDescription(sdp);
-        this.sendMessage(sdp);
-    }
-
-    addIceCandidate(message: any): void {
-        console.log('Adding ice candidate.');
-        const candidate = new RTCIceCandidate({
-            sdpMLineIndex: message.label,
-            candidate: message.candidate
-        });
-        this.peerConnection.addIceCandidate(candidate);
-    }
-
-    sendIceCandidate(event: RTCPeerConnectionIceEvent): void {
-        console.log('Sending ice candidate to remote peer.');
-        this.sendMessage({
-            type: 'candidate',
-            label: event?.candidate?.sdpMLineIndex,
-            id: event?.candidate?.sdpMid,
-            candidate: event?.candidate?.candidate
-        });
-    }
-
-    sendMessage(message:any): void {
-        this.signaling.invoke('SendMessage', message, this.room);
-    }
-
-    addTransceivers(): void {
-        console.log('Adding transceivers.');
-        const init = { direction: 'recvonly', streams: [], sendEncodings: [] } as RTCRtpTransceiverInit;
-        this.peerConnection.addTransceiver('audio', init);
-        this.peerConnection.addTransceiver('video', init);
-    }
-
-    addLocalStream(stream: MediaStream): void {
-        console.log('Local stream added.');
-        this.localStream = stream;
-
-        //this.localVideo.nativeElement.srcObject = this.localStream;
-        //this.localVideo.nativeElement.muted = 'muted';
-    }
-
-    addRemoteStream(stream: MediaStream): void {
-        console.log('Remote stream added.');
-        this.remoteStream = stream;
-
-        //this.remoteVideo.nativeElement.srcObject = this.remoteStream;
-        //this.remoteVideo.nativeElement.muted = 'muted';
-    }
-
-    hangup(): void {
-        console.log('Hanging up.');
-        this.stopPeerConnection();
-        this.sendMessage('bye');
-        this.signaling.invoke('LeaveRoom', this.room);
-        setTimeout(() => {
-            this.signaling.disconnect();
-        }, 1000);
-    }
-
-    handleRemoteHangup(): void {
-        console.log('Session terminated by remote peer.');
-        this.stopPeerConnection();
-        this.isInitiator = true;
        
-        //this.snack.open('Remote client has left the call.', 'Dismiss', { duration: 5000 });
+
+        //connect if it's not connected yet
+        await this.signaling.connect();
+    }
+    private listenCallMessage = ()=>{
+        this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE, (message: CallMessage) => {
+            console.log("receive-"+ message.type, message.data)
+            switch (message.type) {
+                //sender
+                case 'call-request-response':
+                    const { accepted } = message.data;
+                    if (!accepted) {
+                        this.callSender.hangup();
+                        this.pubSub.publish(CallEvents.CALL_STOPED);
+                        return;
+                    }
+                    this.callSender.sendOffer();
+
+                    break;
+               
+
+                //sender + receiver
+                case 'other-session-description':
+                    {
+                        const sdp: RTCSessionDescriptionInit = message.data;
+                        if (sdp.type === 'answer' && this.isSender) {
+                            this.callSender.receiveAnswer(sdp);
+                        }else if (sdp.type === 'offer' && !this.isSender) {
+                            this.callReceiver.receiveOffer(sdp);
+                        }
+                        break;
+                    }
+
+                case 'other-ice-candidate':
+                    {
+                        const candidateResponse = message.data;
+                        const { label, id, candidate } = message.data;
+                        if (this.isSender) {
+                            this.callSender.addIceCandidate(candidateResponse);
+                        } else {
+                            this.callReceiver.addIceCandidate(candidateResponse);
+                        }
+
+                        break;
+                    }
+                case 'other-hangup':
+                    {
+                        console.log('other-hangup');
+                        this.stopCall(false);
+                        break;
+                    }
+            }
+        });
     }
 
-    stopPeerConnection(): void {
-        this.isStarted = false;
-        this.isChannelReady = false;
-        if (this.peerConnection) {
-            this.peerConnection.close();
-            this.peerConnection = null as any;
+    public acceptCallRequest = async(room:string)=>{
+        this.listenCallMessage();
+        this.callReceiver.acceptCall(room || 'room-name');
+    }
+
+    public ignoreCallRequest = async(room:string)=>{
+        console.log("ignore call...")
+        this.signaling.invoke(CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
+            {
+                room,
+                accepted: false
+            })
+    }
+
+    public startCall = async () => {
+        const devices = await this.deviceManager.enumerateDevices(); 
+        console.log('devices', devices)
+
+        this.listenCallMessage();
+        this.isSender = true;
+        await this.callSender.startCallRequest('receiver-name');
+    }
+
+    public stopCall = async (notifiyOther: boolean = true) => {
+        if (this.isSender) {
+            this.callSender.hangup();
+        } else {
+            this.callReceiver.hangup();
+        }
+        //remove signaling listen
+        this.callUnsubcrideFunc?.();
+        this.callUnsubcrideFunc = undefined;
+
+        this.pubSub.publish(CallEvents.CALL_STOPED);
+        if(notifiyOther){
+            this.signaling.invoke(CallSignalingActions.SEND_HANG_UP);
         }
     }
 
-    destroy(): void {
-        this.hangup();
-        if (this.localStream && this.localStream.active) {
-            this.localStream.getTracks().forEach((track) => { track.stop(); });
-        }
-        if (this.remoteStream && this.remoteStream.active) {
-            this.remoteStream.getTracks().forEach((track) => { track.stop(); });
-        }
+    public listen = (evt: string, callback :(...args : any[])=> void) =>{
+        return this.pubSub.subscription(evt, callback);
     }
 }
 
-export default CallService;
+class SignalRSignaling implements ISignaling {
+    constructor() {
+
+    }
+
+    connect(): Promise<void> {
+        return SignalR.connect('/hubChat');
+    }
+    isConnected(): boolean {
+        return SignalR.isConnected();
+    }
+    invoke(action: string, data: any): Promise<any> {
+        return SignalR.invoke(
+            'sendCallMessage', 
+            action,
+            data
+        )
+    }
+    listen(eventName: string, handler: (...args: any[]) => void) {
+        const subscription = SignalR.subscription(eventName, handler);
+        subscription.subscribe();
+        return subscription.unsubscribe;
+    }
+
+}
+ const CallServiceInstance = new CallService();
+
+ export default CallServiceInstance;

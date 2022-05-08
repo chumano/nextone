@@ -8,10 +8,12 @@ export enum CallStatus {
 
 export interface CallState {
     status : CallStatus
+    isSender: boolean
 }
 
 const initialState: CallState = {
-    status: CallStatus.idle
+    status: CallStatus.idle,
+    isSender: true
 }
 
 export const callSlice = createSlice({
@@ -20,14 +22,18 @@ export const callSlice = createSlice({
     reducers: {
         receiveCall: (state) => {
             state.status = CallStatus.calling;
+            state.isSender = false;
         },
         toggleCall: (state) => {
             if(state.status==CallStatus.calling){
                 state.status = CallStatus.idle;
             }else{
                 state.status = CallStatus.calling;
+                state.isSender = true;
             }
-           
+        },
+        stopCall: (state) => {
+            state.status = CallStatus.idle;
         }
     },
 })

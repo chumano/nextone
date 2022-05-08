@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { User } from "oidc-client";
 import { IAppStore } from ".";
-import { AuthenticationService } from "../services";
-import { SignalR } from "../services/SignalRService";
-
 export interface AuthState {
     isLoggedIn: boolean;
     user: User | undefined;
