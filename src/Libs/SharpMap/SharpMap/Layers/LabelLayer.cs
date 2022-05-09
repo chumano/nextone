@@ -57,7 +57,7 @@ namespace SharpMap.Layers
     /// </code>
     /// </example>
     [Serializable]
-    public class LabelLayer : Layer
+    public class LabelLayer : Layer, ICloneable
     {
         #region Delegates
 
@@ -947,6 +947,17 @@ namespace SharpMap.Layers
             var gp = new GraphicsPath(FillMode.Alternate);
                 gp.AddLines(lineString.TransformToImage(map));
             return gp;
+        }
+
+
+        /// <inheritdoc cref="ICloneable.Clone()"/>>
+        public object Clone()
+        {
+            var res = (LabelLayer)MemberwiseClone();
+            res.Style = Style.Clone();
+            if (Theme is ICloneable)
+                res.Theme = (ITheme)((ICloneable)Theme).Clone();
+            return res;
         }
     }
 }
