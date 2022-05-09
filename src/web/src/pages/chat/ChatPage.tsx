@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import 'react-chat-elements/dist/main.css';
 import '../../styles/pages/chat/chat.scss';
 import {
-    ChatItem, MessageBox, MeetingMessage, MessageList,
+    ChatItem, MessageBox, MeetingMessage,
     ChatList, Input, Popup, Dropdown,
     Avatar, MeetingItem, MeetingList
 } from 'react-chat-elements';
@@ -24,6 +24,7 @@ import {
 import { chatList, messageList } from './fakedate';
 import logo from '../../assets/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { MessageList } from '../../components/message-list/MessageList';
 
 const ChatPage: React.FC = () => {
 
@@ -38,16 +39,17 @@ const ChatPage: React.FC = () => {
                     <div className="chat-channel-list__header">
                        Kênh
                     </div>
-                    <ChatList className='channel-list'
-                        dataSource={chatList} />
+                    {/* <ChatList className='channel-list'
+                        dataSource={chatList} /> */}
                 </div>
 
                 <div className="chat-users-list">
                     <div className="chat-users-list__header">
                        Tin nhắn
                     </div>
-                    <ChatList className='chat-list'
-                        dataSource={chatList} />
+                    {/* <ChatList className='chat-list'
+                        dataSource={chatList} /> */}
+                    
                 </div>
             </div>
             <div className="chat-page__main">
@@ -69,10 +71,13 @@ const ChatPage: React.FC = () => {
                         </div>
                     </div>
                     <div className="chat-content">
-                        <MessageList className='message-list'
+                        {/* <MessageList className='message-list'
                             lockable={true}
                             toBottomHeight={'100$'}
-                            dataSource={messageList} />
+                            dataSource={messageList} /> */}
+
+                        <MessageList/>
+                        
                     </div>
                     <div className="chat-send-box">
                         <Input
