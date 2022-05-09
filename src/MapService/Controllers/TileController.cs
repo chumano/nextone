@@ -17,7 +17,7 @@ namespace MapService.Controllers
     [Route("tms")]
     public class TileController : Controller
     {
-        private static GlobalSphericalMercator _schema = new GlobalSphericalMercator("image/png", YAxis.TMS, 0, 19);
+        private readonly GlobalSphericalMercator _schema = MapUtils.DeaultMapSchema;
 
         private readonly IMapService _mapService;
         private readonly IMapRender _mapRender;

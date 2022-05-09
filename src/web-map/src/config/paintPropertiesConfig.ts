@@ -27,8 +27,8 @@ export const paintProperties = [
     
     'theme-enabled',
     'theme-column',
-    'theme-column-min',
-    'theme-column-max',
+    'theme-value-min',
+    'theme-value-max',
     'theme-color1',
     'theme-color2',
     'theme-color3',

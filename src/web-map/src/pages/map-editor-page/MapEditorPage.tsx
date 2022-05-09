@@ -15,11 +15,12 @@ import { SampleLayers } from "./layerData";
 import { useDatasourceApi } from "../../apis";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
 import { geo2LayerType } from "../../utils/functions";
+import ModalSymbol from "./ModalSymbol";
+import ModalMap from "./ModalMap";
 
 
 const bottomPanel = <>Map@2022</>
-const modals = <>
-</>
+
 
 const MapEditorPage: React.FC = () => {
     const navigate = useNavigate();
@@ -27,13 +28,14 @@ const MapEditorPage: React.FC = () => {
     const { mapState, ...mapStore } = useMapStore();
     const sourceStore = useDatasourceStore();
     const mapEditor = useMapEditor();
-    
+
     useEffect(()=>{
         sourceStore.list()
     },[])
 
     useEffect(() => {
         const mapid = params['mapid'] as string;
+        console.log("edit map", mapid);
         if (!mapid) return;
         const fetchMapInfo = async () => {
             const map = await mapStore.get(mapid);
@@ -75,6 +77,15 @@ const MapEditorPage: React.FC = () => {
             })
     }, [params]);
 
+    const modals = <>
+        {mapEditor.mapEditorState.showModalSymbol &&
+            <ModalSymbol />
+        }
+        {mapEditor.mapEditorState.showModalMap &&
+            <ModalMap />
+        }
+    </>
+    console.log('MapEditorPage render....')
     return <>
         <MapEditorLayout
             toolbar={<ToolBar map={mapEditor.mapEditorState.mapInfo} />}

@@ -1,20 +1,28 @@
 import { Button, Modal as AntDModal } from 'antd';
-import { DeleteOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
-import { useCallback, useEffect, useState } from 'react';
+import { DeleteOutlined, ExclamationCircleOutlined, TableOutlined } from '@ant-design/icons';
+import React, { useCallback, useEffect, useState } from 'react';
 import Modal from '../../components/modals/Modal';
-import { DataSource, DataSourceType, GeoType, ShapeFileProps } from '../../interfaces';
+import { DataSource, DataSourceType, FeatureData, GeoType, ShapeFileProps } from '../../interfaces';
 import { useDatasourceStore } from '../../stores/useDataSourceStore';
 import '../../styles/pages/data-source-page.scss';
 import ModalCreateDataSource from './ModalCreateDataSource';
 import ModalEditDataSource from './ModalEditDataSource';
+import ModalViewFeature from './ModalViewFeature';
 
-const DatasouceItem = ({ item, onClick, onDelete }: { item: DataSource, onClick: any, onDelete: any }) => {
+interface DatasouceItemProps {
+    item: DataSource,
+    onClick: any,
+    onDelete: any,
+    onViewData?: (data: FeatureData[]) => void
+}
+const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, onViewData }) => {
+
     return <>
         <div className="source-item clickable" title={item.name} onClick={onClick}>
             <div className='source-item-image'>
-                <img src={item.imageUrl} alt="default image"/>
+                <img src={item.imageUrl} alt="default image" />
             </div>
-            <div  className='source-item-info'>
+            <div className='source-item-info'>
                 <div>
                     <h3 className='source-item-title'>
                         {item.name}
@@ -30,16 +38,27 @@ const DatasouceItem = ({ item, onClick, onDelete }: { item: DataSource, onClick:
                     <span className='source-info'>
                         {GeoType[item.geoType]}
                     </span>
-                    
+
                 </div>
 
-                {item.dataSourceType ===DataSourceType.shapeFile &&
+                {item.dataSourceType === DataSourceType.shapeFile &&
                     <div className='source-item-shapefile'>
-                        <label>Shapfile :</label>
                         <div>
                             <span className='source-info'>
                                 Feature Count: {item.properties[ShapeFileProps.FEATURECOUNT]}
                             </span>
+                        </div>
+                        <div>
+                            {item.featureData && item.featureData.length >0 &&
+                                <span className='clickable' onClick={(e) => {
+                                    e.stopPropagation();
+                                    onViewData && onViewData(item.featureData!)
+                                }}>
+                                    <TableOutlined />
+                                </span>
+                            }
+
+
                         </div>
                     </div>
                 }
@@ -63,6 +82,8 @@ const DataSourcePage: React.FC = () => {
     const { datasourceState: sourceState, ...sourceStore } = useDatasourceStore();
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
     const [modalEditVisible, setModalEditVisible] = useState(false);
+    const [modalViewFeatureVisible, setModalViewFeatureVisible] = useState(false);
+    const [modalViewFeatureData, setmodalViewFeatureData] = useState<FeatureData[]>([]);
     const [modalEditSource, setModalEditSource] = useState<any>(undefined);
 
     useEffect(() => {
@@ -96,6 +117,11 @@ const DataSourcePage: React.FC = () => {
         }
     }, [sourceStore])
 
+    const handleViewData = useCallback((data: FeatureData[]) => {
+        setModalViewFeatureVisible(true);
+        setmodalViewFeatureData(data)
+    }, []);
+
     return <>
         <div className="datasource-page">
             <div className="datasource-page__header">
@@ -113,6 +139,7 @@ const DataSourcePage: React.FC = () => {
                         return <DatasouceItem key={item.id} item={item}
                             onClick={handleEditSource(item)}
                             onDelete={handleDeleteSource(item)}
+                            onViewData={handleViewData}
                         />
                     })}
                 </div>
@@ -129,6 +156,13 @@ const DataSourcePage: React.FC = () => {
             source={modalEditSource}
             onToggle={(visible: boolean) => {
                 setModalEditVisible(visible);
+            }} />
+        }
+
+        {modalViewFeatureVisible && <ModalViewFeature visible={modalViewFeatureVisible}
+            features={modalViewFeatureData}
+            onToggle={(visible: boolean) => {
+                setModalViewFeatureVisible(visible);
             }} />
         }
 

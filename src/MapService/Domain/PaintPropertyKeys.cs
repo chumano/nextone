@@ -21,8 +21,8 @@
 
         public const string ThemeEnabled = "theme-enabled";
         public const string ThemeColumn = "theme-column";
-        public const string ThemeColumnMin = "theme-column-min";
-        public const string ThemeColumnMax = "theme-column-max";
+        public const string ThemeColumnMin = "theme-value-min";
+        public const string ThemeColumnMax = "theme-value-max";
         public const string ThemeColor1 = "theme-color1";
         public const string ThemeColor2 = "theme-color2";
         public const string ThemeColor3 = "theme-color3";

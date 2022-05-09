@@ -38,6 +38,7 @@ namespace MapService.DTOs.Map
                     MinZoom = l.MinZoom,
                     MaxZoom = l.MaxZoom,
                     Note = l.Note,
+                    Active = l.Active,
                     PaintProperties = l.PaintProperties
                 })
             };

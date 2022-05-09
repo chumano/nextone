@@ -45,7 +45,7 @@ const IconAction: React.FC<any> = (props) => {
 }
 
 const LayerListItemContainer: React.FC<LayerListItemProps> = (props) => {
-    const visibilityAction = props.visibility ? 'show' : 'hide';
+    const visibilityAction = props.visibility ? 'hide' : 'show';
 
     const actionHanlder = useCallback((action:string)=>{
         return (e:any)=>{

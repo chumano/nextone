@@ -11,6 +11,7 @@ namespace MapService.Infrastructure
         public const string DB_SCHEMA = "map";
         public DbSet<MapInfo> Maps { get; set; }
         public DbSet<DataSource> DataSources { get; set; }
+        public DbSet<IconSymbol> Symbols { get; set; }
 
         public MapDBContext(DbContextOptions<MapDBContext> options) : base(options)
         {
@@ -161,6 +162,26 @@ namespace MapService.Infrastructure
                 eb.HasIndex(e => e.DataSourceType)
                 .IsClustered(false);
 
+            });
+
+            modelBuilder.Entity<IconSymbol>(eb =>
+            {
+                eb.ToTable("T_Symbols", DB_SCHEMA)
+                 .HasKey("Name");
+
+
+                eb.Property(o => o.Name)
+                    .HasColumnType("nvarchar(255)");
+
+
+                eb.Property(o => o.Width)
+                    .HasColumnType("int");
+
+                eb.Property(o => o.Height)
+                    .HasColumnType("int");
+
+                eb.Property(o => o.ImageData)
+                    .HasColumnType("varbinary(max)");
             });
         }
     }

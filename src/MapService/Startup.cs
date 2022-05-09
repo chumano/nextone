@@ -105,6 +105,7 @@ namespace MapService
             services.AddSingleton<IdGenerator, DefaultIdGenerator>();
             services.AddScoped<IDataSourceRepository, DataSourceRepository>();
             services.AddScoped<IMapRepository, MapRepository>();
+            services.AddScoped<IIconSymbolRepository, IconSymbolRepository>();
 
             services.AddTransient<IMapService, MapService.Domain.Services.MapService>();
             services.AddTransient<ISharpMapFactory, SharpMapFactory>();

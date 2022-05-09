@@ -24,7 +24,7 @@ export interface LayerStyle {
 
 export interface MapInfoState{
     id: string;
-     name: string;
+    name: string;
 }
 
 interface MapEditorState {
@@ -32,10 +32,15 @@ interface MapEditorState {
     layers: LayerStyle[];
     selectedLayerIndex?: number;
     collapsedGroups: {[key:string]: boolean};
+
+    showModalSymbol?: boolean,
+    showModalMap?:boolean
 }
 const initialState = {
     layers: [],
-    collapsedGroups: {}
+    collapsedGroups: {},
+    showModalSymbol: false,
+    showModalMap: false
 };
 
 const subject = new BehaviorSubject<MapEditorState>(initialState);
@@ -130,6 +135,14 @@ const addLayer = (layer: LayerStyle) => {
     setNextState({ layers: layers, selectedLayerIndex: layerIndex });
 }
 
+const showModal = (modal: 'symbol' | 'map', isShow: boolean) =>{
+    if(modal == 'symbol'){
+        setNextState({ showModalSymbol: isShow });
+    }else if(modal == 'map'){
+        setNextState({ showModalMap: isShow });
+    }
+
+}
 const setNextState = (payload: any) => {
     const state = subject.getValue();
     subject.next({ ...state, ...payload });
@@ -182,6 +195,8 @@ export const useMapEditor = () => {
         
         saveMap,
         
+        showModal,
+
         getObservable,
     };
 }

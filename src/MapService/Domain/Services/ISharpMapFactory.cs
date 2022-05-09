@@ -1,4 +1,5 @@
-﻿using GeoAPI;
+﻿using BruTile.Predefined;
+using GeoAPI;
 using GeoAPI.CoordinateSystems;
 using MapService.Utils;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace MapService.Domain.Services
@@ -24,6 +26,7 @@ namespace MapService.Domain.Services
     }
     public class SharpMapFactory : ISharpMapFactory
     {
+        private readonly GlobalSphericalMercator _schema = MapUtils.DeaultMapSchema;
         private readonly CoordinateTransformationFactory _coordinateTransformationFactory;
         private readonly ICoordinateSystemServices _css;
         private readonly ILogger<SharpMapFactory> _logger;
@@ -97,9 +100,11 @@ namespace MapService.Domain.Services
             if (!textEnabled)
             {
                 //vectorLayer
-                var style = GetVectorStyle(mapLayer);
-                layer = new VectorLayer(mapLayer.LayerName, dataProvider);
-                layer.Style = style;
+                var style = GetVectorStyle(mapLayer, out var theme);
+                var vectorlayer = new VectorLayer(mapLayer.LayerName, dataProvider);
+                vectorlayer.Style = style;
+                vectorlayer.Theme = theme;
+                layer = vectorlayer;
             }
             else
             {
@@ -115,7 +120,7 @@ namespace MapService.Domain.Services
 
                 if (!string.IsNullOrEmpty(textRotateColumn))
                 {
-                    labellayer.RotationColumn = textColumn;
+                    labellayer.RotationColumn = textRotateColumn;
                 }
 
                 layer = labellayer;
@@ -125,14 +130,18 @@ namespace MapService.Domain.Services
             layer.CoordinateTransformation = transform;
             layer.ReverseCoordinateTransformation = reverseTransform;
             layer.MinVisible = mapLayer.MinZoom ?? 1;
-            layer.MaxVisible = mapLayer.MaxZoom ?? 20;
+            layer.MaxVisible =mapLayer.MaxZoom ?? 19;
             return layer;
         }
 
-        private VectorStyle GetVectorStyle(MapLayer mapLayer)
+     
+
+        private VectorStyle GetVectorStyle(MapLayer mapLayer, out ITheme theme)
         {
+            theme = null;
             try
             {
+                
                 if (mapLayer.PaintProperties == null)
                 {
                     return GetDefaultVectorStyle(mapLayer.DataSource.GeoType);
@@ -151,7 +160,7 @@ namespace MapService.Domain.Services
                         SetStyleLine(style, mapLayer.PaintProperties);
                         break;
                     case GeoTypeEnum.Polygon:
-                        SetStyleFill(style, mapLayer.PaintProperties, out var theme);
+                        SetStyleFill(style, mapLayer.PaintProperties, out theme);
                         break;
                 }
 
@@ -172,15 +181,21 @@ namespace MapService.Domain.Services
 
         private void SetStylePoint(VectorStyle style, Dictionary<string, object> properites)
         {
+            var defaultSymbol = "Data/IconSymbols/beachflag.png";
             var pointColor = GetValue<string>(properites, PaintPropertyKeys.PointColor, "#000000");
             var pointSize = GetValue<float>(properites, PaintPropertyKeys.PointSize, 5.0f);
 
             var symbolEnabled = GetValue<bool>(properites, PaintPropertyKeys.SymbolEnabled, false);
-            var symbolImage = GetValue<string>(properites, PaintPropertyKeys.SymbolImage, "https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png");
+            var symbolImage = GetValue<string>(properites, PaintPropertyKeys.SymbolImage, defaultSymbol);
             var symbolScale = GetValue<float>(properites, PaintPropertyKeys.SymbolScale, 1.0f);
 
+           
             if (symbolEnabled)
             {
+                if (!File.Exists(symbolImage))
+                {
+                    symbolImage = defaultSymbol;
+                }
                 style.Symbol = new Bitmap(symbolImage);
                 style.SymbolScale = symbolScale;
             }
@@ -209,8 +224,8 @@ namespace MapService.Domain.Services
             if (themeEnabled)
             {
                 var themeColumn = GetValue<string>(properites, PaintPropertyKeys.ThemeColumn, "");
-                var themeColumnMin = GetValue<double>(properites, PaintPropertyKeys.ThemeColumn, 0);
-                var themeColumnMax = GetValue<double>(properites, PaintPropertyKeys.ThemeColumn, 100);
+                var themeColumnMin = GetValue<double>(properites, PaintPropertyKeys.ThemeColumnMin, 0);
+                var themeColumnMax = GetValue<double>(properites, PaintPropertyKeys.ThemeColumnMax, 100);
                 var themeColor1 = GetValue<string>(properites, PaintPropertyKeys.ThemeColor1, "#ff0000");
                 var themeColor2 = GetValue<string>(properites, PaintPropertyKeys.ThemeColor2, "#00ff00");
                 var themeColor3 = GetValue<string>(properites, PaintPropertyKeys.ThemeColor3, "#0000ff");
@@ -292,6 +307,10 @@ namespace MapService.Domain.Services
 
         private T GetValue<T>(Dictionary<string, object> properites , string key, T defaultValue = default(T))
         {
+            if(properites == null)
+            {
+                return defaultValue;
+            }
             var value = properites.GetValueOrDefault(key,defaultValue);
             return (T)Convert.ChangeType(value, typeof(T), CultureInfo.InvariantCulture);
         }

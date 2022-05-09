@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef } from "react";
-import { LayersControl, MapContainer, Marker, Popup,
-     TileLayer, useMap, ZoomControl } from "react-leaflet";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+    LayersControl, MapContainer, Marker, Popup,
+    TileLayer, useMap, ZoomControl
+} from "react-leaflet";
 import L from 'leaflet';
 import MapDisplayPosition from "./MapDisplayPosition";
 import React from "react";
@@ -22,18 +24,25 @@ const MapController = () => {
 const GoogleApiKey = process.env.REACT_APP_GOOGLE_APIKEY;
 
 interface MapViewProps {
-    mapId : string;
+    mapId: string;
 }
-const MapViewContainer : React.FC<MapViewProps> = (props)=>{
+const MapViewContainer: React.FC<MapViewProps> = (props) => {
     //const mapEditor = useMapEditor();
-    const defaultCenter: L.LatLngTuple = [40.26,  -102.91];
+    const defaultCenter: L.LatLngTuple = [40.26, -102.91];
     const defaultZoom = 5;
     const mapRef = useRef<any>()
-    console.log("display map : MapViewContainer")
+    const ref = useRef<L.TileLayer>(null);
     const tileMapUrl = `http://localhost:5105/tms/1.0.0/map-${props.mapId}/{z}/{x}/{y}.png`
-    const displayMap = useMemo(()=>{
-        console.log("display map")
-        return <MapContainer center={defaultCenter} zoom={defaultZoom} 
+    useEffect(() => {
+        const tileMapUrl = `http://localhost:5105/tms/1.0.0/map-${props.mapId}/{z}/{x}/{y}.png`
+        if (ref.current) {
+            ref.current.setUrl(tileMapUrl);
+        }
+    }, [props.mapId, ref.current])
+
+    const displayMap = useMemo(() => {
+        console.log("display map", props.mapId, ref.current)
+        return <MapContainer center={defaultCenter} zoom={defaultZoom}
             ref={mapRef}
             zoomControl={false}
             doubleClickZoom={false}
@@ -53,18 +62,18 @@ const MapViewContainer : React.FC<MapViewProps> = (props)=>{
                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     />
                 </LayersControl.BaseLayer>
-               
-                <LayersControl.BaseLayer name="Google"  checked>
-                    <LayerGoogleLeaflet apiKey={GoogleApiKey} 
-                        type={'roadmap'} 
-                        // googleMapsAddLayers={[{name:'BicyclingLayer'},{name:'TrafficLayer'},{name:'TransitLayer'}]}
+
+                <LayersControl.BaseLayer name="Google" checked>
+                    <LayerGoogleLeaflet apiKey={GoogleApiKey}
+                        type={'roadmap'}
+                    // googleMapsAddLayers={[{name:'BicyclingLayer'},{name:'TrafficLayer'},{name:'TransitLayer'}]}
                     />
                 </LayersControl.BaseLayer>
 
-                <LayersControl.Overlay name="Current Map" checked={true}> 
-                    <TileLayer tms={true} 
-                            url={tileMapUrl}
-                        />
+                <LayersControl.Overlay name="Current Map" checked={true}>
+                    <TileLayer tms={true} ref={ref}
+                        url={tileMapUrl}
+                    />
                 </LayersControl.Overlay>
 
                 {/* <LayersControl.Overlay name="us_states" checked={false}> 
@@ -87,15 +96,15 @@ const MapViewContainer : React.FC<MapViewProps> = (props)=>{
                     </Marker>
                 </LayersControl.Overlay> */}
             </LayersControl>
-            
+
             <MapDisplayPosition></MapDisplayPosition>
-            
+
         </MapContainer>
-    },[props.mapId]);
+    }, [props.mapId]);
     return <>
         {displayMap}
     </>
 }
 
-const MapView = React.memo(MapViewContainer) 
+const MapView = React.memo(MapViewContainer)
 export default MapView;

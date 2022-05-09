@@ -1,5 +1,6 @@
 ﻿using MapService.Domain;
 using MapService.Utils;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace MapService.DTOs.DataSource
@@ -17,7 +18,7 @@ namespace MapService.DTOs.DataSource
         public string ImageUrl { get; set; }
 
         public Dictionary<string, object> Properties { get;  set; }
-
+        public List<Dictionary<string, object>> FeatureData { get; set; }
 
         public IList<string> Tags { get; set; }
 
@@ -28,6 +29,15 @@ namespace MapService.DTOs.DataSource
             {
                 imageUrl = ImageHelper.BytesImageToBase64Url(o.ImageData);
             }
+            List<Dictionary<string, object>> featureData = null;
+            if (!string.IsNullOrWhiteSpace(o.FeatureData))
+            {
+                try
+                {
+                    featureData = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(o.FeatureData);
+                }
+                catch { }
+            }
             return new DataSourceDTO()
             {
                 Id = o.Id,
@@ -37,7 +47,8 @@ namespace MapService.DTOs.DataSource
                 SourceFile = o.SourceFile,
                 ImageUrl = imageUrl,
                 Tags = o.Tags,
-                Properties = o.Properties
+                Properties = o.Properties,
+                FeatureData = featureData
             };
         }
     }

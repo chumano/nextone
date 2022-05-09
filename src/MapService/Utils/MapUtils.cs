@@ -1,4 +1,6 @@
-﻿using GeoAPI;
+﻿using BruTile;
+using BruTile.Predefined;
+using GeoAPI;
 using MapService.MapSources;
 using Microsoft.Extensions.Configuration;
 using NetTopologySuite;
@@ -14,6 +16,7 @@ namespace MapService.Utils
 {
     public static class MapUtils
     {
+        public static readonly GlobalSphericalMercator DeaultMapSchema = new GlobalSphericalMercator("image/png", YAxis.TMS, 0, 19);
         public static readonly string ImagePng = "image/png";
         public static readonly string ImageJpeg = "image/jpeg";
         public static readonly string TextXml = "text/xml";

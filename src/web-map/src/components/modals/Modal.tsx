@@ -11,12 +11,14 @@ interface ModalProps {
    className?: string,
    confirmLoading?: boolean,
    onOk: (e:any) => void,
-   onCancel: (e:any) => void,
+   onCancel?: (e:any) => void,
+   width?: number
 }
 
 const Modal: React.FC<ModalProps> = (props) => {
    return <>
       <AntD.Modal
+          width={props.width || 500}
           title={props.title}
           visible={props.isOpen}
           onOk={props.onOk}

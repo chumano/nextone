@@ -1,5 +1,7 @@
 import { Button, Modal, notification, Modal as AntDModal, Typography } from "antd";
-import { SaveOutlined,DeleteOutlined ,ExclamationCircleOutlined} from '@ant-design/icons';
+import { SaveOutlined,DeleteOutlined ,ExclamationCircleOutlined, 
+    EnvironmentOutlined,
+    EditOutlined} from '@ant-design/icons';
 import { MapInfoState, useMapEditor } from "./useMapEditor";
 import { getResponseErrorMessage } from "../../utils/functions";
 import { useMapApi } from "../../apis";
@@ -69,11 +71,24 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             },
         });
     }
+
+    const openModalEditMap = ()=>{
+        mapEditor.showModal('map', true);
+    }
+
+    const openModalSymbol = ()=>{
+        mapEditor.showModal('symbol', true);
+    }
+
     return <>
         <div className="map-editor-toolbar">
             <h3 style={{ width: '600px' }}>
                 <Link className="link" to="/maps">Maps</Link>
                 /{props.map?.name}
+
+                <EditOutlined color={'#1890ff'}  
+                    className="clickable"  
+                    onClick={openModalEditMap}/>
                 {/* <div style={{display:'inline-block', maxWidth:'300px'}}>
                     <Paragraph editable={{ onChange: setName }} style={{display:'inline-block'}}>
                         {name}
@@ -85,6 +100,11 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             <div>
                 <Button type="primary" onClick={onSave}>
                     <SaveOutlined /> Lưu Map
+                </Button>
+
+                <Button type="default" style={{marginLeft:'10px'}}
+                    onClick={openModalSymbol}>
+                    <EnvironmentOutlined /> Tải icon
                 </Button>
             </div>
             <div className="flex-spacer"></div>
