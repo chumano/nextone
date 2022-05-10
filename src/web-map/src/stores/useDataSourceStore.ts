@@ -43,8 +43,8 @@ export const useDatasourceStore = () => {
     const update = async (id: string, obj: UpdateDataSourceDTO) => {
       try {
         observable.updating(true);
-        const updatedCustomer = await handleAxiosApi<DataSource>(api.update(id, obj));
-        observable.update(id, updatedCustomer);
+        const updated = await handleAxiosApi<DataSource>(api.update(id, obj));
+        observable.update(id, updated);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {

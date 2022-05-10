@@ -121,7 +121,7 @@ namespace MapService.Controllers
             };
 
             dataSource.SetBoudingBox(
-                new MapBoudingBox(shapeFileInfo.Extents.MinX, 
+                new MapBoundingBox(shapeFileInfo.Extents.MinX, 
                 shapeFileInfo.Extents.MinY, 
                 shapeFileInfo.Extents.MaxX, 
                 shapeFileInfo.Extents.MaxY));
@@ -173,7 +173,7 @@ namespace MapService.Controllers
             await _dataSourceRepository.SaveChangesAsync();
 
             //TODO: send DomainEvent DataSoruceUpdated
-            return Ok(datasource);
+            return Ok(DataSourceDTO.From(datasource));
         }
 
         [HttpDelete("{id}")]

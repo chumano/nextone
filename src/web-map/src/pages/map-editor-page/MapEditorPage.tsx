@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom";
 import MapEditorLayout from "../../components/_layouts/MapEditorLayout";
 import { MapInfo } from "../../interfaces";
-import { MapState, useMapStore } from "../../stores";
+import { MapState, useMapStore, useSymbolStore } from "../../stores";
 import LayerList from "./LayerList";
 import ToolBar from "./ToolBar";
 import '../../styles/pages/map-editor-page.scss';
@@ -27,10 +27,12 @@ const MapEditorPage: React.FC = () => {
     const params = useParams();
     const { mapState, ...mapStore } = useMapStore();
     const sourceStore = useDatasourceStore();
+    const symbolStore = useSymbolStore();
     const mapEditor = useMapEditor();
 
     useEffect(()=>{
-        sourceStore.list()
+        sourceStore.list();
+        symbolStore.list();
     },[])
 
     useEffect(() => {
@@ -39,28 +41,7 @@ const MapEditorPage: React.FC = () => {
         if (!mapid) return;
         const fetchMapInfo = async () => {
             const map = await mapStore.get(mapid);
-            
-            const layers : LayerStyle[] =[];
-            map.layers.forEach(l =>{
-                const layerStyle : LayerStyle = {
-                    name : l.layerName,
-                    layerGroup : l.layerGroup,
-
-                    sourceId : l.dataSourceId,
-                    layerType : geo2LayerType(l.dataSourceGeoType),
-                    visibility : l.active,
-                    minZoom : l.minZoom,
-                    maxZoom: l.maxZoom,
-                    note: l.note,
-                    style: l.paintProperties
-                };
-                layers.push(layerStyle);
-            })
-
-            mapEditor.setMapInfo({
-                id: map.id??'',
-                name: map.name
-            }, layers);
+            mapEditor.setMapInfo(map);
         }
 
         fetchMapInfo()
@@ -93,7 +74,10 @@ const MapEditorPage: React.FC = () => {
             layerEditor={ mapEditor.mapEditorState.selectedLayerIndex!=undefined && <LayerEditor />}
             map={
                 mapEditor.mapEditorState.mapInfo?.id ? 
-                <MapView mapId={mapEditor.mapEditorState.mapInfo.id}/> 
+                <MapView 
+                    mapId={mapEditor.mapEditorState.mapInfo.id}
+                    boundingBox={mapEditor.mapEditorState.mapInfo.boundingBox}
+                /> 
                 :null
                 }
             bottom={bottomPanel}

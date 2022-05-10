@@ -18,13 +18,13 @@ interface DatasouceItemProps {
 const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, onViewData }) => {
 
     return <>
-        <div className="source-item clickable" title={item.name} onClick={onClick}>
+        <div className="source-item" title={item.name} >
             <div className='source-item-image'>
                 <img src={item.imageUrl} alt="default image" />
             </div>
             <div className='source-item-info'>
                 <div>
-                    <h3 className='source-item-title'>
+                    <h3 className='source-item-title clickable' onClick={onClick}>
                         {item.name}
                     </h3>
                     <Button className='delete-btn' onClick={onDelete}
@@ -49,7 +49,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
                             </span>
                         </div>
                         <div>
-                            {item.featureData && item.featureData.length >0 &&
+                            {item.featureData && item.featureData.length > 0 &&
                                 <span className='clickable' onClick={(e) => {
                                     e.stopPropagation();
                                     onViewData && onViewData(item.featureData!)
@@ -83,7 +83,7 @@ const DataSourcePage: React.FC = () => {
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
     const [modalEditVisible, setModalEditVisible] = useState(false);
     const [modalViewFeatureVisible, setModalViewFeatureVisible] = useState(false);
-    const [modalViewFeatureData, setmodalViewFeatureData] = useState<FeatureData[]>([]);
+    const [modalViewFeatureData, setmodalViewFeatureData] = useState<FeatureData[]>();
     const [modalEditSource, setModalEditSource] = useState<any>(undefined);
 
     useEffect(() => {
@@ -159,7 +159,9 @@ const DataSourcePage: React.FC = () => {
             }} />
         }
 
-        {modalViewFeatureVisible && <ModalViewFeature visible={modalViewFeatureVisible}
+        {modalViewFeatureVisible 
+        && modalViewFeatureData 
+        && <ModalViewFeature visible={modalViewFeatureVisible}
             features={modalViewFeatureData}
             onToggle={(visible: boolean) => {
                 setModalViewFeatureVisible(visible);

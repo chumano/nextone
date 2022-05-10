@@ -13,7 +13,10 @@ namespace MapService.DTOs.Map
         public string Name { get; set; }
         public string Note { get; set; }
         public string ImageUrl { get; set; }
+        public int Version { get; set; }
         public IEnumerable<MapLayerDTO> Layers { get; set; }
+
+        public MapBoundingBox BoundingBox { get; set; }
 
         public static MapDTO From(MapInfo o)
         {
@@ -27,6 +30,8 @@ namespace MapService.DTOs.Map
                 Id = o.Id,
                 Name = o.Name,
                 Note = o.Note,
+                Version = o.Version,
+                BoundingBox = o.BoundingBox,
                 ImageUrl = imageUrl,
                 Layers = o.Layers.Select(l => new MapLayerDTO()
                 {

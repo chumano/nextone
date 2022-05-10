@@ -1,7 +1,9 @@
 import { Button, Dropdown, Menu, } from "antd";
-import { PoweroffOutlined, DownOutlined , AppstoreOutlined} from '@ant-design/icons';
+import { PoweroffOutlined, DownOutlined , AppstoreOutlined, SettingOutlined} from '@ant-design/icons';
 import { Link } from "react-router-dom";
 import { ReactComponent as Logo } from '../../assets/logo.svg'
+import { useState } from "react";
+import ModalSettings from "../modals/settings/ModalSettings";
 
 const AntD= {
     Dropdown :Dropdown as any,
@@ -22,6 +24,7 @@ const MainHeader: React.FC = (props: any) => {
     const user = {
         Name: 'Chumano'
     }
+    const [showModalSettings, setShowModalSettings] = useState(false);
 
     const logOut = () => {
 
@@ -46,24 +49,44 @@ const MainHeader: React.FC = (props: any) => {
             <div className="flex-spacer"></div>
 
             <div className="main-header__right">
+           
+
                 <AntD.Dropdown overlay={menu} trigger={['click']} >
                     <div className="nav-links-btn clickable">
                         <AppstoreOutlined />
                     </div>
                 </AntD.Dropdown>
 
+                <div className="nav-links-btn clickable"  
+                    onClick={()=>{
+                        setShowModalSettings(true);
+                    }}>
+                    <SettingOutlined />
+                </div>
+
                 <div className="user-info">
                     <span>{user.Name}</span>
                 </div>
 
-                <Button
+                {/* <Button
                     type="primary"
                     icon={<PoweroffOutlined />}
                     onClick={logOut}>
                     Đăng xuất
-                </Button>
+                </Button> */}
+                <div className="nav-links-btn clickable" title="Đăng xuất"
+                    onClick={logOut}>
+                    <PoweroffOutlined style={{color:"#ff7875"}}/>
+                </div>
+                
             </div>
         </div>
+
+        {showModalSettings &&
+            <ModalSettings  onClose={()=>{
+                setShowModalSettings(false);
+            }}/>
+        }
     </>
 }
 

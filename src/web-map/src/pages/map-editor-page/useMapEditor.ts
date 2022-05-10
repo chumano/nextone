@@ -1,7 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { useMapApi } from "../../apis";
-import { LayerType, MapInfo, MapLayer, PaintPropertyKey } from "../../interfaces";
-import { findLastIndex, layerType2Geo } from "../../utils/functions";
+import { LayerType, MapBoudingBox, MapInfo, MapLayer, PaintPropertyKey } from "../../interfaces";
+import { findLastIndex, geo2LayerType, handleAxiosApi, layerType2Geo } from "../../utils/functions";
 import { useObservable } from "../../utils/hooks";
 
 export interface LayerStyle {
@@ -14,27 +14,29 @@ export interface LayerStyle {
     isSelected?: boolean;
 
     minZoom?: number;
-    maxZoom?:number;
+    maxZoom?: number;
     note?: string;
 
-    style?:{
-        [key: PaintPropertyKey] : any
+    style?: {
+        [key: PaintPropertyKey]: any
     }
 }
 
-export interface MapInfoState{
+export interface MapInfoState {
     id: string;
     name: string;
+    version: number;
+    boundingBox?: MapBoudingBox
 }
 
 interface MapEditorState {
     mapInfo?: MapInfoState;
     layers: LayerStyle[];
     selectedLayerIndex?: number;
-    collapsedGroups: {[key:string]: boolean};
+    collapsedGroups: { [key: string]: boolean };
 
     showModalSymbol?: boolean,
-    showModalMap?:boolean
+    showModalMap?: boolean
 }
 const initialState = {
     layers: [],
@@ -45,23 +47,49 @@ const initialState = {
 
 const subject = new BehaviorSubject<MapEditorState>(initialState);
 
-const setMapInfo = (mapInfo:{id:string, name: string} ,layers: LayerStyle[])=>{
-    setNextState({ 
-        mapInfo: {...mapInfo},
-        layers: [...layers] 
+const setMapInfo = (mapInfo: MapInfo) => {
+    const layers: LayerStyle[] = [];
+    mapInfo.layers.forEach(l => {
+        const layerStyle: LayerStyle = {
+            name: l.layerName,
+            layerGroup: l.layerGroup,
+
+            sourceId: l.dataSourceId,
+            layerType: geo2LayerType(l.dataSourceGeoType),
+            visibility: l.active,
+            minZoom: l.minZoom,
+            maxZoom: l.maxZoom,
+            note: l.note,
+            style: l.paintProperties
+        };
+        layers.push(layerStyle);
+    })
+
+    setMapInfoState({
+        id: mapInfo.id,
+        name: mapInfo.name,
+        version: mapInfo.version || 0,
+        boundingBox: mapInfo.boundingBox
+    }, layers);
+}
+
+const setMapInfoState = (mapInfo: MapInfoState, layers: LayerStyle[]) => {
+    setNextState({
+        mapInfo: { ...mapInfo },
+        layers: [...layers]
     });
 }
 const setLayers = (layers: LayerStyle[]) => {
     setNextState({ layers: [...layers] });
 }
 
-const setCollapsedGroups = (collapsedGroups:  {[key:string]: boolean}) => {
-    setNextState({ collapsedGroups: {...collapsedGroups} });
+const setCollapsedGroups = (collapsedGroups: { [key: string]: boolean }) => {
+    setNextState({ collapsedGroups: { ...collapsedGroups } });
 }
 
 const onLayerAction = (layerIndex: number, action: string) => {
     //action : select | delete | visibility
-    let { layers , selectedLayerIndex} = subject.getValue();
+    let { layers, selectedLayerIndex } = subject.getValue();
     switch (action) {
         case 'select':
             setNextState({ selectedLayerIndex: layerIndex });
@@ -80,42 +108,42 @@ const onLayerAction = (layerIndex: number, action: string) => {
 
         case 'delete':
             layers = layers.filter((item, index) => layerIndex != index);
-            if(selectedLayerIndex == layerIndex){
-                const selectedIndex = layerIndex > 0?  layerIndex -1
-                                    : (layers.length >0 ? layerIndex : undefined); 
+            if (selectedLayerIndex == layerIndex) {
+                const selectedIndex = layerIndex > 0 ? layerIndex - 1
+                    : (layers.length > 0 ? layerIndex : undefined);
                 setNextState({ layers: layers, selectedLayerIndex: selectedIndex });
-            }else{
-                setNextState({ layers: layers});
+            } else {
+                setNextState({ layers: layers });
             }
             break;
     }
 };
 
 
-const onLayerPropertyChange = (layerIndex: number, property: string, newValue: any ) =>{
-    let { layers} = subject.getValue();
+const onLayerPropertyChange = (layerIndex: number, property: string, newValue: any) => {
+    let { layers } = subject.getValue();
     const layer = layers[layerIndex];
     const newLayer = {
         ...layer,
-          [property]: newValue
+        [property]: newValue
     }
     layers[layerIndex] = newLayer;
     setNextState({ layers: [...layers] });
-} 
+}
 
-const onLayerStyleChange = (layerIndex: number, property: string, newValue: any ) =>{
-    let { layers} = subject.getValue();
+const onLayerStyleChange = (layerIndex: number, property: string, newValue: any) => {
+    let { layers } = subject.getValue();
     const layer = layers[layerIndex];
     const newLayer = {
         ...layer,
-        style : {
+        style: {
             ...layer.style,
             [property]: newValue
-        }   
+        }
     }
     layers[layerIndex] = newLayer;
     setNextState({ layers: [...layers] });
-} 
+}
 
 
 const addLayer = (layer: LayerStyle) => {
@@ -135,10 +163,10 @@ const addLayer = (layer: LayerStyle) => {
     setNextState({ layers: layers, selectedLayerIndex: layerIndex });
 }
 
-const showModal = (modal: 'symbol' | 'map', isShow: boolean) =>{
-    if(modal == 'symbol'){
+const showModal = (modal: 'symbol' | 'map', isShow: boolean) => {
+    if (modal == 'symbol') {
         setNextState({ showModalSymbol: isShow });
-    }else if(modal == 'map'){
+    } else if (modal == 'map') {
         setNextState({ showModalMap: isShow });
     }
 
@@ -155,29 +183,33 @@ const getObservable = () => {
 
 export const useMapEditor = () => {
     const api = useMapApi();
-    const saveMap = async ()=>{
+    const saveMap = async () => {
         let { mapInfo, layers } = subject.getValue();
-        if(!mapInfo) return;
+        if (!mapInfo) return;
 
         const id = mapInfo.id;
-        const mapLayers : MapLayer[] = layers.map(o=>{
+        const mapLayers: MapLayer[] = layers.map(o => {
             return {
-                layerName : o.name,
-                layerGroup : o.layerGroup,
-                paintProperties : o.style,
-                dataSourceId : o.sourceId || '',
-                minZoom : o.minZoom,
+                layerName: o.name,
+                layerGroup: o.layerGroup,
+                paintProperties: o.style,
+                dataSourceId: o.sourceId || '',
+                minZoom: o.minZoom,
                 maxZoom: o.maxZoom,
                 active: o.visibility,
-                note : o.note
+                note: o.note
             }
         });
-        const mapUpdate :MapInfo =  {
+        const mapUpdate: MapInfo = {
             id: id,
-            name : mapInfo.name,
-            layers : mapLayers
+            name: mapInfo.name,
+            layers: mapLayers
         }
-        await api.update(id, mapUpdate);
+
+
+        const repsonse = api.update(id, mapUpdate);
+        const updatedMap = await handleAxiosApi<MapInfo>(repsonse);
+        setMapInfo(updatedMap);
     }
 
     const observable = getObservable();
@@ -185,6 +217,7 @@ export const useMapEditor = () => {
     return {
         mapEditorState,
         setMapInfo,
+        setMapInfoState,
         setLayers,
         setCollapsedGroups,
         addLayer,
@@ -192,9 +225,9 @@ export const useMapEditor = () => {
         onLayerPropertyChange,
         onLayerStyleChange,
         onLayerAction,
-        
+
         saveMap,
-        
+
         showModal,
 
         getObservable,

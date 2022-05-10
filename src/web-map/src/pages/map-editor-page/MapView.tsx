@@ -9,6 +9,14 @@ import React from "react";
 import { useMapEditor } from "./useMapEditor";
 import LayerGoogleLeaflet from "../../components/map/LayerGoogleLeaflet";
 import LayerGridLeaftlet from "../../components/map/LayerGridLeaflet";
+import { AppWindow } from "../../config/AppWindow";
+import { MapBoudingBox } from "../../interfaces";
+
+declare let window: AppWindow;
+const defaultCenter = window.ENV.Map.center;
+const defaultZoom = window.ENV.Map.zoom;
+const defaultBoudingBox = window.ENV.Map.boundingBox;
+const GoogleApiKey = process.env.REACT_APP_GOOGLE_APIKEY || window.ENV.Map.googleApiKey;
 
 const MapController = () => {
     const map = useMap();
@@ -21,29 +29,42 @@ const MapController = () => {
     return null;
 };
 
-const GoogleApiKey = process.env.REACT_APP_GOOGLE_APIKEY;
-
 interface MapViewProps {
     mapId: string;
+    boundingBox?: MapBoudingBox
 }
 const MapViewContainer: React.FC<MapViewProps> = (props) => {
     //const mapEditor = useMapEditor();
-    const defaultCenter: L.LatLngTuple = [40.26, -102.91];
-    const defaultZoom = 5;
-    const mapRef = useRef<any>()
+    const center: L.LatLngTuple = defaultCenter;
+    const zoom = defaultZoom;
+    const mapRef = useRef<L.Map | any>()
+    const [map, setMap] = useState<L.Map | any>(null);
     const ref = useRef<L.TileLayer>(null);
-    const tileMapUrl = `http://localhost:5105/tms/1.0.0/map-${props.mapId}/{z}/{x}/{y}.png`
+    const tileMapUrl = `http://localhost:5105/tms/map-${props.mapId}/{z}/{x}/{y}.png`
     useEffect(() => {
-        const tileMapUrl = `http://localhost:5105/tms/1.0.0/map-${props.mapId}/{z}/{x}/{y}.png`
+        const tileMapUrl = `http://localhost:5105/tms/map-${props.mapId}/{z}/{x}/{y}.png`
         if (ref.current) {
             ref.current.setUrl(tileMapUrl);
         }
     }, [props.mapId, ref.current])
 
+    useEffect(() => {
+        if (map && props.boundingBox) {
+            setTimeout(() => {
+                const lMap = map as L.Map;
+                lMap.flyToBounds([
+                    [props.boundingBox!.minY, props.boundingBox!.minX],
+                    [props.boundingBox!.maxY, props.boundingBox!.maxX]
+                ])
+            }, 500)
+
+        }
+    }, [props.boundingBox, map])
+
     const displayMap = useMemo(() => {
         console.log("display map", props.mapId, ref.current)
-        return <MapContainer center={defaultCenter} zoom={defaultZoom}
-            ref={mapRef}
+        return <MapContainer center={center} zoom={zoom} maxBounds={defaultBoudingBox}
+            ref={setMap}
             zoomControl={false}
             doubleClickZoom={false}
             dragging={true}

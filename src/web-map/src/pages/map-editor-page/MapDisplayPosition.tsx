@@ -8,10 +8,11 @@ const MapDisplayPosition: React.FC<DisplayPositionProps> = ({  }) => {
     const map = useMap();
     const [position, setPosition] = useState(() => map.getCenter())
     const [zoom, setZoom] = useState(() => map.getZoom())
-    const center: L.LatLngTuple = [51.505, -0.09]
-    const defaultzoom = 13;
+    
+    const fixedCenter: L.LatLngTuple = [51.505, -0.09]
+    const fixedZoom = 13;
     const onClick = useCallback(() => {
-        map.setView(center, defaultzoom)
+        map.setView(fixedCenter, fixedZoom)
     }, [map])
 
     const onMove = useCallback(() => {
@@ -33,7 +34,7 @@ const MapDisplayPosition: React.FC<DisplayPositionProps> = ({  }) => {
                 lon: {position.lng.toFixed(2)},
                 zoom: {zoom}
                 {' '}
-                <button onClick={onClick}>reset</button>
+                {/* <button onClick={onClick}>reset</button> */}
             </span>
         </p>
     </>

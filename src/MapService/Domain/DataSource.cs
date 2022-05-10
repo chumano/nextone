@@ -53,25 +53,25 @@ namespace MapService.Domain
 
         public byte[] ImageData { get; set; }
 
-        private MapBoudingBox _bb;
-        public MapBoudingBox BoudingBox {
+        private MapBoundingBox _bb;
+        public MapBoundingBox BoundingBox {
             get
             {
                 if(_bb == null)
                 {
-                    _bb = new MapBoudingBox(_bbMinX ?? 0, _bbMixY ?? 0, _bbMaxX ?? 0, _bbMaxY ?? 0);
+                    _bb = new MapBoundingBox(_bbMinX ?? 0, _bbMixY ?? 0, _bbMaxX ?? 0, _bbMaxY ?? 0);
                 }
                 return _bb;
             }
         }
 
-        public void SetBoudingBox(MapBoudingBox bb)
+        public void SetBoudingBox(MapBoundingBox bb)
         {
             _bbMinX = bb.MinX;
             _bbMixY = bb.MinY;
             _bbMaxX = bb.MaxX;
             _bbMaxY = bb.MaxY;
-            _bb = new MapBoudingBox(_bbMinX ?? 0, _bbMixY ?? 0, _bbMaxX ?? 0, _bbMaxY ?? 0);
+            _bb = new MapBoundingBox(_bbMinX ?? 0, _bbMixY ?? 0, _bbMaxX ?? 0, _bbMaxY ?? 0);
         }
 
         private double? _bbMinX;

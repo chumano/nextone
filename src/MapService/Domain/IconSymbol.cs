@@ -1,4 +1,6 @@
-﻿namespace MapService.Domain
+﻿using System;
+
+namespace MapService.Domain
 {
     public class IconSymbol
     {
@@ -7,6 +9,9 @@
         public int Width { get; private set; }
         public int Height { get; private set; }
         public byte[] ImageData { get; private set; }
+        public DateTime? CreatedDate { get; set; }
+
+        public string CreatedBy { get; set; }
         public IconSymbol(string name, 
             int width,
             int height,
@@ -16,6 +21,7 @@
             this.Width = width;
             this.Height = height;
             this.ImageData = bytes;
+            CreatedDate = DateTime.Now;
         }
 
     }

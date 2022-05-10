@@ -43,6 +43,22 @@ namespace MapService.Infrastructure
                 eb.HasMany(o => o.Layers)
                     .WithOne()
                     .HasForeignKey(o => o.MapId);
+
+                eb.Property(o=>o.Version)
+                .HasColumnType("int")
+                .IsConcurrencyToken();
+
+                eb.Property("_bbMinX")
+               .HasColumnType("float");
+
+                eb.Property("_bbMixY")
+                .HasColumnType("float");
+
+                eb.Property("_bbMaxX")
+                .HasColumnType("float");
+
+                eb.Property("_bbMaxY")
+                .HasColumnType("float");
             });
 
             modelBuilder.Entity<MapLayer>(eb =>

@@ -96,6 +96,10 @@ namespace MapService.Utils
             var bbox = renderOptions.Envelope;
             if (bbox == null)
             {
+                if ((map.Layers == null || map.Layers.Count == 0) &&
+                  (map.VariableLayers == null || map.VariableLayers.Count == 0) &&
+                  (map.BackgroundLayer == null || map.BackgroundLayer.Count == 0))
+                        throw (new InvalidOperationException("No layers to zoom to"));
                 bbox = map.GetExtents();
             }
 

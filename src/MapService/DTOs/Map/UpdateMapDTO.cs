@@ -3,10 +3,14 @@ using System.Collections.Generic;
 
 namespace MapService.DTOs.Map
 {
-    public class UpdateMapDTO
+    public class UpdateMapNameDTO
     {
         public string Name { get; set; }
         public string Note { get; set; }
+    }
+
+    public class UpdateMapDTO
+    {
         public IList<UpdateMapLayerDTO> Layers { get; set; }
     }
 

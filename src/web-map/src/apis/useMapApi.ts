@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { MapInfo } from '../interfaces';
-import { CreateMapDTO } from '../interfaces/dtos';
+import { CreateMapDTO, UpdateMapNameDTO } from '../interfaces/dtos';
 import mockMapApi from './mock/MockMapApi';
 
 const baseApi = process.env.REACT_APP_MAP_API;
@@ -27,9 +27,18 @@ export const useMapApi = () => {
     return axiosInstance.post(`${baseApi}/maps/update/${id}`, map);
   };
 
+  const updateName = (id: string, map: UpdateMapNameDTO): Promise<AxiosResponse<MapInfo>> => {
+    return axiosInstance.post(`${baseApi}/maps/updateName/${id}`, map);
+  };
+
   const remove = (id: string): Promise<AxiosResponse<MapInfo>> => {
     return axiosInstance.delete(`${baseApi}/maps/${id}`);
   };
 
-  return { list, get, create, update, remove };
+  return { list, 
+    get, 
+    create, 
+    update, 
+    updateName,
+    remove };
 };

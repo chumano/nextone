@@ -28,3 +28,10 @@ export const ShapeFileProps = {
     SRID : "ShapeFile_SRID",
     FEATURECOUNT: "ShapeFile_FeatureCount",
 }
+
+export interface MapBoudingBox{
+    minX: number;
+    minY: number;
+    maxX: number;
+    maxY: number;
+}

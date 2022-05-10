@@ -4,14 +4,16 @@ using MapService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace MapService.Migrations
 {
     [DbContext(typeof(MapDBContext))]
-    partial class MapDBContextModelSnapshot : ModelSnapshot
+    [Migration("20220510030533_Map_IconSymbol_CreatedDate")]
+    partial class Map_IconSymbol_CreatedDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,22 +135,6 @@ namespace MapService.Migrations
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("Version")
-                        .IsConcurrencyToken()
-                        .HasColumnType("int");
-
-                    b.Property<double?>("_bbMaxX")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("_bbMaxY")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("_bbMinX")
-                        .HasColumnType("float");
-
-                    b.Property<double?>("_bbMixY")
-                        .HasColumnType("float");
 
                     b.HasKey("Id");
 

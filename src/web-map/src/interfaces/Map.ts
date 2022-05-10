@@ -1,10 +1,12 @@
-import { GeoType, PaintPropertyKey } from "./Types";
+import { GeoType, MapBoudingBox as MapBoundingBox, PaintPropertyKey } from "./Types";
 
 export interface MapInfo {
     id: string;
     name: string;
     note?: string;
     imageUrl?: string;
+    version?: number;
+    boundingBox?: MapBoundingBox;
     layers: MapLayer[]
 }
 

@@ -1,5 +1,7 @@
-﻿using MapService.Domain;
+﻿using GeoAPI.CoordinateSystems.Transformations;
+using MapService.Domain;
 using MapService.Domain.Repositories;
+using MapService.Domain.Services;
 using MapService.DTOs;
 using MapService.DTOs.Map;
 using MapService.Utils;
@@ -27,17 +29,20 @@ namespace MapService.Controllers
         private readonly IdGenerator _idGenerator;
         private readonly IMapRender _mapRender;
         private readonly ICacheStore _cacheStore;
+        private readonly ISharpMapFactory _mapFactory;
 
         public MapController(ILogger<MapController> logger,
             IdGenerator idGenerator,
             IMapRepository mapRepository,
             IMapRender mapRender,
+            ISharpMapFactory mapFactory,
             ICacheStore cacheStore)
         {
             _logger = logger;
             _idGenerator = idGenerator;
             _mapRepository = mapRepository;
             _mapRender = mapRender;
+            _mapFactory = mapFactory;
             _cacheStore = cacheStore;
         }
 
@@ -88,8 +93,8 @@ namespace MapService.Controllers
             return Ok(mapDto);
         }
 
-        [HttpPost("Update/{id}")]
-        public async Task<IActionResult> UpdateMap(string id, [FromBody] UpdateMapDTO updateMapDTO)
+        [HttpPost("UpdateName/{id}")]
+        public async Task<IActionResult> UpdateMapName(string id, [FromBody] UpdateMapNameDTO updateMapDTO)
         {
             var map = await _mapRepository.Get(id);
             if (map == null)
@@ -99,6 +104,23 @@ namespace MapService.Controllers
 
             map.Name = updateMapDTO.Name;
             map.Note = updateMapDTO.Note;
+
+            _mapRepository.Update(map);
+            await _mapRepository.SaveChangesAsync();
+
+            var mapDto = MapDTO.From(map);
+            return Ok(mapDto);
+        }
+
+        [HttpPost("Update/{id}")]
+        public async Task<IActionResult> UpdateMap(string id, [FromBody] UpdateMapDTO updateMapDTO)
+        {
+            var map = await _mapRepository.Get(id);
+            if (map == null)
+            {
+                throw new Exception($"Map {id} is not found");
+            }
+
 
             var layers = new List<MapLayer>();
             var index = 0;
@@ -119,24 +141,42 @@ namespace MapService.Controllers
             }
             map.Layers = layers;
             map.UpdatedDate = DateTime.Now;
+            map.Version = map.Version + 1;
 
             _mapRepository.Update(map);
             await _mapRepository.SaveChangesAsync();
-
-
-            map = await _mapRepository.Get(id);
 
             //generate map image
-            var img = _mapRender.RenderImage(map, new MapRenderOptions()
+            try
             {
-                PixelWidth = 500,
-                BackgroundColor = Color.White
-            }); 
-            var imgBytes = ImageHelper.ImageToByteArray(img);
-            map.ImageData = imgBytes;
-            _mapRepository.Update(map);
+                map = await _mapRepository.Get(id);
+                using (var rMap = _mapFactory.GenerateMap(map))
+                {
+                    var extents = rMap.GetExtents();
+                    var img = _mapRender.RenderImage(rMap, new MapRenderOptions()
+                    {
+                        PixelWidth = 500,
+                        BackgroundColor = Color.White
+                    });
+                    var imgBytes = ImageHelper.ImageToByteArray(img);
+                    map.ImageData = imgBytes;
 
-            await _mapRepository.SaveChangesAsync();
+                    //transform to latlng 4326
+                    var transformedExtents = _mapFactory.TransformToLatLng(extents);
+                    map.SetBoudingBox(new MapBoundingBox(
+                            transformedExtents.MinX, transformedExtents.MinY,
+                            transformedExtents.MaxX, transformedExtents.MaxY
+                        ));
+                }
+                  
+                _mapRepository.Update(map);
+
+                await _mapRepository.SaveChangesAsync();
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, $"MapController-RenderImage {ex.Message}");
+            }
 
             //clear Map Cache
             await _cacheStore.Remove<SharpMap.Map>(map.Id, out var _);

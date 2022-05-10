@@ -24,6 +24,6 @@ export const useDebounce = (cb:(...args:any)=>void, delay:number = 200) => {
         delay,
         options
       ),
-      [delay, debounce]
+      [delay, debounce, inputsRef.current]
     );
   }

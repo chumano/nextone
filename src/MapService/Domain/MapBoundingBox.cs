@@ -1,8 +1,8 @@
 ﻿namespace MapService.Domain
 {
-    public class MapBoudingBox
+    public class MapBoundingBox
     {
-        public MapBoudingBox(double minX, double minY, double maxX, double maxY)
+        public MapBoundingBox(double minX, double minY, double maxX, double maxY)
         {
             MinX = minX;
             MinY = minY;

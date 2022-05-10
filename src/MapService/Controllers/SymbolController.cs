@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace MapService.Controllers
         public async Task<IActionResult> Get()
         {
             var items = await _symbolRepository.Symbols
+                .OrderBy(o => o.Name)
                 .ToListAsync();
 
             return Ok(items.Select(o => SymbolDTO.From(o)));
@@ -67,9 +69,21 @@ namespace MapService.Controllers
             int width =0, height=0;
             using (var image = new Bitmap(filePath))
             {
-                imgBytes = ImageHelper.ImageToByteArray(image);
+                ImageFormat imageFormat = ImageFormat.Jpeg;
+                if (ext.ToLower() == ".png")
+                {
+                    imageFormat = ImageFormat.Png;
+                }
+                
+                
                 width = image.Width;
                 height = image.Height;
+                var resizeImage = image;
+                if(width > 40 || height > 40)
+                {
+                    resizeImage = ImageHelper.ResizeImage(image, new Size(40,40));
+                }
+                imgBytes = ImageHelper.ImageToByteArray(resizeImage, imageFormat);
             }
 
             var symbol = new IconSymbol(createSymbolDTO.Name,
@@ -107,7 +121,7 @@ namespace MapService.Controllers
                     .Where(o => o.Name == name)
                     .FirstOrDefaultAsync();
 
-            if (existNameObj != null)
+            if (existNameObj == null)
             {
                 throw new Exception($"Symbol Name is not found");
             }

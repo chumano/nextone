@@ -1,6 +1,9 @@
 ﻿using BruTile.Predefined;
 using GeoAPI;
 using GeoAPI.CoordinateSystems;
+using GeoAPI.CoordinateSystems.Transformations;
+using GeoAPI.Geometries;
+using MapService.Domain.Repositories;
 using MapService.Utils;
 using Microsoft.Extensions.Logging;
 using ProjNet.CoordinateSystems.Transformations;
@@ -21,6 +24,7 @@ namespace MapService.Domain.Services
 {
     public interface ISharpMapFactory
     {
+        Envelope TransformToLatLng(Envelope envelope, int fromSRID = 3857);
         SharpMap.Map GenerateMap(MapInfo mapInfo, int TargetSRID = 3857);
         SharpMap.Map GenerateMap(ShapeFile dataProvider, int TargetSRID = 3857);
     }
@@ -30,13 +34,23 @@ namespace MapService.Domain.Services
         private readonly CoordinateTransformationFactory _coordinateTransformationFactory;
         private readonly ICoordinateSystemServices _css;
         private readonly ILogger<SharpMapFactory> _logger;
-        public SharpMapFactory(ILogger<SharpMapFactory> logger)
+        private readonly IIconSymbolRepository _symbolRepository;
+        public SharpMapFactory(ILogger<SharpMapFactory> logger, IIconSymbolRepository iconSymbolRepository)
         {
             _coordinateTransformationFactory = new CoordinateTransformationFactory();
             _css = Session.Instance.CoordinateSystemServices;
             _logger = logger;
+            _symbolRepository = iconSymbolRepository;
         }
 
+        public Envelope TransformToLatLng(Envelope envelope, int fromSRID = 3857)
+        {
+            var from = _css.GetCoordinateSystem(fromSRID);
+            var target = _css.GetCoordinateSystem(4326);
+            var transform = _coordinateTransformationFactory.CreateFromCoordinateSystems(from, target);
+
+            return GeometryTransform.TransformBox(envelope, transform.MathTransform);
+        }
         public SharpMap.Map GenerateMap(MapInfo mapInfo, int TargetSRID = 3857)
         {
             Map map = new Map(new Size(1, 1));
@@ -181,22 +195,30 @@ namespace MapService.Domain.Services
 
         private void SetStylePoint(VectorStyle style, Dictionary<string, object> properites)
         {
-            var defaultSymbol = "Data/IconSymbols/beachflag.png";
+            var defaultSymbolPath = "Data/IconSymbols/beachflag.png";
             var pointColor = GetValue<string>(properites, PaintPropertyKeys.PointColor, "#000000");
             var pointSize = GetValue<float>(properites, PaintPropertyKeys.PointSize, 5.0f);
 
             var symbolEnabled = GetValue<bool>(properites, PaintPropertyKeys.SymbolEnabled, false);
-            var symbolImage = GetValue<string>(properites, PaintPropertyKeys.SymbolImage, defaultSymbol);
+            var symbolName = GetValue<string>(properites, PaintPropertyKeys.SymbolImage, "");
             var symbolScale = GetValue<float>(properites, PaintPropertyKeys.SymbolScale, 1.0f);
-
            
+
             if (symbolEnabled)
             {
-                if (!File.Exists(symbolImage))
+                Bitmap bmSymbol = null;
+                var iconSymbol = _symbolRepository.Get(symbolName).GetAwaiter().GetResult();
+                if(iconSymbol == null)
                 {
-                    symbolImage = defaultSymbol;
+                    bmSymbol  = new Bitmap(defaultSymbolPath);
                 }
-                style.Symbol = new Bitmap(symbolImage);
+                else
+                {
+                    var img = ImageHelper.ImageFroBytes(iconSymbol.ImageData);
+                    bmSymbol = new Bitmap(img);
+                }
+                
+                style.Symbol = bmSymbol;
                 style.SymbolScale = symbolScale;
             }
             else

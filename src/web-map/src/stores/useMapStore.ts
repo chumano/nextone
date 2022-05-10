@@ -1,6 +1,6 @@
 import { useMapApi } from "../apis";
 import { MapInfo } from "../interfaces";
-import { CreateMapDTO } from "../interfaces/dtos";
+import { CreateMapDTO, UpdateMapNameDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { MapState, useMapObservable } from "./useMapObservable";
@@ -47,8 +47,20 @@ export const useMapStore = () => {
     const update = async (id: string, obj: MapInfo) => {
       try {
         observable.updating(true);
-        const updatedCustomer = await handleAxiosApi<MapInfo>(api.update(id, obj));
-        observable.update(id, updatedCustomer);
+        const updated = await handleAxiosApi<MapInfo>(api.update(id, obj));
+        observable.update(id, updated);
+      } catch (error) {
+        observable.error(getResponseErrorMessage(error));
+      } finally {
+        observable.updating(false);
+      }
+    };
+
+    const updateName = async (id: string, obj: UpdateMapNameDTO) => {
+      try {
+        observable.updating(true);
+        const updated = await handleAxiosApi<MapInfo>(api.updateName(id, obj));
+        observable.update(id, updated);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
@@ -76,6 +88,7 @@ export const useMapStore = () => {
       get,
       create,
       update,
+      updateName,
       remove,
       getMapObservable,
     };
