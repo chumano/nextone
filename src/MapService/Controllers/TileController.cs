@@ -61,7 +61,7 @@ namespace MapService.Controllers
                     return PhysicalFile(physicFile, "image/png");
                 }
 
-                var image = await RenderMap(mapid,x,y,z);
+                var image = await RenderMap(mapid,x,y,z, version);
 
                 Directory.GetParent(imgPath).Create();
                 image.Save(imgPath, ImageFormat.Png);
@@ -106,9 +106,18 @@ namespace MapService.Controllers
             }
         }
 
-        private async Task<Image> RenderMap(string mapid, int x, int y, int z)
+        private async Task<Image> RenderMap(string mapid, int x, int y, int z, int? version = null)
         {
+            //TODO: return mapContainer
             var map = await _mapService.GetOrCreateMap(mapid);
+            if (version != null)
+            {
+                var mapVersion = 1;
+                if(mapVersion != version)
+                {
+                    throw new Exception($"Version {version} is invalid. Current Map Version is {mapVersion}");
+                }
+            }
 
             var ti = new TileInfo { Index = new TileIndex(x, y, z.ToString()) };
             var bbExtent = TileTransform.TileToWorld(new TileRange(ti.Index.Col, ti.Index.Row), ti.Index.Level, _schema);
