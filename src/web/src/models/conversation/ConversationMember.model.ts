@@ -1,8 +1,9 @@
+import { UserStatus } from "./../user/UserStatus.model";
 export interface ConversationMember {
   ConversationId: string;
   UserId: string;
 
-  UserMember: any;
+  UserMember: UserStatus;
   Role: MemberRole;
 }
 
