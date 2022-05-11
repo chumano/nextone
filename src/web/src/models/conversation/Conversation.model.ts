@@ -1,9 +1,10 @@
+import { Message } from "./../message/Message.model";
 import { BaseListPagingRequest } from "./../apis/Request.model";
 import { BaseObjectCRUD } from "../ObjectCRUD.model";
 
 import { ConversationMember, MemberRole } from "./ConversationMember.model";
 import { ConversationType } from "./ConversationType.model";
-import { BaseFile } from "../File.model";
+import { BaseFile } from "../file/File.model";
 
 export interface Conversation extends BaseObjectCRUD {
   Id: string;
@@ -12,7 +13,7 @@ export interface Conversation extends BaseObjectCRUD {
   Type: ConversationType;
 
   Members: ConversationMember[];
-  RecentMessages: any;
+  RecentMessages: Message[];
 }
 
 export interface CreateConversationRequest {
