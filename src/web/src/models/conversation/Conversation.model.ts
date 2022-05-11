@@ -1,8 +1,9 @@
 import { BaseListPagingRequest } from "./../apis/Request.model";
-import { BaseObjectCRUD } from "../BaseObjectCRUD.model";
+import { BaseObjectCRUD } from "../ObjectCRUD.model";
 
 import { ConversationMember, MemberRole } from "./ConversationMember.model";
 import { ConversationType } from "./ConversationType.model";
+import { BaseFile } from "../File.model";
 
 export interface Conversation extends BaseObjectCRUD {
   Id: string;
@@ -43,7 +44,7 @@ export interface ConversationGetMessageHistoryRequest
 }
 
 export interface ConversationSendMessageRequest {
-    ConversationId: string;
-    Content: string;
-    Files: any;
+  ConversationId: string;
+  Content: string;
+  Files: BaseFile[];
 }
