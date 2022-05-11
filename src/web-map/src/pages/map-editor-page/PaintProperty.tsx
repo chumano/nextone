@@ -40,7 +40,8 @@ const renderPropertyInput = (property: string, value: any,
                 onChange={onChange}>
                 {symbols.map((symbol) => {
                     return <Select.Option key={symbol.name} value={symbol.name}  >
-                        <Avatar src={symbol.imageUrl} shape="square"  size={'small'}/> {symbol.name}
+                        <Avatar src={symbol.imageUrl} shape="square"  size={'small'}/>
+                        {symbol.name}
                     </Select.Option>
                 })}
             </Select>

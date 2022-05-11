@@ -144,10 +144,16 @@ namespace MapService.Infrastructure
 
                 eb.Property(o => o.Tags)
                  .HasColumnType("nvarchar(max)")
+                 .HasColumnName("Tags")
                  .HasConversion(
                      v => v.ToDBString(","),
                      v => v.ToListFromDBString(",")
                  );
+
+                eb.Property(o => o.RawTags)
+                    .HasColumnType("nvarchar(max)")
+                    .HasColumnName("Tags")
+                    .ValueGeneratedOnAddOrUpdate();
 
                 eb.Property(o => o.Properties)
                  .HasColumnType("nvarchar(max)")

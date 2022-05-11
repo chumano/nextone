@@ -38,7 +38,7 @@
             maxZoom: 19,
             tms: true
         }),
-        'nextmap': L.tileLayer('/tms/1/map-e2bb2d4b-659e-43d4-9a9d-112851f75bf4/{z}/{x}/{y}.png', {
+        'nextmap': L.tileLayer('/tms/latest/map-e2bb2d4b-659e-43d4-9a9d-112851f75bf4/{z}/{x}/{y}.png', {
             attribution: 'nextmap',
             maxZoom: 19,
             tms: true

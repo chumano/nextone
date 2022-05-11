@@ -1,6 +1,6 @@
 import { useMapApi } from "../apis";
 import { MapInfo } from "../interfaces";
-import { CreateMapDTO, UpdateMapNameDTO } from "../interfaces/dtos";
+import { CreateMapDTO, SearchMapDTO, UpdateMapNameDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { MapState, useMapObservable } from "./useMapObservable";
@@ -12,10 +12,10 @@ export const useMapStore = () => {
     const getMapObservable = () => observable.getObservable();
     const mapState = useObservable<MapState>(observable.getObservable());
 
-    const list = async () => {
+    const list = async (searchParams?: SearchMapDTO) => {
       try {
         observable.listing(true);
-        const objs = await handleAxiosApi<MapInfo[]>(api.list());
+        const objs = await handleAxiosApi<MapInfo[]>(api.list(searchParams));
         observable.list(objs);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));

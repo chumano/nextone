@@ -1,6 +1,6 @@
 import { useDatasourceApi, } from "../apis";
 import { DataSource } from "../interfaces";
-import { CreateDataSourceDTO, UpdateDataSourceDTO } from "../interfaces/dtos";
+import { CreateDataSourceDTO, SearchDataSourceDTO, UpdateDataSourceDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { DatasourceState, useDatasourceObservable } from "./useDataSourceObservable";
@@ -11,17 +11,19 @@ export const useDatasourceStore = () => {
     const getObservable = () => observable.getObservable();
     const objState = useObservable<DatasourceState>(observable.getObservable());
 
-    const list = async () => {
+    const list = async (searchParams?: SearchDataSourceDTO) => {
       try {
         observable.listing(true);
-        const objs = await handleAxiosApi<DataSource[]>(api.list());
-        observable.list(objs);
+        const count = await  await handleAxiosApi<number>(api.count(searchParams));
+        const objs = await handleAxiosApi<DataSource[]>(api.list(searchParams));
+        observable.listAndCount(objs, count);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
         observable.listing(false);
       }
     };
+
   
     const create = async (obj: CreateDataSourceDTO) => {
       try {

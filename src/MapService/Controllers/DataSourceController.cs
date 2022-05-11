@@ -39,11 +39,44 @@ namespace MapService.Controllers
             _mapRender = mapRender;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetDataSources()
+        [HttpGet("count")]
+        public async Task<IActionResult> Count([FromQuery] CountDataSourcesDTO getDataSourcesDTO)
         {
-            var datasources = await _dataSourceRepository.DataSources
-                    .OrderByDescending(o=>o.CreatedDate)
+           
+            var query = _dataSourceRepository.DataSources;
+            var tagSearch = "," + getDataSourcesDTO.TextSearch + ",";
+            if (!string.IsNullOrWhiteSpace(getDataSourcesDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getDataSourcesDTO.TextSearch) || o.RawTags.Contains(tagSearch));
+            }
+            if (getDataSourcesDTO.GeoTypes != null && getDataSourcesDTO.GeoTypes.Count > 0)
+            {
+                query = query.Where(o => getDataSourcesDTO.GeoTypes.Contains(o.GeoType));
+            }
+
+            var count = await query.CountAsync();
+
+            return Ok(count);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDataSources([FromQuery] GetDataSourcesDTO getDataSourcesDTO)
+        {
+            var pagingOptions = new PageOptions(getDataSourcesDTO.Offset, getDataSourcesDTO.PageSize);
+            var query =  _dataSourceRepository.DataSources;
+            var tagSearch = "," + getDataSourcesDTO.TextSearch + ",";
+            if (!string.IsNullOrWhiteSpace(getDataSourcesDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getDataSourcesDTO.TextSearch) || o.RawTags.Contains(tagSearch));
+            }
+            if (getDataSourcesDTO.GeoTypes !=null && getDataSourcesDTO.GeoTypes.Count>0)
+            {
+                query = query.Where(o => getDataSourcesDTO.GeoTypes.Contains(o.GeoType));
+            }
+
+            var datasources  = await query.OrderByDescending(o=>o.CreatedDate)
+                    .Skip(pagingOptions.Offset)
+                    .Take(pagingOptions.PageSize)
                     .ToListAsync();
 
             return Ok(datasources.Select(o =>
@@ -128,7 +161,7 @@ namespace MapService.Controllers
 
             if (shapeFileInfo.Image != null)
             {
-                var bytes = ImageHelper.ImageToByteArray(shapeFileInfo.Image);
+                var bytes = ImageHelper.ImageToByteArray(shapeFileInfo.Image, ImageFormat.Jpeg);
                 dataSource.ImageData = bytes;
             }
 

@@ -7,7 +7,9 @@ export interface MapInfo {
     imageUrl?: string;
     version?: number;
     boundingBox?: MapBoundingBox;
-    layers: MapLayer[]
+    layers: MapLayer[];
+    currentTileUrl: string;
+    latestTileUrl: string;
 }
 
 export interface MapLayer {

@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
+import { MAP_API } from '../config/AppWindow';
 
-const baseApi = process.env.REACT_APP_MAP_API;
+const baseApi = MAP_API;
 const axiosInstance = axios.create({
   baseURL: `${baseApi}`
 });

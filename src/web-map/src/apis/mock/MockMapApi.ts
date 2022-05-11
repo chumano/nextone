@@ -7,27 +7,16 @@ const maps: MapInfo[] = [
     {
         id: "Map1",
         name: "Map Khu vực 1",
-        layers: []
+        layers: [],
+        currentTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
+        latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}"
     },
     {
         id: "Map2",
         name: "Map Tp. HCM",
-        layers: []
-    },
-    {
-        id: "Map3",
-        name: "Map Tỉnh Đồng Tháp",
-        layers: []
-    },
-    {
-        id: "Map4",
-        name: "Map 4",
-        layers: []
-    },
-    {
-        id: "Map5",
-        name: "Map 5",
-        layers: []
+        layers: [],
+        currentTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
+        latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}"
     }
 ];
 

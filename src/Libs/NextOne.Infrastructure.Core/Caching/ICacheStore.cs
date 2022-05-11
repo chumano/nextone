@@ -10,6 +10,9 @@ namespace NextOne.Infrastructure.Core.Caching
     {
         Task<T> Get<T> (string key );
         Task Set<T>(string key, T value);
+        Task Set<T>(string key, T value, DateTimeOffset sbsoluteExpiration);
+        Task Set<T>(string key, T value, TimeSpan slidingExpiration);
+        
         Task Remove<T>(string key, out T value);
     }
 
@@ -34,6 +37,21 @@ namespace NextOne.Infrastructure.Core.Caching
         public Task Set<T>(string key, T value)
         {
             _memoryCache.Set<T>(key, value);
+            return Task.CompletedTask;
+        }
+
+        public Task Set<T>(string key, T value, DateTimeOffset asbsoluteExpiration)
+        {
+            _memoryCache.Set<T>(key, value, asbsoluteExpiration);
+            return Task.CompletedTask;
+        }
+
+        public Task Set<T>(string key, T value, TimeSpan slidingExpiration)
+        {
+            _memoryCache.Set<T>(key, value, new MemoryCacheEntryOptions()
+            {
+                SlidingExpiration = slidingExpiration
+            });
             return Task.CompletedTask;
         }
 

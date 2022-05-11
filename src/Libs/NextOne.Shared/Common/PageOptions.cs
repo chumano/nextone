@@ -17,7 +17,7 @@ namespace NextOne.Shared.Common
             Offset = offset;
             PageSize = pageSize;
         }
-        public const int DefaultPageSize = 20;
+        public const int DefaultPageSize = 10;
         public int Offset { get; set; }
         public int PageSize { get; set; }
     }

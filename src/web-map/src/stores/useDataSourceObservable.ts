@@ -1,11 +1,13 @@
 import { BehaviorSubject } from "rxjs";
 import { ErrorPayload, ErrorState, FlagPayload, FlagState, DataSource } from "../interfaces";
 export type DatasourceState = {
+    count: number;
     datasources: DataSource[];
 } & FlagState & ErrorState;
 
 export type DatasourcePayload =
   | { datasources: DataSource[] }
+  | { datasources: DataSource[], count: number }
   | { source: DataSource }
   | { id: string; source: DataSource }
   | { id: string }
@@ -13,6 +15,7 @@ export type DatasourcePayload =
   | FlagPayload;
 
 const initialState = {
+    count: 0,
     datasources: [],
     listing: false,
     creating: false,
@@ -26,6 +29,14 @@ const datasourceSubject = new BehaviorSubject<DatasourceState>(initialState);
 export const useDatasourceObservable = () => {
     const list = (objs: DataSource[]) => {
         setNextState({ datasources: objs, error: '' });
+    };
+
+    const listAndCount = (objs: DataSource[], count: number ) => {
+        setNextState({
+            datasources: objs, 
+            count : count,
+            error: '' 
+        });
     };
 
     const listing = (flag: boolean) => {
@@ -81,6 +92,7 @@ export const useDatasourceObservable = () => {
     };
 
     return {
+        listAndCount,
         list,
         listing,
         create,

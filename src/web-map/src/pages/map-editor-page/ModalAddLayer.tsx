@@ -1,6 +1,8 @@
-import { Form, Input, Select } from "antd";
+import { Avatar, Form, Input, Select } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import TextArea from "antd/lib/input/TextArea";
+import DataSourceAutocomplete from "../../components/DataSourceAutocomplete";
+import DataSourceSelect from "../../components/DataSourceSelect";
 import Modal from "../../components/modals/Modal";
 import { GeoType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
@@ -20,7 +22,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
 
     const onFormFinish = async (values: any) => {
         //onLayerAdded
-        const source = datasources.find(o=> o.id == values['Source'])
+        const source = values['Source']
         if(!source){
             return;
         }
@@ -30,6 +32,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
             layerGroup:  values['GroupName'],
             layerType: geo2LayerType(source?.geoType),
             sourceId: source.id,
+            sourceName: source.name,
             visibility: true,
             note:  values['Note'],
         }
@@ -63,11 +66,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
 
                 <Form.Item name="Source" label="Source" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Source is required' }]}>
-                    <Select placeholder="Source" >
-                        {datasources.map(o=>
-                            <Select.Option key={o.id} value={o.id}>{o.name} - {GeoType[o.geoType]}</Select.Option>
-                        )}
-                    </Select>
+                    <DataSourceAutocomplete datasources={datasources} />
                 </Form.Item>
 
                 <Form.Item name="GroupName" label="Group Name"  tooltip="This is a required field"

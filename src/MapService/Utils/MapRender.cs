@@ -25,12 +25,15 @@ namespace MapService.Utils
         public double? MaxY { private get; set; }
 
         public Color BackgroundColor { get; set; }
+
+        public bool IsCalculateZoom { get; set; }
         public MapRenderOptions()
         {
             PixelWidth = 512;
             PixelHeight = null;
             TargetSRID = 3857;
             BackgroundColor = Color.Transparent;
+            IsCalculateZoom = true;
         }
 
         public Envelope Envelope { 
@@ -115,14 +118,18 @@ namespace MapService.Utils
             map.Center = bbox.Centre;
             map.Zoom = bbox.Width;
             map.SRID = renderOptions.TargetSRID;
-            foreach(var layer in map.Layers)
+            if (renderOptions.IsCalculateZoom)
             {
-                int zoomLvl1 = (int)layer.MinVisible;
-                int zoomLvl2 = (int)layer.MaxVisible;
-                // zoom lvl to Width thì phải ngược lại
-                layer.MinVisible =  Math.Floor(ConvertZoomLevel((int)zoomLvl2, renderOptions.PixelWidth)); 
-                layer.MaxVisible = Math.Ceiling(ConvertZoomLevel((int)zoomLvl1, renderOptions.PixelWidth)); 
+                foreach (var layer in map.Layers)
+                {
+                    int zoomLvl1 = (int)layer.MinVisible;
+                    int zoomLvl2 = (int)layer.MaxVisible;
+                    // zoom lvl to Width thì phải ngược lại
+                    layer.MinVisible = Math.Floor(ConvertZoomLevel((int)zoomLvl2, renderOptions.PixelWidth));
+                    layer.MaxVisible = Math.Ceiling(ConvertZoomLevel((int)zoomLvl1, renderOptions.PixelWidth));
+                }
             }
+           
 
             var img = map.GetMap();
             //var imageName = Path.ChangeExtension(dataSource.SourceFile, ".jpg");

@@ -44,6 +44,7 @@ namespace MapService.Domain
 
 
         public IList<string> Tags { get; set; }
+        public string RawTags { get; private set; }
 
         public DateTime? CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -96,6 +97,7 @@ namespace MapService.Domain
     {
         Point,
         Line,
-        Polygon
+        Polygon,
+        Other
     }
 }

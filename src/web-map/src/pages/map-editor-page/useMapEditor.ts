@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { useMapApi } from "../../apis";
 import { LayerType, MapBoudingBox, MapInfo, MapLayer, PaintPropertyKey } from "../../interfaces";
+import { UpdateMapLayersDTO } from "../../interfaces/dtos";
 import { findLastIndex, geo2LayerType, handleAxiosApi, layerType2Geo } from "../../utils/functions";
 import { useObservable } from "../../utils/hooks";
 
@@ -9,6 +10,7 @@ export interface LayerStyle {
     layerGroup: string;
     layerType: LayerType;
     sourceId: string;
+    sourceName: string;
 
     visibility?: boolean;
     isSelected?: boolean;
@@ -55,6 +57,7 @@ const setMapInfo = (mapInfo: MapInfo) => {
             layerGroup: l.layerGroup,
 
             sourceId: l.dataSourceId,
+            sourceName: l.dataSourceName ||'',
             layerType: geo2LayerType(l.dataSourceGeoType),
             visibility: l.active,
             minZoom: l.minZoom,
@@ -200,7 +203,7 @@ export const useMapEditor = () => {
                 note: o.note
             }
         });
-        const mapUpdate: MapInfo = {
+        const mapUpdate: UpdateMapLayersDTO = {
             id: id,
             name: mapInfo.name,
             layers: mapLayers

@@ -1,18 +1,25 @@
 import axios, { AxiosResponse } from 'axios';
+import qs from 'qs';
+import { MAP_API } from '../config/AppWindow';
 import { MapInfo } from '../interfaces';
-import { CreateMapDTO, UpdateMapNameDTO } from '../interfaces/dtos';
+import { CreateMapDTO, SearchMapDTO, UpdateMapLayersDTO, UpdateMapNameDTO } from '../interfaces/dtos';
 import mockMapApi from './mock/MockMapApi';
 
-const baseApi = process.env.REACT_APP_MAP_API;
+const baseApi = MAP_API;
 const axiosInstance = axios.create({
-  baseURL: `${baseApi}`
+  baseURL: `${baseApi}`,
+  paramsSerializer: params => {
+    return qs.stringify(params)
+  }
 });
 
 // /mockMapApi(axiosInstance);
 
 export const useMapApi = () => {
-  const list = (): Promise<AxiosResponse<MapInfo[]>> => {
-    return axiosInstance.get(`/maps`);
+  const list = (searchParams?: SearchMapDTO): Promise<AxiosResponse<MapInfo[]>> => {
+    return axiosInstance.get(`/maps`,{
+      params: searchParams
+     });
   };
 
   const get = (id: string): Promise<AxiosResponse<MapInfo>> => {
@@ -23,7 +30,7 @@ export const useMapApi = () => {
     return axiosInstance.post(`${baseApi}/maps/create`, map);
   };
 
-  const update = (id: string, map: MapInfo): Promise<AxiosResponse<MapInfo>> => {
+  const update = (id: string, map: UpdateMapLayersDTO): Promise<AxiosResponse<MapInfo>> => {
     return axiosInstance.post(`${baseApi}/maps/update/${id}`, map);
   };
 

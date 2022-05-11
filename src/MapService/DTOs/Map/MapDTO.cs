@@ -14,6 +14,8 @@ namespace MapService.DTOs.Map
         public string Note { get; set; }
         public string ImageUrl { get; set; }
         public int Version { get; set; }
+        public string CurrentTileUrl { get; set; }
+        public string LatestTileUrl { get; set; }
         public IEnumerable<MapLayerDTO> Layers { get; set; }
 
         public MapBoundingBox BoundingBox { get; set; }
@@ -33,6 +35,8 @@ namespace MapService.DTOs.Map
                 Version = o.Version,
                 BoundingBox = o.BoundingBox,
                 ImageUrl = imageUrl,
+                CurrentTileUrl = $"/tms/{o.Version}/map-{o.Id}" +"/{z}/{x}/{y}.png",
+                LatestTileUrl = $"/tms/latest/map-{o.Id}" + "/{z}/{x}/{y}.png",
                 Layers = o.Layers.Select(l => new MapLayerDTO()
                 {
                     LayerName = l.LayerName,

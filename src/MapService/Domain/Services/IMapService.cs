@@ -14,10 +14,10 @@ namespace MapService.Domain.Services
 {
     public interface IMapService
     {
-        Task<SharpMap.Map> GetOrCreateMap(string mapId);
+        Task<MapContainer> GetOrCreateMap(string mapId);
     }
 
-    public class MapService: IMapService
+    public class MapService : IMapService
     {
         private static SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly IMapRepository _mapRespository;
@@ -33,28 +33,39 @@ namespace MapService.Domain.Services
             _mapFactory = sharpMapFactory;
         }
 
-        public async Task<SharpMap.Map> GetOrCreateMap(string mapId)
+        public async Task<MapContainer> GetOrCreateMap(string mapId)
         {
             await semaphoreSlim.WaitAsync();
             try
             {
-                var map = await _cacheStore.Get<SharpMap.Map>(mapId);
-                if (map == null)
+                var mapContainer = await _cacheStore.Get<MapContainer>(mapId);
+                if (mapContainer != null)
                 {
-                    var mapInfo = await _mapRespository.Get(mapId);
-                   
-                    map = _mapFactory.GenerateMap(mapInfo);
-                    await _cacheStore.Set(mapId, map);
-
+                    return mapContainer;
                 }
 
-                return map;
+                var mapInfo = await _mapRespository.Get(mapId);
+                var shaprMap = _mapFactory.GenerateMap(mapInfo);
+
+                mapContainer = new MapContainer()
+                {
+                    Id = mapId,
+                    Name = mapInfo.Name,
+                    Version = mapInfo.Version,
+                    CreatedDate = System.DateTime.Now,
+                    LastUsed = System.DateTime.Now,
+                    Map = shaprMap
+                };
+
+                await _cacheStore.Set(mapId, mapContainer, System.TimeSpan.FromMinutes(5));
+
+                return mapContainer;
             }
             finally
             {
                 semaphoreSlim.Release();
             }
-            
+
         }
 
     }

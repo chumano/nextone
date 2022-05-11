@@ -1,5 +1,6 @@
 ﻿using BruTile;
 using BruTile.Predefined;
+using GeoAPI.Geometries;
 using MapService.Domain.Services;
 using MapService.Infrastructure.AppSettings;
 using MapService.MapSources;
@@ -25,6 +26,9 @@ namespace MapService.Controllers
         private readonly IMapService _mapService;
         private readonly IMapRender _mapRender;
         private readonly IOptionsMonitor<MapSettings> _mapOptionsMontior;
+        private static Image EmptyTile;
+        private static Object _imageLock = new Object();
+
         public TileController(
             IHostEnvironment hostEnvironment,
             IMapService mapService,
@@ -35,10 +39,11 @@ namespace MapService.Controllers
             _mapService = mapService;
             _mapRender = mapRender;
             _mapOptionsMontior = mapOptionsMontior;
+           
         }
 
         [HttpGet("{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}")]
-        public async Task<IActionResult> GetMapTileVersionAsync(int version, string mapid, int x, int y, int z, string formatExtension)
+        public async Task<IActionResult> GetMapTileVersionAsync(string version, string mapid, int x, int y, int z, string formatExtension)
         {
             if (String.IsNullOrEmpty(mapid))
             {
@@ -50,22 +55,37 @@ namespace MapService.Controllers
                 throw new Exception($"Not support format {formatExtension}");
             }
 
-            //TODO: check map version
+            int? versionNum = null; 
+            if(version == "latest")
+            {
+                versionNum = -1;
+            }
+            else
+            {
+                if(!int.TryParse(version, out var parsedVersion))
+                {
+                    throw new Exception($"Version {version} is invalid");
+                }
+
+                versionNum = parsedVersion;
+            }
+
             try
             {
-                var imgPath = Path.Combine(_mapOptionsMontior.CurrentValue.MapTilesFolder, $"{mapid}/{version}/{z}/{x}/{y}.png");
 
+                var imgPath = GetTileImagePath(mapid, x, y, z, versionNum.Value);
                 if (System.IO.File.Exists(imgPath))
                 {
                     var physicFile = Path.Combine(_environment.ContentRootPath, imgPath);
                     return PhysicalFile(physicFile, "image/png");
                 }
 
-                var image = await RenderMap(mapid,x,y,z, version);
-
-                Directory.GetParent(imgPath).Create();
-                image.Save(imgPath, ImageFormat.Png);
-
+                var image = await RenderMap(mapid,x,y,z,true, versionNum);
+                if (image == null)
+                {
+                    image = GetEmptyImage();
+                }
+               
                 byte[] buffer = ImageHelper.ImageToByteArray(image, ImageFormat.Png);
                 return File(buffer, "image/png");
             }
@@ -75,9 +95,7 @@ namespace MapService.Controllers
             }
         }
 
-        
-
-        //Render on demon
+        //Render on demand
         [HttpGet("map-{mapid}/{z}/{x}/{y}.{formatExtension}")]
         public async Task<IActionResult> GetMapTileAsync(string mapid, int x, int y, int z, string formatExtension)
         {
@@ -93,8 +111,10 @@ namespace MapService.Controllers
 
             try
             {
-                var image = await RenderMap(mapid, x, y, z);
-
+                var image = await RenderMap(mapid, x, y, z, false, -1); //latest
+                if(image == null) {
+                    image = GetEmptyImage();
+                }
                 byte[] buffer = ImageHelper.ImageToByteArray(image, ImageFormat.Png);
                 //this.Response.Headers.Add("Cache-Control", "no-store,no-cache");
                 return File(buffer, "image/png");
@@ -106,43 +126,88 @@ namespace MapService.Controllers
             }
         }
 
-        private async Task<Image> RenderMap(string mapid, int x, int y, int z, int? version = null)
+        private async Task<Image> RenderMap(string mapid, int x, int y, int z, bool isSaveTile = false, int? version = null)
         {
-            //TODO: return mapContainer
-            var map = await _mapService.GetOrCreateMap(mapid);
+            //TODO: chỗ này lúc request cho latest thì chỉ cần cache thông tin đơn gian thôi
+            // vì chỉ cần mapVersion, không cần SharpMap
+            var mapContainer = await _mapService.GetOrCreateMap(mapid);
             if (version != null)
             {
-                var mapVersion = 1;
-                if(mapVersion != version)
+                var mapVersion = mapContainer.Version;
+                if(version != -1 //latest
+                    && mapVersion != version)
                 {
                     throw new Exception($"Version {version} is invalid. Current Map Version is {mapVersion}");
+                }
+
+                if(version == -1)//latest
+                {
+                    var imgPath = GetTileImagePath(mapid, x, y, z, mapVersion);
+                    if (System.IO.File.Exists(imgPath))
+                    {
+                        return Image.FromFile(imgPath);
+                    }
                 }
             }
 
             var ti = new TileInfo { Index = new TileIndex(x, y, z.ToString()) };
             var bbExtent = TileTransform.TileToWorld(new TileRange(ti.Index.Col, ti.Index.Row), ti.Index.Level, _schema);
-
             // MinX, MinY, MaxX, MaxY
             var width = _schema.GetTileWidth(ti.Index.Level);
             var height = _schema.GetTileHeight(ti.Index.Level);
-
+            var renderOptions = new MapRenderOptions()
+            {
+                PixelWidth = width,
+                PixelHeight = height,
+                MinX = bbExtent.MinX,
+                MinY = bbExtent.MinY,
+                MaxX = bbExtent.MaxX,
+                MaxY = bbExtent.MaxY,
+            };
+            
+            //check intersects
+            var requestExtent = renderOptions.Envelope;
+            var mapExtent = mapContainer.Map.GetExtents();
+            if (!mapExtent.Intersects(requestExtent))
+            {
+                return null;
+            }
 
             //Phải clone map để không bị ảnh hưởng các lần render khác
-            using (var safeMap = map.Clone())
+            using (var safeMap = mapContainer.Map.Clone())
             {
-                var image = _mapRender.RenderImage(safeMap, new MapRenderOptions()
+                var image = _mapRender.RenderImage(safeMap, renderOptions);
+
+                if(isSaveTile)
                 {
-                    PixelWidth = width,
-                    PixelHeight = height,
-                    MinX = bbExtent.MinX,
-                    MinY = bbExtent.MinY,
-                    MaxX = bbExtent.MaxX,
-                    MaxY = bbExtent.MaxY,
-                });
+                    var imgPath = GetTileImagePath(mapid, x, y, z, mapContainer.Version);
+                    Directory.GetParent(imgPath).Create();
+                    image.Save(imgPath, ImageFormat.Png);
+                }
 
                 return image;
             }
         }
+
+        private Image GetEmptyImage()
+        {
+            lock (_imageLock)
+            {
+                if (EmptyTile == null)
+                {
+                    EmptyTile = Image.FromFile("Data/tile_empty_256_256.png");
+                }
+
+                return (Image)EmptyTile.Clone();
+            }
+        }
+
+        private string GetTileImagePath(string mapid, int x, int y, int z, int version)
+        {
+            var imgPath = Path.Combine(_mapOptionsMontior.CurrentValue.MapTilesFolder, $"{mapid}/{version}/{z}/{x}/{y}.png");
+            return imgPath;
+        }
+
 
         //for test only
         [HttpGet("1.0.0/{tilesetName}/{z}/{x}/{y}.{formatExtension}")]

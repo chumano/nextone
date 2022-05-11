@@ -1,6 +1,6 @@
-import { Button, Modal as AntDModal } from 'antd';
+import { Button, Input, Modal as AntDModal, Pagination, Select } from 'antd';
 import { DeleteOutlined, ExclamationCircleOutlined, TableOutlined } from '@ant-design/icons';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../components/modals/Modal';
 import { DataSource, DataSourceType, FeatureData, GeoType, ShapeFileProps } from '../../interfaces';
 import { useDatasourceStore } from '../../stores/useDataSourceStore';
@@ -8,7 +8,7 @@ import '../../styles/pages/data-source-page.scss';
 import ModalCreateDataSource from './ModalCreateDataSource';
 import ModalEditDataSource from './ModalEditDataSource';
 import ModalViewFeature from './ModalViewFeature';
-
+const { Search } = Input;
 interface DatasouceItemProps {
     item: DataSource,
     onClick: any,
@@ -86,10 +86,6 @@ const DataSourcePage: React.FC = () => {
     const [modalViewFeatureData, setmodalViewFeatureData] = useState<FeatureData[]>();
     const [modalEditSource, setModalEditSource] = useState<any>(undefined);
 
-    useEffect(() => {
-        sourceStore.list();
-    }, []);
-
     const handleCreateSource = async () => {
         setModalCreateVisible(true);
     }
@@ -107,7 +103,7 @@ const DataSourcePage: React.FC = () => {
             AntDModal.confirm({
                 title: 'Do you Want to delete these items?',
                 icon: <ExclamationCircleOutlined />,
-                content: 'Some descriptions',
+                // content: 'Some descriptions',
                 onOk() {
                     sourceStore.remove(item.id);
                 },
@@ -122,6 +118,48 @@ const DataSourcePage: React.FC = () => {
         setmodalViewFeatureData(data)
     }, []);
 
+    
+    const geoTypeOptions = useMemo(()=>{
+        const keytypes = Object.keys(GeoType)
+            .filter(key => isNaN(Number(GeoType[key as any])));
+        
+        return keytypes.map(key =>(
+            <Select.Option key={key}>
+                {GeoType[key as any]}
+            </Select.Option>
+        ));
+    },[]);
+    
+    const [searchFilter, setSearchFilter] = useState<any>({
+        offset :0,
+        pageSize: 10
+    });
+
+    useEffect(()=>{
+        sourceStore.list(searchFilter);
+    },[searchFilter])
+
+    const onSearch = useCallback((value:string)=>{
+        console.log(`search text ${value}`);
+        setSearchFilter((filter:any)=>{
+           return {
+               ...filter,
+               textSearch: value
+           }
+        })
+    },[setSearchFilter])
+    const filterGeoTypeChange = useCallback((values: any[])=>{
+        console.log(`selected geotypes `, values);
+        const types = values
+        setSearchFilter((filter:any)=>{
+            return {
+                ...filter,
+                geoTypes: types
+            }
+         })
+    },[])
+
+
     return <>
         <div className="datasource-page">
             <div className="datasource-page__header">
@@ -133,6 +171,25 @@ const DataSourcePage: React.FC = () => {
                     <Button type="primary" onClick={handleCreateSource}> Upload dữ liệu </Button>
                 </div>
             </div>
+            <div className="datasource-page__filter">
+                <Select
+                    mode="multiple"
+                    allowClear
+                    style={{ width: '400px' }}
+                    placeholder="Chọn loại vector"
+                    onChange={filterGeoTypeChange}
+                    >
+                    {geoTypeOptions}
+                </Select>
+                <div className='flex-spacer'> </div>
+                <Search
+                    style={{ width: 400 }}
+                    placeholder="Tìm kiếm"
+                    allowClear
+                    enterButton
+                    onSearch={onSearch}
+                    />
+            </div>
             <div className="datasource-page__body">
                 <div className="datasource-page__list">
                     {sourceState.datasources.map((item) => {
@@ -143,6 +200,19 @@ const DataSourcePage: React.FC = () => {
                         />
                     })}
                 </div>
+               
+            </div>
+            <div className="datasource-page__paging">
+                <div className='flex-spacer'></div>
+                <Pagination defaultCurrent={1} total={sourceState.count} onChange={(page,pageSize)=>{
+                    setSearchFilter((filter:any)=>{
+                        return {
+                            ...filter,
+                            offset: (page - 1) * pageSize,
+                            pageSize: pageSize
+                        }
+                    });
+                }}/>
             </div>
         </div>
 
@@ -159,13 +229,13 @@ const DataSourcePage: React.FC = () => {
             }} />
         }
 
-        {modalViewFeatureVisible 
-        && modalViewFeatureData 
-        && <ModalViewFeature visible={modalViewFeatureVisible}
-            features={modalViewFeatureData}
-            onToggle={(visible: boolean) => {
-                setModalViewFeatureVisible(visible);
-            }} />
+        {modalViewFeatureVisible
+            && modalViewFeatureData
+            && <ModalViewFeature visible={modalViewFeatureVisible}
+                features={modalViewFeatureData}
+                onToggle={(visible: boolean) => {
+                    setModalViewFeatureVisible(visible);
+                }} />
         }
 
     </>

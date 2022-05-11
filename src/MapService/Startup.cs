@@ -1,3 +1,4 @@
+using MapService.BackgroundServices;
 using MapService.Domain.Repositories;
 using MapService.Domain.Services;
 using MapService.Infrastructure;
@@ -110,6 +111,8 @@ namespace MapService
             services.AddTransient<IMapService, MapService.Domain.Services.MapService>();
             services.AddTransient<ISharpMapFactory, SharpMapFactory>();
             services.AddTransient<IMapRender, MapRender>();
+
+            services.AddHostedService<MapWatcherBackgroundService>();
 
             MapUtils.InitSharpMap();
         }

@@ -100,6 +100,7 @@ const LayerEditor: React.FC = () => {
           disabled={true}
           sources={layerSources}
           value={layerProps.sourceId || ''}
+          name={layerProps.sourceName}
           onChange={(sourceId) => {
             changeProperty('sourceId', sourceId);
           }}

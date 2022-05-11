@@ -8,7 +8,8 @@ import './setting-map.scss';
 import 'leaflet/dist/leaflet.css';
 import { AppWindow } from "../../../config/AppWindow";
 import { LatLngBounds, LatLngBoundsExpression } from "leaflet";
-
+import { Typography } from "antd";
+const { Paragraph } = Typography;
 declare let window: AppWindow;
 const defaultCenter = window.ENV.Map.center;
 const defaultZoom = window.ENV.Map.zoom;
@@ -43,15 +44,16 @@ const MapController = () => {
 
     return <p className='leaflet-bottom leaflet-left'  style={{ backgroundColor: 'white', padding: '5px' }}>
         <span className='leaflet-control'>
-            lat: {position.lat.toFixed(2)},
-            lon: {position.lng.toFixed(2)},
-            zoom: {zoom}
-            {' '}
-            <br/>
-            <span>
-                [{boudingBox.getSouth().toFixed(2)},{boudingBox.getWest().toFixed(2)}]
-                - [{boudingBox.getNorth().toFixed(2)},{boudingBox.getEast().toFixed(2)}]
-            </span>
+            <Paragraph copyable style={{marginBottom:0}}>
+                lat: {position.lat.toFixed(2)},
+                lon: {position.lng.toFixed(2)},
+                zoom: {zoom}
+            </Paragraph>
+            <Paragraph copyable style={{marginBottom:0}}>
+                {'['}{boudingBox.getSouth().toFixed(2)},{boudingBox.getWest().toFixed(2)}{']'}
+                - 
+                {'['}{boudingBox.getNorth().toFixed(2)},{boudingBox.getEast().toFixed(2)}{']'}
+            </Paragraph>
         </span>
     </p>;
 };

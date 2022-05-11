@@ -417,7 +417,9 @@ namespace MapService.Utils
                 {
                     var image = mapRender.RenderImage(sf, new MapRenderOptions()
                     {
-                        PixelWidth = 512
+                        PixelWidth = 512,
+                        BackgroundColor = Color.White,
+                        IsCalculateZoom = false
                     });
                     info.Image = image;
                 }

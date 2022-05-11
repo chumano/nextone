@@ -47,12 +47,19 @@ namespace MapService.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetMaps()
+        public async Task<IActionResult> GetMaps([FromQuery] GetMapDTO getMapDTO)
         {
-            Expression<Func<MapInfo, MapDTO>> expression = o => new MapDTO();
+            var pagingOptions = new PageOptions(getMapDTO.Offset, getMapDTO.PageSize);
+            var query = _mapRepository.Maps;
+            if (!string.IsNullOrWhiteSpace(getMapDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getMapDTO.TextSearch));
+            }
 
-            var objs = await _mapRepository.Maps
+            var objs = await query
                 .OrderByDescending(o => o.CreatedDate)
+                .Skip(pagingOptions.Offset)
+                .Take(pagingOptions.PageSize)
                 .ToListAsync();
             return Ok(objs.Select(o=> MapDTO.From(o)));
         }
@@ -179,7 +186,7 @@ namespace MapService.Controllers
             }
 
             //clear Map Cache
-            await _cacheStore.Remove<SharpMap.Map>(map.Id, out var _);
+            await _cacheStore.Remove<MapContainer>(map.Id, out var _);
 
             //TODO: send DomainEvent MapUpdated
             var mapDto = MapDTO.From(map);

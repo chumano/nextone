@@ -5,6 +5,9 @@ export interface AppWindow extends Window {
             zoom: number;
             boundingBox?: [ [number, number], [number, number]] ;
             googleApiKey: string;
+            apiUrl?: string
         }
     }
 }
+declare let window: AppWindow;
+export const MAP_API  = window.ENV.Map.apiUrl || process.env.REACT_APP_MAP_API;
