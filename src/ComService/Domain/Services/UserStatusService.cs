@@ -11,7 +11,7 @@ namespace ComService.Domain.Services
     {
         Task<UserStatus> GetUser(string userId);
 
-        Task<IList<UserStatus>> GetUsersByIds(IList<string> userIds);
+        Task<IList<UserStatus>> GetOrAddUsersByIds(IList<string> userIds);
 
         Task AddOrUpdateUserStatus(string userId, double? lat, double? lon);
     }
@@ -53,7 +53,7 @@ namespace ComService.Domain.Services
             };
         }
 
-        public async Task<IList<UserStatus>> GetUsersByIds(IList<string> userIds)
+        public async Task<IList<UserStatus>> GetOrAddUsersByIds(IList<string> userIds)
         {
             var userStatuses = await _userStatusRepository.Users
                 .Where(o => userIds.Contains(o.UserId))
@@ -76,6 +76,12 @@ namespace ComService.Domain.Services
                     Status = StatusEnum.Offline
                 });
 
+                foreach(var userStatus in notFoundUserStatuses)
+                {
+                    _userStatusRepository.Add(userStatus);
+                }
+
+                await _userStatusRepository.SaveChangesAsync();
                 userStatuses.AddRange(notFoundUserStatuses);
             }
 

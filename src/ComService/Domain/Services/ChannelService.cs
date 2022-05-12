@@ -46,7 +46,7 @@ namespace ComService.Domain.Services
             var channel = new Channel(id, name, eventTypeCodes);
             
             //get users
-            var users = await _userService.GetUsersByIds(memberIds);
+            var users = await _userService.GetOrAddUsersByIds(memberIds);
 
             foreach (var user in users)
             {

@@ -24,9 +24,17 @@ import {
 import { chatList, messageList } from './fakedate';
 import logo from '../../assets/logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { chatStore, IChatStore } from '../../store/chat/chatStore';
+import { IAppStore } from '../../store';
+import { chatActions, getConversations } from '../../store/chat/chatReducer';
 
 const ChatPage: React.FC = () => {
-
+    const dispatch = useDispatch();
+    const {conversations, channels} = useSelector((store:IAppStore)=> store.chat);
+    useEffect(()=>{
+        dispatch(getConversations())
+    },[])
     return (
         <div className="chat-page">
             <div className="chat-page__sidebar">
@@ -51,6 +59,7 @@ const ChatPage: React.FC = () => {
                 </div>
             </div>
             <div className="chat-page__main">
+
                 <div className="chat-box">
                     <div className="chat-header">
                         <Avatar

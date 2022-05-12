@@ -31,12 +31,10 @@ namespace ComService.Domain.Repositories
             _dbContext.Conversations
                 .Include(o => o.Members)
                     .ThenInclude(o => o.UserMember)
-                .Include(o => o.RecentMessages
-                        .OrderByDescending(x => x.SentDate)
-                        .Take(20))
+                .Include(o => o.RecentMessages.OrderByDescending(x => x.SentDate).Take(10))
                     .ThenInclude(o => o.Files)
                 .Include(o => o.RecentMessages)
-                    .ThenInclude(o => o.UserSender)
+                    .ThenInclude(m => m.UserSender)
                 .AsQueryable();
 
         public async Task<Conversation> Get(string id)

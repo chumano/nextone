@@ -1,20 +1,30 @@
-import axios from "axios";
-
-export const axiosSetup = () => {
-    // Add a request interceptor
-    const myInterceptor = axios.interceptors.request.use(function (config) {
-        // Do something before request is sent
-        const access_token = 'abc';
-        config.headers = { 
+import axios, { AxiosRequestConfig } from "axios";
+import { AuthenticationService } from "../services";
+import qs from 'qs';
+const axiosRequestConfig = async (config: AxiosRequestConfig<any>) => {
+    // Do something before request is sent
+    const authenticated = await AuthenticationService.isAuthenticated();
+    if (authenticated) {
+        const access_token = await AuthenticationService.getAccessToken();
+        config.headers = {
             'Authorization': `Bearer ${access_token}`,
             'Accept': 'application/json',
             //'Content-Type': 'application/x-www-form-urlencoded'
         }
-        return config;
-    }, function (error) {
-        // Do something with request error
-        return Promise.reject(error);
-    });
+    }
+
+    return config;
+}
+
+export const axiosSetup = () => {
+    // Add a request interceptor
+    const myInterceptor = axios.interceptors.request.use(
+        axiosRequestConfig,
+        (error) => {
+            // Do something with request error
+            return Promise.reject(error);
+        }
+    );
     //axios.interceptors.request.eject(myInterceptor);
 
 
@@ -24,7 +34,7 @@ export const axiosSetup = () => {
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
         return response;
-    },  async (error) => {
+    }, async (error) => {
         const originalRequest = error.config;
         if (error.response.status === 403 && !originalRequest._retry) {
             originalRequest._retry = true;
@@ -34,5 +44,23 @@ export const axiosSetup = () => {
         }
         return Promise.reject(error);
     });
-    
+
+}
+
+export const createAxios = (baseURL: string) => {
+    const newInstance = axios.create({
+        baseURL,
+        paramsSerializer: params => {
+            return qs.stringify(params)
+        }
+    });
+
+    newInstance.interceptors.request.use(
+        axiosRequestConfig,
+        (error) => {
+            // Do something with request error
+            return Promise.reject(error);
+        }
+    );
+    return newInstance;
 }

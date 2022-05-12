@@ -45,6 +45,7 @@ namespace ComService.Domain.Services
         {
             _conversationRepository = conversationRepository;
             _messageRepository = messageRepository;
+            _userService= userService;
             _bus = bus;
             _idGenerator = idGenerator;
         }
@@ -52,7 +53,7 @@ namespace ComService.Domain.Services
         public async Task<string> Create(UserStatus createdUser,string name, ConversationTypeEnum type, IList<string> memberIds)
         {
             var id = _idGenerator.GenerateNew();
-            var conversation = new Conversation(id, name, type);
+            Conversation conversation = new P2PConversation(id, name, type);
             if(type == ConversationTypeEnum.Peer2Peer
                 || type == ConversationTypeEnum.Private
                 || type == ConversationTypeEnum.Group)
@@ -79,7 +80,7 @@ namespace ComService.Domain.Services
             }
 
             //get users
-            var users = await _userService.GetUsersByIds(memberIds);
+            var users = await _userService.GetOrAddUsersByIds(memberIds);
 
             foreach(var user in users)
             {
@@ -122,10 +123,11 @@ namespace ComService.Domain.Services
                 )
                 .FirstOrDefaultAsync();
         }
+
         public async Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions)
         {
             var items = await  _conversationRepository.Conversations
-                .Where(o => o.Members.Exists(m => m.UserId == user.UserId))
+                .Where(o => o.Members.Any(m => m.UserId == user.UserId))
                 .OrderByDescending(o=>o.UpdatedDate)
                 .Skip(pageOptions.Offset)
                 .Take(pageOptions.PageSize)
@@ -146,7 +148,7 @@ namespace ComService.Domain.Services
         //member
         public async Task AddMembers(Conversation conversation, List<string> memberIds)
         {
-            var users = await _userService.GetUsersByIds(memberIds);
+            var users = await _userService.GetOrAddUsersByIds(memberIds);
 
             foreach (var user in users)
             {
@@ -188,6 +190,7 @@ namespace ComService.Domain.Services
         public async Task AddMessage(Conversation conversation, Message message)
         {
             _messageRepository.Add(message);
+            conversation.RecentMessages.Add(message);
 
             await _messageRepository.SaveChangesAsync();
 

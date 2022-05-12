@@ -40,14 +40,11 @@ namespace ComService.Boudaries.Controllers
         [HttpGet("GetList")]
         public async Task<IActionResult> GetList([FromQuery] GetListConversationDTO getListConversationDTO)
         {
+            var pageOptions = new PageOptions(getListConversationDTO.Offset, getListConversationDTO.PageSize);
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);
             var conversations = await _conversationService.GetConversationsByUser(user,
-                new PageOptions()
-                {
-                    Offset = getListConversationDTO.Offset,
-                    PageSize = getListConversationDTO.PageSize > 0 ? getListConversationDTO.PageSize : PageOptions.DefaultPageSize
-                });
+                pageOptions);
             return Ok(ApiResult.Success(conversations));
         }
 
@@ -189,7 +186,7 @@ namespace ComService.Boudaries.Controllers
                 messageFiles);
             await _conversationService.AddMessage(conversation, message);
 
-            return Ok(ApiResult.Success(null));
+            return Ok(ApiResult.Success(messageId));
         }
 
 

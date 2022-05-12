@@ -5,15 +5,36 @@ using System.Threading.Tasks;
 
 namespace ComService.Domain
 {
-    public class Conversation
+    public class PrivateConversation: Conversation
+    {
+        private PrivateConversation() { }
+    }
+
+    public class GroupConversation : Conversation
+    {
+        private GroupConversation() { }
+    }
+
+    public class P2PConversation : Conversation
+    {
+        private P2PConversation() { }
+        public P2PConversation(string id,
+            string name,
+            ConversationTypeEnum conversationType) 
+            :base(id, name, conversationType) {
+
+        }
+    }
+
+    public abstract class Conversation
     {
         protected Conversation() //use for EFCore
         {
         }
 
         public Conversation(string id,
-            string name,
-            ConversationTypeEnum conversationType)
+           string name,
+           ConversationTypeEnum conversationType)
         {
             Id = id;
             Name = name;
@@ -24,12 +45,12 @@ namespace ComService.Domain
             UpdatedDate = DateTime.Now;
         }
 
-        public string Id { get; private set; }
+        public string Id { get; protected set; }
         public string Name { get; protected set; }
 
-        public ConversationTypeEnum Type { get; private set; }
-        public List<ConversationMember> Members { get; private set; }
-        public IList<Message> RecentMessages { get; private set; }
+        public ConversationTypeEnum Type { get; protected set; }
+        public List<ConversationMember> Members { get; protected set; }
+        public IList<Message> RecentMessages { get; protected set; }
 
 
         public bool IsActive { get; set; }

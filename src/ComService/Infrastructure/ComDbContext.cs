@@ -52,10 +52,10 @@ namespace ComService.Infrastructure
             modelBuilder.Entity<Conversation>(eb =>
             {
                 eb.HasDiscriminator(o => o.Type)
-                    .HasValue<Channel>(ConversationTypeEnum.Channel)
-                    .HasValue<Conversation>(ConversationTypeEnum.Private)
-                    .HasValue<Conversation>(ConversationTypeEnum.Peer2Peer)
-                    .HasValue<Conversation>(ConversationTypeEnum.Group);
+                    .HasValue<PrivateConversation>(ConversationTypeEnum.Private)
+                    .HasValue<P2PConversation>(ConversationTypeEnum.Peer2Peer)
+                    .HasValue<GroupConversation>(ConversationTypeEnum.Group)
+                    .HasValue<Channel>(ConversationTypeEnum.Channel);
 
                 eb.ToTable("T_App_Conversation", DB_SCHEMA)
                    .HasKey("Id");
