@@ -3,15 +3,9 @@ import { MAP_API } from '../config/AppWindow';
 import {  DataSource, MapInfo } from '../interfaces';
 import { SearchDataSourceDTO, UpdateDataSourceDTO } from '../interfaces/dtos';
 import mockDataSourceApi from './mock/MockDataSourceApi';
-import qs from 'qs';
+import { createAxios, mapAxiosInstance } from '../config/axios';
 const baseApi = MAP_API;
-const axiosInstance = axios.create({
-  baseURL: `${baseApi}`,
-  paramsSerializer: params => {
-    return qs.stringify(params)
-  }
-});
-
+const axiosInstance = mapAxiosInstance;
 //mockDataSourceApi(axiosInstance);
 
 export const useDatasourceApi = () => {

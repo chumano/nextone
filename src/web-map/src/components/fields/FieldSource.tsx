@@ -27,7 +27,7 @@ const FieldSource: React.FC<FieldSourceProps> = (props) => {
 
 
   return <Block label={"Source"}>
-    <Select placeholder="Source" value={props.value} style={{ 'width': '100%' }}
+    <Select placeholder="" value={props.value} style={{ 'width': '100%' }}
       disabled={props.disabled}
       onChange={props.onChange}>
         {option || <Select.Option key={props.value} value={props.value}>

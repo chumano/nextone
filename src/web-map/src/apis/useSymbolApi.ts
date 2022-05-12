@@ -1,10 +1,9 @@
 import axios, { AxiosResponse } from 'axios';
 import { MAP_API } from '../config/AppWindow';
+import { mapAxiosInstance } from '../config/axios';
 
 const baseApi = MAP_API;
-const axiosInstance = axios.create({
-  baseURL: `${baseApi}`
-});
+const axiosInstance = mapAxiosInstance;
 
 export const useSymbolApi = () => {
   const list = (): Promise<AxiosResponse<Symbol>> => {

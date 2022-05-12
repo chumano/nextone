@@ -20,7 +20,7 @@ export enum DashStyle
     dot,
     dashDot,
     dashDotDot,
-    custom
+    //custom
 }
 
 export const ShapeFileProps = {

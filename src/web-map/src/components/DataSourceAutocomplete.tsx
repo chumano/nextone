@@ -89,7 +89,7 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
     return <AutoComplete
         onSelect={onSelect}
         onSearch={onSearch}
-        placeholder="input here"
+        placeholder=""
     >
         {!state.loading ?
             state.children :

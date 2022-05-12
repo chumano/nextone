@@ -101,7 +101,7 @@ const DataSourcePage: React.FC = () => {
         return (e: MouseEvent) => {
             e.stopPropagation();
             AntDModal.confirm({
-                title: 'Do you Want to delete these items?',
+                title: `Bạn có muốn xóa ${item.name}?`,
                 icon: <ExclamationCircleOutlined />,
                 // content: 'Some descriptions',
                 onOk() {
@@ -134,26 +134,33 @@ const DataSourcePage: React.FC = () => {
         offset :0,
         pageSize: 10
     });
+    const [currentPage, setCurentPage] = useState<number>(1);
 
     useEffect(()=>{
+        console.log("search...", searchFilter)
         sourceStore.list(searchFilter);
     },[searchFilter])
 
     const onSearch = useCallback((value:string)=>{
         console.log(`search text ${value}`);
+        setCurentPage(1);
         setSearchFilter((filter:any)=>{
            return {
                ...filter,
+               offset:0,
                textSearch: value
            }
         })
     },[setSearchFilter])
+
     const filterGeoTypeChange = useCallback((values: any[])=>{
         console.log(`selected geotypes `, values);
-        const types = values
+        const types = values;
+        setCurentPage(1);
         setSearchFilter((filter:any)=>{
             return {
                 ...filter,
+                offset:0,
                 geoTypes: types
             }
          })
@@ -204,14 +211,19 @@ const DataSourcePage: React.FC = () => {
             </div>
             <div className="datasource-page__paging">
                 <div className='flex-spacer'></div>
-                <Pagination defaultCurrent={1} total={sourceState.count} onChange={(page,pageSize)=>{
-                    setSearchFilter((filter:any)=>{
-                        return {
-                            ...filter,
-                            offset: (page - 1) * pageSize,
-                            pageSize: pageSize
-                        }
-                    });
+                <Pagination 
+                    current={currentPage}
+                    total={sourceState.count} 
+                    pageSize={searchFilter.pageSize}
+                    onChange={(page,pageSize)=>{
+                        setCurentPage(page)
+                        setSearchFilter((filter:any)=>{
+                            return {
+                                ...filter,
+                                offset: (page - 1) * pageSize,
+                                pageSize: pageSize
+                            }
+                        });
                 }}/>
             </div>
         </div>

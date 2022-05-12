@@ -17,6 +17,7 @@ import { useDatasourceStore } from "../../stores/useDataSourceStore";
 import { geo2LayerType } from "../../utils/functions";
 import ModalSymbol from "./ModalSymbol";
 import ModalMap from "./ModalMap";
+import Loading from "../../components/common/Loading";
 
 
 const bottomPanel = <>Map@2022</>
@@ -29,6 +30,7 @@ const MapEditorPage: React.FC = () => {
     const sourceStore = useDatasourceStore();
     const symbolStore = useSymbolStore();
     const mapEditor = useMapEditor();
+    const [loading, setLoading] = useState(false);
 
     useEffect(()=>{
         sourceStore.list();
@@ -42,8 +44,9 @@ const MapEditorPage: React.FC = () => {
         const fetchMapInfo = async () => {
             const map = await mapStore.get(mapid);
             mapEditor.setMapInfo(map);
+            setLoading(false);
         }
-
+        setLoading(true);
         fetchMapInfo()
             .catch(err => {
                 AntDModal.error({
@@ -73,12 +76,12 @@ const MapEditorPage: React.FC = () => {
             layerList={<LayerList />}
             layerEditor={ mapEditor.mapEditorState.selectedLayerIndex!=undefined && <LayerEditor />}
             map={
-                mapEditor.mapEditorState.mapInfo?.id ? 
-                <MapView 
-                    mapId={mapEditor.mapEditorState.mapInfo.id}
-                    boundingBox={mapEditor.mapEditorState.mapInfo.boundingBox}
-                /> 
-                :null
+                <>
+                {loading && <Loading/>}
+                {!loading && mapEditor.mapEditorState.mapInfo?.id ? 
+                    <MapView /> 
+                    :null}
+                    </>
                 }
             bottom={bottomPanel}
             modals={modals}

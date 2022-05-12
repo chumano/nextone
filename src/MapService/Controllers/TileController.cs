@@ -116,7 +116,7 @@ namespace MapService.Controllers
                     image = GetEmptyImage();
                 }
                 byte[] buffer = ImageHelper.ImageToByteArray(image, ImageFormat.Png);
-                //this.Response.Headers.Add("Cache-Control", "no-store,no-cache");
+                this.Response.Headers.Add("Cache-Control", "no-store,no-cache");
                 return File(buffer, "image/png");
                 
             }
@@ -155,14 +155,15 @@ namespace MapService.Controllers
             // MinX, MinY, MaxX, MaxY
             var width = _schema.GetTileWidth(ti.Index.Level);
             var height = _schema.GetTileHeight(ti.Index.Level);
+
             var renderOptions = new MapRenderOptions()
             {
                 PixelWidth = width,
                 PixelHeight = height,
-                MinX = bbExtent.MinX,
-                MinY = bbExtent.MinY,
-                MaxX = bbExtent.MaxX,
-                MaxY = bbExtent.MaxY,
+                MinX = bbExtent.MinX + _mapOptionsMontior.CurrentValue.MapOffsetX,
+                MinY = bbExtent.MinY + _mapOptionsMontior.CurrentValue.MapOffsetY,
+                MaxX = bbExtent.MaxX + _mapOptionsMontior.CurrentValue.MapOffsetX,
+                MaxY = bbExtent.MaxY + _mapOptionsMontior.CurrentValue.MapOffsetY,
             };
             
             //check intersects

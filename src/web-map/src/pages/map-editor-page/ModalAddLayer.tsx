@@ -61,7 +61,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
                 <Form.Item name="Name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' },
                             {min: 4, message: 'Name\'s length >= 4'}]}>
-                    <Input placeholder="input placeholder" autoComplete="newpassword" />
+                    <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
                 <Form.Item name="Source" label="Source" required tooltip="This is a required field"
@@ -71,11 +71,11 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
 
                 <Form.Item name="GroupName" label="Group Name"  tooltip="This is a required field"
                     rules={[{min: 4, message: 'GroupName\'s length >= 4'}]}>
-                    <Input placeholder="input placeholder" autoComplete="newpassword" />
+                    <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
                 <Form.Item name="Note" label="Note" tooltip="This is a optional field">
-                    <TextArea rows={4} placeholder="maxLength is 255" maxLength={255} />
+                    <TextArea rows={4} placeholder="" maxLength={255} />
                 </Form.Item>
             </Form>
         </Modal>

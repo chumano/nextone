@@ -21,7 +21,12 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
         uploading: false,
         multiple: false,
         accept: '.zip',
-        beforeUpload: (file: any) => {
+        beforeUpload: (file: File) => {
+            if(!form.getFieldValue('name')){
+                form.setFieldsValue({
+                    'name': file.name.split('.')[0]
+                })
+            }
             setUploadProps((state: any) => ({
                 ...state,
                 fileList: [file]// [...state.fileList, file],
@@ -106,7 +111,7 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
 
                 <Form.Item name="name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' }]}>
-                    <Input placeholder="input placeholder"  autoComplete="newpassword"/>
+                    <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
                 <Form.Item name="tags" label="Tags" tooltip="This is a optional field">

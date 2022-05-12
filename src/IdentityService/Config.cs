@@ -7,6 +7,7 @@ using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace IdentityService
 {
@@ -133,12 +134,33 @@ namespace IdentityService
                     AllowedGrantTypes = GrantTypes.Code,
 
                     RedirectUris = { "https://localhost:5100/auth/callback" , "http://localhost:5100/auth/callback"},
-                    FrontChannelLogoutUri = "https://localhost:5100/auth/signout",
+                    FrontChannelLogoutUri = "http://localhost:5100/auth/signout",
                     PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
-                    AccessTokenLifetime = 1*60*60  //1 hour
+                    AccessTokenLifetime = 2*60*60  //1 hour
+                },
+
+                new Client
+                {
+                    ClientId = "web-map-spa",
+                    ClientName = "Web Map App",
+                    ClientSecrets = { new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256()) },
+                    RequireClientSecret = false,
+
+                    AlwaysIncludeUserClaimsInIdToken = true,
+                    AlwaysSendClientClaims = false,
+
+                    AllowedGrantTypes =  GrantTypes.Code.Concat(GrantTypes.ResourceOwnerPassword).ToList(),
+
+                    RedirectUris = { "https://localhost:5107/auth/callback" , "http://localhost:5107/auth/callback"},
+                    FrontChannelLogoutUri = "http://localhost:5107/auth/signout",
+                    PostLogoutRedirectUris = { "https://localhost:5107/auth/signout-callback", "http://localhost:5107/auth/signout-callback" },
+
+                    AllowOfflineAccess = true,
+                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AccessTokenLifetime = 2*60*60  //1 hour
                 },
 
                  new Client

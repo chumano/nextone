@@ -5,6 +5,7 @@ using MapService.Domain.Services;
 using MapService.DTOs;
 using MapService.DTOs.Map;
 using MapService.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ using System.Threading.Tasks;
 
 namespace MapService.Controllers
 {
+    [Authorize]
     [Route("maps")]
     [ApiController]
     public class MapController : ControllerBase
@@ -62,6 +64,21 @@ namespace MapService.Controllers
                 .Take(pagingOptions.PageSize)
                 .ToListAsync();
             return Ok(objs.Select(o=> MapDTO.From(o)));
+        }
+
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] GetMapDTO getMapDTO)
+        {
+           
+            var query = _mapRepository.Maps;
+            if (!string.IsNullOrWhiteSpace(getMapDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getMapDTO.TextSearch));
+            }
+
+            var count = await query
+                .CountAsync();
+            return Ok(count);
         }
 
         [HttpGet("{id}")]

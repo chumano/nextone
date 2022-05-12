@@ -55,10 +55,6 @@ const MapsPage : React.FC = ()=>{
     const location = useLocation();
     const params = useParams();
 
-    useEffect(() => {
-        mapStore.list();
-    }, []);
-
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
     const showModalCreate = () => {
         setModalCreateVisible(true);
@@ -73,20 +69,24 @@ const MapsPage : React.FC = ()=>{
         offset :0,
         pageSize: 10
     });
+    const [currentPage, setCurentPage] = useState<number>(1);
+
+    useEffect(()=>{
+        mapStore.list(searchFilter);
+    },[searchFilter])
 
     const onSearch = useCallback((value:string)=>{
         console.log(`search text ${value}`);
+        setCurentPage(1);
         setSearchFilter((filter:any)=>{
            return {
                ...filter,
+               offset: 0,
                textSearch: value
            }
         })
     },[setSearchFilter])
 
-    useEffect(()=>{
-        mapStore.list(searchFilter);
-    },[searchFilter])
 
     return <>
         <div className="maps-page">
@@ -120,15 +120,19 @@ const MapsPage : React.FC = ()=>{
             </div>
             <div className="maps-page__paging">
                 <div className='flex-spacer'></div>
-                <Pagination defaultCurrent={1} total={15} onChange={(page,pageSize)=>{
-                    setSearchFilter((filter:any)=>{
-                        return {
-                            ...filter,
-                            offset: (page - 1) * pageSize,
-                            pageSize: pageSize
-                        }
-                    });
-                }}/>
+                <Pagination current={currentPage} 
+                    total={mapState.count} 
+                    pageSize={searchFilter.pageSize}
+                    onChange={(page,pageSize)=>{
+                        setCurentPage(page);
+                        setSearchFilter((filter:any)=>{
+                            return {
+                                ...filter,
+                                offset: (page - 1) * pageSize,
+                                pageSize: pageSize
+                            }
+                        });
+                    }}/>
             </div>
         </div>
 

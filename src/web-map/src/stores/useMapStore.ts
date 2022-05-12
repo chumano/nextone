@@ -15,8 +15,9 @@ export const useMapStore = () => {
     const list = async (searchParams?: SearchMapDTO) => {
       try {
         observable.listing(true);
+        const count = await handleAxiosApi<number>(api.count(searchParams));
         const objs = await handleAxiosApi<MapInfo[]>(api.list(searchParams));
-        observable.list(objs);
+        observable.listAndCount(objs, count);
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {

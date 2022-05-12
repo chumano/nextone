@@ -1,9 +1,11 @@
 import { Button, Dropdown, Menu, } from "antd";
 import { PoweroffOutlined, DownOutlined , AppstoreOutlined, SettingOutlined} from '@ant-design/icons';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ReactComponent as Logo } from '../../assets/logo.svg'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ModalSettings from "../modals/settings/ModalSettings";
+import { useDispatch, useSelector } from "react-redux";
+import { authActions, getAuthState } from "../../stores/auth/authReducer";
 
 const AntD= {
     Dropdown :Dropdown as any,
@@ -21,14 +23,24 @@ const menu = (
 );
 
 const MainHeader: React.FC = (props: any) => {
-    const user = {
-        Name: 'Chumano'
-    }
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const {user} = useSelector(getAuthState);
+
     const [showModalSettings, setShowModalSettings] = useState(false);
+    const [userName, setUserName] = useState('Guest');
+
+    useEffect(() => {
+        const name:string  = user?.profile?.name || user?.profile?.email || user?.profile?.sub || 'NoName';
+        setUserName( name as string )
+    }, [user])
 
     const logOut = () => {
-
+        dispatch(authActions.logout)
+        navigate("/auth/redirect");
     }
+
+  
     return <>
         <div className="main-header">
             <div className="main-header__logo-container">
@@ -65,7 +77,7 @@ const MainHeader: React.FC = (props: any) => {
                 </div>
 
                 <div className="user-info">
-                    <span>{user.Name}</span>
+                    <span>{userName}</span>
                 </div>
 
                 {/* <Button

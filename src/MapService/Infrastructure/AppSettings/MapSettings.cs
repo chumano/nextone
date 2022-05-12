@@ -4,5 +4,7 @@
     {
         public string MapTilesFolder { get; set; }
         public int MapWatcherIntervalInMinutes { get; set; }
+        public double MapOffsetX { get; set; }
+        public double MapOffsetY { get; set; }
     }
 }

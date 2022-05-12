@@ -1,11 +1,13 @@
 import { BehaviorSubject } from "rxjs";
 import { ErrorPayload, ErrorState, FlagPayload, FlagState, MapInfo } from "../interfaces";
 export type MapState = {
+    count: number,
     maps: MapInfo[];
 } & FlagState & ErrorState;
 
 export type MapPayload =
   | { maps: MapInfo[] }
+  | { maps: MapInfo[], count: number }
   | { map: MapInfo }
   | { id: string; map: MapInfo }
   | { id: string }
@@ -13,6 +15,7 @@ export type MapPayload =
   | FlagPayload;
 
 const initialState = {
+    count: 0,
     maps: [],
     listing: false,
     creating: false,
@@ -26,6 +29,14 @@ const mapSubject = new BehaviorSubject<MapState>(initialState);
 export const useMapObservable = () => {
     const list = (maps: MapInfo[]) => {
         setNextState({ maps, error: '' });
+    };
+
+    const listAndCount = (maps: MapInfo[], count: number ) => {
+        setNextState({
+            maps: maps, 
+            count : count,
+            error: '' 
+        });
     };
 
     const listing = (flag: boolean) => {
@@ -82,6 +93,7 @@ export const useMapObservable = () => {
 
     return {
         list,
+        listAndCount,
         listing,
         create,
         creating,

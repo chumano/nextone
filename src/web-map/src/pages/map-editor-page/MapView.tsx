@@ -30,39 +30,43 @@ const MapController = () => {
 };
 
 interface MapViewProps {
-    mapId: string;
-    boundingBox?: MapBoudingBox
 }
 const MapViewContainer: React.FC<MapViewProps> = (props) => {
-    //const mapEditor = useMapEditor();
+    const mapEditor = useMapEditor();
     const center: L.LatLngTuple = defaultCenter;
     const zoom = defaultZoom;
     const mapRef = useRef<L.Map | any>()
     const [map, setMap] = useState<L.Map | any>(null);
+    const mapid = mapEditor.mapEditorState.mapInfo?.id;
     const ref = useRef<L.TileLayer>(null);
-    const tileMapUrl = `http://localhost:5105/tms/map-${props.mapId}/{z}/{x}/{y}.png`
+    const tileMapUrl = `http://localhost:5105/tms/map-${mapid}/{z}/{x}/{y}.png`
     useEffect(() => {
-        const tileMapUrl = `http://localhost:5105/tms/map-${props.mapId}/{z}/{x}/{y}.png`
+        const tileMapUrl = `http://localhost:5105/tms/map-${mapid}/{z}/{x}/{y}.png`
         if (ref.current) {
             ref.current.setUrl(tileMapUrl);
         }
-    }, [props.mapId, ref.current])
+    }, [mapid, ref.current])
 
+   
+    const [isFirst, setIsFirst] =useState(true);
     useEffect(() => {
-        if (map && props.boundingBox) {
+        const boundingBox = mapEditor.mapEditorState.mapInfo!.boundingBox;
+        if (map && boundingBox) {
+            if(!isFirst) return;
+            setIsFirst(false)
             setTimeout(() => {
                 const lMap = map as L.Map;
                 lMap.flyToBounds([
-                    [props.boundingBox!.minY, props.boundingBox!.minX],
-                    [props.boundingBox!.maxY, props.boundingBox!.maxX]
+                    [boundingBox.minY, boundingBox.minX],
+                    [boundingBox.maxY, boundingBox.maxX]
                 ])
             }, 500)
 
         }
-    }, [props.boundingBox, map])
+    }, [mapEditor.mapEditorState.mapInfo?.boundingBox, map, isFirst])
 
     const displayMap = useMemo(() => {
-        console.log("display map", props.mapId, ref.current)
+        console.log("display map", mapid, ref.current)
         return <MapContainer center={center} zoom={zoom} maxBounds={defaultBoudingBox}
             ref={setMap}
             zoomControl={false}
@@ -121,7 +125,7 @@ const MapViewContainer: React.FC<MapViewProps> = (props) => {
             <MapDisplayPosition></MapDisplayPosition>
 
         </MapContainer>
-    }, [props.mapId]);
+    }, []);
     return <>
         {displayMap}
     </>

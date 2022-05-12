@@ -1,5 +1,5 @@
 import { Avatar, Button, Input, InputNumber, Select, Switch } from "antd";
-import React from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import Block from "../../components/fields/Block";
 import InputColor from "../../components/ui-inputs/InputColor";
 import { DashStyle, DataSource, ShapeFileProps, Symbol } from "../../interfaces";
@@ -7,6 +7,7 @@ import { useSymbolStore } from "../../stores";
 import { capitalize } from "../../utils/functions";
 import { useMapEditor } from "./useMapEditor";
 import { EnvironmentOutlined} from "@ant-design/icons";
+import SymbolSelect from "../../components/SymbolSelect";
 
 interface PaintPropertyProps {
     property: string;
@@ -25,31 +26,25 @@ const getPropertyName = (property: string) => {
     return name;
 }
 
-const renderPropertyInput = (property: string, value: any,
+interface PropertyInputProps {
+    property: string, 
     dataSource: DataSource | undefined,
-    symbols: Symbol[],
-    onChange: (val: any) => void,
-    openModalSymbol: () => void
-    ) => {
+    value:any,
+    onChange : (value:string) =>void
+}
+const PropertyInput : React.FC<PropertyInputProps> = ({property,
+    dataSource,
+    ...props
+}) => {
+    const [value,setValue] = useState(props.value);
+    const onChange = useCallback((value:any)=>{
+        setValue(value);
+
+        props.onChange(value);
+    },[props.onChange])
 
     if (property.indexOf('symbol-image') !== -1) {
-        const fisrt = symbols.find(o=>true);
-        return <>
-            <Select value={value || fisrt?.name}
-                style={{ width: '100%' }}
-                onChange={onChange}>
-                {symbols.map((symbol) => {
-                    return <Select.Option key={symbol.name} value={symbol.name}  >
-                        <Avatar src={symbol.imageUrl} shape="square"  size={'small'}/>
-                        {symbol.name}
-                    </Select.Option>
-                })}
-            </Select>
-            <Button type="default" title="Tải icon" style={{marginTop: "5px"}}
-                    onClick={openModalSymbol}>
-                    <EnvironmentOutlined />
-            </Button>
-        </>
+       return <SymbolSelect value={value} onChange={onChange} />
     } else if (property.indexOf('symbol-scale') !== -1) {
         return <InputNumber min={1} max={5}
             value={value || 1}
@@ -116,25 +111,27 @@ const renderPropertyInput = (property: string, value: any,
         </Select>;
     }
 
-    return property;
+    return <>{property}</>;
 }
 
 const InternalPaintProperty: React.FC<PaintPropertyProps> = ({ property, value, dataSource, onChange }) => {
     const name = getPropertyName(property);
-    const mapEditor = useMapEditor();
-    const symbolStore = useSymbolStore();
-    const openModalSymbol = ()=>{
-        mapEditor.showModal('symbol', true);
-    }
 
-    const handleChange = (val: any) => {
+
+    const handleChange = useCallback((val: any) => {
         console.log('PaintProperty-' + property, val);
         onChange(val);
-    }
+    },[onChange]);
+
+    const properyInput = useMemo(()=>{
+        return  <PropertyInput property={property} value={value}
+            dataSource={dataSource} 
+            onChange={handleChange} 
+        />;
+    },[property, value, dataSource,  handleChange])
     return <>
         <Block label={name}>
-            {renderPropertyInput(property, value, dataSource, symbolStore.symbolState.symbols, 
-                handleChange ,openModalSymbol)}
+           {properyInput}
         </Block>
     </>
 }

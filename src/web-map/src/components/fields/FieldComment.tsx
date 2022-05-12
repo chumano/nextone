@@ -23,7 +23,7 @@ const FieldComment: React.FC<any> = (props) => {
     <Input.TextArea
       value={value}
       onChange={onChange}
-      placeholder={'Comment..'}
+      placeholder={''}
       showCount maxLength={200} style={{ height: 80 }}
     />
   </Block>

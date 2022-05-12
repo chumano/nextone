@@ -17,9 +17,12 @@ using System.Threading.Tasks;
 using NextOne.Shared.Extenstions;
 using Newtonsoft.Json;
 using System.Drawing.Imaging;
+using Microsoft.AspNetCore.Authorization;
+using MapService.Authorization;
 
 namespace MapService.Controllers
 {
+    [Authorize(Policy = AppAuthorizationPolicy.AdminRole)]
     [Route("datasources")]
     [ApiController]
     public class DataSourceController : ControllerBase

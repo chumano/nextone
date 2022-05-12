@@ -72,7 +72,7 @@ const ModalEditDataSource :React.FC<ModalEditDataSourceProps> = (props)=>{
             >
                 <Form.Item name="name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' }]}>
-                    <Input placeholder="input placeholder"  autoComplete="newpassword"/>
+                    <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
                 <Form.Item name="tags" label="Tags" tooltip="This is a optional field">

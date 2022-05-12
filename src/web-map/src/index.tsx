@@ -4,6 +4,13 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+
+// const log = console.log
+// console.log = (...args: any[])=>{
+//   log('log disabled');
+//   console.log = ()=>{}
+// }
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

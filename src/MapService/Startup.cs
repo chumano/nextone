@@ -1,3 +1,4 @@
+using MapService.Authorization;
 using MapService.BackgroundServices;
 using MapService.Domain.Repositories;
 using MapService.Domain.Services;
@@ -82,6 +83,11 @@ namespace MapService
                         return Task.CompletedTask;
                     }
                 };
+            });
+
+            services.AddAuthorization(options =>
+            {
+                 options.AddPolicy(AppAuthorizationPolicy.AdminRole, policy => policy.RequireRole("admin"));
             });
 
             var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();

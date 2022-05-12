@@ -81,11 +81,11 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
             >
                 <Form.Item name="name" label="Name" required tooltip="This is a required field"
                      rules={[{ required: true, message: 'Name is required' }]}>
-                    <Input placeholder="input placeholder"  autoComplete="newpassword"/>
+                    <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
                 <Form.Item name="note" label="Note" tooltip="This is a optional field">
-                    <TextArea rows={4} placeholder="maxLength is 255" maxLength={255} />
+                    <TextArea rows={4} placeholder="" maxLength={255} />
                 </Form.Item>
             </Form>
         </Modal>

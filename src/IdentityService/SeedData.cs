@@ -18,6 +18,7 @@ namespace IdentityService
 {
     public class SeedData
     {
+        //dotnet run /seed
         public static void EnsureSeedData(string connectionString)
         {
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;

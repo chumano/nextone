@@ -93,7 +93,7 @@ const DataSourceSelect: React.FC<DataSourceSelectProps> = ({ datasources, value,
         })
     }
 
-    return <Select placeholder="Source" optionLabelProp="label"
+    return <Select placeholder="" optionLabelProp="label"
         value={state.value} onChange={myOnChange}
         onPopupScroll={onScroll}>
             

@@ -45,6 +45,10 @@ namespace MapService.Domain.Services
                 }
 
                 var mapInfo = await _mapRespository.Get(mapId);
+                if(mapInfo ==null)
+                {
+                    throw new System.Exception($"Map {mapId} is not found");
+                }
                 var shaprMap = _mapFactory.GenerateMap(mapInfo);
 
                 mapContainer = new MapContainer()

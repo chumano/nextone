@@ -102,6 +102,7 @@ namespace IdentityService.Services
         /// <returns></returns>
         public  async Task IsActiveAsync(IsActiveContext context)
         {
+
             var sub = context.Subject?.GetSubjectId();
             if (sub == null) throw new Exception("No subject Id claim present");
 
@@ -110,6 +111,7 @@ namespace IdentityService.Services
             {
                 Logger?.LogWarning("No user found matching subject Id: {0}", sub);
             }
+            //ProfileIsActiveCallers
 
             context.IsActive = user != null;
         }

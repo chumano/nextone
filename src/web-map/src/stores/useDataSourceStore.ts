@@ -14,7 +14,7 @@ export const useDatasourceStore = () => {
     const list = async (searchParams?: SearchDataSourceDTO) => {
       try {
         observable.listing(true);
-        const count = await  await handleAxiosApi<number>(api.count(searchParams));
+        const count = await handleAxiosApi<number>(api.count(searchParams));
         const objs = await handleAxiosApi<DataSource[]>(api.list(searchParams));
         observable.listAndCount(objs, count);
       } catch (error) {

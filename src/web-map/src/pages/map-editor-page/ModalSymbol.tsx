@@ -5,7 +5,7 @@ import TextArea from "antd/lib/input/TextArea";
 import React, { MouseEventHandler, useEffect, useState } from "react";
 import { useSymbolStore } from "../../stores";
 import { useMapEditor } from "./useMapEditor";
-import {DeleteOutlined} from '@ant-design/icons';
+import {DeleteOutlined, ExclamationCircleOutlined} from '@ant-design/icons';
 import { Symbol } from "../../interfaces";
 
 const getBase64 = (file: File) => {
@@ -122,7 +122,17 @@ const ModalSymbol: React.FC = () => {
 
     const onDelete = (item:Symbol) =>{
         return async (e:any)=>{
-            await symbolStore.remove(item.name);
+            Modal.confirm({
+                title: `Bạn có muốn xóa symbol này không?`,
+                icon: <ExclamationCircleOutlined />,
+               
+                onOk: async() => {
+                    await symbolStore.remove(item.name);
+                },
+                onCancel() {
+                },
+            });
+           
         }
     }
 
@@ -207,7 +217,7 @@ const ModalSymbol: React.FC = () => {
 
                         <Form.Item name="name" label="Name" required tooltip="This is a required field"
                             rules={[{ required: true, message: 'Name is required' }]}>
-                            <Input placeholder="input placeholder" autoComplete="newpassword" />
+                            <Input placeholder="" autoComplete="newpassword" />
                         </Form.Item>
                     </Form>
                 </Tabs.TabPane>

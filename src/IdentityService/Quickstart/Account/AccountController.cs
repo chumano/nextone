@@ -71,6 +71,12 @@ namespace IdentityServerHost.Quickstart.UI
                 return RedirectToAction("Challenge", "External", new { scheme = vm.ExternalLoginScheme, returnUrl });
             }
 
+            if (this.User.IsAuthenticated())
+            {
+               var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+                return Redirect(returnUrl);
+            }
+
             return View(vm);
         }
 

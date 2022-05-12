@@ -25,6 +25,7 @@ namespace IdentityService
 {
     public class Startup
     {
+        private string AllowSpecificOrigins = "AllowSpecificOrigins";
         public IWebHostEnvironment Environment { get; }
         public IConfiguration Configuration { get; }
 
@@ -98,19 +99,19 @@ namespace IdentityService
             services.AddTransient<IProfileService, ProfileService>();
             services.AddScoped<IEventSink, IdentityEventSink>();
 
+            var CorsHosts = Configuration.GetSection("CorsHosts").Get<string>();
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllOrigins",
-                    builder =>
+                options.AddPolicy(name: AllowSpecificOrigins,
+                    policy =>
                     {
-                        builder
-                            .WithOrigins("http://localhost:5100", "https://localhost:5100")
+                        policy.AllowAnyHeader()
+                            .WithOrigins(CorsHosts.Split(";"))// * now allow in SignalR
                             .SetIsOriginAllowedToAllowWildcardSubdomains()
-                            .AllowAnyHeader()
-                            .AllowAnyMethod();
+                            .AllowAnyMethod()
+                            .AllowCredentials();
                     });
             });
-
 
             //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
             builder.AddDeveloperSigningCredential();
@@ -140,7 +141,7 @@ namespace IdentityService
             }
 
             app.UseStaticFiles();
-            app.UseCors("AllowAllOrigins");
+            app.UseCors(AllowSpecificOrigins);
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();

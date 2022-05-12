@@ -57,7 +57,7 @@ const LayerEditor: React.FC = () => {
       property, newValue)
   }, [mapEditor.mapEditorState.selectedLayerIndex]);
 
-  const changeProperty = useDebounce(changePropertyFunc, 300);
+  const changeProperty = useDebounce(changePropertyFunc, 500);
 
   const changeStylePropertyFunc = useCallback((property: string, newValue: any) => {
     const selectedIndex = mapEditor.mapEditorState.selectedLayerIndex || 0;

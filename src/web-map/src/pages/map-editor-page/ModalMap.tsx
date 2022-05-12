@@ -85,7 +85,7 @@ const ModalMap: React.FC = () => {
               
                 <Form.Item name="name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' }]}>
-                    <Input placeholder="input placeholder"  autoComplete="newpassword"/>
+                    <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
             </Form>
         </Modal>
