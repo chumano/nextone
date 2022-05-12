@@ -57,6 +57,7 @@ services:
   project: MapService/MapService.csproj
   tags:
     - map
+    - core
   replicas: 1
   bindings:
   - port: 5105

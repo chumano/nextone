@@ -8,7 +8,7 @@ export const axiosSetup = () => {
         config.headers = { 
             'Authorization': `Bearer ${access_token}`,
             'Accept': 'application/json',
-            'Content-Type': 'application/x-www-form-urlencoded'
+            //'Content-Type': 'application/x-www-form-urlencoded'
         }
         return config;
     }, function (error) {
