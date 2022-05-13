@@ -1,3 +1,4 @@
+import { BaseFile } from "./../file/File.model";
 export interface Channel {
   Id: string;
   Name: string;
@@ -26,11 +27,5 @@ export interface SendEventToChannelRequest {
   Lat: number;
   Lon: number;
 
-  Files: SendEventFileToChannelRequest[];
-}
-
-export interface SendEventFileToChannelRequest {
-  FileId: string;
-  FileType: string;
-  FileUrl: string;
+  Files: BaseFile[];
 }
