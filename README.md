@@ -21,7 +21,7 @@ tye run --tags=core --watch
 - npm  >= 6.14.15, v8
 
 ## Account
-manager/NextOne@123
+manager/Nextone@123
 
 ## web
 - Setup route
