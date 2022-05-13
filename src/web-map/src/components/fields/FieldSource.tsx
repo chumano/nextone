@@ -9,7 +9,7 @@ import Block from './Block'
 interface FieldSourceProps {
   value: string;
   name: string;
-  sources: { key: string, name: string }[]
+  //sources: { key: string, name: string }[]
   disabled?: boolean;
   onChange: (key: string) => void
 }

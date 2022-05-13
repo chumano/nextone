@@ -44,9 +44,9 @@ const getDefaultStyle = (geoType: GeoType) => {
             return {
                 ...commonStyle,
                 'circle-color': "#000000",
-                'circle-size': "",
+                'circle-size': 5,
 
-                'symbol-enabled': 5,
+                'symbol-enabled': false,
                 'symbol-image': "",
                 'symbol-scale': 1,
             }
@@ -96,6 +96,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
             layerType: geo2LayerType(source?.geoType),
             sourceId: source.id,
             sourceName: source.name,
+            dataSource: source,
             visibility: true,
             note: values['Note'],
             minZoom: 1,

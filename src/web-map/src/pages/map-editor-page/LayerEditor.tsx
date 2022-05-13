@@ -70,14 +70,14 @@ const LayerEditor: React.FC = () => {
 
   const renderGroupType = useCallback((type: 'layer' | 'properties' | string, 
     layerProps: LayerStyle, fields: any) => {
-    const layerSources = datasources.map(o => {
-      return {
-        key: o.id,
-        name: `${o.name} - ${GeoType[o.geoType]}`
-      }
-    });
+    // const layerSources = datasources.map(o => {
+    //   return {
+    //     key: o.id,
+    //     name: `${o.name} - ${GeoType[o.geoType]}`
+    //   }
+    // });
 
-    const dataSource = datasources.find(o=>o.id == layer?.sourceId);
+    const dataSource = layer?.dataSource;
 
     switch (type) {
       case 'layer': return <div>
@@ -98,7 +98,7 @@ const LayerEditor: React.FC = () => {
 
         <FieldSource
           disabled={true}
-          sources={layerSources}
+          // sources={layerSources}
           value={layerProps.sourceId || ''}
           name={layerProps.sourceName}
           onChange={(sourceId) => {

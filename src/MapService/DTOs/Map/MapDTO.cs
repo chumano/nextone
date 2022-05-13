@@ -1,4 +1,5 @@
 ﻿using MapService.Domain;
+using MapService.DTOs.DataSource;
 using MapService.Utils;
 using System;
 using System.Collections.Generic;
@@ -46,6 +47,7 @@ namespace MapService.DTOs.Map
                     DataSourceId = l.DataSourceId,
                     DataSourceName = l.DataSource.Name,
                     DataSourceGeoType = l.DataSource.GeoType,
+                    DataSource = DataSourceDTO.From(l.DataSource, ignoreFeatureData:true),
                     MinZoom = l.MinZoom,
                     MaxZoom = l.MaxZoom,
                     Note = l.Note,

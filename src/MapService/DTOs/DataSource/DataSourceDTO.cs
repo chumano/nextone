@@ -22,7 +22,7 @@ namespace MapService.DTOs.DataSource
 
         public IList<string> Tags { get; set; }
 
-        public static DataSourceDTO From(MapService.Domain.DataSource o)
+        public static DataSourceDTO From(MapService.Domain.DataSource o, bool ignoreFeatureData = false)
         {
             string imageUrl = null;
             if (o.ImageData != null)
@@ -30,7 +30,7 @@ namespace MapService.DTOs.DataSource
                 imageUrl = ImageHelper.BytesImageToBase64Url(o.ImageData);
             }
             List<Dictionary<string, object>> featureData = null;
-            if (!string.IsNullOrWhiteSpace(o.FeatureData))
+            if (!ignoreFeatureData && !string.IsNullOrWhiteSpace(o.FeatureData))
             {
                 try
                 {

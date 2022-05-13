@@ -1,5 +1,5 @@
 import { Avatar, Button, Input, InputNumber, Select, Switch } from "antd";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Block from "../../components/fields/Block";
 import InputColor from "../../components/ui-inputs/InputColor";
 import { DashStyle, DataSource, ShapeFileProps, Symbol } from "../../interfaces";
@@ -37,6 +37,11 @@ const PropertyInput : React.FC<PropertyInputProps> = ({property,
     ...props
 }) => {
     const [value,setValue] = useState(props.value);
+    
+    useEffect(()=>{
+        setValue(props.value);
+    },[props.value])
+    
     const onChange = useCallback((value:any)=>{
         setValue(value);
 
@@ -97,7 +102,7 @@ const PropertyInput : React.FC<PropertyInputProps> = ({property,
             value={value || 10}
             onChange={onChange} />
     } else if (property.indexOf('enabled') !== -1) {
-        return <Switch defaultChecked={value || false} onChange={onChange} />;
+        return <Switch checked={value || false} onChange={onChange} />;
     } else if (property.indexOf('style') !== -1) {
         const styles = Object.keys(DashStyle).filter(key => isNaN(Number(DashStyle[key as any])));
         return <Select value={value || `${DashStyle.solid}`}
