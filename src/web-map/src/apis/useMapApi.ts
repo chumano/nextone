@@ -3,7 +3,7 @@ import qs from 'qs';
 import { MAP_API } from '../config/AppWindow';
 import { createAxios, mapAxiosInstance } from '../config/axios';
 import { MapInfo } from '../interfaces';
-import { CreateMapDTO, SearchMapDTO, UpdateMapLayersDTO, UpdateMapNameDTO } from '../interfaces/dtos';
+import { CreateMapDTO, PublishMapDTO, SearchMapDTO, UpdateMapLayersDTO, UpdateMapNameDTO } from '../interfaces/dtos';
 import mockMapApi from './mock/MockMapApi';
 
 const baseApi = MAP_API;
@@ -39,6 +39,10 @@ export const useMapApi = () => {
     return axiosInstance.post(`${baseApi}/maps/updateName/${id}`, map);
   };
 
+  const publish = (id: string, map: PublishMapDTO): Promise<AxiosResponse<MapInfo>> => {
+    return axiosInstance.post(`${baseApi}/maps/Publish/${id}`, map);
+  };
+
   const remove = (id: string): Promise<AxiosResponse<MapInfo>> => {
     return axiosInstance.delete(`${baseApi}/maps/${id}`);
   };
@@ -50,6 +54,7 @@ export const useMapApi = () => {
     create, 
     update, 
     updateName,
+    publish,
     remove 
   };
 };

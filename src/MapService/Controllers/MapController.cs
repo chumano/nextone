@@ -48,11 +48,36 @@ namespace MapService.Controllers
             _cacheStore = cacheStore;
         }
 
+        [HttpGet("tileUrl")]
+        public async Task<IActionResult> GetMapTileUrls([FromQuery] GetMapDTO getMapDTO)
+        {
+            var pagingOptions = new PageOptions(getMapDTO.Offset, getMapDTO.PageSize);
+            var query = _mapRepository.MapQuery
+                    .Where(o=>o.IsPublished);
+            if (!string.IsNullOrWhiteSpace(getMapDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getMapDTO.TextSearch));
+            }
+
+            var objs = await query
+                .OrderByDescending(o => o.CreatedDate)
+                .Skip(pagingOptions.Offset)
+                .Take(pagingOptions.PageSize)
+                .ToListAsync();
+            return Ok(objs.Select(o => MapTileUrlDTO.From(o)));
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetMaps([FromQuery] GetMapDTO getMapDTO)
         {
             var pagingOptions = new PageOptions(getMapDTO.Offset, getMapDTO.PageSize);
             var query = _mapRepository.Maps;
+            if(getMapDTO.PublishState!=null && getMapDTO.PublishState!= YesNoEnum.All)
+            {
+                bool isPublished = getMapDTO.PublishState == YesNoEnum.Yes;
+                query = query.Where(o => o.IsPublished == isPublished);
+            }
+
             if (!string.IsNullOrWhiteSpace(getMapDTO.TextSearch))
             {
                 query = query.Where(o => o.Name.Contains(getMapDTO.TextSearch));
@@ -71,6 +96,12 @@ namespace MapService.Controllers
         {
            
             var query = _mapRepository.Maps;
+            if (getMapDTO.PublishState != null && getMapDTO.PublishState != YesNoEnum.All)
+            {
+                bool isPublished = getMapDTO.PublishState == YesNoEnum.Yes;
+                query = query.Where(o => o.IsPublished == isPublished);
+            }
+
             if (!string.IsNullOrWhiteSpace(getMapDTO.TextSearch))
             {
                 query = query.Where(o => o.Name.Contains(getMapDTO.TextSearch));
@@ -131,6 +162,27 @@ namespace MapService.Controllers
 
             _mapRepository.Update(map);
             await _mapRepository.SaveChangesAsync();
+
+            var mapDto = MapDTO.From(map);
+            return Ok(mapDto);
+        }
+
+        [HttpPost("Publish/{id}")]
+        public async Task<IActionResult> PublishMap(string id, [FromBody] PublishMapDTO updateMapDTO)
+        {
+            var map = await _mapRepository.Get(id);
+            if (map == null)
+            {
+                throw new Exception($"Map {id} is not found");
+            }
+
+            map.IsPublished = updateMapDTO.IsPublished;
+
+            _mapRepository.Update(map);
+            await _mapRepository.SaveChangesAsync();
+
+            //clear Map Cache
+            await _cacheStore.Remove<MapContainer>(map.Id, out var _);
 
             var mapDto = MapDTO.From(map);
             return Ok(mapDto);

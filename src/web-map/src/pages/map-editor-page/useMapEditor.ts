@@ -28,6 +28,7 @@ export interface MapInfoState {
     id: string;
     name: string;
     version: number;
+    isPublished: boolean;
     boundingBox?: MapBoudingBox
 }
 
@@ -72,7 +73,8 @@ const setMapInfo = (mapInfo: MapInfo) => {
         id: mapInfo.id,
         name: mapInfo.name,
         version: mapInfo.version || 0,
-        boundingBox: mapInfo.boundingBox
+        boundingBox: mapInfo.boundingBox,
+        isPublished: mapInfo.isPublished
     }, layers);
 }
 

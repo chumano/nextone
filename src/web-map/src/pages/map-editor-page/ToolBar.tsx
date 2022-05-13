@@ -1,12 +1,14 @@
 import { Button, Modal, notification, Modal as AntDModal, Typography } from "antd";
 import { SaveOutlined,DeleteOutlined ,ExclamationCircleOutlined, 
-    EnvironmentOutlined,
-    EditOutlined} from '@ant-design/icons';
+    EnvironmentOutlined,PauseOutlined,
+    EditOutlined, GlobalOutlined} from '@ant-design/icons';
 import { MapInfoState, useMapEditor } from "./useMapEditor";
-import { getResponseErrorMessage } from "../../utils/functions";
+import { getResponseErrorMessage, handleAxiosApi } from "../../utils/functions";
 import { useMapApi } from "../../apis";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { PublishMapDTO } from "../../interfaces/dtos";
+import { MapInfo } from "../../interfaces";
 const { Paragraph } = Typography;
 interface ToolBarProps {
     map? : MapInfoState;
@@ -15,6 +17,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
     const mapApi = useMapApi();
     const navigate = useNavigate();
     const mapEditor = useMapEditor();
+    const mapInfo = mapEditor.mapEditorState.mapInfo!;
 
     const [name, setName] = useState(props.map?.name);
     useEffect(()=>{
@@ -36,6 +39,34 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
                 title: 'Có lỗi',
                 content: `Không thể lưu: ${errMsg}`,
             });
+        }
+     
+    }
+
+    const onPublish = async (isPublished: boolean) => {
+        const item : PublishMapDTO = {
+            isPublished: isPublished
+        };
+        
+        const mapid = mapInfo!.id;
+        try{
+            const updated = await handleAxiosApi<MapInfo>(mapApi.publish(mapid, item));
+            mapEditor.setMapInfo(updated);
+
+            notification['success']({
+                message: 'Lưu map',
+                description:
+                  'Đã lưu thành công',
+              });
+        }catch{
+            Modal.error({
+                title: 'Có lỗi',
+                content: <>
+                    {`Không thể cập nhật `}
+                    <b>{mapInfo!.name}</b>
+                </>,
+            });
+            return;
         }
      
     }
@@ -81,6 +112,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
     }
 
     return <>
+        {mapInfo &&
         <div className="map-editor-toolbar">
             <h3 style={{ width: '600px' }}>
                 <Link className="link" to="/maps">Maps</Link>
@@ -102,11 +134,24 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
                     <SaveOutlined /> Lưu Map
                 </Button>
 
-                <Button type="default" style={{marginLeft:'10px'}}
+                {!mapInfo.isPublished &&
+                <Button type="default" onClick={()=>{onPublish(true)}}>
+                    <GlobalOutlined/> Publish
+                </Button>
+                }
+
+                {mapInfo.isPublished &&
+                <Button type="default" onClick={()=>{onPublish(false)}}>
+                    <PauseOutlined /> Unpublish
+                </Button>
+                }
+
+                {/* <Button type="ghost" style={{marginLeft:'10px'}}
                     onClick={openModalSymbol}>
                     <EnvironmentOutlined /> Tải icon
-                </Button>
+                </Button> */}
             </div>
+
             <div className="flex-spacer"></div>
             <div style={{marginLeft:'20px'}}>
                 <Button className='delete-btn' onClick={onDelete}
@@ -116,6 +161,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
                 </Button>
             </div>
         </div>
+        }
     </>
 }
 

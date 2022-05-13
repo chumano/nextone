@@ -126,7 +126,7 @@ namespace MapService.Controllers
             }
         }
 
-        private async Task<Image> RenderMap(string mapid, int x, int y, int z, bool isSaveTile = false, int? version = null)
+        private async Task<Image> RenderMap(string mapid, int x, int y, int z, bool isRequestSaveTile = false, int? version = null)
         {
             //TODO: chỗ này lúc request cho latest thì chỉ cần cache thông tin đơn gian thôi
             // vì chỉ cần mapVersion, không cần SharpMap
@@ -179,7 +179,7 @@ namespace MapService.Controllers
             {
                 var image = _mapRender.RenderImage(safeMap, renderOptions);
 
-                if(isSaveTile)
+                if(isRequestSaveTile && mapContainer.IsPublished)
                 {
                     var imgPath = GetTileImagePath(mapid, x, y, z, mapContainer.Version);
                     Directory.GetParent(imgPath).Create();

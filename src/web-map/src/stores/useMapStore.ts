@@ -1,6 +1,6 @@
 import { useMapApi } from "../apis";
 import { MapInfo } from "../interfaces";
-import { CreateMapDTO, SearchMapDTO, UpdateMapNameDTO } from "../interfaces/dtos";
+import { CreateMapDTO, PublishMapDTO, SearchMapDTO, UpdateMapNameDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
 import { MapState, useMapObservable } from "./useMapObservable";
@@ -68,7 +68,7 @@ export const useMapStore = () => {
         observable.updating(false);
       }
     };
-  
+
     const remove = async (id: string) => {
       try {
         observable.removing(true);
@@ -81,7 +81,6 @@ export const useMapStore = () => {
       }
     };
   
-
     
     return {
       mapState,

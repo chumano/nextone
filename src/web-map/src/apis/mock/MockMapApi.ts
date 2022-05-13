@@ -9,14 +9,16 @@ const maps: MapInfo[] = [
         name: "Map Khu vực 1",
         layers: [],
         currentTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
-        latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}"
+        latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
+        isPublished: false
     },
     {
         id: "Map2",
         name: "Map Tp. HCM",
         layers: [],
         currentTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
-        latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}"
+        latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
+        isPublished: true
     }
 ];
 

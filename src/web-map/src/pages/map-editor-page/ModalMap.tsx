@@ -53,7 +53,7 @@ const ModalMap: React.FC = () => {
             Modal.error({
                 title: 'Có lỗi',
                 content: <>
-                    {`Không thể upload `}
+                    {`Không thể cập nhật `}
                     <b>{item.name}</b>
                 </>,
             });

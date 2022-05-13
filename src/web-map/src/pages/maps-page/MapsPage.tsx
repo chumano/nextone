@@ -1,7 +1,7 @@
-import { Button, Input, Pagination, Typography } from "antd";
+import { Button, Input, Pagination, Select, Typography } from "antd";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { map } from "rxjs";
+import {GlobalOutlined} from '@ant-design/icons';
 import { MapInfo } from "../../interfaces";
 import { MapState, useMapStore } from "../../stores";
 import '../../styles/pages/maps-page.scss';
@@ -9,6 +9,7 @@ import { useObservable } from "../../utils/hooks";
 import ModalCreateMap from "./ModalCreateMap";
 import defaultMapImg from  '../../assets/images/default_map.png';
 import { MAP_API } from "../../config/AppWindow";
+import Item from "antd/lib/list/Item";
 
 const { Paragraph } = Typography;
 const { Search } = Input;
@@ -26,7 +27,11 @@ const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
             </div>
             <div className="map-item__body">
                 <div  className="map-item__title">
-                    {map.name}
+                    {map.name} 
+                    {map.isPublished &&
+                       <GlobalOutlined title="Đã publish" style={{marginLeft: '5px'}}/>
+                    }
+                    
                 </div>
                 <div style={{marginTop: '10px'}}>
                     <div className="tile-info">
@@ -85,7 +90,19 @@ const MapsPage : React.FC = ()=>{
                textSearch: value
            }
         })
-    },[setSearchFilter])
+    },[setSearchFilter, setCurentPage])
+
+    const handlePublishFilterChange = useCallback((value: number)=>{
+        console.log(`search text ${value}`);
+        setCurentPage(1);
+        setSearchFilter((filter:any)=>{
+           return {
+               ...filter,
+               offset: 0,
+               publishState: value
+           }
+        })
+    },[setSearchFilter, setCurentPage])
 
 
     return <>
@@ -102,6 +119,13 @@ const MapsPage : React.FC = ()=>{
             </div>
             <div className="maps-page__filter">
                 <div className='flex-spacer'> </div>
+                <Select defaultValue={0} style={{ width: '110px', marginRight: '10px' }}
+                    onChange={handlePublishFilterChange}>
+                    <Select.Option value={0}>Tất cả</Select.Option>
+                    <Select.Option value={1}>Đã publish</Select.Option>
+                    <Select.Option value={2}>Chưa publish</Select.Option>
+                </Select>
+
                 <Search
                     style={{ width: 400 }}
                     placeholder="Tìm kiếm"

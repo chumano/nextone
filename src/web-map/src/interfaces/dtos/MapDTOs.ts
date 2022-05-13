@@ -9,6 +9,10 @@ export interface UpdateMapNameDTO{
     note?:string
 }
 
+export interface PublishMapDTO{
+    isPublished: boolean,
+}
+
 export interface UpdateMapLayersDTO{
     id: string,
     name: string,
@@ -19,4 +23,5 @@ export interface SearchMapDTO{
     textSearch? : string;
     offset? : number;
     pageSize?: number;
+    publishState?: number;
 }
