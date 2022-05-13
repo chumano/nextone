@@ -1,0 +1,89 @@
+@import "../../abstracts/variables";
+@import "../../abstracts/mixins";
+
+.user-page{
+    padding: 0 28px;
+    
+    &__head{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        &--left{
+            display: flex;
+            flex-direction: column;
+        }
+
+        &--right{
+            .add-btn{
+                padding: 0 10px;
+            }
+        }
+    }
+
+    &__filter{
+        background-color: $color-white;
+        padding: 20px;
+        margin-bottom: 20px;
+        display: flex;
+
+        @include mobile-width{
+            flex-direction: column;
+        }
+
+        .filter-inputs{
+            display: flex;
+            align-items: center;
+            .input-label-group{
+                display: flex;
+                align-items: center;
+
+                .label{
+                    color: $color-grey;
+                    margin-right: 5px;
+                }
+                .input {
+                    height: $input-control-height;
+                }
+            }
+           
+        }
+
+        .filter-actions{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            @include tablet-width{
+                float: left;
+            }
+            @include mobile-width{
+                float: none;
+                flex-direction: row-reverse;
+                justify-content: flex-start;
+            }
+
+            .reset-btn{
+                margin-left: 20px;
+                cursor: pointer;
+                &:hover{
+                    color: $color-grey;
+                }
+                @include mobile-width{
+                    margin-right: 20px;
+                }
+            }
+        }
+    }
+
+    &__body{
+        .user-list{
+
+        }
+
+        .pagination-info{
+           
+        }
+    }
+}
