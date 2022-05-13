@@ -13,7 +13,7 @@ interface DatasouceItemProps {
     item: DataSource,
     onClick: any,
     onDelete: any,
-    onViewData?: (data: FeatureData[]) => void
+    onViewData?: (item: DataSource) => void
 }
 const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, onViewData }) => {
 
@@ -44,15 +44,15 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
                 {item.dataSourceType === DataSourceType.shapeFile &&
                     <div className='source-item-shapefile'>
                         <div>
-                            <span className='source-info'>
-                                Feature Count: {item.properties[ShapeFileProps.FEATURECOUNT]}
-                            </span>
+                            
+                            Feature Count: {item.properties[ShapeFileProps.FEATURECOUNT]}
+                            
                         </div>
                         <div>
-                            {item.featureData && item.featureData.length > 0 &&
+                            { item &&
                                 <span className='clickable' onClick={(e) => {
                                     e.stopPropagation();
-                                    onViewData && onViewData(item.featureData!)
+                                    onViewData && onViewData(item)
                                 }}>
                                     <TableOutlined />
                                 </span>
@@ -83,7 +83,7 @@ const DataSourcePage: React.FC = () => {
     const [modalCreateVisible, setModalCreateVisible] = useState(false);
     const [modalEditVisible, setModalEditVisible] = useState(false);
     const [modalViewFeatureVisible, setModalViewFeatureVisible] = useState(false);
-    const [modalViewFeatureData, setmodalViewFeatureData] = useState<FeatureData[]>();
+    const [modalViewFeatureData, setmodalViewFeatureData] = useState<DataSource>();
     const [modalEditSource, setModalEditSource] = useState<any>(undefined);
 
     const handleCreateSource = async () => {
@@ -113,9 +113,9 @@ const DataSourcePage: React.FC = () => {
         }
     }, [sourceStore])
 
-    const handleViewData = useCallback((data: FeatureData[]) => {
+    const handleViewData = useCallback((item: DataSource) => {
         setModalViewFeatureVisible(true);
-        setmodalViewFeatureData(data)
+        setmodalViewFeatureData(item)
     }, []);
 
     
@@ -241,10 +241,10 @@ const DataSourcePage: React.FC = () => {
             }} />
         }
 
-        {modalViewFeatureVisible
+        {modalViewFeatureVisible 
             && modalViewFeatureData
             && <ModalViewFeature visible={modalViewFeatureVisible}
-                features={modalViewFeatureData}
+                item={modalViewFeatureData}
                 onToggle={(visible: boolean) => {
                     setModalViewFeatureVisible(visible);
                 }} />

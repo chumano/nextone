@@ -4,37 +4,103 @@ import TextArea from "antd/lib/input/TextArea";
 import DataSourceAutocomplete from "../../components/DataSourceAutocomplete";
 import DataSourceSelect from "../../components/DataSourceSelect";
 import Modal from "../../components/modals/Modal";
-import { GeoType } from "../../interfaces";
+import { DashStyle, GeoType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
 import { geo2LayerType } from "../../utils/functions";
 import { LayerStyle } from "./useMapEditor";
 
 
-interface ModalAddLayerProps{
-    onLayerAdded: (layer: LayerStyle) =>void;
+interface ModalAddLayerProps {
+    onLayerAdded: (layer: LayerStyle) => void;
     visible: boolean;
-    onToggle : (visible: boolean)=>void;
+    onToggle: (visible: boolean) => void;
+}
+
+const getDefaultStyle = (geoType: GeoType) => {
+    const commonStyle = {
+         //text
+        'text-enabled': false,
+        'text-column': "",
+        'text-color': "#000000",
+        'text-font': "Arial",
+        'text-size': 10,
+
+        'text-halo-enabled': false,
+        'text-halo-color': "#000000",
+        'text-halo-width': 1,
+
+        'text-rotate-enabled': false,
+        'text-rorate-column': "",
+
+        //common
+        'outline-enabled': false,
+        'outline-color': "#000000",
+        'outline-width': 1,
+        'outline-style': `${DashStyle.dash}`,
+    }
+
+    switch (geoType) {
+        case GeoType.point:
+            return {
+                ...commonStyle,
+                'circle-color': "#000000",
+                'circle-size': "",
+
+                'symbol-enabled': 5,
+                'symbol-image': "",
+                'symbol-scale': 1,
+            }
+        case GeoType.line:
+            return {
+                ...commonStyle,
+                'line-color' :"#000000",
+                'line-width' : 1,
+                'line-style' : `${DashStyle.solid}`,
+            }
+        case GeoType.fill:
+            return {
+                ...commonStyle,
+                'fill-transparent-enabled': false,
+                'fill-color': "#000000",
+                
+                'theme-enabled': false,
+                'theme-column': "",
+                'theme-value-min': 0,
+                'theme-value-max': 100,
+                'theme-color1': "#000000",
+                'theme-color2': "#000000",
+                'theme-color3': "#000000",
+            }
+
+        default:
+            return {
+            }
+    }
+
 }
 const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
     const [form] = Form.useForm();
     const sourceStore = useDatasourceStore();
-    const {datasources} = sourceStore.datasourceState;
+    const { datasources } = sourceStore.datasourceState;
 
     const onFormFinish = async (values: any) => {
         //onLayerAdded
         const source = values['Source']
-        if(!source){
+        if (!source) {
             return;
         }
 
-        const layerStyle : LayerStyle = {
+        const layerStyle: LayerStyle = {
             name: values['Name'],
-            layerGroup:  values['GroupName'],
+            layerGroup: values['GroupName'],
             layerType: geo2LayerType(source?.geoType),
             sourceId: source.id,
             sourceName: source.name,
             visibility: true,
-            note:  values['Note'],
+            note: values['Note'],
+            minZoom: 1,
+            maxZoom: 20,
+            style: getDefaultStyle(source?.geoType)
         }
 
         props.onLayerAdded(layerStyle)
@@ -60,7 +126,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
             >
                 <Form.Item name="Name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' },
-                            {min: 4, message: 'Name\'s length >= 4'}]}>
+                    { min: 4, message: 'Name\'s length >= 4' }]}>
                     <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
@@ -69,8 +135,8 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
                     <DataSourceAutocomplete datasources={datasources} />
                 </Form.Item>
 
-                <Form.Item name="GroupName" label="Group Name"  tooltip="This is a required field"
-                    rules={[{min: 4, message: 'GroupName\'s length >= 4'}]}>
+                <Form.Item name="GroupName" label="Group Name" tooltip="This is a required field"
+                    rules={[{ min: 4, message: 'GroupName\'s length >= 4' }]}>
                     <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
