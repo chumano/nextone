@@ -28,7 +28,7 @@ const MainHeader: React.FC = (props: any) => {
     const {user} = useSelector(getAuthState);
 
     const [showModalSettings, setShowModalSettings] = useState(false);
-    const [userName, setUserName] = useState('Guest');
+    const [userName, setUserName] = useState('');
 
     useEffect(() => {
         const name:string  = user?.profile?.name || user?.profile?.email || user?.profile?.sub || 'NoName';
@@ -36,7 +36,7 @@ const MainHeader: React.FC = (props: any) => {
     }, [user])
 
     const logOut = () => {
-        dispatch(authActions.logout)
+        dispatch(authActions.logout())
         navigate("/auth/redirect");
     }
 

@@ -46,7 +46,7 @@ namespace MapService.Controllers
         public async Task<IActionResult> Count([FromQuery] CountDataSourcesDTO getDataSourcesDTO)
         {
            
-            var query = _dataSourceRepository.DataSources;
+            var query = _dataSourceRepository.DataSources.AsNoTracking();
             var tagSearch = "," + getDataSourcesDTO.TextSearch + ",";
             if (!string.IsNullOrWhiteSpace(getDataSourcesDTO.TextSearch))
             {
@@ -66,7 +66,7 @@ namespace MapService.Controllers
         public async Task<IActionResult> GetDataSources([FromQuery] GetDataSourcesDTO getDataSourcesDTO)
         {
             var pagingOptions = new PageOptions(getDataSourcesDTO.Offset, getDataSourcesDTO.PageSize);
-            var query =  _dataSourceRepository.DataSources;
+            var query =  _dataSourceRepository.DataSources.AsNoTracking();
             var tagSearch = "," + getDataSourcesDTO.TextSearch + ",";
             if (!string.IsNullOrWhiteSpace(getDataSourcesDTO.TextSearch))
             {
