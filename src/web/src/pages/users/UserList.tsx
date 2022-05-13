@@ -10,6 +10,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Avatar, Button, Checkbox, Table } from "antd";
 import Column from "antd/lib/table/Column";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import { getListUserAsync } from "./store/UserSlice";
+import { PageOptions } from "../../models/apis/PageOptions.model";
 
 const data: User[] = [
 	{
@@ -32,6 +36,12 @@ const data: User[] = [
 ];
 
 const UserList = () => {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		dispatch(getListUserAsync(new PageOptions()));
+	}, []);
+
 	return (
 		<Table dataSource={data} rowKey="Id">
 			<Column
