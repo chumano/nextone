@@ -79,12 +79,17 @@ namespace IdentityService
             }
         }
 
+        //RequestedClaims phải thuộc IdentityResource thì mới claims mới được trả về clients
         public static IEnumerable<IdentityResource> IdentityResources =>
-                   new IdentityResource[]
-                   {
+            new IdentityResource[]
+            {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Profile(),
-                   };
+                new IdentityResource( "role", "Your business user role", new string[] {"role", "group"})
+                {
+                    Required = true
+                }
+            };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
@@ -99,8 +104,7 @@ namespace IdentityService
                   new ApiResource[]
                   {
                         new ApiResource(){ Name = "gateway", ShowInDiscoveryDocument =false,DisplayName="Gateway api resource", Enabled= true, 
-                            Scopes = new List<string>{"gateway"},
-                            UserClaims = new List<string>{"role"} //reuqest role claim
+                            Scopes = new List<string>{"gateway"} //scope được lấy từ ApiScopes
                         },
                   };
 
@@ -138,7 +142,7 @@ namespace IdentityService
                     PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AllowedScopes = { "openid", "profile", "role", "gateway", "master-scope" },
                     AccessTokenLifetime = 2*60*60  //1 hour
                 },
 
@@ -159,7 +163,7 @@ namespace IdentityService
                     PostLogoutRedirectUris = { "https://localhost:5107/auth/signout-callback", "http://localhost:5107/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AllowedScopes = { "openid", "profile", "role", "gateway", "master-scope" },
                     AccessTokenLifetime = 2*60*60  //1 hour
                 },
 
@@ -178,7 +182,7 @@ namespace IdentityService
                     PostLogoutRedirectUris = { },
 
                     AllowOfflineAccess = false,
-                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AllowedScopes = { "openid", "profile", "role", "gateway", "master-scope" },
                     AccessTokenLifetime = 30*24*60*60   //30 days
                 },
 
@@ -193,7 +197,7 @@ namespace IdentityService
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = { "openid", "profile", "gateway", "master-scope" },
+                    AllowedScopes = { "openid", "profile", "role", "gateway", "master-scope" },
                     AccessTokenLifetime = 14*24*60*60  //4 ngay
                 },
             };

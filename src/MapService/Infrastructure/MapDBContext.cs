@@ -48,6 +48,9 @@ namespace MapService.Infrastructure
                 .HasColumnType("int")
                 .IsConcurrencyToken();
 
+                eb.Property(o => o.IsPublished)
+                .HasColumnType("bit");
+
                 eb.Property("_bbMinX")
                .HasColumnType("float");
 

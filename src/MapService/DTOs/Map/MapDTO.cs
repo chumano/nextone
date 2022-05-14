@@ -1,4 +1,5 @@
 ﻿using MapService.Domain;
+using MapService.DTOs.DataSource;
 using MapService.Utils;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace MapService.DTOs.Map
         public string Note { get; set; }
         public string ImageUrl { get; set; }
         public int Version { get; set; }
+        public bool IsPublished { get; set; }
         public string CurrentTileUrl { get; set; }
         public string LatestTileUrl { get; set; }
         public IEnumerable<MapLayerDTO> Layers { get; set; }
@@ -33,6 +35,7 @@ namespace MapService.DTOs.Map
                 Name = o.Name,
                 Note = o.Note,
                 Version = o.Version,
+                IsPublished = o.IsPublished,
                 BoundingBox = o.BoundingBox,
                 ImageUrl = imageUrl,
                 CurrentTileUrl = $"/tms/{o.Version}/map-{o.Id}" +"/{z}/{x}/{y}.png",
@@ -44,6 +47,7 @@ namespace MapService.DTOs.Map
                     DataSourceId = l.DataSourceId,
                     DataSourceName = l.DataSource.Name,
                     DataSourceGeoType = l.DataSource.GeoType,
+                    DataSource = DataSourceDTO.From(l.DataSource, ignoreFeatureData:true),
                     MinZoom = l.MinZoom,
                     MaxZoom = l.MaxZoom,
                     Note = l.Note,

@@ -1,3 +1,4 @@
+import { DataSource } from "./DataSource";
 import { GeoType, MapBoudingBox as MapBoundingBox, PaintPropertyKey } from "./Types";
 
 export interface MapInfo {
@@ -6,6 +7,7 @@ export interface MapInfo {
     note?: string;
     imageUrl?: string;
     version?: number;
+    isPublished: boolean;
     boundingBox?: MapBoundingBox;
     layers: MapLayer[];
     currentTileUrl: string;
@@ -18,6 +20,7 @@ export interface MapLayer {
     dataSourceId: string;
     dataSourceName?: string;
     dataSourceGeoType?: GeoType;
+    dataSource?: DataSource;
 
     paintProperties?: { [key: PaintPropertyKey]: any }
 

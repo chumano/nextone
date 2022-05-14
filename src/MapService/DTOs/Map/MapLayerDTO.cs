@@ -1,4 +1,5 @@
 ﻿using MapService.Domain;
+using MapService.DTOs.DataSource;
 using System.Collections.Generic;
 
 namespace MapService.DTOs.Map
@@ -10,6 +11,7 @@ namespace MapService.DTOs.Map
 
         public string DataSourceId { get; set; }
         public string DataSourceName { get; set; }
+        public DataSourceDTO DataSource { get; set; }
 
         public GeoTypeEnum DataSourceGeoType { get; set; }
 

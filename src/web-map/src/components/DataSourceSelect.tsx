@@ -12,7 +12,7 @@ interface DataSourceSelectProps {
 }
 
 const renderDataSourceOption = (o:DataSource) =>{
-    return <Select.Option key={o.id} value={o.id} label={o.name} geoType={o.geoType}>
+    return <Select.Option key={o.id} value={o.id} label={o.name} data-geotype={o.geoType}>
         <div style={{
             display: 'flex',
             flexDirection: 'row',
@@ -80,6 +80,7 @@ const DataSourceSelect: React.FC<DataSourceSelectProps> = ({ datasources, value,
     },[fetchGood, state.loading]);
 
     const myOnChange = (value:string, option:any)=>{
+        console.log('DataSourceSelect', option)
         setState((state) => {
             return {
                 ...state,
@@ -89,7 +90,7 @@ const DataSourceSelect: React.FC<DataSourceSelectProps> = ({ datasources, value,
         onChange && onChange({
             id: option.key,
             name: option.label,
-            geoType: option.geoType
+            geoType: option['data-geotype']
         })
     }
 

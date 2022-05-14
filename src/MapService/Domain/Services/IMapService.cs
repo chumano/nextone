@@ -58,6 +58,7 @@ namespace MapService.Domain.Services
                     Version = mapInfo.Version,
                     CreatedDate = System.DateTime.Now,
                     LastUsed = System.DateTime.Now,
+                    IsPublished = mapInfo.IsPublished,
                     Map = shaprMap
                 };
 

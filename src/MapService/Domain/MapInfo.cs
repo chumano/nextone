@@ -14,12 +14,14 @@ namespace MapService.Domain
             Note = note;
             Layers = new List<MapLayer>();
             CreatedDate = DateTime.Now;
+            IsPublished = false;
         }
         public string Id { get; private set; }
         public string Name { get; set; }
         public string Note { get; set; }
 
         public int Version { get; set; }
+        public bool IsPublished { get; set; }
 
         private MapBoundingBox _bb;
         public MapBoundingBox BoundingBox

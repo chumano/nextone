@@ -12,7 +12,7 @@ interface DataSourceAutocompleteProps {
 }
 
 const renderDataSourceOption = (o: DataSource) => {
-    return <AutoComplete.Option key={o.id} value={o.name} label={o.name} geoType={o.geoType}>
+    return <AutoComplete.Option key={o.id} value={o.name} label={o.name} data-geotype={o.geoType}>
         <div style={{
             display: 'flex',
             flexDirection: 'row',
@@ -78,11 +78,11 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
     }, [fetchGood, state.loading]);
 
     const onSelect = (value: string, option: any) => {
-        console.log("onSelect", value, option, onChange)
+        console.log("DataSourceAutocomplete-onSelect", value, option)
         onChange && onChange({
             id: option.key,
             name: option.label,
-            geoType: option.geoType
+            geoType: option['data-geotype']
         })
     }
 

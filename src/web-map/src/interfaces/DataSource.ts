@@ -1,5 +1,9 @@
 import { DataSourceType, GeoType } from "./Types";
 
+export interface ColumnType{
+    Name: string;
+    Type: string;
+}
 export interface FeatureData{
     [key:string]: any
 }

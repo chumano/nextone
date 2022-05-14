@@ -16,8 +16,13 @@ const SymbolSelect : React.FC<SymbolSelectProps> = (props)=>{
         mapEditor.showModal('symbol', true);
     },[])
     
-
+    
     const [value,setValue] = useState(props.value);
+    
+    useEffect(()=>{
+        setValue(props.value);
+    },[props.value])
+
     const onChange = useCallback((value:any)=>{
         setValue(value);
 
@@ -33,7 +38,7 @@ const SymbolSelect : React.FC<SymbolSelectProps> = (props)=>{
     },[symbols])
 
     return <>
-        <Select defaultValue={defaultValue} value={value}
+        <Select  value={value}
             style={{ width: '100%' }}
             onChange={onChange}>
             {symbols.map((symbol) => {

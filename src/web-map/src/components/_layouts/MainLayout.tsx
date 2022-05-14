@@ -8,11 +8,12 @@ import Loading from "../common/Loading";
 import { useLocation } from "react-router-dom";
 import { authActions } from "../../stores/auth/authReducer";
 import { User } from "oidc-client-ts";
+import AuthNoPermission from "../auth/AuthNoPermission";
 const MainLayout : React.FC<any> = ({children})=>{
     const dispatch = useDispatch();
     const location = useLocation();
     const isLoggedIn = useSelector((state: IAppStore) => state.auth.isLoggedIn);
-
+    const user = useSelector((state: IAppStore) => state.auth.user);
     useEffect(() => {
         if(!isLoggedIn){
             let redirectUrl = location.pathname + (location.search || "");
@@ -66,7 +67,12 @@ const MainLayout : React.FC<any> = ({children})=>{
                     <MainHeader/>
                 </div>
                 <div>
-                    {children}
+                    {user?.profile['role'] ==='admin' &&
+                        children 
+                    }
+                     {user?.profile['role'] !=='admin' &&
+                        <AuthNoPermission/> 
+                    }
                 </div>
             </div>
         }

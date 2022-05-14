@@ -33,7 +33,7 @@ namespace MapService.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var items = await _symbolRepository.Symbols
+            var items = await _symbolRepository.Symbols.AsNoTracking()
                 .OrderBy(o => o.Name)
                 .ToListAsync();
 

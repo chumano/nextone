@@ -8,6 +8,7 @@ namespace MapService.Domain.Repositories
     public interface IMapRepository
     {
         IQueryable<MapInfo> Maps { get; }
+        IQueryable<MapInfo> MapQuery { get; }
 
         Task<MapInfo> Get(string id);
         void Add(MapInfo dataSource);
@@ -25,6 +26,8 @@ namespace MapService.Domain.Repositories
         {
             _dbContext = mapDBContext;
         }
+
+        public IQueryable<MapInfo> MapQuery => _dbContext.Maps.AsQueryable().AsNoTracking();
 
         public IQueryable<MapInfo> Maps => _dbContext.Maps.AsQueryable()
                 .Include(o=> o.Layers)
