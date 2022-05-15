@@ -8,10 +8,15 @@ import CreateUserModal from "../../components/user/CreateUserFormModal";
 
 const UserPage = () => {
 	const [searchInput, setSearchInput] = useState("");
+	const [modalVisible, setModalVisible] = useState(false);
 
 	const searchHandler = (value: string) => {
 		setSearchInput(value);
 	};
+
+	const modalVisibleHandler = (value: boolean) => {
+		setModalVisible(value)
+	}
 
 	return (
 		<>
@@ -25,7 +30,10 @@ const UserPage = () => {
 					</div>
 					<div className="flex-spacer"></div>
 					<div className="user-page__head--right">
-						<CreateUserModal />
+						<CreateUserModal 
+							isModalVisible={modalVisible}
+							setModalVisible={modalVisibleHandler}
+						/>
 					</div>
 				</div>
 
@@ -34,7 +42,7 @@ const UserPage = () => {
 				</div>
 
 				<div className="user-page__body">
-					<UserList textSearch={searchInput} />
+					<UserList modalVisible={modalVisible} textSearch={searchInput} />
 				</div>
 			</div>
 		</>

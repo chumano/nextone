@@ -3,8 +3,8 @@ export interface BaseObjectCRUD {
     isDeleted: boolean;
 
     createdDate?: string;
-    createdBy?: string;
+    createdBy?: string | null;
 
     updatedDate?: string;
-    updatedBy?: string;
+    updatedBy?: string | null;
 }

@@ -1,3 +1,4 @@
+import { CreateUserResponse } from "./../models/user/User.model";
 import { ApiResult } from "./../models/apis/ApiResult.model";
 import { AxiosResponse } from "axios";
 
@@ -5,7 +6,7 @@ import BaseAPI from "../config/apis";
 
 import { mapAxiosInstance } from "../config/axios";
 import { PageOptions } from "../models/apis/PageOptions.model";
-import { User } from "../models/user/User.model";
+import { CreateUserRequest, User } from "../models/user/User.model";
 
 const baseApi = BaseAPI.MASTER_SERVICE;
 const axiosInstance = mapAxiosInstance;
@@ -24,8 +25,15 @@ export const useUserApi = () => {
 		return axiosInstance.get(`${baseApi}/user/${userId}`);
 	};
 
+	const create = (
+		user: CreateUserRequest
+	): Promise<AxiosResponse<ApiResult<CreateUserResponse>>> => {
+		return axiosInstance.post(`${baseApi}/user/createUser`, user);
+	};
+
 	return {
 		list,
 		get,
+		create
 	};
 };

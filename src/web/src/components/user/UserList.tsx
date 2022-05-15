@@ -63,14 +63,16 @@ const userOtherActionMenu = (
 
 interface IProps {
 	textSearch: string;
+	modalVisible: boolean;
 }
 
-const UserList: FC<IProps> = ({ textSearch }) => {
+const UserList: FC<IProps> = ({ textSearch, modalVisible }) => {
 	const userApi = useUserApi();
 	const [{ isLoading, error, data }, dispatch] = useReducer(
 		userReducer,
 		INITIAL_STATE
 	);
+	
 	const getListUser = async () => {
 		const response = await userApi.list(new PageOptions());
 
@@ -99,7 +101,7 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 
 	useEffect(() => {
 		getListUser();
-	}, [textSearch]);
+	}, [textSearch, modalVisible]);
 
 	if (isLoading === "success")
 		return (

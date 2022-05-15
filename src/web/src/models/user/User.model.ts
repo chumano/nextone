@@ -6,5 +6,13 @@ export interface User extends BaseObjectCRUD {
 	name: string;
 	email: string;
 	phone: string;
-	role: UserRole;
+	role: UserRole | null;
 }
+
+export interface CreateUserRequest {
+	Name: string;
+	Email: string;
+	Phone: string;
+}
+
+export interface CreateUserResponse extends User {}
