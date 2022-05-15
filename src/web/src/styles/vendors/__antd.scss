@@ -1,0 +1,10 @@
+@import "../abstracts/variables";
+
+.ant-btn-primary{
+    background-color: $color-primary-btn !important;
+    border-color: $color-primary-btn !important;
+
+    &:hover{
+        background-color: $color-primary-btn-hover !important;
+    }
+}

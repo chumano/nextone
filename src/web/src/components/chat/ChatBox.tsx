@@ -176,7 +176,7 @@ const ChatBox = () => {
                             }}
                             />
                     </div>
-                    <Button type="primary" onClick={() => {
+                    <Button type="primary"  onClick={() => {
                         onSendMessage();
                     }} >Gửi</Button>
 
