@@ -1,0 +1,39 @@
+@import '../../abstracts/variables';
+
+.conversation-list{
+    min-height: 300px;
+    .empty-conversation{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
+        img{
+            width: 50%;
+        }
+    }
+}
+
+.conversation-item{
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: 1px solid $color-grey-5;
+    &:last-child{
+        border-bottom: none;
+    }
+    &:hover{
+        background-color: $color-grey-2;
+    }
+
+    &.active{
+        .conversation-name{
+            color: $color-primary;
+        }
+    }
+
+    .conversation-name{
+        margin-left: 5px;
+        font-weight: $font-weight-5;
+    }
+}

@@ -6,6 +6,11 @@ export enum CallStatus {
     calling
 }
 
+export interface StartCallPayload{
+    conversationId:string,
+    callType: 'voice' | 'video'
+}
+//=================================
 export interface CallState {
     status : CallStatus
     isSender: boolean
@@ -31,6 +36,10 @@ export const callSlice = createSlice({
                 state.status = CallStatus.calling;
                 state.isSender = true;
             }
+        },
+        startCall: (state, action: PayloadAction<StartCallPayload>) => {
+            state.status = CallStatus.calling;
+            state.isSender = true;
         },
         stopCall: (state) => {
             state.status = CallStatus.idle;

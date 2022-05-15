@@ -1,15 +1,15 @@
+import { UserStatus } from "../user/UserStatus.model";
 import { MessageFile } from "./MessageFile.model";
 import { MessageType } from "./MessageType.model";
 
 export interface Message {
-  Id: string;
-  ConversationId: string;
-  Type: MessageType;
+  id: string;
+  conversationId: string;
+  type: MessageType;
 
-  SentDate: string;
-  UserSenderId: string;
-  UserSender: any;
+  sentDate: string;
+  userSender: UserStatus;
 
-  Content: string;
-  Files: MessageFile[];
+  content: string;
+  files: MessageFile[];
 }

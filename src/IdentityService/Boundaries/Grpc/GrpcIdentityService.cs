@@ -39,44 +39,58 @@ namespace IdentityService.Boundaries.Grpc
 
         public override async Task<CreateIdentityUserResponse> CreateIdentityUser(CreateIdentityUserRequest request, ServerCallContext context)
         {
-            var actionUser = _userContext.User;
-            var user = new ApplicationUser()
+            try
             {
-                UserName = request.UserName,
-                Email = request.Email,
-                LockoutEnabled = false,
-                ApplicationSystem = "NextOne"
-            };
-         
-            IdentityResult identityResult = await _userManager.CreateAsync(user, "Nextone@123");
+                var actionUser = _userContext.User;
+                var user = new ApplicationUser()
+                {
+                    Id = request.UserId,
+                    UserName = request.UserName,
+                    Email = request.Email,
+                    LockoutEnabled = false,
+                    ApplicationSystem = "NextOne"
+                };
 
-            if (!identityResult.Succeeded || identityResult.Errors.Any())
+                IdentityResult identityResult = await _userManager.CreateAsync(user, "Nextone@123");
+
+                if (!identityResult.Succeeded || identityResult.Errors.Any())
+                {
+                    var errorResult = new CreateIdentityUserResponse()
+                    {
+                        IsSuccess = false,
+                        Error = new Error()
+                        {
+                            Message = identityResult.Errors.First().Description
+                        }
+                    };
+
+                    return errorResult;
+                }
+
+                user = await _userManager.FindByIdAsync(request.UserId);
+
+                foreach (var roleName in request.RoleNames)
+                {
+                    var role = await _roleManager.FindByNameAsync(roleName);
+                    await _userManager.AddToRoleAsync(user, role.NormalizedName);
+                }
+
+                return new CreateIdentityUserResponse()
+                {
+                    IsSuccess = true,
+                    IdentityUserId = user.Id
+                };
+            }catch(Exception ex)
             {
-                var errorResult = new CreateIdentityUserResponse()
+                return new CreateIdentityUserResponse()
                 {
                     IsSuccess = false,
                     Error = new Error()
                     {
-                        Message = identityResult.Errors.First().Description
+                        Message = ex.Message
                     }
                 };
-
-                return errorResult;
             }
-
-            user = await _userManager.FindByIdAsync(request.UserId);
-
-            foreach (var roleName in request.RoleNames)
-            {
-                var role = await _roleManager.FindByNameAsync(roleName);
-                await _userManager.AddToRoleAsync(user, role.NormalizedName);
-            }
-
-            return new CreateIdentityUserResponse()
-            {
-                IsSuccess = true,
-                IdentityUserId = user.Id
-            };
         }
 
         public override async Task<UpdateIdentityUserResponse> UpdateIdentityUser(UpdateIdentityUserRequest request, ServerCallContext context)

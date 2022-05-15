@@ -31,7 +31,7 @@ namespace ComService.Domain.Repositories
             _dbContext.Conversations
                 .Include(o => o.Members)
                     .ThenInclude(o => o.UserMember)
-                .Include(o => o.RecentMessages.OrderByDescending(x => x.SentDate).Take(10))
+                .Include(o => o.RecentMessages.OrderByDescending(x => x.SentDate).Take(20))
                     .ThenInclude(o => o.Files)
                 .Include(o => o.RecentMessages)
                     .ThenInclude(m => m.UserSender)

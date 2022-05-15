@@ -34,6 +34,22 @@ namespace ComService.Boudaries.Controllers
             _userStatusRepository = userStatusRepository;
             _userContext = userContext;
         }
+
+        [HttpGet("GetList")]
+        public async Task<IActionResult> GetList([FromQuery] GetListUserStatusDTO getListUserStatusDTO)
+        {
+            var pageOptions = new PageOptions(getListUserStatusDTO.Offset, getListUserStatusDTO.PageSize);
+            var actionsUser = _userContext.User;
+            var query = _userStatusRepository.Users.AsNoTracking();
+            if (getListUserStatusDTO.ExcludeMe)
+            {
+                query = query.Where(o => o.UserId != actionsUser.UserId);
+            }
+            var users = await query.Skip(pageOptions.Offset).Take(pageOptions.PageSize)
+                    .ToListAsync();
+            return Ok(ApiResult.Success(users));
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCurrentUserStatus(string id)
         {

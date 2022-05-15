@@ -7,6 +7,7 @@ using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Domain;
 using NextOne.Shared.Security;
+using SharedDomain.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +46,8 @@ namespace ComService.Boudaries.Controllers
             var user = await _userStatusService.GetUser(userId);
             var conversations = await _conversationService.GetConversationsByUser(user,
                 pageOptions);
-            return Ok(ApiResult.Success(conversations));
+            var dtos = conversations.Select(o => ConversationDTO.From(o));
+            return Ok(ApiResult.Success(dtos));
         }
 
         [HttpGet("{id}")]
@@ -53,7 +55,7 @@ namespace ComService.Boudaries.Controllers
         {
             var conversation = await _conversationService.Get(id);
 
-            return Ok(ApiResult.Success(conversation));
+            return Ok(ApiResult.Success(ConversationDTO.From(conversation)));
         }
 
 
@@ -169,6 +171,25 @@ namespace ComService.Boudaries.Controllers
             //TODO: check user have permission to SendMessage into the Conversation
 
             var messageType = MessageTypeEnum.Text;
+            if (sendMessageDTO.Files != null && sendMessageDTO.Files.Count > 0)
+            {
+                var aFile = sendMessageDTO.Files.First();
+                switch(aFile.FileType)
+                {
+                    case FileTypeEnum.Image:
+                        messageType = MessageTypeEnum.ImageFile;
+                        break;
+                    case FileTypeEnum.Video:
+                        messageType = MessageTypeEnum.VideoFile;
+                        break;
+                    case FileTypeEnum.TextFile:
+                        messageType = MessageTypeEnum.Text;
+                        break;
+                    case FileTypeEnum.Other:
+                        messageType = MessageTypeEnum.OtherFile;
+                        break;
+                }
+            }
             var messageId = _idGenerator.GenerateNew();
             var messageFiles = new List<MessageFile>();
             if (sendMessageDTO.Files != null)
@@ -185,8 +206,9 @@ namespace ComService.Boudaries.Controllers
                 sendMessageDTO.Content,
                 messageFiles);
             await _conversationService.AddMessage(conversation, message);
+            message = await _conversationService.GetMessageById(messageId);
 
-            return Ok(ApiResult.Success(messageId));
+            return Ok(ApiResult.Success(message));
         }
 
 

@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 using NextOne.Shared.Extenstions;
 using System.IO;
 using FileInfo = FileService.Domain.FileInfo;
+using NextOne.Infrastructure.Core;
+using SharedDomain.Common;
 
 namespace FileService.Boudaries.Controllers
 {
@@ -55,13 +57,32 @@ namespace FileService.Boudaries.Controllers
                 //local
                 result.Add(new UploadFileResponse()
                 {
+                    FileId = file.Id,
                     FileName = formFile.FileName,
-                    FileType = formFile.ContentType,
-                    Url = GetFileUrl(filePathOrUrl)
+                    FileContent = formFile.ContentType,
+                    FileType = GetFileType(formFile.ContentType),
+                    FileUrl = GetFileUrl(filePathOrUrl)
                 });
             }
             await _fileDbContext.SaveChangesAsync();
-            return Ok(result);
+            return Ok(ApiResult.Success(result));
+        }
+
+        private FileTypeEnum GetFileType(string contentType)
+        {
+            if (contentType.StartsWith("image/"))
+            {
+                return FileTypeEnum.Image;
+            }
+            if (contentType.StartsWith("video/"))
+            {
+                return FileTypeEnum.Video;
+            }
+            if (contentType.StartsWith("text/"))
+            {
+                return FileTypeEnum.TextFile;
+            }
+            return FileTypeEnum.Other;
         }
 
         private string GetBaseUrl()

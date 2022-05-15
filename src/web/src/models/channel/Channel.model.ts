@@ -1,36 +1,38 @@
-export interface Channel {
-  Id: string;
-  Name: string;
-  AllowedEventTypeCodes: string[];
-  RecentEvents: any;
+import { Conversation } from "../conversation/Conversation.model";
+
+export interface Channel extends Conversation {
+  id: string;
+  name: string;
+  allowedEventTypeCodes: string[];
+  events: any;
 }
 
 export interface CreateChannelRequest {
-  Name: string;
-  MemberIds: string[];
-  EventTypeCodes: string[];
+  name: string;
+  memberIds: string[];
+  eventTypeCodes: string[];
 }
 
 export interface UpdateEventTypesChannelRequest {
-  ChannelId: string;
-  Name: string;
-  EventTypeCodes: string[];
+  channelId: string;
+  name: string;
+  eventTypeCodes: string[];
 }
 
 export interface SendEventToChannelRequest {
-  Content: string;
-  EventTypeCode: string;
-  OccurDate: string;
+  content: string;
+  eventTypeCode: string;
+  occurDate: string;
 
-  Address: string;
-  Lat: number;
-  Lon: number;
+  address: string;
+  lat: number;
+  lon: number;
 
-  Files: SendEventFileToChannelRequest[];
+  files: SendEventFileToChannelRequest[];
 }
 
 export interface SendEventFileToChannelRequest {
-  FileId: string;
-  FileType: string;
-  FileUrl: string;
+  fileId: string;
+  fileType: string;
+  fileUrl: string;
 }

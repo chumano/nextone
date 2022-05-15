@@ -2,14 +2,16 @@ import axios from "axios";
 import { ApiResult } from "../models/apis/ApiResult.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
+import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
 import { Message } from "../models/message/Message.model";
+import { UserStatus } from "../models/user/UserStatus.model";
 import { createAxios } from "../utils";
 import { handleAxiosApi } from "../utils/functions";
 
 const comAxiosInstance = createAxios('http://localhost:5104');
 export const comApi = {
     //conversation
-    createConversation : async (data: CreateConverationDTO)=>{
+    getOrCreateConversation : async (data: CreateConverationDTO)=>{
         const responsePromise = comAxiosInstance.post('/conversation/CreateConversation', data)
         return await handleAxiosApi<ApiResult<string>>(responsePromise);
     },
@@ -50,7 +52,7 @@ export const comApi = {
     },
     sendMessage : async (data: SendMessageDTO)=>{
         const responsePromise = comAxiosInstance.post(`/conversation/SendMessage`, data)
-        return await handleAxiosApi<ApiResult<string>>(responsePromise);
+        return await handleAxiosApi<ApiResult<Message>>(responsePromise);
     },
 
     //channel
@@ -69,5 +71,11 @@ export const comApi = {
     sendEvent : async (data: SendEventDTO)=>{
         const responsePromise = comAxiosInstance.post(`/channel/SendEvent`, data)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+    },
+
+    //users
+    getUsers : async (data? : GetListUserStatusDTO)=>{
+        const responsePromise = comAxiosInstance.get('/userstatus/GetList', {params: data});
+        return await handleAxiosApi<ApiResult<UserStatus[]>>(responsePromise);
     },
 }

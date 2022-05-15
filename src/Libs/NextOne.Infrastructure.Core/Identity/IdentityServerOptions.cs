@@ -8,7 +8,6 @@ namespace NextOne.Infrastructure.Core.Identity
     {
         public string Authority { get; set; } = "https://localhost:5102";
 
-
         public bool RequireHttpsMetadata { get; set; } = false;
     }
 }

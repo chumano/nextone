@@ -3,7 +3,7 @@ syntax = "proto3";
 package nextone.common;
 option csharp_namespace = "NextOne.Common";
 
-import "google/protobuf/wrappers.proto";
+//import "google/protobuf/wrappers.proto";
 
 message HelloRequest {
   string name = 1;

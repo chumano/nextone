@@ -1,5 +1,5 @@
 export interface ApiResult<T> {
-  IsSuccess: boolean;
-  Data: T;
-  ErrorMessage: string;
+  isSuccess: boolean;
+  data: T;
+  errorMessage: string;
 }

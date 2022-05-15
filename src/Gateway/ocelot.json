@@ -26,6 +26,7 @@
         "AllowedScopes": [ "master-scope", "invalid-scope" ] // one of them is valid => allowed
       }
     },
+
     //com service
     {
       "DownstreamPathTemplate": "/{everything}",
@@ -42,14 +43,12 @@
 
       "UpstreamHeaderTransform": {
         "X-Forwarded-For": "{RemoteIpAddress}"
-      },
+      }
       //"AuthenticationOptions": {
       //  "AuthenticationProviderKey": "Bearer",
       //  "AllowedScopes": [] // one of them is valid => allowed
       //}
     },
-    //map service
-
     //websocket
     {
       //https://ocelot.readthedocs.io/en/latest/features/websockets.html
@@ -63,7 +62,47 @@
       ],
       "UpstreamPathTemplate": "/com/hub/{catchAll}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    },
+
+    //map 
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5105
+        }
+      ],
+      "UpstreamPathTemplate": "/map/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "ServiceName": "", // let it empty, use for service discovery
+
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      }
+    },
+
+    //file service
+    {
+      "DownstreamPathTemplate": "/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5106
+        }
+      ],
+      "UpstreamPathTemplate": "/file/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "ServiceName": "", // let it empty, use for service discovery
+
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      }
     }
+
+
   ],
   "GlobalConfiguration": {
     "RequestIdKey": "OcRequestId",

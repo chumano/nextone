@@ -1,41 +1,26 @@
 import React, { useEffect, useState } from 'react'
 import 'react-chat-elements/dist/main.css';
 import '../../styles/pages/chat/chat.scss';
-import {
-    ChatItem, MessageBox, MeetingMessage, MessageList,
-    ChatList, Input, Popup, Dropdown,
-    Avatar, MeetingItem, MeetingList
-} from 'react-chat-elements';
-
-//https://fontawesome.com/v5.15/icons?d=gallery&p=2&q=video&s=regular,solid&m=free
-import {
-    faPhone,
-    faVideo,
-    faInfoCircle,
-    faPaperclip,
-    faImage,
-    faImages,
-    faFileVideo,
-    faVideoSlash,
-    faPhotoVideo
-} from "@fortawesome/free-solid-svg-icons";
-
-
-import { chatList, messageList } from './fakedate';
-import logo from '../../assets/logo.png';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Provider, useDispatch, useSelector } from 'react-redux';
-import { chatStore, IChatStore } from '../../store/chat/chatStore';
+import { useDispatch, useSelector } from 'react-redux';
 import { IAppStore } from '../../store';
 import { chatActions, getConversations } from '../../store/chat/chatReducer';
+import ConversationList from '../../components/chat/ConversationList';
+import ChatBox from '../../components/chat/ChatBox';
+import { Button, Icon } from 'antd';
+import ModalFindUser from '../../components/chat/ModalFindUser';
+import no_selected_conversation_bg from '../../assets/images/chat/no_selected_conversation_bg.png';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
-    const {conversations, channels} = useSelector((store:IAppStore)=> store.chat);
-    useEffect(()=>{
+    const { conversations, channels, modals, selectedConversationId } = useSelector((store: IAppStore) => store.chat);
+    useEffect(() => {
         dispatch(getConversations())
-    },[])
-    return (
+    }, [])
+
+
+    console.log('conversations', conversations)
+    console.log('channels', channels)
+    return <>
         <div className="chat-page">
             <div className="chat-page__sidebar">
                 <div className="search-container">
@@ -44,65 +29,56 @@ const ChatPage: React.FC = () => {
 
                 <div className="chat-channel-list">
                     <div className="chat-channel-list__header">
-                       Kênh
+                        Kênh
+                        <div className='flex-spacer'></div>
+                        <Button shape="circle" className='button-icon' onClick={() => {
+                            //new channel
+                        }}>
+                            <Icon type="plus" />
+                        </Button>
                     </div>
-                    <ChatList className='channel-list'
-                        dataSource={chatList} />
+                    <ConversationList conversations={channels} type='channel' />
                 </div>
 
                 <div className="chat-users-list">
                     <div className="chat-users-list__header">
-                       Tin nhắn
+                        Tin nhắn
+                        <div className='flex-spacer'></div>
+                        <Button shape="circle" className='button-icon' onClick={() => {
+                            //new chat
+                            dispatch(chatActions.showModal({ modal: 'find_user', visible: true }))
+                        }}>
+                            <Icon type="message" />
+                        </Button>
                     </div>
-                    <ChatList className='chat-list'
-                        dataSource={chatList} />
+                    <ConversationList conversations={conversations} type='conversation' />
                 </div>
             </div>
             <div className="chat-page__main">
+                <div className="chatbox__container">
+                    {!selectedConversationId &&
+                        <div className='no-selected-conversation'>
+                            <img src={no_selected_conversation_bg} />
 
-                <div className="chat-box">
-                    <div className="chat-header">
-                        <Avatar
-                            src={logo}
-                            alt={'logo'}
-                            size="large"
-                            type="circle flexible" />
-                        <div className="chat-header--name">
-                            Hoang Xuan Loc
+                            <h1>Welcome to Ucom!</h1>
+                            <p>
+                                Chọn một kênh/tin nhắn để bắt đầu
+                            </p>
                         </div>
-                        <div className="flex-spacer"></div>
-                        <div className="chat-header__tools">
-                            <FontAwesomeIcon icon={faPhone} className="tool clickable" />
-                            <FontAwesomeIcon icon={faVideo} className="tool clickable" />
-                            <FontAwesomeIcon icon={faInfoCircle} className="tool clickable" />
-                        </div>
-                    </div>
-                    <div className="chat-content">
-                        <MessageList className='message-list'
-                            lockable={true}
-                            toBottomHeight={'100$'}
-                            dataSource={messageList} />
-                    </div>
-                    <div className="chat-send-box">
-                        <Input
-                            placeholder="Nhập tin nhắn..."
-                            multiline={true}
-                            leftButtons={
-                                <span>
-                                    <FontAwesomeIcon icon={faPaperclip} className="input-button clickable" />
-                                    <FontAwesomeIcon icon={faImages} className="input-button clickable" />
-                                    <FontAwesomeIcon icon={faPhotoVideo} className="input-button clickable" />
-                                </span>
-                            }
-                            rightButtons={
-                                <span className="clickable">Send</span>
-                            } />
-                    </div>
+                    }
+                    {selectedConversationId &&
+                        <ChatBox />
+                    }
                 </div>
 
             </div>
         </div>
-    )
+        {modals['find_user'] &&
+            <ModalFindUser onVisible={(visible) => {
+                dispatch(chatActions.showModal({ modal: 'find_user', visible: visible }))
+            }} />
+        }
+    </>
 }
 
 export default ChatPage;

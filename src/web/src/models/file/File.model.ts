@@ -1,8 +1,8 @@
 import { FileType } from "./FileType.model";
 
 export interface BaseFile {
-  FileId: string;
-  FileType: FileType;
-  FileUrl: string;
+  fileId: string;
+  fileType: FileType;
+  fileUrl: string;
 }
 

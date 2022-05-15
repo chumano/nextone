@@ -65,7 +65,7 @@ namespace FileService
             .AddJwtBearer("Bearer", jwtOptions =>
             {
                 jwtOptions.Authority = identityServerOptions.Authority;
-                jwtOptions.Audience = "gateway"; // ApiResources
+                jwtOptions.Audience = "file"; // ApiResources
                 jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NextOne.Infrastructure.Core.Identity;
+using NextOne.Infrastructure.Core.ModelBinding;
 using NextOne.Infrastructure.MessageBus.Bus;
 using NextOne.Infrastructure.MessageBus.Notification;
 using NextOne.Shared.Bus;
@@ -42,12 +43,17 @@ namespace ComService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers()
-                .AddNewtonsoftJson((options) =>
-                {
-                    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                    options.SerializerSettings.DateFormatString = Constants.DateTimeFormat;
-                });
+            services.AddControllers((options) =>
+            {
+                options
+                   .ModelBinderProviders
+                   .Insert(0, new CustomDateTimeModelBinderProvider());
+            })
+            .AddNewtonsoftJson((options) =>
+            {
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.SerializerSettings.DateFormatString = Constants.DateTimeFormat;
+            });
 
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             //Grpc Clients
@@ -77,7 +83,7 @@ namespace ComService
             .AddJwtBearer("Bearer", jwtOptions =>
             {
                 jwtOptions.Authority = identityServerOptions.Authority;
-                jwtOptions.Audience = "gateway"; // ApiResources
+                jwtOptions.Audience = "com"; // ApiResources
                 jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
@@ -117,7 +123,11 @@ namespace ComService
             services.AddSignalR(options =>
             {
                 options.EnableDetailedErrors = true;
-            }).AddNewtonsoftJsonProtocol();
+            }).AddNewtonsoftJsonProtocol((options) =>
+            {
+                options.PayloadSerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.PayloadSerializerSettings.DateFormatString = Constants.DateTimeFormat;
+            });
 
             services.AddMediatR(typeof(Startup).Assembly);
 

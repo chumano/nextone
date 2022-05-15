@@ -22,7 +22,7 @@ namespace ComService.Domain.Services
         Task AddMessage(Conversation conversation, Message message);
         Task<Message> GetMessageById(string messageId);
         Task<IEnumerable<Message>> GetMessagesHistory(Conversation conversation, DateTime beforeDate, PageOptions pageOptions);
-        Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10 );
+        Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10);
 
         //members
         Task AddMembers(Conversation conversation, List<string> memberIds);
@@ -45,16 +45,16 @@ namespace ComService.Domain.Services
         {
             _conversationRepository = conversationRepository;
             _messageRepository = messageRepository;
-            _userService= userService;
+            _userService = userService;
             _bus = bus;
             _idGenerator = idGenerator;
         }
 
-        public async Task<string> Create(UserStatus createdUser,string name, ConversationTypeEnum type, IList<string> memberIds)
+        public async Task<string> Create(UserStatus createdUser, string name, ConversationTypeEnum type, IList<string> memberIds)
         {
             var id = _idGenerator.GenerateNew();
             Conversation conversation = new P2PConversation(id, name, type);
-            if(type == ConversationTypeEnum.Peer2Peer
+            if (type == ConversationTypeEnum.Peer2Peer
                 || type == ConversationTypeEnum.Private
                 || type == ConversationTypeEnum.Group)
             {
@@ -64,7 +64,7 @@ namespace ComService.Domain.Services
                 }
             }
 
-            if(type == ConversationTypeEnum.Peer2Peer)
+            if (type == ConversationTypeEnum.Peer2Peer)
             {
                 if (memberIds.Count != 2)
                 {
@@ -75,17 +75,17 @@ namespace ComService.Domain.Services
                 var existConversation = await GetP2PConversation(memberIds[0], memberIds[1]);
                 if (existConversation != null)
                 {
-                    throw new DomainException("", "");
+                    return existConversation.Id;
                 }
             }
 
             //get users
             var users = await _userService.GetOrAddUsersByIds(memberIds);
 
-            foreach(var user in users)
+            foreach (var user in users)
             {
                 var role = MemberRoleEnum.MEMBER;
-                if(user.UserId == createdUser.UserId && 
+                if (user.UserId == createdUser.UserId &&
                        (type == ConversationTypeEnum.Group || type == ConversationTypeEnum.Channel))
                 {
                     role = MemberRoleEnum.MANAGER;
@@ -97,7 +97,7 @@ namespace ComService.Domain.Services
                     Role = role
                 });
             }
-           
+
             _conversationRepository.Add(conversation);
 
             await _conversationRepository.SaveChangesAsync();
@@ -117,8 +117,8 @@ namespace ComService.Domain.Services
         {
             return _conversationRepository.Conversations
                 .Where(o => o.Type == ConversationTypeEnum.Peer2Peer)
-                .Where(o=> (
-                    o.Members.Any(o=>o.UserId == userId1) 
+                .Where(o => (
+                    o.Members.Any(o => o.UserId == userId1)
                     && o.Members.Any(o => o.UserId == userId2))
                 )
                 .FirstOrDefaultAsync();
@@ -126,9 +126,10 @@ namespace ComService.Domain.Services
 
         public async Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions)
         {
-            var items = await  _conversationRepository.Conversations
+            var items = await _conversationRepository.Conversations
+                .Where(o => o.Type != ConversationTypeEnum.Channel)
                 .Where(o => o.Members.Any(m => m.UserId == user.UserId))
-                .OrderByDescending(o=>o.UpdatedDate)
+                .OrderByDescending(o => o.UpdatedDate)
                 .Skip(pageOptions.Offset)
                 .Take(pageOptions.PageSize)
                 .ToListAsync();
@@ -195,12 +196,16 @@ namespace ComService.Domain.Services
             await _messageRepository.SaveChangesAsync();
 
             // TODO: send ConversationMessageAdded
-            await _bus.Publish(new ConversationMessageAdded());
+            await _bus.Publish(new ConversationMessageAdded()
+            {
+                Conversation = conversation,
+                Message = message
+            });
         }
 
         public Task<Message> GetMessageById(string messageId)
         {
-            return _messageRepository.Messages.FirstOrDefaultAsync(o=> o.Id == messageId);
+            return _messageRepository.Messages.FirstOrDefaultAsync(o => o.Id == messageId);
         }
 
         public async Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10)
@@ -210,7 +215,7 @@ namespace ComService.Domain.Services
             var prevMessages = _messageRepository.Messages
                                 .Where(o => o.SentDate <= message.SentDate && o.Id != message.Id)
                                 .OrderByDescending(o => o.SentDate)
-                                
+
                                 .Take(prevNum);
             var nextMessages = _messageRepository.Messages
                                 .OrderByDescending(o => o.SentDate)
@@ -223,7 +228,7 @@ namespace ComService.Domain.Services
         public async Task<IEnumerable<Message>> GetMessagesHistory(Conversation conversation, DateTime beforeDate, PageOptions pageOptions)
         {
             var query = _messageRepository.Messages
-                               .Where(o=>o.ConversationId == conversation.Id
+                               .Where(o => o.ConversationId == conversation.Id
                                         && o.SentDate < beforeDate)
                                .OrderByDescending(o => o.SentDate)
                                .Skip(pageOptions.Offset)

@@ -8,5 +8,7 @@ namespace ComService.Domain.DomainEvents
 {
     public class ConversationMessageAdded : IDomainEvent
     {
+        public Conversation Conversation { get; set; }
+        public Message Message { get; set; }
     }
 }

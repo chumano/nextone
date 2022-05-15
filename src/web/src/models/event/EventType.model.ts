@@ -1,9 +1,9 @@
 export interface EventType {
-  Code: string;
-  Name: string;
+  code: string;
+  name: string;
 
-  IconUrl: string;
-  Note: string;
+  iconUrl: string;
+  note: string;
 }
 
 export interface CreateEventTypeRequest extends EventType {}

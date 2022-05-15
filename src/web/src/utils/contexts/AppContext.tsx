@@ -8,6 +8,7 @@ import { CallEvents } from "../../services/CallBase";
 import CallService from "../../services/CallService";
 import { SignalR } from "../../services/SignalRService";
 import { IAppStore, authActions, callActions } from "../../store";
+import { chatActions } from "../../store/chat/chatReducer";
 
 export const GlobalContext = createContext<any>({});
 
@@ -33,6 +34,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
         const singalRSubsription =SignalR.subscription('connected', async ()=>{
             await registerHub();
             CallService.init();
+           
             const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, (room)=>{
                 //show user confirm
                 Modal.confirm({
@@ -52,11 +54,19 @@ const AppContextProvider = (props: IContextProviderProp) => {
         });
         
         singalRSubsription.subscribe();
+
+        const chatSubsription = SignalR.subscription('chat', (data)=>{
+            console.log('SignalR-chat', data)
+            dispatch(chatActions.receiveChatEvent(data))
+        });
+        chatSubsription.subscribe();
+
     },[dispatch]);
 
    const logIn = useCallback(
         (user: User) => {
             dispatch(authActions.login(user));
+            dispatch(chatActions.setUser(user.profile.sub));
             registerHub();
     }, [dispatch]);
 

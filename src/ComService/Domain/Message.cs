@@ -62,6 +62,7 @@ namespace ComService.Domain
         ImageFile, // multi_file
         VideoFile, //single file
         OtherFile, //single file
+
         SystemMessage, // single text
         CallMessage,
         Event

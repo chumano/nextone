@@ -20,6 +20,7 @@ namespace ComService.Boudaries.Hubs
 
     public class ChatHub : Hub
     {
+        const string CallRequest = "call-request";
         const string CallMessage = "call-message";
         private readonly ILogger<ChatHub> _logger;
         public ChatHub(ILogger<ChatHub> logger)
@@ -41,7 +42,7 @@ namespace ComService.Boudaries.Hubs
 
                         //create  room
                         var room = Guid.NewGuid().ToString();
-                        var emitData = CreateEventData("call-request", room);
+                        var emitData = CreateEventData(CallRequest, room);
                         await EmitData(Clients.Others, emitData);
                     }
                     break;
@@ -223,6 +224,9 @@ namespace ComService.Boudaries.Hubs
             {
                 return "";
             }
+
+            //add user to user group
+            await Groups.AddToGroupAsync(this.Context.ConnectionId, $"user_{userId}");
 
             return userId.ToString();
         }

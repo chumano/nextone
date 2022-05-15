@@ -1,10 +1,10 @@
 import { UserTrackingLocation } from "./UserTrackingLocation.model";
 export interface UserStatus {
-  UserId: string;
-  UserName: string;
+  userId: string;
+  userName: string;
   UserAvatarUrl: string;
 
-  Status: Status;
+  status: Status;
 
   LastUpdateDate?: string;
   LastLat?: number;

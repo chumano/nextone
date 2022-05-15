@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace NextOne.Infrastructure.MessageBus.Notification
 {
@@ -16,5 +17,7 @@ namespace NextOne.Infrastructure.MessageBus.Notification
         {
             _hubContext = hubContext;
         }
+
+        //public Task Send<T>(T notification)
     }
 }

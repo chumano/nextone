@@ -121,6 +121,11 @@ table{
         color: $color-blue;
     }
 }
+.button-icon{
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
 
 .link-clickable{
     color: $color-blue;

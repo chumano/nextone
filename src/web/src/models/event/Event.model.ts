@@ -1,20 +1,19 @@
-import { BaseObjectCRUD } from "../ObjectCRUD.model";
 import { EventFile } from "./EventFile.model";
 
-export interface Event extends BaseObjectCRUD {
-  Id: string;
-  Content: string;
-  EventTypeCode: string;
+export interface Event {
+  id: string;
+  content: string;
+  eventTypeCode: string;
 
-  OccurDate: string;
+  occurDate: string;
 
-  Address: string;
-  Lat: number;
-  Lon: number;
+  address: string;
+  lat: number;
+  lon: number;
 
-  ChannelId: string;
-  UserSenderId: string;
-  UserSender: any;
+  channelId: string;
+  userSenderId: string;
+  userSender: any;
 
-  Files: EventFile[];
+  files: EventFile[];
 }

@@ -1,125 +1,102 @@
 @import "../../abstracts/variables";
 @import "../../abstracts/mixins";
 
-.chat-page{
+.chat-page {
   display: flex;
   height: calc(100vh - #{$header-height});
 
-  @include mobile-width{
+  @include mobile-width {
     flex-direction: column;
   }
-  
-  &__sidebar{
-      display:flex;
-      flex-direction: column;
-      width: 300px;
-      background-color: $color-white;
-      border-right: 1px solid $color-grey-5;
-      height: 100%;
 
-      .search-container{
-        padding: 4px;
-        margin-top: 4px;
-        input {
-          border-radius: $border-radius;
-        }
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 300px;
+    background-color: $color-white;
+    border-right: 1px solid $color-grey-5;
+    height: 100%;
+
+    .search-container {
+      padding: 4px;
+      margin-top: 4px;
+
+      input {
+        border-radius: $border-radius;
       }
-  } 
-
-  &__main{
-      flex-grow: 1;
-      background-color: $color-grey-9;
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    }
   }
 
-  /*-------------------*/
-  .chat-channel-list{
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-
-    &__header{
-      padding: 5px;
-      border-bottom: 2px solid  $color-primary;
-      font-weight: $font-weight-5;
-    }
-
-    .chat-list{
-      flex-grow: 1;
-    }
-
-  }
-  /*-------------------*/
-  .chat-users-list{
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-
-    &__header{
-      padding: 5px;
-      border-bottom: 2px solid  $color-primary;
-      font-weight: $font-weight-5;
-    }
-
-    .chat-list{
-      flex-grow: 1;
-    }
-
-  }
-
-  /*-------------------*/
-  .chat-box{
+  &__main {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
-    
-    .chat-header{
-      background-color: $color-white;
+  }
+
+  /*-------------------*/
+  .chat-channel-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &__header {
       padding: 5px;
+      border-bottom: 2px solid $color-primary;
+      font-weight: $font-weight-5;
       display: flex;
+      flex-direction: row;
       align-items: center;
-
-      &--name{
-        margin-left: 10px;
-        font-weight: 500;
-      }
-      &__tools{
-        display: flex;
-        align-items: center;
-        .tool{
-          padding: 2px;
-          margin-left: 20px;
-          font-size: 30px;
-        }
-      }
     }
 
-    .chat-content{
+    .chat-list {
       flex-grow: 1;
-      height: 100%;
-      min-height: 300px;
-      .message-list{
-        height: 100%;
-      }
     }
 
-    .chat-send-box{
-      .rce-input-textarea{
-        height: 41px;
-      }
-      .input-button {
-        padding: 5px;
-        margin-left: 5px;
-        font-size: 30px;
-      }
+  }
+
+  /*-------------------*/
+  .chat-users-list {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+
+    &__header {
+      padding: 5px;
+      border-bottom: 2px solid $color-primary;
+      font-weight: $font-weight-5;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .chat-list {
+      flex-grow: 1;
+    }
+
+  }
+
+  /*-------------------*/
+  .no-selected-conversation {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    h1 {
+      font-size: $font-size-3;
+      font-weight: $font-weight-5;
+    }
+
+    img {
+      width: 30%;
     }
   }
-   
 
-   /*-------------------*/
-   .chat-list,.message-list{
+  .chatbox__container {
+    width: 100%;
     height: 100%;
   }
 }

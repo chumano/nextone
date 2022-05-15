@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
+using NextOne.Infrastructure.Core.Identity;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
@@ -47,13 +48,15 @@ namespace Gateway
 
             services.AddHttpContextAccessor();
 
+
+            var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();
             services.AddAuthentication(options=>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             })
             .AddJwtBearer("Bearer", jwtOptions=>
             {
-                jwtOptions.Authority = "https://localhost:5102";
+                jwtOptions.Authority = identityServerOptions.Authority;
                 jwtOptions.Audience = "gateway"; // ApiResources
             });
 
