@@ -49,11 +49,17 @@ namespace MapService.Migrations
                     b.Property<string>("Properties")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("RawTags")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnName("Tags")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SourceFile")
                         .IsRequired()
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("Tags")
+                        .HasColumnName("Tags")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UpdatedBy")

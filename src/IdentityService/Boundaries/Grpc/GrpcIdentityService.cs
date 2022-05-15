@@ -42,6 +42,7 @@ namespace IdentityService.Boundaries.Grpc
             var actionUser = _userContext.User;
             var user = new ApplicationUser()
             {
+                Id = request.UserId,
                 UserName = request.UserName,
                 Email = request.Email,
                 LockoutEnabled = false,

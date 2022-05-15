@@ -1,10 +1,10 @@
 import { UserStatus } from "./../user/UserStatus.model";
 export interface ConversationMember {
-  ConversationId: string;
-  UserId: string;
+  conversationId: string;
+  userId: string;
 
-  UserMember: UserStatus;
-  Role: MemberRole;
+  userMember: UserStatus;
+  role: MemberRole;
 }
 
 export enum MemberRole {

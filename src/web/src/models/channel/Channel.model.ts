@@ -1,31 +1,31 @@
 import { BaseFile } from "./../file/File.model";
 export interface Channel {
-  Id: string;
-  Name: string;
-  AllowedEventTypeCodes: string[];
-  RecentEvents: any;
+  id: string;
+  name: string;
+  allowedEventTypeCodes: string[];
+  recentEvents: any;
 }
 
 export interface CreateChannelRequest {
-  Name: string;
-  MemberIds: string[];
-  EventTypeCodes: string[];
+  name: string;
+  memberIds: string[];
+  eventTypeCodes: string[];
 }
 
 export interface UpdateEventTypesChannelRequest {
-  ChannelId: string;
-  Name: string;
-  EventTypeCodes: string[];
+  channelId: string;
+  name: string;
+  eventTypeCodes: string[];
 }
 
 export interface SendEventToChannelRequest {
-  Content: string;
-  EventTypeCode: string;
-  OccurDate: string;
+  content: string;
+  eventTypeCode: string;
+  occurDate: string;
 
-  Address: string;
-  Lat: number;
-  Lon: number;
+  address: string;
+  lat: number;
+  lon: number;
 
-  Files: BaseFile[];
+  files: BaseFile[];
 }

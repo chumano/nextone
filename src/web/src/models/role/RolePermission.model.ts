@@ -1,10 +1,10 @@
 export interface RolePermission {
-	RoleCode: string;
-	PermissionCode: string;
-	Permission: Permission;
+	roleCode: string;
+	permissionCode: string;
+	permission: Permission;
 }
 
 export interface Permission {
-	Code: string;
-	Name: string;
+	code: string;
+	name: string;
 }

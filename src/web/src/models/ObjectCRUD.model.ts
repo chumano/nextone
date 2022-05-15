@@ -1,10 +1,10 @@
 export interface BaseObjectCRUD {
-    IsActive: boolean;
-    IsDeleted: boolean;
+    isActive: boolean;
+    isDeleted: boolean;
 
-    CreatedDate?: string;
-    CreatedBy?: string;
+    createdDate?: string;
+    createdBy?: string;
 
-    UpdatedDate?: string;
-    UpdatedBy?: string;
+    updatedDate?: string;
+    updatedBy?: string;
 }

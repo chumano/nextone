@@ -1,4 +1,4 @@
 export interface BaseListPagingRequest {
-  Offset: number;
-  PageSize: number;
+  offset: number;
+  pageSize: number;
 }

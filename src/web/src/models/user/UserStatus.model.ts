@@ -1,16 +1,16 @@
 import { UserTrackingLocation } from "./UserTrackingLocation.model";
 export interface UserStatus {
-  UserId: string;
-  UserName: string;
-  UserAvatarUrl: string;
+  userId: string;
+  userName: string;
+  userAvatarUrl: string;
 
-  Status: Status;
+  status: Status;
 
-  LastUpdateDate?: string;
-  LastLat?: number;
-  LastLon?: number;
+  lastUpdateDate?: string;
+  lastLat?: number;
+  lastLon?: number;
 
-  RecentTrackingLocations: UserTrackingLocation[];
+  recentTrackingLocations: UserTrackingLocation[];
 }
 
 export enum Status {

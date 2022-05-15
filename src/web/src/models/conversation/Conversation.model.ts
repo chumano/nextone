@@ -7,45 +7,45 @@ import { ConversationType } from "./ConversationType.model";
 import { BaseFile } from "../file/File.model";
 
 export interface Conversation extends BaseObjectCRUD {
-  Id: string;
-  Name: string;
+  id: string;
+  name: string;
 
-  Type: ConversationType;
+  type: ConversationType;
 
-  Members: ConversationMember[];
-  RecentMessages: Message[];
+  members: ConversationMember[];
+  recentMessages: Message[];
 }
 
 export interface CreateConversationRequest {
-  Name: string;
-  Type: ConversationType;
-  MemberIds: string[];
+  name: string;
+  type: ConversationType;
+  memberIds: string[];
 }
 
 export interface ConversationAddMemberRequest {
-  ConversationId: string;
-  MemberIds: string[];
+  conversationId: string;
+  memberIds: string[];
 }
 
 export interface ConversationRemoveMemberRequest {
-  ConversationId: string;
-  MemberIds: string[];
+  conversationId: string;
+  memberIds: string[];
 }
 
 export interface ConversationUpdateMemberRoleRequest {
-  ConversationId: string;
-  UserMemberId: string;
-  MemberRole: MemberRole;
+  conversationId: string;
+  userMemberId: string;
+  memberRole: MemberRole;
 }
 
 export interface ConversationGetMessageHistoryRequest
   extends BaseListPagingRequest {
-  ConversationId: string;
-  BeforeDate: string;
+  conversationId: string;
+  beforeDate: string;
 }
 
 export interface ConversationSendMessageRequest {
-  ConversationId: string;
-  Content: string;
-  Files: BaseFile[];
+  conversationId: string;
+  content: string;
+  files: BaseFile[];
 }

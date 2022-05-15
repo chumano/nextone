@@ -21,7 +21,7 @@ import { Redirect } from "react-router-dom";
 import TestPage from "./pages/test/TestPage";
 import ChatPage from "./pages/chat/ChatPage";
 import MapPage from "./pages/map/MapPage";
-import UsersPage from "./pages/users/Users";
+import UserPage from "./pages/user/User";
 
 const authRoutes: Array<{
 	path: string;
@@ -106,8 +106,8 @@ const routes: Array<IRouteConfig> = [
 
 	//users
 	{
-		path: "/users",
-		component: UsersPage,
+		path: "/user",
+		component: UserPage,
 		useAuthLayout: true,
 	},
 
@@ -156,7 +156,7 @@ const MenuList = [
 	{
 		id: 101,
 		title: "Quản lý người dùng",
-		path: "/admin/users",
+		path: "/user",
 		icon: <FontAwesomeIcon icon={faAddressBook} />,
 	},
 	{
