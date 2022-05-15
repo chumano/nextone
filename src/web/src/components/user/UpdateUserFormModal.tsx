@@ -1,70 +1,84 @@
 import { faEnvelope, faPhone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { Modal, Form, Input, Button } from "antd";
+import { Button, Form, Input, Modal } from "antd";
 import { FormComponentProps } from "antd/lib/form";
-
 import { FC, FormEvent, useEffect, useState } from "react";
-
 import { useUserApi } from "../../apis/useUserApi";
-
-interface CreateUserFormData {
-	Username: string;
-	Email: string;
-	Phone: string;
-}
+import { User } from "../../models/user/User.model";
 
 const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
 	return Object.keys(fieldsError).some((field) => fieldsError[field]);
 };
 
+interface UpdateUserFormData {
+	Username: string;
+	Email: string;
+	Phone: string;
+}
+
 interface IProps extends FormComponentProps {
 	isModalVisible: boolean;
 	setIsModalVisible: (value: boolean) => void;
+	userNeedToUpdate: User | null;
 }
 
-const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
+const UpdateUserFormModal: FC<FormComponentProps & IProps> = ({
 	form,
 	isModalVisible,
 	setIsModalVisible,
+	userNeedToUpdate,
 }) => {
 	const userApi = useUserApi();
-
 	const [isLoading, setIsLoading] = useState(false);
-
 	const {
+		setFieldsValue,
 		getFieldDecorator,
 		getFieldsError,
 		getFieldError,
 		isFieldTouched,
 		validateFields,
 	} = form;
-
 	useEffect(() => {
-		validateFields();
+		const { name, email, phone } = { ...userNeedToUpdate };
+		setFieldsValue({
+			Username: name,
+			Email: email,
+			Phone: phone,
+		});
 	}, []);
 
 	const hideModalHandler = () => setIsModalVisible(false);
 
-	const userNameError = isFieldTouched("username") && getFieldError("username");
-	const emailError = isFieldTouched("email") && getFieldError("email");
-	const phoneError = isFieldTouched("phone") && getFieldError("phone");
-
 	const onFormSubmitHandler = (event: FormEvent) => {
 		event.preventDefault();
 		setIsLoading(true);
-		validateFields(
-			async (_, { Username, Email, Phone }: CreateUserFormData) => {
-				await userApi.createUser({ Name: Username, Email, Phone });
-				setIsLoading(false);
-				hideModalHandler();
-			}
-		);
+		validateFields(async (_, { Username, Phone }: UpdateUserFormData) => {
+			if (!userNeedToUpdate) return;
+
+			const userUpdated = {
+				...userNeedToUpdate,
+				name: Username,
+				phone: Phone,
+			};
+			const { id, name, phone, email } = userUpdated;
+			await userApi.updateUser({
+				UserId: id,
+				Name: name,
+				Phone: phone,
+				Email: email,
+				RoleCodes: [],
+			});
+			setIsLoading(false);
+			hideModalHandler();
+		});
 	};
+
+	const userNameError = isFieldTouched("Username") && getFieldError("Username");
+	const phoneError = isFieldTouched("Phone") && getFieldError("Phone");
 
 	return (
 		<Modal
-			title="Thêm người dùng mới"
+			title="Cập nhật người dùng"
 			visible={isModalVisible}
 			onCancel={hideModalHandler}
 			footer={[
@@ -72,7 +86,7 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 					Huỷ bỏ
 				</Button>,
 				<Button
-					form="create-user-form"
+					form="update-user-form"
 					key="submit"
 					type="primary"
 					htmlType="submit"
@@ -83,7 +97,7 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 				</Button>,
 			]}
 		>
-			<Form onSubmit={onFormSubmitHandler} id="create-user-form">
+			<Form onSubmit={onFormSubmitHandler} id="update-user-form">
 				<Form.Item
 					validateStatus={userNameError ? "error" : ""}
 					help={userNameError || ""}
@@ -103,23 +117,10 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 						/>
 					)}
 				</Form.Item>
-				<Form.Item
-					validateStatus={emailError ? "error" : ""}
-					help={emailError || ""}
-				>
-					{getFieldDecorator("Email", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-							{
-								type: "email",
-								message: "Địa chỉ email không hợp lệ",
-							},
-						],
-					})(
+				<Form.Item>
+					{getFieldDecorator("Email")(
 						<Input
+							disabled
 							prefix={<FontAwesomeIcon icon={faEnvelope} />}
 							type="email"
 							placeholder="Địa chỉ email"
@@ -150,6 +151,6 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 	);
 };
 
-export default Form.create<IProps>({ name: "create-user-form" })(
-	CreateUserFormModal
+export default Form.create<IProps>({ name: "update-user-form" })(
+	UpdateUserFormModal
 );

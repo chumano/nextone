@@ -1,6 +1,9 @@
-import { CreateUserResponse } from "./../models/user/User.model";
+import {
+	CreateUserResponse,
+	UpdateUserRequest,
+} from "./../models/user/User.model";
 import { ApiResult } from "./../models/apis/ApiResult.model";
-import { AxiosResponse } from "axios";
+import { Axios, AxiosResponse } from "axios";
 
 import BaseAPI from "../config/apis";
 
@@ -21,19 +24,33 @@ export const useUserApi = () => {
 		});
 	};
 
-	const get = (userId: string): Promise<AxiosResponse<ApiResult<User>>> => {
+	const getUser = (userId: string): Promise<AxiosResponse<ApiResult<User>>> => {
 		return axiosInstance.get(`${baseApi}/user/${userId}`);
 	};
 
-	const create = (
-		user: CreateUserRequest
+	const createUser = (
+		newUser: CreateUserRequest
 	): Promise<AxiosResponse<ApiResult<CreateUserResponse>>> => {
-		return axiosInstance.post(`${baseApi}/user/createUser`, user);
+		return axiosInstance.post(`${baseApi}/user/createUser`, newUser);
+	};
+
+	const updateUser = (
+		userNeedToUpdate: UpdateUserRequest
+	): Promise<AxiosResponse<ApiResult<null>>> => {
+		return axiosInstance.post(`${baseApi}/user/updateUser`, userNeedToUpdate);
+	};
+
+	const deleteUser = (
+		userId: string
+	): Promise<AxiosResponse<ApiResult<null>>> => {
+		return axiosInstance.delete(`${baseApi}/user/${userId}`);
 	};
 
 	return {
 		list,
-		get,
-		create
+		getUser,
+		createUser,
+		updateUser,
+		deleteUser,
 	};
 };

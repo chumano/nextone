@@ -16,3 +16,11 @@ export interface CreateUserRequest {
 }
 
 export interface CreateUserResponse extends User {}
+
+export interface UpdateUserRequest {
+	UserId: string;
+	Name: string;
+	Email: string;
+	Phone: string;
+	RoleCodes: string[];
+}
