@@ -16,7 +16,11 @@ pipeline {
   stages {
     stage('MapSerivce') {
       when{ 
-        changeset 'src/MapSerivce/*'
+        anyOf{
+          changeset "cid/jenkins/Jenskinfile"
+          changeset 'src/MapService/*'
+        }
+        
       }
       stages {
         stage('Info') {
@@ -83,7 +87,8 @@ pipeline {
     stage('MapWeb') {
       when{ 
         anyOf {
-            changeset "src/web-map/**"
+          changeset "cid/jenkins/Jenskinfile"
+          changeset "src/web-map/**"
         }
       }
       stages {
@@ -151,10 +156,11 @@ pipeline {
     stage('IdentitySerivce') {
       when{ 
         anyOf {
-            changeset "src/Identity/**"
-            changeset "src/SharedDomain/**"
-            changeset "src/Libs/NextOne.Shared/**"
-            changeset "src/Libs/NextOne.Infrastructure.Core/**"
+          changeset "cid/jenkins/Jenskinfile"
+          changeset "src/Identity/**"
+          changeset "src/SharedDomain/**"
+          changeset "src/Libs/NextOne.Shared/**"
+          changeset "src/Libs/NextOne.Infrastructure.Core/**"
         }
       }
       stages {
