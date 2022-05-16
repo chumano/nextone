@@ -2,8 +2,11 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityService.Data;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,25 +27,16 @@ namespace IdentityService
         {
             try
             {
-                var seed = args.Contains("/seed");
-                if (seed)
-                {
-                    Console.WriteLine("Seeding...");
-                    args = args.Except(new[] { "/seed" }).ToArray();
-                }
+                //var seed = args.Contains("/seed");
+                //if (seed)
+                //{
+                //    Console.WriteLine("Seeding...");
+                //    args = args.Except(new[] { "/seed" }).ToArray();
+                //}
 
                 var host = CreateHostBuilder(args).Build();
 
-                if (seed)
-                {
-                    Console.WriteLine("Seeding database...");
-                    var config = host.Services.GetRequiredService<IConfiguration>();
-                    var connectionString = config.GetConnectionString("DefaultConnection");
-                    SeedData.EnsureSeedData(connectionString);
-                    Console.WriteLine("Done seeding database.");
-                    return 0;
-                }
-
+                DbMigrations(host);
                 Console.WriteLine("Starting host...");
                 host.Run();
                 return 0;
@@ -78,16 +72,27 @@ namespace IdentityService
                 {
                     webBuilder.ConfigureKestrel((ctx, options) =>
                     {
+                        var inDocker = ctx.Configuration.GetSection("DOTNET_RUNNING_IN_CONTAINER").Get<bool>();
                         if (ctx.HostingEnvironment.IsDevelopment())
                         {
                             IdentityModelEventSource.ShowPII = true;
                         }
 
                         options.Limits.MinRequestBodyDataRate = null;
-                        options.Listen(IPAddress.Any, 5102, listenOptions=>
+                        //indocker don't use https, if want then follow the following link
+                        //https://codeburst.io/hosting-an-asp-net-core-app-on-docker-with-https-642cde4f04e8
+                        //https://docs.microsoft.com/en-us/aspnet/core/grpc/aspnetcore?view=aspnetcore-6.0&tabs=visual-studio
+                        //if (!inDocker)
                         {
-                            listenOptions.UseHttps();
-                        });
+                            options.Listen(IPAddress.Any, 5102, listenOptions =>
+                            {
+                                if (!inDocker)
+                                {
+                                    listenOptions.UseHttps();
+                                }
+                            });
+                        }
+
                         //options.Listen(IPAddress.Loopback, 5102, listenOptions =>
                         //{
                         //});
@@ -99,5 +104,38 @@ namespace IdentityService
 
                     webBuilder.UseStartup<Startup>();
                 });
+
+        public static void DbMigrations(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var isAutoMigration = services.GetRequiredService<IConfiguration>().GetValue<bool>("IsAutoMigration");
+
+                if (isAutoMigration)
+                {
+                    var appDbContext = services.GetRequiredService<ApplicationDbContext>();
+                    appDbContext.Database.Migrate();
+
+                    var configDbContext = services.GetRequiredService<ConfigurationDbContext>();
+                    configDbContext.Database.Migrate();
+
+                    var persistedGrantDbContext = services.GetRequiredService<PersistedGrantDbContext>();
+                    persistedGrantDbContext.Database.Migrate();
+                }
+
+                var seed = services.GetRequiredService<IConfiguration>().GetValue<bool>("IsDBSeed");
+                if (seed)
+                {
+                    Console.WriteLine("Seeding database...");
+                    var config = host.Services.GetRequiredService<IConfiguration>();
+                    var connectionString = config.GetConnectionString("DefaultConnection");
+                    SeedData.EnsureSeedData(connectionString);
+                    Console.WriteLine("Done seeding database.");
+                }
+            }
+
+        }
+
     }
 }

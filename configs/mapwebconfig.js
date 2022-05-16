@@ -9,6 +9,6 @@ window.ENV = {
         googleApiKey: ''
     },
     Identity: {
-        identityUrl : 'https://localhost:5102',
+        identityUrl : 'http://localhost:5102',
     }
 }

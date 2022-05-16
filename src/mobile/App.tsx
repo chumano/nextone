@@ -15,10 +15,10 @@ import * as samlib from '@chuno/sam';
 
 
 const App = () => {
-  let msg = useState(samlib.saySomething());
+  const msg = samlib.saySomething();
   return (
     <>
-    <Text>1Text From Lib:{msg}</Text>
+    <Text>{'Text From Lib: '+msg}</Text>
     <SamplePage></SamplePage>
     </>
   );

@@ -55,3 +55,4 @@ src/Libs/NextOne.Infrastructure.MessageBus/bin
 src/obj
 src/web-map/.env.development
 src/MapService/Data/MapTiles
+src/IdentityService/Config/rsakey.json

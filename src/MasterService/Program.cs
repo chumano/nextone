@@ -1,6 +1,9 @@
+using MasterService.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
@@ -17,7 +20,9 @@ namespace MasterService
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+            DbMigrations(host);
+            host.Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -59,5 +64,21 @@ namespace MasterService
                             o.AllowSynchronousIO = true;
                         }); ;
                 });
+
+        public static void DbMigrations(IHost host)
+        {
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                var isAutoMigration = services.GetRequiredService<IConfiguration>().GetValue<bool>("IsAutoMigration");
+
+                if (isAutoMigration)
+                {
+                    var appDbContext = services.GetRequiredService<MasterDBContext>();
+                    appDbContext.Database.Migrate();
+                }
+            }
+
+        }
     }
 }

@@ -7,7 +7,7 @@ services:
     #     depends_on:
     #         - db
     identity:
-        image: hub.tris.vn/nextone/identity:${APP_VERSION:-latest}
+        image: ${DOCKER_REGISTRY}/nextone/identity:${APP_VERSION:-latest}
         build:
           context: ./src
           dockerfile: ./IdentityService/Dockerfile
@@ -15,9 +15,17 @@ services:
         ports:
           - "5102:80"
         restart: unless-stopped
-        
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+          - ASPNETCORE_ENVIRONMENT=Production
+          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+          - IsAutoMigration=true
+          - IsDBSeed=true
+          - Logging__LogLevel__Default=Information
+          - CorsHosts=http://localhost:5100;http://localhost:5107
+
     map:
-        image: hub.tris.vn/nextone/map:${APP_VERSION:-latest}
+        image: ${DOCKER_REGISTRY}/nextone/map:${APP_VERSION:-latest}
         build:
           context: ./src
           dockerfile: ./MapService/Dockerfile
@@ -25,9 +33,25 @@ services:
         ports:
           - "5105:80"
         restart: unless-stopped
-        
+        volumes:
+          - ./Map/MapTiles:/app/Data/MapTiles
+          - ./Map/ShapeFiles:/app/Data/ShapeFiles
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+          - ASPNETCORE_ENVIRONMENT=Production
+          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+          - IsAutoMigration=true
+          - Logging__LogLevel__Default=Information
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107
+          - IdentityServerOptions__Authority=${IDENTITY_URL}
+          - MapSettings__MapOffsetX=0
+          - MapSettings__MapOffsetY=-7500
+          - MapSettings__MapTilesFolder=Data/MapTiles
+          - MapSettings__MapWatcherIntervalInMinutes=5
+          
+          
     map-web:
-        image: hub.tris.vn/nextone/map-web:${APP_VERSION:-latest}
+        image: ${DOCKER_REGISTRY}/nextone/map-web:${APP_VERSION:-latest}
         build:
           context: ./src/web-map
           dockerfile: ./Dockerfile
@@ -35,7 +59,12 @@ services:
         ports:
           - "5107:80"
         restart: unless-stopped
-        
+        volumes:
+          - ./configs/mapwebconfig.js:/usr/share/nginx/html/config.js
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+          
     db:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
         container_name: nextone_mssql
@@ -54,40 +83,5 @@ services:
             resources:
                 limits:
                     memory: 4G
-    mongo:
-        image: mongo:latest
-        #restart: always
-        container_name: nextone_mongodb
-        ports:
-            - 27017:27017
-        environment:
-            MONGO_INITDB_DATABASE: test
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: "NextOne@123456"
-        volumes:
-            # seeding scripts
-            - ./devvolumes/mongo/entrypoint:/docker-entrypoint-initdb.d
-            # named volumes
-            - ./devvolumes/mongo/db:/data/db
-            - ./devvolumes/mongo/config:/data/configdb
-    seq:
-        image: datalust/seq:latest
-        container_name: nextone_seq
-        environment:
-            - ACCEPT_EULA=Y
-            #- BASE_URI=https://seq.dptsprotrans.com
-            #- SEQ_FIRSTRUN_ADMINPASSWORDHASH="$PH"
-        ports:
-            - "5109:80"
-            - "5341:5341"
-        #volumes:
-        #    /path/to/seq/data:/data
-        deploy:
-            resources:
-                limits:
-                    memory: 1G
-                reservations:
-                    memory: 1G
-                    
 volumes:
   db-data:

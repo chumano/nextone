@@ -59,26 +59,26 @@ pipeline {
                   }
               }
 
-              stage('MapService-Clean'){
-                steps{
-                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
-                }
-              }
+              // stage('MapService-Clean'){
+              //   steps{
+              //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
+              //   }
+              // }
 
               stage('MapService-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-                  echo 'TODO: deploy'
+                  sh "docker-compose -f docker-compose.yml up -d map"
                 }
               }
 
-              stage('MapService-SystemTest') {
-                steps{
-                  echo 'system test'
-                }
-              }
+              // stage('MapService-SystemTest') {
+              //   steps{
+              //     echo 'system test'
+              //   }
+              // }
             }
           }
 
@@ -113,26 +113,21 @@ pipeline {
                   }
               }
 
-              stage('MapWeb-Clean'){
-                steps{
-                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map-web --rmi 'all' || true"
-                }
-              }
+              // stage('MapWeb-Clean'){
+              //   steps{
+              //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map-web --rmi 'all' || true"
+              //   }
+              // }
 
               stage('MapWeb-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-                  echo 'TODO: deploy'
+                  sh "docker-compose -f docker-compose.yml up -d map-web"
                 }
               }
-
-              stage('MapWeb-SystemTest') {
-                steps{
-                  echo 'system test'
-                }
-              }
+              
             }
           }
 
@@ -170,18 +165,18 @@ pipeline {
                   }
               }
 
-              stage('IdentityService-Clean'){
-                steps{
-                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose down identity --rmi 'all' || true"
-                }
-              }
+              // stage('IdentityService-Clean'){
+              //   steps{
+              //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down identity --rmi 'all' || true"
+              //   }
+              // }
 
               stage('IdentityService-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-                  echo 'TODO: deploy'
+                  sh "docker-compose -f docker-compose.yml up -d identity"
                 }
               }
 

@@ -20,6 +20,7 @@ using IdentityService.Services;
 using IdentityService.Boundaries.Grpc;
 using NextOne.Shared.Security;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace IdentityService
 {
@@ -70,6 +71,7 @@ namespace IdentityService
 
                // see https://identityserver4.readthedocs.io/en/latest/topics/resources.html
                options.EmitStaticAudienceClaim = true;
+
             })
                 .AddConfigurationStore(options =>
                 {
@@ -114,7 +116,17 @@ namespace IdentityService
             });
 
             //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            if (Environment.IsDevelopment())
+            {
+                builder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                var rsa = new RsaKeyService(Environment, TimeSpan.FromDays(30));
+                services.AddSingleton<RsaKeyService>(provider => rsa);
+
+                builder.AddSigningCredential(rsa.GetKey());
+            }
 
             var authBuilder = services.AddAuthentication();
 
@@ -139,7 +151,6 @@ namespace IdentityService
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
-
             app.UseStaticFiles();
             app.UseCors(AllowSpecificOrigins);
             app.UseRouting();
