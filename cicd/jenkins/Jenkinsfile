@@ -17,8 +17,9 @@ pipeline {
     stage('MapSerivce') {
       when{ 
         anyOf {
-            changeset "src/MapSerivce/**"
-            changeset "src/SharedDomain/**"
+          triggeredBy 'BuildUpstreamCause'
+          changeset './src/MapSerivce/**'
+          changeset './src/SharedDomain/**'
         }
       }
       stages {
