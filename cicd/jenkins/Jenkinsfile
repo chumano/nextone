@@ -69,7 +69,6 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            expression { ACTION_TYPE == 'push' }
             expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
@@ -139,7 +138,6 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            expression { ACTION_TYPE == 'push' }
             expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
@@ -212,7 +210,6 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            expression { ACTION_TYPE == 'push' }
             expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
