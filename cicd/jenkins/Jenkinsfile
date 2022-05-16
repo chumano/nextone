@@ -17,7 +17,7 @@ pipeline {
     stage('MapService') {
       when{ 
         anyOf{
-          changeset "cid/jenkins/Jenskinfile"
+          changeset "cid/jenkins/Jenkinsfile"
           changeset 'src/MapService/*'
         }
         
