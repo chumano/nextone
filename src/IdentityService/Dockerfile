@@ -8,6 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 RUN dotnet tool install Excubo.WebCompiler --global
+RUN export PATH="$PATH:~/.dotnet/tools"
 COPY ["IdentityService/IdentityService.csproj", "IdentityService/"]
 COPY ["Libs/NextOne.Shared/NextOne.Shared.csproj", "Libs/NextOne.Shared/"]
 COPY ["Libs/NextOne.Infrastructure.Core/NextOne.Infrastructure.Core.csproj", "Libs/NextOne.Infrastructure.Core/"]
