@@ -14,6 +14,17 @@ pipeline {
   }
 
   stages {
+    stage('Info') {
+      steps {
+        echo "Current build number: ${currentBuild.number}"
+        script {
+            def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
+            echo "Last commit : ${commit}"
+            echo "APP_VERSION : ${APP_VERSION}"
+            echo "BUILD_NUMBER : ${BUILD_NUMBER}"
+        }
+      }
+    }
     stage('NextOne'){
       parallel{
           stage('MapService') {
@@ -26,18 +37,7 @@ pipeline {
               
             }
             stages {
-              stage('Info') {
-                steps {
-                  echo "Current build number: ${currentBuild.number}"
-                  script {
-                      def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
-                      echo "Last commit : ${commit}"
-                      echo "APP_VERSION : ${APP_VERSION}"
-                      echo "BUILD_NUMBER : ${BUILD_NUMBER}"
-                  }
-                }
-              }
-              stage('Build'){
+              stage('MapService-Build'){
                 // agent {
                 //     docker { image 'node:latest' }
                 // }
@@ -49,7 +49,7 @@ pipeline {
                 }
               }
 
-              stage('Release'){
+              stage('MapService-Release'){
                   steps {
                     //sh 'docker tag hub.tris.vn/nextone/map hub.tris.vn/dataapi:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -59,13 +59,13 @@ pipeline {
                   }
               }
 
-              stage('Clean'){
+              stage('MapService-Clean'){
                 steps{
                   sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
                 }
               }
 
-              stage('DeployStaging') {
+              stage('MapService-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
@@ -74,7 +74,7 @@ pipeline {
                 }
               }
 
-              stage('SystemTest') {
+              stage('MapService-SystemTest') {
                 steps{
                   echo 'system test'
                 }
@@ -91,18 +91,7 @@ pipeline {
               }
             }
             stages {
-              stage('Info') {
-                steps {
-                  echo "Current build number: ${currentBuild.number}"
-                  script {
-                      def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
-                      echo "Last commit : ${commit}"
-                      echo "APP_VERSION : ${APP_VERSION}"
-                      echo "BUILD_NUMBER : ${BUILD_NUMBER}"
-                  }
-                }
-              }
-              stage('Build'){
+              stage('MapWeb-Build'){
                 // agent {
                 //     docker { image 'node:latest' }
                 // }
@@ -114,7 +103,7 @@ pipeline {
                 }
               }
 
-              stage('Release'){
+              stage('MapWeb-Release'){
                   steps {
                     //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -124,13 +113,13 @@ pipeline {
                   }
               }
 
-              stage('Clean'){
+              stage('MapWeb-Clean'){
                 steps{
                   sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map-web --rmi 'all' || true"
                 }
               }
 
-              stage('DeployStaging') {
+              stage('MapWeb-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
@@ -139,7 +128,7 @@ pipeline {
                 }
               }
 
-              stage('SystemTest') {
+              stage('MapWeb-SystemTest') {
                 steps{
                   echo 'system test'
                 }
@@ -147,7 +136,7 @@ pipeline {
             }
           }
 
-          stage('IdentitySerivce') {
+          stage('IdentityService') {
             when{ 
               anyOf {
                 changeset "cicd/jenkins/Jenkinsfile"
@@ -159,18 +148,7 @@ pipeline {
               }
             }
             stages {
-              stage('Info') {
-                steps {
-                  echo "Current build number: ${currentBuild.number}"
-                  script {
-                      def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
-                      echo "Last commit : ${commit}"
-                      echo "APP_VERSION : ${APP_VERSION}"
-                      echo "BUILD_NUMBER : ${BUILD_NUMBER}"
-                  }
-                }
-              }
-              stage('Build'){
+              stage('IdentityService-Build'){
                 // agent {
                 //     docker { image 'node:latest' }
                 // }
@@ -182,7 +160,7 @@ pipeline {
                 }
               }
 
-              stage('Release'){
+              stage('IdentityService-Release'){
                   steps {
                     //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -192,13 +170,13 @@ pipeline {
                   }
               }
 
-              stage('Clean'){
+              stage('IdentityService-Clean'){
                 steps{
                   sh "APP_VERSION=${BUILD_NUMBER} docker-compose down identity --rmi 'all' || true"
                 }
               }
 
-              stage('DeployStaging') {
+              stage('IdentityService-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
@@ -207,7 +185,7 @@ pipeline {
                 }
               }
 
-              stage('SystemTest') {
+              stage('IdentityService-SystemTest') {
                 steps{
                   echo 'system test'
                 }
