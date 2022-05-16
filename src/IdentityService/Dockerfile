@@ -1,16 +1,24 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:3.0 AS build-env
+#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
 WORKDIR /app
+EXPOSE 80
+EXPOSE 443
 
-# Copy csproj and restore as distinct layers
-COPY *.csproj ./
-RUN dotnet restore
+FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
+WORKDIR /src
+COPY ["IdentityService/IdentityService.csproj", "IdentityService/"]
+COPY ["Libs/NextOne.Shared/NextOne.Shared.csproj", "Libs/NextOne.Shared/"]
+COPY ["Libs/NextOne.Infrastructure.Core/NextOne.Infrastructure.Core.csproj", "Libs/NextOne.Infrastructure.Core/"]
+RUN dotnet restore "IdentityService/IdentityService.csproj"
+COPY . .
+WORKDIR "/src/IdentityService"
+RUN dotnet build "IdentityService.csproj" -c Release -o /app/build
 
-# Copy everything else and build
-COPY ../engine/examples ./
-RUN dotnet publish -c Release -o out
+FROM build AS publish
+RUN dotnet publish "IdentityService.csproj" -c Release -o /app/publish
 
-# Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:3.1
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "IdentityService.dll"]

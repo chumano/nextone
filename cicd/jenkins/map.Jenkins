@@ -29,6 +29,7 @@ pipeline {
                 def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
                 echo "Last commit : ${commit}"
                 echo "APP_VERSION : ${APP_VERSION}"
+                echo "BUILD_NUMBER : ${BUILD_NUMBER}"
             }
           }
         }
