@@ -16,7 +16,6 @@ pipeline {
   stages {
     stage('NextOne'){
       parallel{
-        stages{
           stage('MapService') {
             when{ 
               anyOf{
@@ -227,7 +226,6 @@ pipeline {
               }
             }
           }
-        }
       }
     }
 
