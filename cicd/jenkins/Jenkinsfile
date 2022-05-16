@@ -19,6 +19,7 @@ pipeline {
         anyOf{
           changeset "cicd/jenkins/Jenkinsfile"
           changeset 'src/MapService/**'
+          expression { service == 'map'}
         }
         
       }
@@ -68,8 +69,8 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            expression { env.ACTION_TYPE == 'push' }
-            expression { env.GIT_BRANCH == 'origin/main' }
+            //expression { env.ACTION_TYPE == 'push' }
+            expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
             sh 'docker ps'
@@ -89,6 +90,7 @@ pipeline {
         anyOf {
           changeset "cicd/jenkins/Jenkinsfile"
           changeset "src/web-map/**"
+          expression { service == 'map-web'}
         }
       }
       stages {
@@ -161,6 +163,7 @@ pipeline {
           changeset "src/SharedDomain/**"
           changeset "src/Libs/NextOne.Shared/**"
           changeset "src/Libs/NextOne.Infrastructure.Core/**"
+          expression { service == 'identity'}
         }
       }
       stages {
