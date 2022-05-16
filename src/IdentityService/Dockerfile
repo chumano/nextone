@@ -2,6 +2,7 @@
 
 FROM mcr.microsoft.com/dotnet/aspnet:3.1 AS base
 WORKDIR /app
+RUN dotnet tool install Excubo.WebCompiler -- global
 EXPOSE 80
 EXPOSE 443
 
