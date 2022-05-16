@@ -14,7 +14,6 @@ pipeline {
   }
 
   stages {
-    parallel {
     stage('MapService') {
       when{ 
         anyOf{
@@ -224,7 +223,6 @@ pipeline {
           }
         }
       }
-    }
     }
   }
 
