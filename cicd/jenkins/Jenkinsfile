@@ -16,7 +16,9 @@ pipeline {
   stages {
     stage('MapSerivce') {
       when{ 
-        changeset  pattern: './src/MapSerivce/**'
+        anyOf{
+          changeset 'src/MapSerivce/*'
+        }
       }
       stages {
         stage('Info') {
