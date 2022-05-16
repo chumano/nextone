@@ -62,7 +62,7 @@ pipeline {
 
         stage('Clean'){
           steps{
-            sh "APP_VERSION=${APP_VERSION} docker-compose down map --rmi 'all' || true"
+            sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
           }
         }
 
@@ -87,7 +87,7 @@ pipeline {
     stage('MapWeb') {
       when{ 
         anyOf {
-          changeset "cicd/jenkins/Jenskinfile"
+          changeset "cicd/jenkins/Jenkinsfile"
           changeset "src/web-map/**"
         }
       }
@@ -113,7 +113,7 @@ pipeline {
               //   HOME = '.'
               // }
               steps {
-                sh "APP_VERSION=${APP_VERSION} docker-compose build map-web"
+                sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
               }
             }
           }
@@ -124,14 +124,14 @@ pipeline {
               //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
               withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                   sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                  sh 'docker push hub.tris.vn/nextone/map-web:${APP_VERSION}'
+                  sh 'docker push hub.tris.vn/nextone/map-web:${BUILD_NUMBER}'
               }
             }
         }
 
         stage('Clean'){
           steps{
-            sh "APP_VERSION=${APP_VERSION} docker-compose down map-web --rmi 'all' || true"
+            sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map-web --rmi 'all' || true"
           }
         }
 
@@ -156,7 +156,7 @@ pipeline {
     stage('IdentitySerivce') {
       when{ 
         anyOf {
-          changeset "cicd/jenkins/Jenskinfile"
+          changeset "cicd/jenkins/Jenkinsfile"
           changeset "src/Identity/**"
           changeset "src/SharedDomain/**"
           changeset "src/Libs/NextOne.Shared/**"
@@ -185,7 +185,7 @@ pipeline {
               //   HOME = '.'
               // }
               steps {
-                sh "APP_VERSION=${APP_VERSION} docker-compose build identity"
+                sh "APP_VERSION=${BUILD_NUMBER} docker-compose build identity"
               }
             }
           }
@@ -196,14 +196,14 @@ pipeline {
               //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
               withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                   sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                  sh 'docker push hub.tris.vn/nextone/identity:${APP_VERSION}'
+                  sh 'docker push hub.tris.vn/nextone/identity:${BUILD_NUMBER}'
               }
             }
         }
 
         stage('Clean'){
           steps{
-            sh "APP_VERSION=${APP_VERSION} docker-compose down identity --rmi 'all' || true"
+            sh "APP_VERSION=${BUILD_NUMBER} docker-compose down identity --rmi 'all' || true"
           }
         }
 
