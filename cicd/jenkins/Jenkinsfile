@@ -69,7 +69,7 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            //expression { env.ACTION_TYPE == 'push' }
+            expression { ACTION_TYPE == 'push' }
             expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
@@ -139,8 +139,8 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            expression { env.ACTION_TYPE == 'push' }
-            expression { env.GIT_BRANCH == '*/main' }
+            expression { ACTION_TYPE == 'push' }
+            expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
             echo 'TODO: deploy'
@@ -212,8 +212,8 @@ pipeline {
 
         stage('DeployStaging') {
           when {
-            expression { env.ACTION_TYPE == 'push' }
-            expression { env.GIT_BRANCH == '*/main' }
+            expression { ACTION_TYPE == 'push' }
+            expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
             echo 'TODO: deploy'
