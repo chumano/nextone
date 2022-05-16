@@ -6,6 +6,16 @@ services:
     #         - "8000:80"
     #     depends_on:
     #         - db
+    identity:
+        image: hub.tris.vn/nextone/identity:${APP_VERSION:-latest}
+        build:
+          context: ./src
+          dockerfile: ./IdentityService/Dockerfile
+        container_name: nextone-identity
+        ports:
+          - "5102:80"
+        restart: unless-stopped
+        
     map:
         image: hub.tris.vn/nextone/map:${APP_VERSION:-latest}
         build:
@@ -14,6 +24,16 @@ services:
         container_name: nextone-map
         ports:
           - "5105:80"
+        restart: unless-stopped
+        
+    map-web:
+        image: hub.tris.vn/nextone/map-web:${APP_VERSION:-latest}
+        build:
+          context: ./src/web-map
+          dockerfile: ./Dockerfile
+        container_name: nextone-map-web
+        ports:
+          - "5107:80"
         restart: unless-stopped
         
     db:
