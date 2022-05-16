@@ -9,8 +9,11 @@ FROM mcr.microsoft.com/dotnet/sdk:3.1 AS build
 WORKDIR /src
 COPY ["Libs/SharpMap/NuGet.Config", "Libs/SharpMap/"]
 COPY ["MapService/MapService.csproj", "MapService/"]
+COPY ["SharedDomain/SharedDomain.csproj", "SharedDomain/"]
 COPY ["Libs/SharpMap/SharpMap.Layers.BruTile/SharpMap.Layers.BruTile.csproj", "Libs/SharpMap/SharpMap.Layers.BruTile/"]
 COPY ["Libs/SharpMap/SharpMap/SharpMap.csproj", "Libs/SharpMap/SharpMap/"]
+COPY ["Libs/NextOne.Shared/NextOne.Shared.csproj", "Libs/NextOne.Shared/"]
+COPY ["Libs/NextOne.Infrastructure.Core/NextOne.Infrastructure.Core.csproj", "Libs/NextOne.Infrastructure.Core/"]
 COPY ["Libs/SharpMap/SharpMap.Converters.GeoJSON/SharpMap.Converters.GeoJSON.csproj", "Libs/SharpMap/SharpMap.Converters.GeoJSON/"]
 RUN dotnet restore "MapService/MapService.csproj"
 COPY . .
