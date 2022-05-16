@@ -10,7 +10,7 @@ services:
         image: hub.tris.vn/nextone/map:${APP_VERSION:-latest}
         build:
           context: ./src
-          dockerfile: ./src/MapService/Dockerfile
+          dockerfile: ./MapService/Dockerfile
         container_name: nextone-map
         ports:
           - "5105:80"
