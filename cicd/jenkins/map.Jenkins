@@ -1,0 +1,88 @@
+pipeline {
+  agent any
+  // agent {
+  //   //label 'master'
+  //   //docker { image 'node:latest' }
+  //   //dockerfile true
+  // }
+  environment {
+    registryCredential = 'hub.tris.vn' 
+    CONTAINER_NAME = 'test-jenkins-node-service'
+    ACTION_TYPE = sh(script: "echo \"${env.gitlabActionType}\" | sed 's|/|-|g'", returnStdout: true).trim().toLowerCase()
+    PARSED_VERSION = sh(returnStdout: true, script: "git log -1 | sed -r 's/[[:alnum:]]+=/\\n&/g' | awk -F= '{if(\$1==\"VERSION\"){print \$2} else {print \"\"}}' | sed ':a;N;\$!ba;s/\\n//g' | awk '{if(\$1==\"\"){print \"latest\"} else {print \$1}}'").trim()
+    APP_VERSION = sh(script: "echo \"$PARSED_VERSION\"", returnStdout: true)
+  }
+
+  stages {
+    stage('ShowInfo') {
+      steps {
+        echo "Current build number: ${currentBuild.number}"
+        script {
+            def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
+            echo "Last commit : ${commit}"
+            echo "APP_VERSION : ${APP_VERSION}"
+        }
+      }
+    }
+
+    stage('Build'){
+      parallel {
+        stage('Build iamge') {
+          // agent {
+          //     docker { image 'node:latest' }
+          // }
+          // environment {
+          //   HOME = '.'
+          // }
+          steps {
+            sh "APP_VERSION=${APP_VERSION} docker-compose build map"
+          }
+        }
+       
+      }
+    }
+
+    stage('Release'){
+        steps {
+          //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
+          withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+              sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+              sh 'docker push hub.tris.vn/nextone/map:${APP_VERSION}'
+          }
+        }
+    }
+
+    stage('Clean'){
+      steps{
+        sh "APP_VERSION=${APP_VERSION} docker-compose down map --rmi 'all' || true"
+      }
+    }
+
+    stage('DeployStaging') {
+      when {
+        expression { env.ACTION_TYPE == 'push' }
+        expression { env.GIT_BRANCH == 'origin/main' }
+      }
+      steps {
+        sh 'docker ps'
+      }
+    }
+
+    stage('SystemTest') {
+      steps{
+        echo 'system test'
+      }
+    }
+  }
+
+  post {
+    success {
+      script {
+        sh 'echo Pipeline successfully run'
+      }
+    }
+    always {
+      sh 'echo Done'
+    }
+  }
+}
