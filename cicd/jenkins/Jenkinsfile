@@ -44,7 +44,7 @@ pipeline {
               //   HOME = '.'
               // }
               steps {
-                sh "APP_VERSION=${APP_VERSION} docker-compose build map"
+                sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map"
               }
             }
           }
@@ -52,10 +52,10 @@ pipeline {
 
         stage('Release'){
             steps {
-              //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
+              //sh 'docker tag hub.tris.vn/nextone/map hub.tris.vn/dataapi:version
               withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                   sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                  sh 'docker push hub.tris.vn/nextone/map:${APP_VERSION}'
+                  sh 'docker push hub.tris.vn/nextone/map:${BUILD_NUMBER}'
               }
             }
         }
