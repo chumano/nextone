@@ -38,18 +38,14 @@ pipeline {
                 }
               }
               stage('Build'){
-                parallel {
-                  stage('Build iamge') {
-                    // agent {
-                    //     docker { image 'node:latest' }
-                    // }
-                    // environment {
-                    //   HOME = '.'
-                    // }
-                    steps {
-                      sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map"
-                    }
-                  }
+                // agent {
+                //     docker { image 'node:latest' }
+                // }
+                // environment {
+                //   HOME = '.'
+                // }
+                steps {
+                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map"
                 }
               }
 
@@ -107,18 +103,14 @@ pipeline {
                 }
               }
               stage('Build'){
-                parallel {
-                  stage('Build iamge') {
-                    // agent {
-                    //     docker { image 'node:latest' }
-                    // }
-                    // environment {
-                    //   HOME = '.'
-                    // }
-                    steps {
-                      sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
-                    }
-                  }
+                // agent {
+                //     docker { image 'node:latest' }
+                // }
+                // environment {
+                //   HOME = '.'
+                // }
+                steps {
+                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
                 }
               }
 
@@ -179,18 +171,14 @@ pipeline {
                 }
               }
               stage('Build'){
-                parallel {
-                  stage('Build iamge') {
-                    // agent {
-                    //     docker { image 'node:latest' }
-                    // }
-                    // environment {
-                    //   HOME = '.'
-                    // }
-                    steps {
-                      sh "APP_VERSION=${BUILD_NUMBER} docker-compose build identity"
-                    }
-                  }
+                // agent {
+                //     docker { image 'node:latest' }
+                // }
+                // environment {
+                //   HOME = '.'
+                // }
+                steps {
+                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose build identity"
                 }
               }
 
