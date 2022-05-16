@@ -138,10 +138,10 @@ pipeline {
         stage('DeployStaging') {
           when {
             expression { env.ACTION_TYPE == 'push' }
-            expression { env.GIT_BRANCH == 'origin/main' }
+            expression { env.GIT_BRANCH == '*/main' }
           }
           steps {
-            sh 'docker ps'
+            sh 'TODO: deploy'
           }
         }
 
@@ -210,10 +210,10 @@ pipeline {
         stage('DeployStaging') {
           when {
             expression { env.ACTION_TYPE == 'push' }
-            expression { env.GIT_BRANCH == 'origin/main' }
+            expression { env.GIT_BRANCH == '*/main' }
           }
           steps {
-            sh 'docker ps'
+            sh 'TODO: deploy'
           }
         }
 
