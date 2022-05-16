@@ -5,7 +5,8 @@ window.ENV = {
         //southWest: LatLngExpression, northEast: LatLngExpression
         //boundingBox : [ [7.01,95.01],  [23.89,119.92]] //vietnam
         boundingBox : undefined,
-        apiUrl: 'http://localhost:5105'
+        apiUrl: 'http://localhost:5105',
+        googleApiKey: ''
     },
     Identity: {
         identityUrl : 'https://localhost:5102',

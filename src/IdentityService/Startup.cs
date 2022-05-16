@@ -114,7 +114,17 @@ namespace IdentityService
             });
 
             //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
-            builder.AddDeveloperSigningCredential();
+            if (Environment.IsDevelopment())
+            {
+                builder.AddDeveloperSigningCredential();
+            }
+            else
+            {
+                var rsa = new RsaKeyService(Environment, TimeSpan.FromDays(30));
+                services.AddSingleton<RsaKeyService>(provider => rsa);
+
+                builder.AddSigningCredential(rsa.GetKey());
+            }
 
             var authBuilder = services.AddAuthentication();
 

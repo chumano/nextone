@@ -16,6 +16,13 @@ Run projects using tye
 ```
 tye run --tags=core --watch
 ```
+
+Run use docker-compose
+```
+docker-compose -f docker-compose.infras.yml up -d db
+
+docker-compose -f docker-compose.yml up -d
+```
 ### Frontend
 - node >= v14.17.6 , v16
 - npm  >= 6.14.15, v8

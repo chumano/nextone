@@ -1,0 +1,64 @@
+version: "3.3"
+services:
+    # web:
+    #     build: .
+    #     ports:
+    #         - "8000:80"
+    #     depends_on:
+    #         - db
+        
+    db:
+        image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
+        container_name: nextone_mssql
+        environment:
+            SA_PASSWORD: "NextOne@123456"
+            ACCEPT_EULA: "Y"
+        restart: always
+        ports:
+            - "1435:1433"
+        volumes:
+        #- ./devvolumes/db/backup:/var/opt/mssql/backup
+        #- ./devvolumes/db/data:/var/opt/mssql/data
+        #- ./devvolumes/db/log:/var/opt/mssql/log
+        - db-data:/var/opt/mssql/data
+        deploy:
+            resources:
+                limits:
+                    memory: 4G
+    mongo:
+        image: mongo:latest
+        #restart: always
+        container_name: nextone_mongodb
+        ports:
+            - 27017:27017
+        environment:
+            MONGO_INITDB_DATABASE: test
+            MONGO_INITDB_ROOT_USERNAME: root
+            MONGO_INITDB_ROOT_PASSWORD: "NextOne@123456"
+        volumes:
+            # seeding scripts
+            - ./devvolumes/mongo/entrypoint:/docker-entrypoint-initdb.d
+            # named volumes
+            - ./devvolumes/mongo/db:/data/db
+            - ./devvolumes/mongo/config:/data/configdb
+    seq:
+        image: datalust/seq:latest
+        container_name: nextone_seq
+        environment:
+            - ACCEPT_EULA=Y
+            #- BASE_URI=https://seq.dptsprotrans.com
+            #- SEQ_FIRSTRUN_ADMINPASSWORDHASH="$PH"
+        ports:
+            - "5109:80"
+            - "5341:5341"
+        #volumes:
+        #    /path/to/seq/data:/data
+        deploy:
+            resources:
+                limits:
+                    memory: 1G
+                reservations:
+                    memory: 1G
+                    
+volumes:
+  db-data:
