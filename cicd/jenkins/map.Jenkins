@@ -13,6 +13,12 @@ pipeline {
     APP_VERSION = sh(script: "echo \"$PARSED_VERSION\"", returnStdout: true)
   }
 
+  when{ 
+    anyOf {
+        changeset "src/MapSerivce/**"
+        changeset "src/SharedDomain/**"
+    }
+  }
   stages {
     stage('ShowInfo') {
       steps {
