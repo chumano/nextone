@@ -73,7 +73,7 @@ pipeline {
             expression { GIT_BRANCH == 'origin/main' }
           }
           steps {
-            sh 'docker ps'
+            echo 'TODO: deploy'
           }
         }
 
@@ -143,7 +143,7 @@ pipeline {
             expression { env.GIT_BRANCH == '*/main' }
           }
           steps {
-            sh 'TODO: deploy'
+            echo 'TODO: deploy'
           }
         }
 
@@ -216,7 +216,7 @@ pipeline {
             expression { env.GIT_BRANCH == '*/main' }
           }
           steps {
-            sh 'TODO: deploy'
+            echo 'TODO: deploy'
           }
         }
 
