@@ -22,7 +22,7 @@ namespace MapService.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return Ok("MapService: " + DateTime.Now.ToString());
+            return Ok("MapService : " + DateTime.Now.ToString());
         }
     }
 }
