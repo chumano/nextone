@@ -1,7 +1,7 @@
 version: "3.3"
 services:
     identity:
-        image: ${DOCKER_REGISTRY}/nextone/identity
+        image: ${DOCKER_REGISTRY}/nextone/identity:latest
         build:
           context: ./src
           dockerfile: ./IdentityService/Dockerfile
@@ -31,7 +31,7 @@ services:
           - "traefik.http.services.nextone-backend.loadbalancer.server.port=5102"
 
     map:
-        image: ${DOCKER_REGISTRY}/nextone/map
+        image: ${DOCKER_REGISTRY}/nextone/map:latest
         build:
           context: ./src
           dockerfile: ./MapService/Dockerfile
@@ -68,7 +68,7 @@ services:
           - "traefik.http.routers.nextone-map.entrypoints=https"
 
     map-web:
-        image: ${DOCKER_REGISTRY}/nextone/map-web
+        image: ${DOCKER_REGISTRY}/nextone/map-web:latest
         build:
           context: ./src/web-map
           dockerfile: ./Dockerfile
