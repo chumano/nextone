@@ -22,7 +22,7 @@ pipeline {
       steps {
         echo "Current build number: ${currentBuild.number}"
         withCredentials([string(credentialsId: 'MAT_KHAU', variable: 'MAT_KHAU')]) {
-			sh 'echo "MAT_KHAU: ${MAT_KHAU}, - %MAT_KHAU1%"'
+			sh 'echo "MAT_KHAU: ${MAT_KHAU}"'
 		}
 		script {
             def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
