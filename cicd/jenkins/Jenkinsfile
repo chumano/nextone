@@ -32,6 +32,7 @@ pipeline {
         }
       }
     }
+
     stage('NextOne'){
       parallel{
           stage('MapService') {
@@ -43,30 +44,18 @@ pipeline {
               }
               
             }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/map'
+              }
+            }
+			
             stages {
-              stage('MapService-Build'){
-                // agent {
-                //     docker { image 'node:latest' }
-                // }
-                // environment {
-                //   HOME = '.'
-                // }
-                steps {
-                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map"
-                }
-              }
-
-              stage('MapService-Release'){
-                  steps {
-                    sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
-                    withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh 'docker push ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
-						sh 'docker push ${DOCKER_REGISTRY}/nextone/map'
-                    }
-                  }
-              }
-
               // stage('MapService-Clean'){
               //   steps{
               //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
@@ -81,13 +70,8 @@ pipeline {
                   sh "docker-compose -f docker-compose.yml up --no-deps -d map"
                 }
               }
-
-              // stage('MapService-SystemTest') {
-              //   steps{
-              //     echo 'system test'
-              //   }
-              // }
             }
+			
           }
 
           stage('MapWeb') {
@@ -98,38 +82,31 @@ pipeline {
                 expression { service == 'map-web'}
               }
             }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/map-web ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web'
+              }
+            }
+			
             stages {
-              stage('MapWeb-Build'){
-                steps {
-                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
-                }
-              }
-
-              stage('MapWeb-Release'){
-                  steps {
-					sh 'docker tag ${DOCKER_REGISTRY}/nextone/map-web ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
-                    withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
-						sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web'
-                    }
-                  }
-              }
-
               stage('MapWeb-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-					withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+					          withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
                         sh "docker-compose -f docker-compose.yml up -d map-web"
                     }
-                  
                 }
               }
-              
             }
+			
           }
 
           stage('IdentityService') {
@@ -143,25 +120,19 @@ pipeline {
                 expression { service == 'identity'}
               }
             }
+			
+			      steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build identity"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/identity ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/identity'
+              }
+            }
+			
             stages {
-              stage('IdentityService-Build'){
-                steps {
-                  sh "APP_VERSION=${BUILD_NUMBER} docker-compose build identity"
-                }
-              }
-
-              stage('IdentityService-Release'){
-                  steps {
-                    sh 'docker tag ${DOCKER_REGISTRY}/nextone/identity ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
-                    withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh 'docker push ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
-                        sh 'docker push ${DOCKER_REGISTRY}/nextone/identity'
-                    }
-                  }
-              }
-
-
               stage('IdentityService-DeployStaging') {
                 when {
                   expression { GIT_BRANCH == 'origin/main' }
