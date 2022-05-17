@@ -6,11 +6,12 @@ pipeline {
   //   //dockerfile true
   // }
   environment {
-    registryCredential = 'hub.tris.vn' 
+    registryCredential = 'harbor.tris.vn' 
     CONTAINER_NAME = 'test-jenkins-node-service'
     ACTION_TYPE = sh(script: "echo \"${env.gitlabActionType}\" | sed 's|/|-|g'", returnStdout: true).trim().toLowerCase()
     PARSED_VERSION = sh(returnStdout: true, script: "git log -1 | sed -r 's/[[:alnum:]]+=/\\n&/g' | awk -F= '{if(\$1==\"VERSION\"){print \$2} else {print \"\"}}' | sed ':a;N;\$!ba;s/\\n//g' | awk '{if(\$1==\"\"){print \"latest\"} else {print \$1}}'").trim()
     APP_VERSION = sh(script: "echo \"$PARSED_VERSION\"", returnStdout: true)
+	DOCKER_REGISTRY = harbor.tris.vn
   }
 
   stages {
@@ -51,7 +52,7 @@ pipeline {
 
               stage('MapService-Release'){
                   steps {
-                    //sh 'docker tag hub.tris.vn/nextone/map hub.tris.vn/dataapi:version
+                    //sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/dataapi:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
                         sh 'docker push hub.tris.vn/nextone/map:${BUILD_NUMBER}'
@@ -105,19 +106,12 @@ pipeline {
 
               stage('MapWeb-Release'){
                   steps {
-                    //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh 'docker push hub.tris.vn/nextone/map-web:${BUILD_NUMBER}'
+                        sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
                     }
                   }
               }
-
-              // stage('MapWeb-Clean'){
-              //   steps{
-              //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map-web --rmi 'all' || true"
-              //   }
-              // }
 
               stage('MapWeb-DeployStaging') {
                 when {
@@ -157,10 +151,9 @@ pipeline {
 
               stage('IdentityService-Release'){
                   steps {
-                    //sh 'docker tag hub.tris.vn/dataapi hub.tris.vn/dataapi:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh 'docker push hub.tris.vn/nextone/identity:${BUILD_NUMBER}'
+                        sh 'docker push ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
                     }
                   }
               }
@@ -177,12 +170,6 @@ pipeline {
                 }
                 steps {
                   sh "docker-compose -f docker-compose.yml up -d identity"
-                }
-              }
-
-              stage('IdentityService-SystemTest') {
-                steps{
-                  echo 'system test'
                 }
               }
             }
