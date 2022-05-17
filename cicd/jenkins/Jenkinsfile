@@ -55,23 +55,6 @@ pipeline {
               }
             }
 			
-            stages {
-              // stage('MapService-Clean'){
-              //   steps{
-              //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
-              //   }
-              // }
-
-              stage('MapService-DeployStaging') {
-                when {
-                  expression { GIT_BRANCH == 'origin/main' }
-                }
-                steps {
-                  sh "docker-compose -f docker-compose.yml up --no-deps -d map"
-                }
-              }
-            }
-			
           }
 
           stage('MapWeb') {
@@ -93,19 +76,7 @@ pipeline {
               }
             }
 			
-            stages {
-              stage('MapWeb-DeployStaging') {
-                when {
-                  expression { GIT_BRANCH == 'origin/main' }
-                }
-                steps {
-					          withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                        sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh "docker-compose -f docker-compose.yml up -d map-web"
-                    }
-                }
-              }
-            }
+            
 			
           }
 
@@ -132,20 +103,46 @@ pipeline {
               }
             }
 			
-            stages {
-              stage('IdentityService-DeployStaging') {
-                when {
-                  expression { GIT_BRANCH == 'origin/main' }
-                }
-                steps {
-                  sh "docker-compose -f docker-compose.yml up --no-deps -d identity"
-                }
-              }
-            }
           }
       }
     }
 
+    // stage('MapService-Clean'){
+    //   steps{
+    //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
+    //   }
+    // }
+
+    stage('MapService-DeployStaging') {
+        when {
+          expression { GIT_BRANCH == 'origin/main' }
+        }
+        steps {
+          sh "docker-compose -f docker-compose.yml up --no-deps -d map"
+        }
+    }
+
+    stage('MapWeb-DeployStaging') {
+      when {
+        expression { GIT_BRANCH == 'origin/main' }
+      }
+      steps {
+          withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+              sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+              sh "docker-compose -f docker-compose.yml up -d map-web"
+          }
+      }
+    }
+
+    stage('IdentityService-DeployStaging') {
+        when {
+          expression { GIT_BRANCH == 'origin/main' }
+        }
+        steps {
+          sh "docker-compose -f docker-compose.yml up --no-deps -d identity"
+        }
+    }
+    
   }
 
   post {
