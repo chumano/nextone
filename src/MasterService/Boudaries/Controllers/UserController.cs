@@ -82,6 +82,20 @@ namespace MasterService.Controllers
             return Ok(ApiResult.Success(null));
         }
 
+        [HttpPost("UpdateUserRoles")]
+        public async Task<IActionResult> UpdateUserRoles(UpdateUserRolesDTO userDTO)
+        {
+            var user = await _userService.Get(userDTO.UserId);
+            if(user == null)
+            {
+                throw new DomainException("", "");
+            }
+
+            await _userService.UpdateUserRoles(user, userDTO.RoleCodes);
+
+            return Ok(ApiResult.Success(null));
+        }
+
         [HttpPost("ActiveUser")]
         public async Task<IActionResult> ActiveUser(ActiveUserDTO userDTO)
         {

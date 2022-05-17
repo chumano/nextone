@@ -1,5 +1,7 @@
 import {
+	ActivateUserRequest,
 	CreateUserResponse,
+	ResetPasswordUserRequest,
 	UpdateUserRequest,
 } from "./../models/user/User.model";
 import { ApiResult } from "./../models/apis/ApiResult.model";
@@ -46,11 +48,27 @@ export const useUserApi = () => {
 		return axiosInstance.delete(`${baseApi}/user/${userId}`);
 	};
 
+	const activateUser = (
+		userNeedToActivate: ActivateUserRequest
+	): Promise<AxiosResponse<ApiResult<null>>> => {
+		return axiosInstance.post(`${baseApi}/user/activeUser`, userNeedToActivate);
+	};
+
+	const resetPassword = (
+		userNeedToResetPassword: ResetPasswordUserRequest
+	): Promise<AxiosResponse<ApiResult<string>>> => {
+		return axiosInstance.post(
+			`${baseApi}/user/resetPassword`,
+			userNeedToResetPassword
+		);
+	};
 	return {
 		list,
 		getUser,
 		createUser,
 		updateUser,
 		deleteUser,
+		activateUser,
+		resetPassword,
 	};
 };

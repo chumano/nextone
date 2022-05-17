@@ -20,6 +20,8 @@ namespace MasterService.Domain.Services
         Task<User> UpdateUser(User user, string name, string email, string phone,
             List<string> roleCodes);
 
+        Task<User> UpdateUserRoles(User user, List<string> roleCodes);
+
         Task Active(User user, bool isActive);
 
         Task DeleteUser(User user);
@@ -83,29 +85,48 @@ namespace MasterService.Domain.Services
         public async Task<User> UpdateUser(User user, string name, string email, string phone,
             List<string> roleCodes)
         {
-            var roles = await _roleRepository.Roles
-                    .Where(o => roleCodes.Contains(o.Code))
-                    .ToListAsync();
-            var userRoles = roles.Select(o => new UserRole()
-            {
-                RoleCode = o.Code,
-                Role = o
-            }).ToList();
+            //var roles = await _roleRepository.Roles
+            //        .Where(o => roleCodes.Contains(o.Code))
+            //        .ToListAsync();
+            //var userRoles = roles.Select(o => new UserRole()
+            //{
+            //    RoleCode = o.Code,
+            //    Role = o
+            //}).ToList();
             user.Name = name;
             user.Email = email;
             user.Phone = phone;
-            user.SetRoles(userRoles);
+            //user.SetRoles(userRoles);
 
             user.UpdatedDate = DateTime.Now;
             _userRepository.Update(user);
 
             await _identityService.UpdateIdentityUser(user.Id, email.ToLower(), email);
-            await _identityService.UpdateIdentityUserRoles(user.Id, userRoles.Select(o=>o.RoleCode).ToList());
+            // await _identityService.UpdateIdentityUserRoles(user.Id, userRoles.Select(o=>o.RoleCode).ToList());
 
             await _userRepository.SaveChangesAsync();
 
             //TODO : Send domainevent UserUpdated
             await _bus.Publish(new UserUpdated());
+            return user;
+        }
+
+        public async Task<User> UpdateUserRoles(User user, List<string> roleCodes)
+        {
+            var roles = await _roleRepository.Roles.Where(o => roleCodes.Contains(o.Code)).ToListAsync();
+
+            var userRoles = roles.Select(o => new UserRole() { RoleCode = o.Code, Role= o}).ToList();
+
+            user.SetRoles(userRoles);
+
+            user.UpdatedDate= DateTime.Now;
+            _userRepository.Update(user);
+
+            await _identityService.UpdateIdentityUserRoles(user.Id, userRoles.Select(o => o.RoleCode).ToList());
+            await _userRepository.SaveChangesAsync();
+
+            // TODO : Send domainevent UserUpdated
+             await _bus.Publish(new UserUpdated());
             return user;
         }
 
@@ -135,6 +156,5 @@ namespace MasterService.Domain.Services
 
             await _bus.Publish(new UserDeleted());
         }
-       
     }
 }

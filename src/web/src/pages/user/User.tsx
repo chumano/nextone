@@ -49,7 +49,7 @@ const UserPage = () => {
 			</div>
 
 			<div className="user-page__body">
-				<UserList isModalVisible={isModalVisible} textSearch={searchInput} />
+				<UserList isCreateModalVisible={isModalVisible} textSearch={searchInput} />
 			</div>
 
 			{isModalVisible && (

@@ -24,3 +24,12 @@ export interface UpdateUserRequest {
 	Phone: string;
 	RoleCodes: string[];
 }
+
+export interface ActivateUserRequest {
+	UserId: string;
+	IsActive: boolean;
+}
+
+export interface ResetPasswordUserRequest {
+	UserId: string;
+}
