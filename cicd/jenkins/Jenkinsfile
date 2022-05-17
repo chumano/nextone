@@ -168,7 +168,7 @@ pipeline {
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
                         sh 'docker push ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
-                        //sh 'docker push ${DOCKER_REGISTRY}/nextone/identity'
+                        sh 'docker push ${DOCKER_REGISTRY}/nextone/identity'
                     }
                   }
               }
