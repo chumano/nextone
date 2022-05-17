@@ -14,6 +14,7 @@ pipeline {
     PARSED_VERSION = sh(returnStdout: true, script: "git log -1 | sed -r 's/[[:alnum:]]+=/\\n&/g' | awk -F= '{if(\$1==\"VERSION\"){print \$2} else {print \"\"}}' | sed ':a;N;\$!ba;s/\\n//g' | awk '{if(\$1==\"\"){print \"latest\"} else {print \$1}}'").trim()
     APP_VERSION = sh(script: "echo \"$PARSED_VERSION\"", returnStdout: true)
 	
+	MAT_KHAU1 = credentials('MAT_KHAU')
   }
 
   stages {
@@ -21,7 +22,7 @@ pipeline {
       steps {
         echo "Current build number: ${currentBuild.number}"
         withCredentials([string(credentialsId: 'MAT_KHAU', variable: 'MAT_KHAU')]) {
-			sh 'MAT_KHAU: ${MAT_KHAU} - %MAT_KHAU%'
+			sh 'echo "MAT_KHAU: ${MAT_KHAU}, - ${MAT_KHAU1}"'
 		}
 		script {
             def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
