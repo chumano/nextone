@@ -107,11 +107,11 @@ pipeline {
       }
     }
 
-    // stage('MapService-Clean'){
-    //   steps{
-    //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down map --rmi 'all' || true"
-    //   }
-    // }
+    stage('Clean'){
+      steps{
+        sh "APP_VERSION=${BUILD_NUMBER} docker-compose down --rmi 'all' || true"
+      }
+    }
 
     stage('MapService-DeployStaging') {
         when {
