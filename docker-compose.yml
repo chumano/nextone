@@ -52,6 +52,7 @@ services:
           - Logging__LogLevel__Default=Information
           - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${MAPWEB_DOMAIN}
           - IdentityServerOptions__Authority=${IDENTITY_URL}
+          - IdentityServerOptions__RequireHttpsMetadata=false
           - MapSettings__MapOffsetX=0
           - MapSettings__MapOffsetY=-7500
           - MapSettings__MapTilesFolder=Data/MapTiles
@@ -63,7 +64,7 @@ services:
           - "traefik.enable=true"
           - "traefik.http.routers.nextone-map.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`/nextone/map`)"
           - "traefik.http.routers.nextone-map.middlewares=nextone-map-stripprefix"
-          - "traefik.http.middlewares.nextone-map-stripprefix.stripprefix.prefixes=nextone/map"
+          - "traefik.http.middlewares.nextone-map-stripprefix.stripprefix.prefixes=/nextone/map"
           - "traefik.http.routers.nextone-map.entrypoints=https"
 
     map-web:
