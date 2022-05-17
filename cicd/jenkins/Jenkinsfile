@@ -22,7 +22,7 @@ pipeline {
       steps {
         echo "Current build number: ${currentBuild.number}"
         withCredentials([string(credentialsId: 'MAT_KHAU', variable: 'MAT_KHAU')]) {
-			sh 'echo "MAT_KHAU: ${MAT_KHAU}, - ${MAT_KHAU1}"'
+			sh 'echo "MAT_KHAU: ${MAT_KHAU}, - %MAT_KHAU1%"'
 		}
 		script {
             def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
@@ -58,10 +58,10 @@ pipeline {
 
               stage('MapService-Release'){
                   steps {
-                    //sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/dataapi:version
+                    //sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:version
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                        sh 'docker push hub.tris.vn/nextone/map:${BUILD_NUMBER}'
+                        sh 'docker push ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
                     }
                   }
               }
