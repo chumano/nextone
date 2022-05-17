@@ -20,11 +20,15 @@ services:
           - Logging__LogLevel__Default=Information
           - CorsHosts=http://localhost:5100;http://localhost:5107;https://${MAPWEB_DOMAIN}
         networks:
+          - nextone-internal
           - traefik-proxy
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.nextone-identity.rule=Host(`${IDENTITY_DOMAIN}`)"
           - "traefik.http.routers.nextone-identity.entrypoints=https"
+          - "traefik.http.routers.nextone-identity.service=nextone-backend"
+          - "traefik.http.services.nextone-backend.loadbalancer.server.scheme=http"
+          - "traefik.http.services.nextone-backend.loadbalancer.server.port=5102"
 
     map:
         image: ${DOCKER_REGISTRY}/nextone/map
@@ -52,10 +56,12 @@ services:
           - MapSettings__MapOffsetY=-7500
           - MapSettings__MapTilesFolder=Data/MapTiles
           - MapSettings__MapWatcherIntervalInMinutes=5
+        networks:
+          - nextone-internal
+          - traefik-proxy
         labels:
           - "traefik.enable=true"
-          - "traefik.docker.network=traefik-proxy"
-          - "traefik.http.routers.nextone-map.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`nextone/map`)"
+          - "traefik.http.routers.nextone-map.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`/nextone/map`)"
           - "traefik.http.routers.nextone-map.middlewares=nextone-map-stripprefix"
           - "traefik.http.middlewares.nextone-map-stripprefix.stripprefix.prefixes=nextone/map"
           - "traefik.http.routers.nextone-map.entrypoints=https"
@@ -74,9 +80,10 @@ services:
         environment:
           - TZ=Asia/Ho_Chi_Minh
           - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+        networks:
+          - traefik-proxy
         labels:
           - "traefik.enable=true"
-          - "traefik.docker.network=traefik-proxy"
           - "traefik.http.routers.nextone-mapweb.rule=Host(`${MAPWEB_DOMAIN}`)"
           - "traefik.http.routers.nextone-mapweb.entrypoints=https"
           
@@ -87,8 +94,10 @@ services:
             SA_PASSWORD: "NextOne@123456"
             ACCEPT_EULA: "Y"
         restart: always
+        networks:
+          - nextone-internal
         ports:
-            - "1435:1433"
+          - "1435:1433"
         volumes:
         #- ./devvolumes/db/backup:/var/opt/mssql/backup
         #- ./devvolumes/db/data:/var/opt/mssql/data
@@ -98,6 +107,7 @@ services:
 networks:
   traefik-proxy:
     external: true
-    
+  nextone-internal:
+    external: false
 volumes:
   db-data:
