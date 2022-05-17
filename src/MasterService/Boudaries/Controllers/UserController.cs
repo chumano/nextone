@@ -54,6 +54,13 @@ namespace MasterService.Controllers
             return Ok(ApiResult.Success(items));
         }
 
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
+        {
+            var count = await _userService.Count(getUserListDTO.TextSearch);
+            return Ok(ApiResult.Success(count));
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {

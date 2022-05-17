@@ -22,6 +22,8 @@ namespace MasterService.Domain.Services
 
         Task<User> UpdateUserRoles(User user, List<string> roleCodes);
 
+        Task<int> Count(string textSearch);
+
         Task Active(User user, bool isActive);
 
         Task DeleteUser(User user);
@@ -155,6 +157,18 @@ namespace MasterService.Domain.Services
             //TODO : Send domainevent UserDeleted
 
             await _bus.Publish(new UserDeleted());
+        }
+
+        public async Task<int> Count(string textSearch)
+        {
+            var query = _userRepository.Users;
+
+            if (!string.IsNullOrWhiteSpace(textSearch))
+            {
+                query = query.Where(o => o.Name.Contains(textSearch));
+            }
+
+            return await query.CountAsync();
         }
     }
 }
