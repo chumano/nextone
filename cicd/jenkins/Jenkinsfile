@@ -20,7 +20,7 @@ pipeline {
     stage('Info') {
       steps {
         echo "Current build number: ${currentBuild.number}"
-        withCredentials([usernameColonPassword(credentialsId: 'MAT_KHAU', variable: 'MAT_KHAU')]) {
+        withCredentials([string(credentialsId: 'MAT_KHAU', variable: 'MAT_KHAU')]) {
 			echo "MAT_KHAU: ${MAT_KHAU}"
 		}
 		script {
