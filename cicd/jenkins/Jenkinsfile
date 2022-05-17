@@ -53,6 +53,8 @@ pipeline {
                 sh 'docker push ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
                 sh 'docker push ${DOCKER_REGISTRY}/nextone/map:latest'
               }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
             }
 			
           }
@@ -74,10 +76,9 @@ pipeline {
                 sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
                 sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:latest'
               }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
             }
-			
-            
-			
           }
 
           stage('IdentityService') {
@@ -101,17 +102,19 @@ pipeline {
                 sh 'docker push ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
                 sh 'docker push ${DOCKER_REGISTRY}/nextone/identity:latest'
               }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
             }
 			
           }
       }
     }
 
-    stage('Clean'){
-      steps{
-        sh "APP_VERSION=${BUILD_NUMBER} docker-compose down --rmi 'all' || true"
-      }
-    }
+    // stage('Clean'){
+    //   steps{
+    //     sh "APP_VERSION=${BUILD_NUMBER} docker-compose down --rmi 'all' || true"
+    //   }
+    // }
 
     // stage('MapService-DeployStaging') {
     //     when {
