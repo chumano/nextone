@@ -58,10 +58,11 @@ pipeline {
 
               stage('MapService-Release'){
                   steps {
-                    //sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:version
+                    sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
                         sh 'docker push ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
+						sh 'docker push ${DOCKER_REGISTRY}/nextone/map'
                     }
                   }
               }

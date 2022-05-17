@@ -1,7 +1,7 @@
 version: "3.3"
 services:
     identity:
-        image: ${DOCKER_REGISTRY}/nextone/identity:${APP_VERSION:-latest}
+        image: ${DOCKER_REGISTRY}/nextone/identity
         build:
           context: ./src
           dockerfile: ./IdentityService/Dockerfile
@@ -27,7 +27,7 @@ services:
           - "traefik.http.routers.nextone-identity.entrypoints=https"
 
     map:
-        image: ${DOCKER_REGISTRY}/nextone/map:${APP_VERSION:-latest}
+        image: ${DOCKER_REGISTRY}/nextone/map
         build:
           context: ./src
           dockerfile: ./MapService/Dockerfile
@@ -59,7 +59,7 @@ services:
           - "traefik.http.routers.nextone-map.entrypoints=https"
 
     map-web:
-        image: ${DOCKER_REGISTRY}/nextone/map-web:${APP_VERSION:-latest}
+        image: ${DOCKER_REGISTRY}/nextone/map-web
         build:
           context: ./src/web-map
           dockerfile: ./Dockerfile
@@ -92,10 +92,6 @@ services:
         #- ./devvolumes/db/data:/var/opt/mssql/data
         #- ./devvolumes/db/log:/var/opt/mssql/log
         - db-data:/var/opt/mssql/data
-        deploy:
-            resources:
-                limits:
-                    memory: 4G
 
 networks:
   traefik-proxy:
