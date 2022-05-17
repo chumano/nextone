@@ -21,6 +21,8 @@ using IdentityService.Boundaries.Grpc;
 using NextOne.Shared.Security;
 using System;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace IdentityService
 {
@@ -115,6 +117,15 @@ namespace IdentityService
                     });
             });
 
+            services.Configure<CookieAuthenticationOptions>(
+                IdentityServerConstants.DefaultCookieAuthenticationScheme, 
+                options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.IsEssential = true;
+            });
+
             //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
             if (Environment.IsDevelopment())
             {
@@ -153,6 +164,13 @@ namespace IdentityService
             }
             app.UseStaticFiles();
             app.UseCors(AllowSpecificOrigins);
+            //app.UseCookiePolicy(new CookiePolicyOptions
+            //{
+            //    HttpOnly = HttpOnlyPolicy.None,
+            //    MinimumSameSitePolicy = SameSiteMode.None,
+            //    Secure = CookieSecurePolicy.Always
+            //});
+
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();

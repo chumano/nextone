@@ -10,7 +10,7 @@ services:
           - "5102:5102"
         restart: unless-stopped
         depends_on:         
-          - db
+          - nextonedb
         environment:
           - TZ=Asia/Ho_Chi_Minh
           - ASPNETCORE_ENVIRONMENT=Production
@@ -18,18 +18,82 @@ services:
           - IsAutoMigration=true
           - IsDBSeed=true
           - Logging__LogLevel__Default=Information
-          - CorsHosts=http://localhost:5100;http://localhost:5107;https://${MAPWEB_DOMAIN}
+          - CorsHosts=http://localhost:5100;http://localhost:5107;http://${MAPWEB_DOMAIN}
         networks:
           - nextone-internal
           - traefik-proxy
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.nextone-identity.rule=Host(`${IDENTITY_DOMAIN}`)"
-          - "traefik.http.routers.nextone-identity.entrypoints=https"
-          - "traefik.http.routers.nextone-identity.service=nextone-backend"
-          - "traefik.http.services.nextone-backend.loadbalancer.server.scheme=http"
-          - "traefik.http.services.nextone-backend.loadbalancer.server.port=5102"
+          - "traefik.http.routers.nextone-identity.entrypoints=http,https"
+          - "traefik.http.routers.nextone-identity.service=nextone-identity"
+          - "traefik.http.services.nextone-identity.loadbalancer.server.scheme=http"
+          - "traefik.http.services.nextone-identity.loadbalancer.server.port=5102"
 
+
+    com:
+        image: ${DOCKER_REGISTRY}/nextone/com:latest
+        build:
+          context: ./src
+          dockerfile: ./ComService/Dockerfile
+        container_name: nextone-com
+        ports:
+          - "5104:80"
+        restart: unless-stopped
+        depends_on:         
+          - nextonedb
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+          - ASPNETCORE_ENVIRONMENT=Production
+          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+          - IsAutoMigration=true
+          - Logging__LogLevel__Default=Information
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - IdentityServerOptions__RequireHttpsMetadata=false
+        networks:
+          - nextone-internal
+          - traefik-proxy
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.nextone-com.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`/nextone/com`)"
+          - "traefik.http.routers.nextone-com.middlewares=nextone-com-stripprefix"
+          - "traefik.http.middlewares.nextone-com-stripprefix.stripprefix.prefixes=/nextone/com"
+          - "traefik.http.routers.nextone-com.entrypoints=http,https"
+        
+    master:
+        image: ${DOCKER_REGISTRY}/nextone/master:latest
+        build:
+          context: ./src
+          dockerfile: ./MasterService/Dockerfile
+        container_name: nextone-master
+        ports:
+          - "5103:5103"
+        restart: unless-stopped
+        depends_on:         
+          - nextonedb
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+          - ASPNETCORE_ENVIRONMENT=Production
+          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+          - IsAutoMigration=true
+          - Logging__LogLevel__Default=Information
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - IdentityServerOptions__RequireHttpsMetadata=false
+        networks:
+          - nextone-internal
+          - traefik-proxy
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.nextone-master.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`/nextone/master`)"
+          - "traefik.http.routers.nextone-master.middlewares=nextone-master-stripprefix"
+          - "traefik.http.middlewares.nextone-master-stripprefix.stripprefix.prefixes=/nextone/master"
+          - "traefik.http.routers.nextone-master.entrypoints=http,https"
+          - "traefik.http.routers.nextone-master.service=nextone-master"
+          - "traefik.http.services.nextone-master.loadbalancer.server.scheme=http"
+          - "traefik.http.services.nextone-master.loadbalancer.server.port=5103"
+          
     map:
         image: ${DOCKER_REGISTRY}/nextone/map:latest
         build:
@@ -40,10 +104,11 @@ services:
           - "5105:80"
         restart: unless-stopped
         depends_on:         
-          - db
+          - nextonedb
         volumes:
-          - ./Map/MapTiles:/app/Data/MapTiles
-          - ./Map/ShapeFiles:/app/Data/ShapeFiles
+          #- ./Map/MapTiles:/app/Data/MapTiles
+          #- ./Map/ShapeFiles:/app/Data/ShapeFiles
+          - map-data:/app/Data
         environment:
           - TZ=Asia/Ho_Chi_Minh
           - ASPNETCORE_ENVIRONMENT=Production
@@ -51,7 +116,7 @@ services:
           - IsAutoMigration=true
           - Logging__LogLevel__Default=Information
           - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${MAPWEB_DOMAIN}
-          - IdentityServerOptions__Authority=${IDENTITY_URL}
+          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
           - IdentityServerOptions__RequireHttpsMetadata=false
           - MapSettings__MapOffsetX=0
           - MapSettings__MapOffsetY=-7500
@@ -65,8 +130,42 @@ services:
           - "traefik.http.routers.nextone-map.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`/nextone/map`)"
           - "traefik.http.routers.nextone-map.middlewares=nextone-map-stripprefix"
           - "traefik.http.middlewares.nextone-map-stripprefix.stripprefix.prefixes=/nextone/map"
-          - "traefik.http.routers.nextone-map.entrypoints=https"
-
+          - "traefik.http.routers.nextone-map.entrypoints=http,https"
+      
+    file:
+        image: ${DOCKER_REGISTRY}/nextone/file:latest
+        build:
+          context: ./src
+          dockerfile: ./FileService/Dockerfile
+        container_name: nextone-file
+        ports:
+          - "5106:80"
+        restart: unless-stopped
+        depends_on:         
+          - nextonedb
+        volumes:
+          #- ./File/Uploads:/app/Data/Uploads
+          - file-uploads:/app/Data/Uploads
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+          - ASPNETCORE_ENVIRONMENT=Production
+          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
+          - IsAutoMigration=true
+          - Logging__LogLevel__Default=Information
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - IdentityServerOptions__RequireHttpsMetadata=false
+          - LocalFileSettings__FileFolder=Data/Uploads
+        networks:
+          - nextone-internal
+          - traefik-proxy
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.nextone-file.rule=Host(`${API_DOMAIN}`)&&PathPrefix(`/nextone/file`)"
+          - "traefik.http.routers.nextone-file.middlewares=nextone-file-stripprefix"
+          - "traefik.http.middlewares.nextone-file-stripprefix.stripprefix.prefixes=/nextone/file"
+          - "traefik.http.routers.nextone-file.entrypoints=http,https"
+              
     map-web:
         image: ${DOCKER_REGISTRY}/nextone/map-web:latest
         build:
@@ -78,17 +177,19 @@ services:
         restart: unless-stopped
         volumes:
           - ./configs/mapwebconfig.js:/usr/share/nginx/html/config.js
+          
         environment:
           - TZ=Asia/Ho_Chi_Minh
           - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
         networks:
+          - nextone-internal
           - traefik-proxy
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.nextone-mapweb.rule=Host(`${MAPWEB_DOMAIN}`)"
           - "traefik.http.routers.nextone-mapweb.entrypoints=https"
           
-    db:
+    nextonedb:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
         container_name: nextone-mssql
         environment:
@@ -104,11 +205,30 @@ services:
         #- ./devvolumes/db/data:/var/opt/mssql/data
         #- ./devvolumes/db/log:/var/opt/mssql/log
         - db-data:/var/opt/mssql/data
+        
+    nginx:
+        image: nginx:alpine
+        container_name: nextone-nginx
+        restart: always
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+        ports:
+          - "80:80"
+          - "443:443"
+        volumes:
+          - ./configs/nginx-proxy.conf:/etc/nginx/nginx.conf
+          - ./configs/certificates:/ca-certificates
+        networks:
+          - nextone-internal
+        
 
 networks:
   traefik-proxy:
-    external: true
+    external: false
   nextone-internal:
     external: false
+    
 volumes:
   db-data:
+  file-uploads:
+  map-data:

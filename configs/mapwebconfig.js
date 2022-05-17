@@ -5,10 +5,10 @@ window.ENV = {
         //southWest: LatLngExpression, northEast: LatLngExpression
         //boundingBox : [ [7.01,95.01],  [23.89,119.92]] //vietnam
         boundingBox : undefined,
-        apiUrl: 'http://localhost:5105',
+        apiUrl: 'http://api.map.nextone.local',
         googleApiKey: ''
     },
     Identity: {
-        identityUrl : 'https://localhost:5102',
+        identityUrl : 'https://id.nextone.local',
     }
 }

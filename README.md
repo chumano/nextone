@@ -44,23 +44,24 @@ manager/NextOne@123
 - map config page
 
 ### Services
-- Web :       http://localhost:5100
-- Web-map :   http://localhost:5107
+- Web :       http://localhost:5100 nextone.local
+- Web-map :   http://localhost:5107 map.nextone.local
 
-- Gateway :   http://localhost:5101
+- Gateway :   http://localhost:5101 gateway.nextone.local
 
-- Identity :  https://localhost:5102
+
+- Identity :  https://localhost:5102 id.nextone.local
 -- Chú ý: Identity phải chạy ở https thì nới redirect oidc
 
-- Master :    http://localhost:5103
-- Com :       http://localhost:5104
+- Master :    http://localhost:5103 api.master.nextone.local
+- Com :       http://localhost:5104 api.com.nextone.local
 
-- Map :       http://localhost:5105
+- Map :       http://localhost:5105 api.map.nextone.local
 
-- File :       http://localhost:5106
+- File :       http://localhost:5106 api.file.nextone.local
 
 Infrastructures:
-- Seq :       http://localhost:5109
+- Seq :       http://localhost:5109 seq.nextone.local
 - DB :        localhost, 1433
 
 Gateway route:
@@ -68,6 +69,22 @@ Gateway route:
 - /com
 - /file - not
 - /map - not
+
+
+### hosts file : C:\Windows\System32\drivers\etc\hosts
+127.0.0.1 nextone.local
+127.0.0.1 map.nextone.local
+127.0.0.1 gateway.nextone.local
+127.0.0.1 id.nextone.local
+127.0.0.1 apis.nextone.local
+
+127.0.0.1 api.master.nextone.local
+127.0.0.1 api.com.nextone.local
+127.0.0.1 api.map.nextone.local
+127.0.0.1 api.file.nextone.local
+
+127.0.0.1 seq.nextone.local
+
 #### Migrations and Seed identity data
 Migrations
 ```
@@ -144,3 +161,18 @@ usersecrets
 ```
 %appdata%/microsoft/usersecrets
 ```
+
+certificates
+```
+#wsl2
+cd configs/certificates/
+
+openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout id.nextone.local.key -out id.nextone.local.crt -config id.nextone.local.conf
+
+#verify : 2 results must be same
+openssl x509 -noout -modulus -in id.nextone.local.crt| openssl md5
+openssl rsa -noout -modulus -in id.nextone.local.key| openssl md5
+```
+
+install trust certificate
+https://support.kaspersky.com/CyberTrace/1.0/en-US/174127.htm

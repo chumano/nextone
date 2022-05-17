@@ -137,9 +137,9 @@ namespace IdentityService
 
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = { "https://localhost:5100/auth/callback" , "http://localhost:5100/auth/callback"},
+                    RedirectUris = { "https://localhost:5100/auth/callback" , "http://localhost:5100/auth/callback", "http://nextone.local:5100/auth/callback"},
                     FrontChannelLogoutUri = "http://localhost:5100/auth/signout",
-                    PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" },
+                    PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" , "http://nextone.local/auth/signout-callback"},
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "role", "gateway", "master-scope" },
@@ -158,9 +158,9 @@ namespace IdentityService
 
                     AllowedGrantTypes =  GrantTypes.Code.Concat(GrantTypes.ResourceOwnerPassword).ToList(),
 
-                    RedirectUris = { "https://localhost:5107/auth/callback" , "http://localhost:5107/auth/callback"},
+                    RedirectUris = { "https://localhost:5107/auth/callback" , "http://localhost:5107/auth/callback", "http://map.nextone.local/auth/callback"},
                     FrontChannelLogoutUri = "http://localhost:5107/auth/signout",
-                    PostLogoutRedirectUris = { "https://localhost:5107/auth/signout-callback", "http://localhost:5107/auth/signout-callback" },
+                    PostLogoutRedirectUris = { "https://localhost:5107/auth/signout-callback", "http://localhost:5107/auth/signout-callback", "http://map.nextone.local/auth/signout-callback" },
 
                     AllowOfflineAccess = true,
                     AllowedScopes = { "openid", "profile", "role", "gateway", "master-scope" },
