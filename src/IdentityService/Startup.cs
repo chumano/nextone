@@ -23,6 +23,7 @@ using System;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 
 namespace IdentityService
 {
@@ -117,14 +118,14 @@ namespace IdentityService
                     });
             });
 
-            services.Configure<CookieAuthenticationOptions>(
-                IdentityServerConstants.DefaultCookieAuthenticationScheme, 
-                options =>
-            {
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.IsEssential = true;
-            });
+            //services.Configure<CookieAuthenticationOptions>(
+            //    IdentityServerConstants.DefaultCookieAuthenticationScheme, 
+            //    options =>
+            //{
+            //    options.Cookie.SameSite = SameSiteMode.None;
+            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            //    options.Cookie.IsEssential = true;
+            //});
 
             //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
             if (Environment.IsDevelopment())
@@ -162,14 +163,26 @@ namespace IdentityService
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
             }
+
+            //forward header from nginx proxy to .well-known urls is same domain
+            var fordwardedHeaderOptions = new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            };
+            fordwardedHeaderOptions.KnownNetworks.Clear();
+            fordwardedHeaderOptions.KnownProxies.Clear();
+            app.UseForwardedHeaders(fordwardedHeaderOptions);
+
             app.UseStaticFiles();
             app.UseCors(AllowSpecificOrigins);
+            //Khong can
             //app.UseCookiePolicy(new CookiePolicyOptions
             //{
-            //    HttpOnly = HttpOnlyPolicy.None,
-            //    MinimumSameSitePolicy = SameSiteMode.None,
-            //    Secure = CookieSecurePolicy.Always
+            //   HttpOnly = HttpOnlyPolicy.None,
+            //   MinimumSameSitePolicy = SameSiteMode.None,
+            //   Secure = CookieSecurePolicy.Always
             //});
+
 
             app.UseRouting();
             app.UseIdentityServer();

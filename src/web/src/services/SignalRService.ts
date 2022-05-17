@@ -1,4 +1,5 @@
 import { HubConnection, HubConnectionBuilder, HubConnectionState, IHttpConnectionOptions } from "@microsoft/signalr";
+import API from "../config/apis";
 import Pubsub from "../utils/pubSub";
 
 class SignalRService {
@@ -7,7 +8,7 @@ class SignalRService {
   private hubConnection: HubConnection | undefined;
   private pubSub: Pubsub = new Pubsub();
   public constructor() {
-    this.baseUrl = process.env.REACT_APP_COM_API || '';
+    this.baseUrl = API.COM_SERVICE;
   }
   public subscription(evt: 'connected' | string, callback: (...args: any[]) => void) {
     

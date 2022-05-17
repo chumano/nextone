@@ -12,7 +12,7 @@ export const OidcConfig: UserManagerSettings = {
     scope : "openid profile offline_access gateway master-scope",
     silent_redirect_uri : `${hostUrl}/auth/silent-callback`,
     automaticSilentRenew : true,
-    loadUserInfo: false,
+    loadUserInfo: true,
     userStore : new WebStorageStateStore({ store: localStorage}),
     prompt : "login"
 };

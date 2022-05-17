@@ -31,10 +31,6 @@ class CallService {
             this.pubSub.publish(CallEvents.RECEIVE_CALL_REQUEST, room);
         });
 
-       
-
-        //connect if it's not connected yet
-        await this.signaling.connect();
     }
     private listenCallMessage = ()=>{
         this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE, (message: CallMessage) => {
@@ -136,9 +132,6 @@ class SignalRSignaling implements ISignaling {
 
     }
 
-    connect(): Promise<void> {
-        return SignalR.connect('/hubChat');
-    }
     isConnected(): boolean {
         return SignalR.isConnected();
     }

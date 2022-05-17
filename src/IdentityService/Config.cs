@@ -137,7 +137,7 @@ namespace IdentityService
 
                     AllowedGrantTypes = GrantTypes.Code,
 
-                    RedirectUris = { "https://localhost:5100/auth/callback" , "http://localhost:5100/auth/callback", "http://nextone.local:5100/auth/callback"},
+                    RedirectUris = { "https://localhost:5100/auth/callback" , "http://localhost:5100/auth/callback", "http://nextone.local/auth/callback"},
                     FrontChannelLogoutUri = "http://localhost:5100/auth/signout",
                     PostLogoutRedirectUris = { "https://localhost:5100/auth/signout-callback", "http://localhost:5100/auth/signout-callback" , "http://nextone.local/auth/signout-callback"},
 

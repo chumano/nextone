@@ -18,7 +18,7 @@ services:
           - IsAutoMigration=true
           - IsDBSeed=true
           - Logging__LogLevel__Default=Information
-          - CorsHosts=http://localhost:5100;http://localhost:5107;http://${MAPWEB_DOMAIN}
+          - CorsHosts=http://localhost:5100;http://localhost:5107;http://${MAPWEB_DOMAIN};http://${COMWEB_DOMAIN}
         networks:
           - nextone-internal
           - traefik-proxy
@@ -48,8 +48,8 @@ services:
           - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
           - IsAutoMigration=true
           - Logging__LogLevel__Default=Information
-          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${COMWEB_DOMAIN}
-          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;http://${COMWEB_DOMAIN};https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_LOCAL}
           - IdentityServerOptions__RequireHttpsMetadata=false
         networks:
           - nextone-internal
@@ -78,8 +78,8 @@ services:
           - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
           - IsAutoMigration=true
           - Logging__LogLevel__Default=Information
-          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${COMWEB_DOMAIN}
-          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;http://${COMWEB_DOMAIN};https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_LOCAL}
           - IdentityServerOptions__RequireHttpsMetadata=false
         networks:
           - nextone-internal
@@ -115,8 +115,8 @@ services:
           - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
           - IsAutoMigration=true
           - Logging__LogLevel__Default=Information
-          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${MAPWEB_DOMAIN}
-          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;http://${MAPWEB_DOMAIN};https://${MAPWEB_DOMAIN};http://${COMWEB_DOMAIN};https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_LOCAL}
           - IdentityServerOptions__RequireHttpsMetadata=false
           - MapSettings__MapOffsetX=0
           - MapSettings__MapOffsetY=-7500
@@ -152,8 +152,8 @@ services:
           - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
           - IsAutoMigration=true
           - Logging__LogLevel__Default=Information
-          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;https://${COMWEB_DOMAIN}
-          - IdentityServerOptions__Authority=${IDENTITY_DOMAIN}
+          - CorsHosts=http://localhost:4200;http://localhost:5100;http://localhost:5107;http://${COMWEB_DOMAIN};https://${COMWEB_DOMAIN}
+          - IdentityServerOptions__Authority=${IDENTITY_LOCAL}
           - IdentityServerOptions__RequireHttpsMetadata=false
           - LocalFileSettings__FileFolder=Data/Uploads
         networks:
@@ -180,15 +180,36 @@ services:
           
         environment:
           - TZ=Asia/Ho_Chi_Minh
-          - ConnectionStrings__DefaultConnection=${DATABASE_CONNECTION}
         networks:
           - nextone-internal
           - traefik-proxy
         labels:
           - "traefik.enable=true"
           - "traefik.http.routers.nextone-mapweb.rule=Host(`${MAPWEB_DOMAIN}`)"
-          - "traefik.http.routers.nextone-mapweb.entrypoints=https"
+          - "traefik.http.routers.nextone-mapweb.entrypoints=http,https"
           
+    com-web:
+        image: ${DOCKER_REGISTRY}/nextone/com-web:latest
+        build:
+          context: ./src/web
+          dockerfile: ./Dockerfile
+        container_name: nextone-com-web
+        ports:
+          - "5100:80"
+        restart: unless-stopped
+        volumes:
+          - ./configs/comwebconfig.js:/usr/share/nginx/html/config.js
+          
+        environment:
+          - TZ=Asia/Ho_Chi_Minh
+        networks:
+          - nextone-internal
+          - traefik-proxy
+        labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.nextone-mapweb.rule=Host(`${COMWEB_DOMAIN}`)"
+          - "traefik.http.routers.nextone-mapweb.entrypoints=http,https"
+
     nextonedb:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
         container_name: nextone-mssql
@@ -216,7 +237,7 @@ services:
           - "80:80"
           - "443:443"
         volumes:
-          - ./configs/nginx-proxy.conf:/etc/nginx/nginx.conf
+          - ./configs/nginx.conf:/etc/nginx/nginx.conf
           - ./configs/certificates:/ca-certificates
         networks:
           - nextone-internal

@@ -26,7 +26,6 @@ export const CallEvents = {
 
 
 export interface ISignaling {
-    connect(): Promise<void>;
     isConnected(): boolean;
 
     invoke(action: string, 
