@@ -58,7 +58,7 @@ pipeline {
 
               stage('MapService-Release'){
                   steps {
-                    sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}
+                    sh 'docker tag ${DOCKER_REGISTRY}/nextone/map ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
                     withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                         sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
                         sh 'docker push ${DOCKER_REGISTRY}/nextone/map:${BUILD_NUMBER}'
@@ -125,7 +125,11 @@ pipeline {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-                  sh "docker-compose -f docker-compose.yml up -d map-web"
+					withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                        sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                        sh "docker-compose -f docker-compose.yml up -d map-web"
+                    }
+                  
                 }
               }
               
