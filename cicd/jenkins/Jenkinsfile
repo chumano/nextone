@@ -6,19 +6,24 @@ pipeline {
   //   //dockerfile true
   // }
   environment {
-    registryCredential = 'harbor.tris.vn' 
+    registryCredential = 'harbor.tris.vn'
+	DOCKER_REGISTRY = 'harbor.tris.vn'
+	
     CONTAINER_NAME = 'test-jenkins-node-service'
     ACTION_TYPE = sh(script: "echo \"${env.gitlabActionType}\" | sed 's|/|-|g'", returnStdout: true).trim().toLowerCase()
     PARSED_VERSION = sh(returnStdout: true, script: "git log -1 | sed -r 's/[[:alnum:]]+=/\\n&/g' | awk -F= '{if(\$1==\"VERSION\"){print \$2} else {print \"\"}}' | sed ':a;N;\$!ba;s/\\n//g' | awk '{if(\$1==\"\"){print \"latest\"} else {print \$1}}'").trim()
     APP_VERSION = sh(script: "echo \"$PARSED_VERSION\"", returnStdout: true)
-	DOCKER_REGISTRY = harbor.tris.vn
+	
   }
 
   stages {
     stage('Info') {
       steps {
         echo "Current build number: ${currentBuild.number}"
-        script {
+        withCredentials([usernameColonPassword(credentialsId: 'MAT_KHAU', variable: 'MAT_KHAU')]) {
+			echo "MAT_KHAU: ${MAT_KHAU}"
+		}
+		script {
             def commit = sh(returnStdout: true, script: 'git log -1 --pretty=%B | cat')
             echo "Last commit : ${commit}"
             echo "APP_VERSION : ${APP_VERSION}"
