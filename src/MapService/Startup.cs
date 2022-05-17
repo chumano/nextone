@@ -52,6 +52,7 @@ namespace MapService
 
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
+            Console.WriteLine("connectionstring: " + connectionString);
             services.AddDbContext<MapDBContext>(options =>
             {
                 options.UseSqlServer(connectionString, sql => sql.MigrationsAssembly(migrationsAssembly));

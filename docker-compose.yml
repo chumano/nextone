@@ -82,7 +82,7 @@ services:
           
     db:
         image: mcr.microsoft.com/mssql/server:2017-latest #"mcr.microsoft.com/mssql/server"
-        container_name: nextone_mssql
+        container_name: nextone-mssql
         environment:
             SA_PASSWORD: "NextOne@123456"
             ACCEPT_EULA: "Y"
