@@ -35,6 +35,8 @@ services:
         ports:
           - "5105:80"
         restart: unless-stopped
+        depends_on:         
+          - db
         volumes:
           - ./Map/MapTiles:/app/Data/MapTiles
           - ./Map/ShapeFiles:/app/Data/ShapeFiles

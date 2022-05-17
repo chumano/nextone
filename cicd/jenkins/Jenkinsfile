@@ -78,7 +78,7 @@ pipeline {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-                  sh "docker-compose -f docker-compose.yml up -d map"
+                  sh "docker-compose -f docker-compose.yml up --no-deps -d map"
                 }
               }
 
@@ -100,12 +100,6 @@ pipeline {
             }
             stages {
               stage('MapWeb-Build'){
-                // agent {
-                //     docker { image 'node:latest' }
-                // }
-                // environment {
-                //   HOME = '.'
-                // }
                 steps {
                   sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
                 }
@@ -151,12 +145,6 @@ pipeline {
             }
             stages {
               stage('IdentityService-Build'){
-                // agent {
-                //     docker { image 'node:latest' }
-                // }
-                // environment {
-                //   HOME = '.'
-                // }
                 steps {
                   sh "APP_VERSION=${BUILD_NUMBER} docker-compose build identity"
                 }
@@ -179,7 +167,7 @@ pipeline {
                   expression { GIT_BRANCH == 'origin/main' }
                 }
                 steps {
-                  sh "docker-compose -f docker-compose.yml up -d identity"
+                  sh "docker-compose -f docker-compose.yml up --no-deps -d identity"
                 }
               }
             }
