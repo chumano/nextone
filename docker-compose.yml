@@ -2,6 +2,7 @@ version: "3.3"
 services:
     identity:
         image: ${DOCKER_REGISTRY}/nextone/identity:latest
+        #pull_policy: always
         build:
           context: ./src
           dockerfile: ./IdentityService/Dockerfile
