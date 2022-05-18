@@ -97,7 +97,7 @@ namespace IdentityService
                 new ApiScope("scope1"),
                 new ApiScope("scope2"),
                 new ApiScope("gateway"),
-                new ApiScope("master-scope")
+                new ApiScope("master-scope", new string[] {"role"})
             };
 
         public static IEnumerable<ApiResource> ApiResources =>

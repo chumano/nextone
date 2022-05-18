@@ -9,7 +9,7 @@ import React from "react";
 import { useMapEditor } from "./useMapEditor";
 import LayerGoogleLeaflet from "../../components/map/LayerGoogleLeaflet";
 import LayerGridLeaftlet from "../../components/map/LayerGridLeaflet";
-import { AppWindow } from "../../config/AppWindow";
+import { AppWindow, MAP_API } from "../../config/AppWindow";
 import { MapBoudingBox } from "../../interfaces";
 
 declare let window: AppWindow;
@@ -39,9 +39,9 @@ const MapViewContainer: React.FC<MapViewProps> = (props) => {
     const [map, setMap] = useState<L.Map | any>(null);
     const mapid = mapEditor.mapEditorState.mapInfo?.id;
     const ref = useRef<L.TileLayer>(null);
-    const tileMapUrl = `http://localhost:5105/tms/map-${mapid}/{z}/{x}/{y}.png`
+    const tileMapUrl = `${MAP_API}/tms/map-${mapid}/{z}/{x}/{y}.png`
     useEffect(() => {
-        const tileMapUrl = `http://localhost:5105/tms/map-${mapid}/{z}/{x}/{y}.png`
+        const tileMapUrl = `${MAP_API}/tms/map-${mapid}/{z}/{x}/{y}.png`
         if (ref.current) {
             ref.current.setUrl(tileMapUrl);
         }
@@ -103,7 +103,7 @@ const MapViewContainer: React.FC<MapViewProps> = (props) => {
 
                 {/* <LayersControl.Overlay name="us_states" checked={false}> 
                     <TileLayer tms={true}
-                            url="http://localhost:5105/tms/1.0.0/us_states/{z}/{x}/{y}.png"
+                            url="${MAP_API}/tms/1.0.0/us_states/{z}/{x}/{y}.png"
                         />
                 </LayersControl.Overlay>
 
