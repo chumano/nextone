@@ -6,15 +6,15 @@ pipeline {
   //   //dockerfile true
   // }
   environment {
-    registryCredential = 'harbor.tris.vn'
-	DOCKER_REGISTRY = 'harbor.tris.vn'
-	
+    
     CONTAINER_NAME = 'test-jenkins-node-service'
     ACTION_TYPE = sh(script: "echo \"${env.gitlabActionType}\" | sed 's|/|-|g'", returnStdout: true).trim().toLowerCase()
     PARSED_VERSION = sh(returnStdout: true, script: "git log -1 | sed -r 's/[[:alnum:]]+=/\\n&/g' | awk -F= '{if(\$1==\"VERSION\"){print \$2} else {print \"\"}}' | sed ':a;N;\$!ba;s/\\n//g' | awk '{if(\$1==\"\"){print \"latest\"} else {print \$1}}'").trim()
     APP_VERSION = sh(script: "echo \"$PARSED_VERSION\"", returnStdout: true)
 	
-	MAT_KHAU1 = credentials('MAT_KHAU')
+	  MAT_KHAU1 = credentials('MAT_KHAU')
+    DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
+    registryCredential = DOCKER_REGISTRY
   }
 
   stages {

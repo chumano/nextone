@@ -73,7 +73,7 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (this.User.IsAuthenticated())
             {
-               var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+                var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
                 return Redirect(returnUrl);
             }
 
