@@ -14,7 +14,7 @@ pipeline {
 	
 	  MAT_KHAU1 = credentials('MAT_KHAU')
     DOCKER_REGISTRY = credentials('DOCKER_REGISTRY')
-    registryCredential = DOCKER_REGISTRY
+    registryCredential = sh(script: "echo \"$DOCKER_REGISTRY\"", returnStdout: true)
   }
 
   stages {
