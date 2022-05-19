@@ -3,17 +3,19 @@ import 'react-chat-elements/dist/main.css';
 import '../../styles/pages/chat/chat.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { IAppStore } from '../../store';
-import { chatActions, getConversations } from '../../store/chat/chatReducer';
+import { chatActions, getChannels, getConversations } from '../../store/chat/chatReducer';
 import ConversationList from '../../components/chat/ConversationList';
 import ChatBox from '../../components/chat/ChatBox';
 import { Button, Icon } from 'antd';
 import ModalFindUser from '../../components/chat/ModalFindUser';
 import no_selected_conversation_bg from '../../assets/images/chat/no_selected_conversation_bg.png';
+import ModalChannelCreation from '../../components/chat/ModalChannelCreation';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
     const { conversations, channels, modals, selectedConversationId } = useSelector((store: IAppStore) => store.chat);
     useEffect(() => {
+        dispatch(getChannels())
         dispatch(getConversations())
     }, [])
 
@@ -33,6 +35,7 @@ const ChatPage: React.FC = () => {
                         <div className='flex-spacer'></div>
                         <Button shape="circle" className='button-icon' onClick={() => {
                             //new channel
+                            dispatch(chatActions.showModal({ modal: 'channel_creation', visible: true }))
                         }}>
                             <Icon type="plus" />
                         </Button>
@@ -76,6 +79,12 @@ const ChatPage: React.FC = () => {
         {modals['find_user'] &&
             <ModalFindUser onVisible={(visible) => {
                 dispatch(chatActions.showModal({ modal: 'find_user', visible: visible }))
+            }} />
+        }
+
+        {modals['channel_creation'] &&
+            <ModalChannelCreation onVisible={(visible) => {
+                dispatch(chatActions.showModal({ modal: 'channel_creation', visible: visible }))
             }} />
         }
     </>

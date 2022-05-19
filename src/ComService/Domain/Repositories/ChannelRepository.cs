@@ -62,7 +62,7 @@ namespace ComService.Domain.Repositories
 
         public Task<Channel> Get(string id)
         {
-            return _dbContext.Channels.FirstOrDefaultAsync(o => o.Id == id);
+            return this.Channels.FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public Task SaveChangesAsync()

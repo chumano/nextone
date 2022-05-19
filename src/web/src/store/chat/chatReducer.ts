@@ -1,12 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { comApi } from "../../apis/comApi";
 import { Conversation } from "../../models/conversation/Conversation.model";
-import { CreateConverationDTO, GetListConversationDTO, GetMessagesHistoryDTO, SendMessageDTO } from "../../models/dtos";
+import { CreateChannelDTO, CreateConverationDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, SendMessageDTO } from "../../models/dtos";
 import { GetListUserStatusDTO } from "../../models/dtos/UserStatusDTOs";
 import { Message } from "../../models/message/Message.model";
 import { ChatMesageEventData } from "./chatPayload";
 import { ChatState } from "./ChatState";
 
+
+//conversation
 export const getOrCreateConversation = createAsyncThunk(
     'chat/getOrCreateConversation',
     async (data: CreateConverationDTO, thunkAPI) => {
@@ -38,6 +40,29 @@ export const deleteConversation = createAsyncThunk(
     async (id: string, thunkAPI) => {
         const response = await comApi.deleteConversation(id);
         return response
+    }
+)
+
+export const getChannels = createAsyncThunk(
+    'chat/getChannels',
+    async (data: GetListChannelDTO |undefined, thunkAPI) => {
+        const response = await comApi.getChannels(data);
+        return response
+    }
+)
+
+
+//channel
+export const createChannel = createAsyncThunk(
+    'chat/createChannel',
+    async (data: CreateChannelDTO, thunkAPI) => {
+        const { dispatch } = thunkAPI;
+        const createResponse = await comApi.createChannel(data);
+        
+        debugger
+        const response = await comApi.getChannel(createResponse.data);
+        debugger
+        return response;
     }
 )
 
@@ -155,6 +180,23 @@ export const chatSlice = createSlice({
             const { payload } = action;
         })
 
+        //channel
+        builder.addCase(getChannels.fulfilled, (state, action) => {
+            const { payload } = action;
+            state.conversationsLoading = false;
+            if(payload.isSuccess){
+                state.channels = payload.data;
+            }
+        })
+        builder.addCase(createChannel.fulfilled, (state, action) => {
+            const { payload } = action;
+            if(payload.isSuccess){
+                state.selectedConversationId = payload.data.id;
+                if(!state.channels.find(o=>o.id == payload.data.id)){
+                    state.channels.unshift(payload.data)
+                }
+            }
+        })
         //member
 
         //message 

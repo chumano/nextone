@@ -21,7 +21,7 @@ namespace ComService.Boudaries.Controllers
     {
         private readonly ILogger<ChannelController> _logger;
         private readonly IUserContext _userContext;
-        private readonly IUserStatusService _userService;
+        private readonly IUserStatusService _userStatusService;
         private readonly IdGenerator _idGenerator;
         private readonly IChannelService _channelService;
         public ChannelController(
@@ -34,21 +34,40 @@ namespace ComService.Boudaries.Controllers
             _logger = logger;
             _userContext = userContext;
             _idGenerator = idGenerator;
-            _userService = userService;
+            _userStatusService = userService;
             _channelService = channelService;
         }
 
 
-        //channel
+        [HttpGet("GetList")]
+        public async Task<IActionResult> GetList([FromQuery] GetListChannelDTO getListDTO)
+        {
+            var pageOptions = new PageOptions(getListDTO.Offset, getListDTO.PageSize);
+            var userId = _userContext.User.UserId;
+            var user = await _userStatusService.GetUser(userId);
+            var channels = await _channelService.GetChannelsByUser(user,
+                pageOptions);
+            var dtos = channels.Select(o => ChannelDTO.From(o));
+            return Ok(ApiResult.Success(dtos));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
+        {
+            var channel = await _channelService.Get(id);
+
+            return Ok(ApiResult.Success(ChannelDTO.From(channel)));
+        }
+
         [HttpPost("CreateChannel")]
         public async Task<IActionResult> CreateChannel([FromBody] CreateChannelDTO createChannelDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var channelId = await _channelService.Create(user,
                 createChannelDTO.Name,
-                ConversationTypeEnum.Channel,
-                createChannelDTO.MemberIds);
+                createChannelDTO.MemberIds,
+                createChannelDTO.EventTypeCodes);
 
             return Ok(ApiResult.Success(channelId));
         }
@@ -57,7 +76,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> UpdateEventTypes([FromBody] UpdateEventTypesChannelDTO updateDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
 
             var channel = await _channelService.Get(updateDTO.ChannelId);
 
@@ -73,7 +92,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> SendEvent([FromBody] SendEventDTO sendEventDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             //TODO : SendEvent
             //get channels allow event code
             var channels = await _channelService.GetChannelsByEventCode(sendEventDTO.EventTypeCode);
@@ -114,7 +133,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> GetEventsHistory(GetEventsHistoryDTO getEventsDTO)
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            var user = await _userStatusService.GetUser(userId);
             var channel = await _channelService.Get(getEventsDTO.ChannelId);
 
             //TODO: check user have permission to GetEventsHistory

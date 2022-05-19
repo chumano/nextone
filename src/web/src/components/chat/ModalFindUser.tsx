@@ -20,7 +20,6 @@ const ModalFindUser: React.FC<ModalFindUserProps> =
         const [selectedUserId, setSelectedUserId] = useState<string>();
 
         useEffect(() => {
-
             const fetchUsers = async () => {
                 const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
                 setUserList(usersReponse.data);
@@ -29,6 +28,7 @@ const ModalFindUser: React.FC<ModalFindUserProps> =
             setLoading(true);
             fetchUsers();
         }, [])
+
         const handleOk = () => {
             const conversation : CreateConverationDTO={
                 name: '',

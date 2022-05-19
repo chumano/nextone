@@ -9,7 +9,7 @@
  */
 
 import React, { useState } from 'react';
-import { Text } from 'react-native';
+import { SafeAreaView, Text } from 'react-native';
 import SamplePage from './src/pages/SamplePage';
 import * as samlib from '@chuno/sam';
 
@@ -17,10 +17,10 @@ import * as samlib from '@chuno/sam';
 const App = () => {
   const msg = samlib.saySomething();
   return (
-    <>
-    <Text>{'Text From Lib: '+msg}</Text>
-    <SamplePage></SamplePage>
-    </>
+    <SafeAreaView>
+      <Text>{'Text  Lib: ' + msg}</Text>
+      <SamplePage></SamplePage>
+    </SafeAreaView>
   );
 };
 

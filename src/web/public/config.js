@@ -11,9 +11,9 @@ window.ENV = {
         identityUrl : 'https://localhost:5102',
     },
     Apis:{
-        masterUrl : 'https://localhost:5103',
-        comUrl : 'https://localhost:5104',
-        mapUrl : 'https://localhost:5105',
-        fileUrl : 'https://localhost:5106',
+        masterUrl : 'http://localhost:5103',
+        comUrl : 'http://localhost:5104',
+        mapUrl : 'http://localhost:5105',
+        fileUrl : 'http://localhost:5106',
     }
 }

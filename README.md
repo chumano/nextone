@@ -74,14 +74,9 @@ Gateway route:
 ### hosts file : C:\Windows\System32\drivers\etc\hosts
 127.0.0.1 nextone.local
 127.0.0.1 map.nextone.local
-127.0.0.1 gateway.nextone.local
 127.0.0.1 id.nextone.local
 127.0.0.1 apis.nextone.local
-
-127.0.0.1 api.master.nextone.local
-127.0.0.1 api.com.nextone.local
-127.0.0.1 api.map.nextone.local
-127.0.0.1 api.file.nextone.local
+127.0.0.1 gateway.nextone.local
 
 127.0.0.1 seq.nextone.local
 

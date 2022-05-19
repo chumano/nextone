@@ -12,6 +12,7 @@ namespace ComService.Domain.Services
 {
     public interface IChannelService : IConversationService
     {
+        Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions);
         new Task<Channel> Get(string id);
         Task<string> Create(UserStatus createdUser, string name,  IList<string> memberIds, IList<string> eventTypeCodes);
         Task UpdateEventTypes(Channel channel, string name,
@@ -37,6 +38,19 @@ namespace ComService.Domain.Services
             _channelRepository = channelRepository;
             _eventRepository = eventRepository;
         }
+
+        public async Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions)
+        {
+            var items = await _channelRepository.Channels
+                .Where(o => o.Members.Any(m => m.UserId == user.UserId))
+                .OrderByDescending(o => o.UpdatedDate)
+                .Skip(pageOptions.Offset)
+                .Take(pageOptions.PageSize)
+                .ToListAsync();
+
+            return items;
+        }
+
         public async Task<string> Create(UserStatus createdUser, string name, 
             IList<string> memberIds, 
             IList<string> eventTypeCodes)
@@ -44,10 +58,15 @@ namespace ComService.Domain.Services
             var id = _idGenerator.GenerateNew();
             var type = ConversationTypeEnum.Channel;
             var channel = new Channel(id, name, eventTypeCodes);
-            
+
+            if (!memberIds.Contains(createdUser.UserId))
+            {
+                memberIds.Add(createdUser.UserId);
+            }
+
             //get users
             var users = await _userService.GetOrAddUsersByIds(memberIds);
-
+            
             foreach (var user in users)
             {
                 var role = MemberRoleEnum.MEMBER;

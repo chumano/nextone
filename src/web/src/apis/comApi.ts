@@ -1,8 +1,10 @@
 import axios from "axios";
 import { ApiResult } from "../models/apis/ApiResult.model";
+import { Channel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
-import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
+import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
 import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
+import { EventType } from "../models/event/EventType.model";
 import { Message } from "../models/message/Message.model";
 import { UserStatus } from "../models/user/UserStatus.model";
 import { createAxios } from "../utils";
@@ -60,10 +62,23 @@ export const comApi = {
         const responsePromise = comAxiosInstance.post(`/channel/CreateChannel`, data)
         return await handleAxiosApi<ApiResult<string>>(responsePromise);
     },
+
+    getChannels : async (data?: GetListChannelDTO)=>{
+        const responsePromise = comAxiosInstance.get('/channel/GetList', {params: data})
+        return await handleAxiosApi<ApiResult<Channel[]>>(responsePromise);
+    },
+
+    getChannel : async (id: string)=>{
+        const responsePromise = comAxiosInstance.get(`/channel/${id}`)
+        return await handleAxiosApi<ApiResult<Channel>>(responsePromise);
+    },
+
     updateChannelEventTypes : async (data: UpdateEventTypesChannelDTO)=>{
         const responsePromise = comAxiosInstance.post(`/channel/UpdateEventTypes`, data)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
     },
+    
+    //event
     getEventsHistory : async (data : GetEventsHistoryDTO)=>{
         const responsePromise = comAxiosInstance.get('/channel/GetEventsHistory', data)
         return await handleAxiosApi<ApiResult<Message[]>>(responsePromise);
@@ -71,6 +86,11 @@ export const comApi = {
     sendEvent : async (data: SendEventDTO)=>{
         const responsePromise = comAxiosInstance.post(`/channel/SendEvent`, data)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+    },
+
+    getEventTypes: async ()=>{
+        const responsePromise = comAxiosInstance.get('/settings/GetEventTypes')
+        return await handleAxiosApi<ApiResult<EventType[]>>(responsePromise);
     },
 
     //users
