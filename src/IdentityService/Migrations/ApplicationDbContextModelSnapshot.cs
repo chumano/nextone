@@ -20,6 +20,37 @@ namespace IdentityService.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("IdentityService.Data.ApplicationPage", b =>
+                {
+                    b.Property<string>("SystemCode")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("SystemCode", "Name");
+
+                    b.ToTable("ApplicationPages","identity");
+                });
+
+            modelBuilder.Entity("IdentityService.Data.ApplicationSystem", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("ApplicationSystems","identity");
+                });
+
             modelBuilder.Entity("IdentityService.Models.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
@@ -62,7 +93,7 @@ namespace IdentityService.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("ApplicationSystem")
-                        .HasColumnType("nvarchar(256)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -223,6 +254,15 @@ namespace IdentityService.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("IdentityService.Data.ApplicationPage", b =>
+                {
+                    b.HasOne("IdentityService.Data.ApplicationSystem", null)
+                        .WithMany("Pages")
+                        .HasForeignKey("SystemCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

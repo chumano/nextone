@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IdentityService.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220502082302_Idenity_Add_ApplicationSystem")]
-    partial class Idenity_Add_ApplicationSystem
+    [Migration("20220520103344_Identity_AddApplicationSystem")]
+    partial class Identity_AddApplicationSystem
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,6 +21,37 @@ namespace IdentityService.Migrations
                 .HasAnnotation("ProductVersion", "3.1.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("IdentityService.Data.ApplicationPage", b =>
+                {
+                    b.Property<string>("SystemCode")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("SystemCode", "Name");
+
+                    b.ToTable("ApplicationPages","identity");
+                });
+
+            modelBuilder.Entity("IdentityService.Data.ApplicationSystem", b =>
+                {
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Code");
+
+                    b.ToTable("ApplicationSystems","identity");
+                });
 
             modelBuilder.Entity("IdentityService.Models.ApplicationRole", b =>
                 {
@@ -225,6 +256,15 @@ namespace IdentityService.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("IdentityService.Data.ApplicationPage", b =>
+                {
+                    b.HasOne("IdentityService.Data.ApplicationSystem", null)
+                        .WithMany("Pages")
+                        .HasForeignKey("SystemCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

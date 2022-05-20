@@ -73,6 +73,12 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (this.User.IsAuthenticated())
             {
+                var applicationSystem = this.User.Claims.FirstOrDefault(o => o.Type == "ApplicationSystem")?.Value;
+                if (string.IsNullOrEmpty(returnUrl))
+                {
+                    //return to portal page
+                    return Redirect("~/Portal");
+                }
                 var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
                 return Redirect(returnUrl);
             }

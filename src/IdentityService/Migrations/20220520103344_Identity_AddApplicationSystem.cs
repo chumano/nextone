@@ -3,12 +3,25 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace IdentityService.Migrations
 {
-    public partial class Identity_Init_ApplicationDB : Migration
+    public partial class Identity_AddApplicationSystem : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "identity");
+
+            migrationBuilder.CreateTable(
+                name: "ApplicationSystems",
+                schema: "identity",
+                columns: table => new
+                {
+                    Code = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationSystems", x => x.Code);
+                });
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
@@ -46,11 +59,33 @@ namespace IdentityService.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    ApplicationSystem = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApplicationPages",
+                schema: "identity",
+                columns: table => new
+                {
+                    SystemCode = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", nullable: false),
+                    Url = table.Column<string>(type: "nvarchar(255)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationPages", x => new { x.SystemCode, x.Name });
+                    table.ForeignKey(
+                        name: "FK_ApplicationPages_ApplicationSystems_SystemCode",
+                        column: x => x.SystemCode,
+                        principalSchema: "identity",
+                        principalTable: "ApplicationSystems",
+                        principalColumn: "Code",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -220,6 +255,10 @@ namespace IdentityService.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ApplicationPages",
+                schema: "identity");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims",
                 schema: "identity");
 
@@ -237,6 +276,10 @@ namespace IdentityService.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens",
+                schema: "identity");
+
+            migrationBuilder.DropTable(
+                name: "ApplicationSystems",
                 schema: "identity");
 
             migrationBuilder.DropTable(

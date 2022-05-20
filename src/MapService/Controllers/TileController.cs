@@ -5,6 +5,7 @@ using MapService.Domain.Services;
 using MapService.Infrastructure.AppSettings;
 using MapService.MapSources;
 using MapService.Utils;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -42,6 +43,7 @@ namespace MapService.Controllers
            
         }
 
+        //[DisableCors]
         [HttpGet("{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}")]
         public async Task<IActionResult> GetMapTileVersionAsync(string version, string mapid, int x, int y, int z, string formatExtension)
         {

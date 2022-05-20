@@ -33,7 +33,6 @@
   <ItemGroup>
     <Folder Include="Boudaries\Grpc\" />
     <Folder Include="Infrastructure\AppSettings\" />
-    <Folder Include="Migrations\" />
     <Folder Include="UseCases\Commands\" />
     <Folder Include="UseCases\Queries\" />
   </ItemGroup>
