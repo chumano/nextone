@@ -5,6 +5,19 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Portal Index</h1>
-<p> Show application pages </p>
+<h1>@Model.SystemName</h1>
+<div class="pages-container">
+
+     @{
+        var pages = Model.Pages;
+        for(var i = 0; i < pages.Count; i++)
+        {
+            <div class="systempage">
+                <a href="@pages[i].Url" class="systempage-link">
+                    <text>@pages[i].Name</text>
+                </a>
+            </div>
+        }
+    }
+</div>
 

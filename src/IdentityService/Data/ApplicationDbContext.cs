@@ -10,7 +10,7 @@ namespace IdentityService.Data
         public const string DB_SCHEMA = "identity";
 
         public DbSet<ApplicationSystem> Systems { get; set; }
-        // public DbSet<ApplicationPage> SystemPages { get; set; }
+        public DbSet<ApplicationPage> SystemPages { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
@@ -60,32 +60,6 @@ namespace IdentityService.Data
                    .IsRequired();
             });
 
-            #region ApplicationSystem Seed
-            //builder.Entity<ApplicationSystem>().HasData(
-            //    new List<ApplicationSystem>(){
-            //        new ApplicationSystem()
-            //        {
-            //            Code = "NextOne",
-            //            Name = "Next One"
-            //        }
-            //    }
-            //  );
-
-            //builder.Entity<ApplicationSystem>()
-            //    .HasData(
-            //        new ApplicationPage()
-            //        {
-            //            SystemCode = "NextOne",
-            //            Name = "UCom",
-            //            Url = "http://nextone.local"
-            //        },
-            //        new ApplicationPage()
-            //        {
-            //            SystemCode = "NextOne",
-            //            Name = "Map",
-            //            Url = "http://map.nextone.local"
-            //        });
-            #endregion
         }
     }
 }

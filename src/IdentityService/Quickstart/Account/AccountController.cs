@@ -18,7 +18,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -73,13 +75,19 @@ namespace IdentityServerHost.Quickstart.UI
 
             if (this.User.IsAuthenticated())
             {
-                var applicationSystem = this.User.Claims.FirstOrDefault(o => o.Type == "ApplicationSystem")?.Value;
                 if (string.IsNullOrEmpty(returnUrl))
                 {
                     //return to portal page
                     return Redirect("~/Portal");
                 }
                 var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+
+                if(context == null)
+                {
+                    //return to portal page
+                    return Redirect("~/Portal");
+                }
+
                 return Redirect(returnUrl);
             }
 
@@ -134,23 +142,28 @@ namespace IdentityServerHost.Quickstart.UI
 
                     // only set explicit expiration here if user chooses "remember me". 
                     // otherwise we rely upon expiration configured in cookie middleware.
-                    //AuthenticationProperties props = null;
-                    //if (AccountOptions.AllowRememberLogin && model.RememberLogin)
-                    //{
-                    //    props = new AuthenticationProperties
-                    //    {
-                    //        IsPersistent = true,
-                    //        ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
-                    //    };
-                    //};
+                    AuthenticationProperties props = null;
+                    if (AccountOptions.AllowRememberLogin && model.RememberLogin)
+                    {
+                        props = new AuthenticationProperties
+                        {
+                            IsPersistent = true,
+                            ExpiresUtc = DateTimeOffset.UtcNow.Add(AccountOptions.RememberMeLoginDuration)
+                        };
+                    };
 
-                    //// issue authentication cookie with subject ID and username
-                    //var isuser = new IdentityServerUser(user.Id)
-                    //{
-                    //    DisplayName = user.UserName
-                    //};
-
-                    //await HttpContext.SignInAsync(isuser, props);
+                    // issue authentication cookie with subject ID and username
+                    //var userClaims = await _userManager.GetClaimsAsync(user);
+                    var isuser = new IdentityServerUser(user.Id)
+                    {
+                        DisplayName = user.UserName,
+                        AdditionalClaims = new List<Claim>()
+                        {
+                            new Claim("ApplicationSystem", user.ApplicationSystem??"NextOne")
+                        }
+                    };
+                    
+                    await HttpContext.SignInAsync(isuser, props);
 
                     if (context != null)
                     {

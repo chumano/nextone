@@ -3,6 +3,7 @@
 
 
 using IdentityServer4.Models;
+using IdentityService.Data;
 using IdentityService.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -13,8 +14,32 @@ namespace IdentityService
 {
     public static class Config
     {
+        public static IEnumerable<ApplicationSystem> Systems => new ApplicationSystem[]
+        {
+           new ApplicationSystem()
+           {
+               Code = "NextOne",
+               Name = "Next One",
+               Pages = new List<ApplicationPage>()
+               {
+                    new ApplicationPage()
+                    {
+                        SystemCode = "NextOne",
+                        Name = "UCom",
+                        Url = "http://nextone.local"
+                    },
+                    new ApplicationPage()
+                    {
+                        SystemCode = "NextOne",
+                        Name = "Map",
+                        Url = "http://map.nextone.local"
+                    }
+               }
+           }
+        };
+
         public static IEnumerable<ApplicationRole> Roles => new ApplicationRole[]
-       {
+        {
            new ApplicationRole()
            {
                Name = "admin",
@@ -33,7 +58,7 @@ namespace IdentityService
                DisplayName="Member",
                NormalizedName = "MEMBER"
            }
-       };
+        };
 
         public static IEnumerable<ApplicationUser> Users
         {

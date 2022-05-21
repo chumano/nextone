@@ -80,6 +80,7 @@ namespace IdentityService
 
         private static void EnsureSeedUserData(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
+            //Roles
             if (!context.Roles.Any())
             {
                 Log.Debug("Roles being populated");
@@ -94,6 +95,7 @@ namespace IdentityService
                 Log.Debug("Roles already populated");
             }
 
+            //Users
             if (!context.Users.Any())
             {
                 Log.Debug("Users being populated");
@@ -112,6 +114,21 @@ namespace IdentityService
             else
             {
                 Log.Debug("Users already populated");
+            }
+
+            //Systems
+            if (!context.Systems.Any())
+            {
+                Log.Debug("Systems being populated");
+                foreach (var system in Config.Systems)
+                {
+                    context.Systems.Add(system);
+                }
+                context.SaveChanges();
+            }
+            else
+            {
+                Log.Debug("Systems already populated");
             }
         }
 

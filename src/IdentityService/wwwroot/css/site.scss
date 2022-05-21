@@ -67,3 +67,22 @@
         border-bottom: 1px solid #D8D8D8;
     }
 }
+
+.pages-container {
+    display: flex;
+
+    .systempage {
+        margin: 20px;
+        padding: 10px;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        display: flex;
+        width: 200px;
+        height: 100px;
+        align-items: center;
+        justify-content: center;
+
+        .systempage-link {
+            font-size: 2rem;
+        }
+    }
+}

@@ -93,7 +93,7 @@ namespace IdentityService.Services
                 }
 
                 string system = user.ApplicationSystem;
-                if (string.IsNullOrEmpty(system)) system = "";
+                if (string.IsNullOrEmpty(system)) system = "NextOne";
                 context.IssuedClaims.Add(new System.Security.Claims.Claim("ApplicationSystem", system));
             }
         }

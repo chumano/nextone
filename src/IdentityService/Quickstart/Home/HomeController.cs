@@ -29,14 +29,20 @@ namespace IdentityServerHost.Quickstart.UI
 
         public IActionResult Index()
         {
-            if (_environment.IsDevelopment())
+            if (!this.User.Identity.IsAuthenticated)
             {
-                // only show in development
-                return View();
+                if (_environment.IsDevelopment())
+                {
+                    // only show in development
+                    return View();
+                }
+
+                _logger.LogInformation("Homepage is disabled in production. Returning 404.");
+                return Redirect("~/Account/Login");
+
             }
 
-            _logger.LogInformation("Homepage is disabled in production. Returning 404.");
-            return Redirect("~/Account/Login");
+            return Redirect("~/Portal");
         }
 
         /// <summary>

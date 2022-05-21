@@ -171,3 +171,31 @@ openssl rsa -noout -modulus -in id.nextone.local.key| openssl md5
 
 install trust certificate
 https://support.kaspersky.com/CyberTrace/1.0/en-US/174127.htm
+
+
+drop tables in a schema
+
+```sql
+DECLARE @sql NVARCHAR(MAX) = N'';
+
+SELECT @sql += N'
+ALTER TABLE ' + QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id))
+    + '.' + QUOTENAME(OBJECT_NAME(parent_object_id)) + 
+    ' DROP CONSTRAINT ' + QUOTENAME(name) + ';'
+FROM sys.foreign_keys
+where OBJECT_SCHEMA_NAME(parent_object_id)='identity';
+
+PRINT @sql;
+-- EXEC sp_executesql @sql;
+
+```
+
+```sql
+DECLARE @SqlStatement NVARCHAR(MAX)
+SELECT @SqlStatement = 
+    COALESCE(@SqlStatement, N'') + N'DROP TABLE [identity].' + QUOTENAME(TABLE_NAME) + N';' + CHAR(13)
+FROM INFORMATION_SCHEMA.TABLES
+WHERE TABLE_SCHEMA = 'identity' and TABLE_TYPE = 'BASE TABLE'
+
+PRINT @SqlStatement
+```
