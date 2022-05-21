@@ -14,7 +14,7 @@ namespace MasterService.Domain.Services
     {
         Task<User> Get(string userId);
 
-        Task<IList<User>> GetUsers(PageOptions pageOptions);
+        Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch);
         Task<User> CreateUser(string name, string email, string phone);
 
         Task<User> UpdateUser(User user, string name, string email, string phone,
@@ -55,15 +55,20 @@ namespace MasterService.Domain.Services
             return await _userRepository.Get(userId);
         }
 
-        public async Task<IList<User>> GetUsers(PageOptions pageOptions)
+        public async Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch)
         {
-            var users = await _userRepository.Users
+            var query = _userRepository.Users
                     .OrderBy(o => o.Name)
                     .Skip(pageOptions.Offset)
-                    .Take(pageOptions.PageSize)
-                    .ToListAsync();
+                    .Take(pageOptions.PageSize);
+                   
 
-            return users;
+            if (!string.IsNullOrWhiteSpace(textSearch))
+            {
+                query = query.Where(o => o.Name.Contains(textSearch));
+            }
+
+            return await query.ToListAsync() ;
         }
 
         public async Task<User> CreateUser(string name, string email, string phone)

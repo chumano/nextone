@@ -1,36 +1,43 @@
-import { Alert, Modal } from "antd";
-import { FC, useState } from "react";
+import { Alert, message, Modal } from "antd";
+import { FC, useContext, useState } from "react";
 import { useUserApi } from "../../apis/useUserApi";
-import { User } from "../../models/user/User.model";
+import {
+	UserActionType,
+	UserContext,
+	UserCtx,
+} from "../../context/user/user.context";
 
 interface IProps {
 	isModalVisible: boolean;
 	setIsModalVisible: (value: boolean) => void;
-	userNeedToResetPassword: User | null;
 }
 
 const ResetPasswordUserModal: FC<IProps> = ({
 	isModalVisible,
 	setIsModalVisible,
-	userNeedToResetPassword,
 }) => {
 	const userApi = useUserApi();
+	const { state, dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 	const [newPassword, setNewPassword] = useState("");
 
 	const hideModalHandler = () => {
 		setIsModalVisible(false);
+		dispatch({ type: UserActionType.SET_CURRENT_USER_CLICKED, payload: null });
 	};
 
 	const resetPasswordUserHandler = async () => {
 		setIsLoading(true);
-		if (!userNeedToResetPassword) return;
-		const { id } = { ...userNeedToResetPassword };
-		const { data } = await userApi.resetPassword({ UserId: id });
-
-		setNewPassword(data.data);
-
-		setIsLoading(false);
+		if (!state.currentUser) return;
+		const { id } = { ...state.currentUser };
+		try {
+			const { data } = await userApi.resetPassword({ UserId: id });
+			setNewPassword(data.data);
+			setIsLoading(false);
+			message.success("Đổi mật khẩu thành công");
+		} catch (error) {
+			message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+		}
 	};
 
 	return (
@@ -46,13 +53,13 @@ const ResetPasswordUserModal: FC<IProps> = ({
 			{newPassword === "" ? (
 				<Alert
 					type="info"
-					message={`Bạn có muốn cài đặt mật khẩu người dùng: ${userNeedToResetPassword?.name} ?`}
+					message={`Bạn có muốn cài đặt mật khẩu người dùng: ${state.currentUser?.name} ?`}
 					showIcon
 				/>
 			) : (
 				<Alert
 					type="info"
-					message={`Bạn có muốn cài đặt mật khẩu người dùng: ${userNeedToResetPassword?.name} ?`}
+					message={`Bạn có muốn cài đặt mật khẩu người dùng: ${state.currentUser?.name} ?`}
 					description={`Mật khẩu đã được đổi thành: ${newPassword}`}
 					showIcon
 				/>

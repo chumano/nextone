@@ -1,4 +1,13 @@
-import { Avatar, Button, Checkbox, Spin, Table, Dropdown, Menu } from "antd";
+import {
+	Avatar,
+	Button,
+	Checkbox,
+	Spin,
+	Table,
+	Dropdown,
+	Menu,
+	message,
+} from "antd";
 
 import {
 	faEllipsisH,
@@ -8,165 +17,163 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { FC, useEffect, useReducer, useState } from "react";
+import { FC, useContext, useEffect, useState } from "react";
 
 import { ActivateUserRequest, User } from "../../models/user/User.model";
 import { useUserApi } from "../../apis/useUserApi";
-import { PageOptions } from "../../models/apis/PageOptions.model";
 
-import EditUserFormModal from "./UpdateUserFormModal";
-
-import "../../styles/components/user/user-list.scss";
 import DeleteUserModal from "./DeleteUserModal";
 import ResetPasswordUserModal from "./ResetPasswordUserModal";
+import UpdateUserFormModal from "./UpdateUserFormModal";
+import GrantedRoleUserFormModal from "./GrantedRoleUserFormModal";
 
-interface UserState {
-	data: User[];
-	isLoading: "loading" | "success" | "failure";
-	error: string | null;
-}
+import {
+	UserActionType,
+	UserContext,
+	UserCtx,
+} from "../../context/user/user.context";
 
-interface UserAction {
-	type: UserPageActionKind;
-	payload: UserState;
-}
-
-const INITIAL_STATE: UserState = {
-	data: [],
-	isLoading: "loading",
-	error: null,
-};
-
-enum UserPageActionKind {
-	REQUEST_USER_API_SUCCESS = "REQUEST_USER_API_SUCCESS",
-	REQUEST_USER_API_FAILURE = "REQUEST_USER_API_FAILURE",
-}
-
-export const userReducer = (state: UserState, action: UserAction) => {
-	const { type, payload } = action;
-
-	switch (type) {
-		case UserPageActionKind.REQUEST_USER_API_SUCCESS:
-		case UserPageActionKind.REQUEST_USER_API_FAILURE:
-			return {
-				...state,
-				...payload,
-			};
-		default:
-			throw Error("Not support this action type from UserPageActionKind");
-	}
-};
+import "../../styles/components/user/user-list.scss";
 
 interface IProps {
 	textSearch: string;
-	isCreateModalVisible: boolean;
 }
 
-const UserList: FC<IProps> = ({ textSearch, isCreateModalVisible }) => {
+const UserList: FC<IProps> = ({ textSearch }) => {
 	const userApi = useUserApi();
-	const [state, dispatch] = useReducer(userReducer, INITIAL_STATE);
+	const { state, dispatch } = useContext(UserCtx) as UserContext;
 
-	const [isEditModalVisible, setIsEditModalVisible] = useState(false);
-	const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-	const [isResetPasswordModalVisible, setIsResetPasswordModalVisible] =
+	const [countUser, setCountUser] = useState(0);
+	const [isOpenResetPasswordModal, setIsOpenResetPasswordModal] =
 		useState(false);
+	const [isOpenUpdateUserModal, setIsOpenUpdateUserModal] = useState(false);
+	const [isOpenDeleteUserModal, setIsOpenDeleteUserModal] = useState(false);
+	const [isGrantedRoleUserModal, setIsGrantedRoleUserModal] = useState(false);
 
-	const [currentUserClicked, setCurrentUserClicked] = useState<User | null>(
-		null
-	);
+	const onChangePageHandler = (currentPage: number) => {
+		dispatch({
+			type: UserActionType.SET_OFFSET_USER_PAGE,
+			payload: (currentPage - 1) * state.pageSize,
+		});
+	};
+
+	const getListUserAsync = async () => {
+		const { offset, pageSize } = state;
+
+		try {
+			const { data: listUserData } = await userApi.list(textSearch, {
+				offset,
+				pageSize,
+			});
+			const { data: countUser } = await userApi.count(textSearch);
+
+			if (listUserData.isSuccess) {
+				dispatch({
+					type: UserActionType.GET_LIST_USER_SUCCESS,
+					payload: listUserData.data,
+				});
+			} else {
+				dispatch({
+					type: UserActionType.GET_LIST_USER_FAILED,
+					payload: listUserData.errorMessage,
+				});
+
+				//TODO: throw error message
+				message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+			}
+
+			if (countUser.isSuccess) {
+				setCountUser(countUser.data);
+			} else {
+				//TODO: throw error message
+				message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+			}
+		} catch (error) {
+			message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+		}
+	};
 
 	useEffect(() => {
-		const getListUser = async () => {
-			const response = await userApi.list(new PageOptions());
+		const { offset, pageSize } = state;
+		dispatch({
+			type: UserActionType.GET_LIST_USER,
+			payload: { offset, pageSize, textSearch },
+		});
+	}, []);
 
-			const { isSuccess, errorMessage, data } = response.data;
+	useEffect(() => {
+		if (state.isReloadTable) {
+			getListUserAsync();
+			dispatch({
+				type: UserActionType.SET_RELOAD_USER_TABLE,
+				payload: false,
+			});
+		}
+	}, [state.isReloadTable]);
 
-			if (isSuccess) {
-				dispatch({
-					type: UserPageActionKind.REQUEST_USER_API_SUCCESS,
-					payload: {
-						isLoading: "success",
-						error: errorMessage,
-						data,
-					},
-				});
-			} else {
-				dispatch({
-					type: UserPageActionKind.REQUEST_USER_API_FAILURE,
-					payload: {
-						isLoading: "failure",
-						error: errorMessage,
-						data,
-					},
-				});
-			}
-		};
+	useEffect(() => {
+		getListUserAsync();
+	}, [state.offset, textSearch]);
 
-		getListUser();
-	}, [
-		textSearch,
-		isCreateModalVisible,
-		isEditModalVisible,
-		isDeleteModalVisible,
-	]);
+	const activateUserHandler = async (
+		userNeedToActivated: ActivateUserRequest
+	) => {
+		const response = await userApi.activateUser(userNeedToActivated);
+		const { isSuccess, errorMessage } = response.data;
+		if (isSuccess) {
+			const updateUserRowIndex = state.data.findIndex(
+				(u) => u.id === userNeedToActivated.UserId
+			);
+			const updateUserRow: User = {
+				...state.data[updateUserRowIndex],
+				id: userNeedToActivated.UserId,
+				isActive: userNeedToActivated.IsActive,
+			};
+			state.data[updateUserRowIndex] = updateUserRow;
 
-	if (state.isLoading === "success") {
-		const isEditModalVisibleHandler = (value: boolean) =>
-			setIsEditModalVisible(value);
+			dispatch({
+				type: UserActionType.GET_LIST_USER_SUCCESS,
+				payload: state.data,
+			});
+		} else {
+			dispatch({
+				type: UserActionType.GET_LIST_USER_FAILED,
+				payload: errorMessage,
+			});
+		}
+	};
 
-		const openEditModalHandler = (userNeedToUpdate: User) => {
-			setIsEditModalVisible(true);
-			setCurrentUserClicked(userNeedToUpdate);
-		};
+	const openModalHandler = (
+		record: User,
+		modalType: "reset-password" | "update" | "delete" | "granted-role"
+	) => {
+		dispatch({
+			type: UserActionType.SET_CURRENT_USER_CLICKED,
+			payload: record,
+		});
+		switch (modalType) {
+			case "reset-password":
+				setIsOpenResetPasswordModal(true);
+				return;
+			case "update":
+				setIsOpenUpdateUserModal(true);
+				return;
+			case "delete":
+				setIsOpenDeleteUserModal(true);
+				return;
+			case "granted-role":
+				setIsGrantedRoleUserModal(true);
+				return;
+		}
+	};
 
-		const openDeleteModalHandler = (userNeedToDelete: User) => {
-			setIsDeleteModalVisible(true);
-			setCurrentUserClicked(userNeedToDelete);
-		};
-
-		const openResetModalHandler = (userNeedToResetPassword: User) => {
-			setIsResetPasswordModalVisible(true);
-			setCurrentUserClicked(userNeedToResetPassword);
-		};
-
-		const activateUserHandler = async (
-			userNeedToActivated: ActivateUserRequest
-		) => {
-			const response = await userApi.activateUser(userNeedToActivated);
-
-			const { isSuccess, errorMessage } = response.data;
-
-			if (isSuccess) {
-				const updateUserRowIndex = state.data.findIndex(
-					(u) => u.id === userNeedToActivated.UserId
-				);
-				const updateUserRow: User = {
-					...state.data[updateUserRowIndex],
-					id: userNeedToActivated.UserId,
-					isActive: userNeedToActivated.IsActive,
-				};
-				state.data[updateUserRowIndex] = updateUserRow;
-
-				dispatch({
-					type: UserPageActionKind.REQUEST_USER_API_SUCCESS,
-					payload: {
-						isLoading: "success",
-						error: errorMessage,
-						data: state.data,
-					},
-				});
-			} else {
-				dispatch({
-					type: UserPageActionKind.REQUEST_USER_API_FAILURE,
-					payload: {
-						isLoading: "failure",
-						error: errorMessage,
-						data: state.data,
-					},
-				});
-			}
-		};
-
+	if (state.status === "loading") {
+		return (
+			<div className="spinner">
+				<Spin size="large" />
+			</div>
+		);
+	} else if (state.status === "success") {
 		return (
 			<>
 				<Table
@@ -174,6 +181,11 @@ const UserList: FC<IProps> = ({ textSearch, isCreateModalVisible }) => {
 					dataSource={state.data}
 					bordered
 					rowKey="id"
+					pagination={{
+						total: countUser,
+						pageSize: state.pageSize,
+						onChange: onChangePageHandler,
+					}}
 				>
 					<Table.Column
 						title="#"
@@ -234,13 +246,13 @@ const UserList: FC<IProps> = ({ textSearch, isCreateModalVisible }) => {
 							<div className="list-button-actions">
 								<Button
 									type="default"
-									onClick={() => openEditModalHandler(record)}
+									onClick={() => openModalHandler(record, "update")}
 								>
 									<FontAwesomeIcon icon={faPencilAlt} />
 								</Button>
 								<Button
 									type="danger"
-									onClick={() => openDeleteModalHandler(record)}
+									onClick={() => openModalHandler(record, "delete")}
 								>
 									<FontAwesomeIcon icon={faTrash} />
 								</Button>
@@ -249,11 +261,18 @@ const UserList: FC<IProps> = ({ textSearch, isCreateModalVisible }) => {
 										<Menu>
 											<Menu.Item
 												key="1"
-												onClick={() => openResetModalHandler(record)}
+												onClick={() =>
+													openModalHandler(record, "reset-password")
+												}
 											>
 												Đổi mật khẩu
 											</Menu.Item>
-											<Menu.Item key="2">Cấp quyền</Menu.Item>
+											<Menu.Item
+												key="2"
+												onClick={() => openModalHandler(record, "granted-role")}
+											>
+												Cấp quyền
+											</Menu.Item>
 										</Menu>
 									}
 								>
@@ -265,39 +284,34 @@ const UserList: FC<IProps> = ({ textSearch, isCreateModalVisible }) => {
 						)}
 					></Table.Column>
 				</Table>
-
-				{isEditModalVisible && (
-					<EditUserFormModal
-						isModalVisible={isEditModalVisible}
-						setIsModalVisible={isEditModalVisibleHandler}
-						userNeedToUpdate={currentUserClicked}
-					/>
-				)}
-
-				{isDeleteModalVisible && (
-					<DeleteUserModal
-						isModalVisible={isDeleteModalVisible}
-						setIsModalVisible={setIsDeleteModalVisible}
-						userNeedToDelete={currentUserClicked}
-					/>
-				)}
-
-				{isResetPasswordModalVisible && (
+				{isOpenResetPasswordModal && (
 					<ResetPasswordUserModal
-						isModalVisible={isResetPasswordModalVisible}
-						setIsModalVisible={setIsResetPasswordModalVisible}
-						userNeedToResetPassword={currentUserClicked}
+						isModalVisible={isOpenResetPasswordModal}
+						setIsModalVisible={setIsOpenResetPasswordModal}
+					/>
+				)}
+				{isOpenDeleteUserModal && (
+					<DeleteUserModal
+						isModalVisible={isOpenDeleteUserModal}
+						setIsModalVisible={setIsOpenDeleteUserModal}
+					/>
+				)}
+				{isOpenUpdateUserModal && (
+					<UpdateUserFormModal
+						isModalVisible={isOpenUpdateUserModal}
+						setIsModalVisible={setIsOpenUpdateUserModal}
+					/>
+				)}
+				{isGrantedRoleUserModal && (
+					<GrantedRoleUserFormModal
+						isModalVisible={isGrantedRoleUserModal}
+						setIsModalVisible={setIsGrantedRoleUserModal}
 					/>
 				)}
 			</>
 		);
-	} else if (state.isLoading === "failure") return <p>{state.error}</p>;
-	else {
-		return (
-			<div className="spinner">
-				<Spin size="large" />
-			</div>
-		);
+	} else {
+		return <p>{state.errorMessage}</p>;
 	}
 };
 

@@ -29,7 +29,6 @@ services:
   project: MasterService/MasterService.csproj
   tags:
     - master
-    - core
   replicas: 1
   bindings:
   - name: http

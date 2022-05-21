@@ -1,12 +1,17 @@
 import { faEnvelope, faPhone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { Modal, Form, Input, Button } from "antd";
+import { Modal, Form, Input, Button, message } from "antd";
 import { FormComponentProps } from "antd/lib/form";
 
-import { FC, FormEvent, useEffect, useState } from "react";
+import { FC, FormEvent, useContext, useEffect, useState } from "react";
 
 import { useUserApi } from "../../apis/useUserApi";
+import {
+	UserActionType,
+	UserContext,
+	UserCtx,
+} from "../../context/user/user.context";
 
 interface CreateUserFormData {
 	Username: string;
@@ -29,7 +34,7 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 	setIsModalVisible,
 }) => {
 	const userApi = useUserApi();
-
+	const { dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 
 	const {
@@ -55,9 +60,30 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 		setIsLoading(true);
 		validateFields(
 			async (_, { Username, Email, Phone }: CreateUserFormData) => {
-				await userApi.createUser({ Name: Username, Email, Phone });
-				setIsLoading(false);
-				hideModalHandler();
+				try {
+					const { data } = await userApi.createUser({
+						Name: Username,
+						Email,
+						Phone,
+					});
+
+					setIsLoading(false);
+
+					if (data.isSuccess) {
+						dispatch({
+							type: UserActionType.SET_RELOAD_USER_TABLE,
+							payload: true,
+						});
+						message.success("Thêm người dùng thành công");
+					} else {
+						//TODO: Throw error message
+						message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+					}
+
+					hideModalHandler();
+				} catch (error) {
+					message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+				}
 			}
 		);
 	};

@@ -1,10 +1,14 @@
 import { faEnvelope, faPhone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button, Form, Input, Modal } from "antd";
+import { Button, Form, Input, message, Modal } from "antd";
 import { FormComponentProps } from "antd/lib/form";
-import { FC, FormEvent, useEffect, useState } from "react";
+import { FC, FormEvent, useContext, useEffect, useState } from "react";
 import { useUserApi } from "../../apis/useUserApi";
-import { User } from "../../models/user/User.model";
+import {
+	UserActionType,
+	UserContext,
+	UserCtx,
+} from "../../context/user/user.context";
 
 const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
 	return Object.keys(fieldsError).some((field) => fieldsError[field]);
@@ -19,16 +23,15 @@ interface UpdateUserFormData {
 interface IProps extends FormComponentProps {
 	isModalVisible: boolean;
 	setIsModalVisible: (value: boolean) => void;
-	userNeedToUpdate: User | null;
 }
 
 const UpdateUserFormModal: FC<FormComponentProps & IProps> = ({
 	form,
 	isModalVisible,
 	setIsModalVisible,
-	userNeedToUpdate,
 }) => {
 	const userApi = useUserApi();
+	const { state, dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 	const {
 		setFieldsValue,
@@ -39,7 +42,7 @@ const UpdateUserFormModal: FC<FormComponentProps & IProps> = ({
 		validateFields,
 	} = form;
 	useEffect(() => {
-		const { name, email, phone } = { ...userNeedToUpdate };
+		const { name, email, phone } = { ...state.currentUser };
 		setFieldsValue({
 			Username: name,
 			Email: email,
@@ -47,29 +50,46 @@ const UpdateUserFormModal: FC<FormComponentProps & IProps> = ({
 		});
 	}, []);
 
-	const hideModalHandler = () => setIsModalVisible(false);
+	const hideModalHandler = () => {
+		setIsModalVisible(false);
+		dispatch({ type: UserActionType.SET_CURRENT_USER_CLICKED, payload: null });
+	};
 
 	const onFormSubmitHandler = (event: FormEvent) => {
 		event.preventDefault();
 		setIsLoading(true);
 		validateFields(async (_, { Username, Phone }: UpdateUserFormData) => {
-			if (!userNeedToUpdate) return;
+			if (!state.currentUser) return;
 
 			const userUpdated = {
-				...userNeedToUpdate,
+				...state.currentUser,
 				name: Username,
 				phone: Phone,
 			};
 			const { id, name, phone, email } = userUpdated;
-			await userApi.updateUser({
-				UserId: id,
-				Name: name,
-				Phone: phone,
-				Email: email,
-				RoleCodes: [],
-			});
-			setIsLoading(false);
-			hideModalHandler();
+			try {
+				const { data } = await userApi.updateUser({
+					UserId: id,
+					Name: name,
+					Phone: phone,
+					Email: email,
+					RoleCodes: [],
+				});
+				setIsLoading(false);
+				if (data.isSuccess) {
+					dispatch({
+						type: UserActionType.SET_RELOAD_USER_TABLE,
+						payload: true,
+					});
+					message.success("Cập nhật thông tin thành công");
+				} else {
+					//TODO: Throw error message
+					message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+				}
+				hideModalHandler();
+			} catch (error) {
+				message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+			}
 		});
 	};
 

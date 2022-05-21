@@ -50,7 +50,7 @@ namespace MasterService.Controllers
         public async Task<IActionResult> GetList([FromQuery] GetUserListDTO getUserListDTO)
         {
             var actionUser =_userContext.User;
-            var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize));
+            var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize), getUserListDTO.TextSearch);
             return Ok(ApiResult.Success(items));
         }
 

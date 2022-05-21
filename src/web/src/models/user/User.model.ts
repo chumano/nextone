@@ -6,7 +6,7 @@ export interface User extends BaseObjectCRUD {
 	name: string;
 	email: string;
 	phone: string;
-	role: UserRole | null;
+	roles: UserRole[] | null;
 }
 
 export interface CreateUserRequest {
@@ -32,4 +32,9 @@ export interface ActivateUserRequest {
 
 export interface ResetPasswordUserRequest {
 	UserId: string;
+}
+
+export interface UpdateUserRoleRequest {
+	UserId: string;
+	RoleCodes: string[];
 }

@@ -3,9 +3,10 @@ import {
 	CreateUserResponse,
 	ResetPasswordUserRequest,
 	UpdateUserRequest,
+	UpdateUserRoleRequest,
 } from "./../models/user/User.model";
 import { ApiResult } from "./../models/apis/ApiResult.model";
-import { Axios, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 
 import BaseAPI from "../config/apis";
 
@@ -18,13 +19,23 @@ const axiosInstance = mapAxiosInstance;
 
 export const useUserApi = () => {
 	const list = (
-		searchParams?: PageOptions
+		textSearch: string, searchParams?: PageOptions
 	): Promise<AxiosResponse<ApiResult<User[]>>> => {
 		if (!searchParams) searchParams = new PageOptions();
 		return axiosInstance.get(`${baseApi}/user/getlist`, {
-			params: searchParams,
+			params: {
+				offset: searchParams.offset,
+				pageSize: searchParams.pageSize,
+				textSearch
+			},
 		});
 	};
+
+	const count = (textSearch?: string): Promise<AxiosResponse<ApiResult<number>>> => {
+		return axiosInstance.get(`${baseApi}/user/count`, {
+			params: textSearch
+		})
+	}
 
 	const getUser = (userId: string): Promise<AxiosResponse<ApiResult<User>>> => {
 		return axiosInstance.get(`${baseApi}/user/${userId}`);
@@ -41,6 +52,12 @@ export const useUserApi = () => {
 	): Promise<AxiosResponse<ApiResult<null>>> => {
 		return axiosInstance.post(`${baseApi}/user/updateUser`, userNeedToUpdate);
 	};
+
+	const updateUserRole = (
+		userNeedToUpdateRole: UpdateUserRoleRequest
+	): Promise<AxiosResponse<ApiResult<null>>> => {
+		return axiosInstance.post(`${baseApi}/user/updateUserRoles`, userNeedToUpdateRole);
+	}
 
 	const deleteUser = (
 		userId: string
@@ -64,9 +81,11 @@ export const useUserApi = () => {
 	};
 	return {
 		list,
+		count,
 		getUser,
 		createUser,
 		updateUser,
+		updateUserRole,
 		deleteUser,
 		activateUser,
 		resetPassword,

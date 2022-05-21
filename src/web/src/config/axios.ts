@@ -11,8 +11,8 @@ const axiosRequestConfig = async (config: AxiosRequestConfig<any>) => {
 	if (authenticated) {
 		const access_token = await AuthenticationService.getAccessToken();
 		config.headers = {
-			Authorization: `Bearer ${access_token}`,
-			Accept: "application/json",
+			//Authorization: `Bearer ${access_token}`,
+			//Accept: "application/json",
 			//'Content-Type': 'application/x-www-form-urlencoded'
 		};
 	}
