@@ -31,6 +31,10 @@ namespace ComService.Domain.Repositories
                          .OrderByDescending(x => x.CreatedDate)
                         .Take(20))
                     .ThenInclude(o => o.UserSender)
+
+                .Include(o => o.AllowedEventTypes)
+                    .ThenInclude(o => o.EventType)
+
                 .Include(o => o.RecentEvents)
                     .ThenInclude(o => o.Files)
 
@@ -43,7 +47,10 @@ namespace ComService.Domain.Repositories
                     .ThenInclude(o => o.Files)
                 .Include(o => o.RecentMessages)
                     .ThenInclude(o => o.UserSender)
-                
+
+                .Include(o => o.RecentMessages)
+                    .ThenInclude(o => o.Event)
+
                 .AsQueryable();
 
         public void Add(Channel channel)

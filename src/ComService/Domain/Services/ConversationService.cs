@@ -25,7 +25,7 @@ namespace ComService.Domain.Services
         Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10);
 
         //members
-        Task AddMembers(Conversation conversation, List<string> memberIds);
+        Task<List<ConversationMember>> AddMembers(Conversation conversation, List<string> memberIds);
         Task UpdateMemberRole(Conversation conversation, UserStatus user, MemberRoleEnum role);
         Task RemoveMember(Conversation conversation, UserStatus user);
     }
@@ -147,24 +147,27 @@ namespace ComService.Domain.Services
         }
 
         //member
-        public async Task AddMembers(Conversation conversation, List<string> memberIds)
+        public async Task<List<ConversationMember>> AddMembers(Conversation conversation, List<string> memberIds)
         {
             var users = await _userService.GetOrAddUsersByIds(memberIds);
-
+            var newMembers = new List<ConversationMember>();
             foreach (var user in users)
             {
                 var role = MemberRoleEnum.MEMBER;
-                conversation.AddMember(new ConversationMember()
+                var member = new ConversationMember()
                 {
                     UserId = user.UserId,
                     Role = role
-                });
+                };
+                conversation.AddMember(member);
+                newMembers.Add(member);
             }
 
             await _conversationRepository.SaveChangesAsync();
 
             // TODO: send ConversationMemberAdded
             await _bus.Publish(new ConversationMembersAdded());
+            return newMembers;
         }
 
         public async Task UpdateMemberRole(Conversation conversation, UserStatus user, MemberRoleEnum role)

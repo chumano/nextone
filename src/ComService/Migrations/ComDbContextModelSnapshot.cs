@@ -22,6 +22,21 @@ namespace ComService.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("ComService.Domain.ChannelEventType", b =>
+                {
+                    b.Property<string>("ChannelId")
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<string>("EventTypeCode")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("ChannelId", "EventTypeCode");
+
+                    b.HasIndex("EventTypeCode");
+
+                    b.ToTable("T_App_ChannelEventTypes", "com");
+                });
+
             modelBuilder.Entity("ComService.Domain.Conversation", b =>
                 {
                     b.Property<string>("Id")
@@ -144,8 +159,11 @@ namespace ComService.Migrations
                     b.Property<string>("FileId")
                         .HasColumnType("varchar(36)");
 
-                    b.Property<string>("FileType")
-                        .HasColumnType("varchar(50)");
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("FileType")
+                        .HasColumnType("int");
 
                     b.Property<string>("FileUrl")
                         .HasColumnType("nvarchar(255)");
@@ -220,6 +238,9 @@ namespace ComService.Migrations
                     b.Property<string>("FileId")
                         .HasColumnType("varchar(36)");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("FileType")
                         .HasColumnType("int");
 
@@ -283,10 +304,6 @@ namespace ComService.Migrations
                 {
                     b.HasBaseType("ComService.Domain.Conversation");
 
-                    b.Property<string>("AllowedEventTypeCodes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasDiscriminator().HasValue(3);
                 });
 
@@ -309,6 +326,23 @@ namespace ComService.Migrations
                     b.HasBaseType("ComService.Domain.Conversation");
 
                     b.HasDiscriminator().HasValue(0);
+                });
+
+            modelBuilder.Entity("ComService.Domain.ChannelEventType", b =>
+                {
+                    b.HasOne("ComService.Domain.Channel", null)
+                        .WithMany("AllowedEventTypes")
+                        .HasForeignKey("ChannelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ComService.Domain.EventType", "EventType")
+                        .WithMany()
+                        .HasForeignKey("EventTypeCode")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("EventType");
                 });
 
             modelBuilder.Entity("ComService.Domain.ConversationMember", b =>
@@ -415,6 +449,8 @@ namespace ComService.Migrations
 
             modelBuilder.Entity("ComService.Domain.Channel", b =>
                 {
+                    b.Navigation("AllowedEventTypes");
+
                     b.Navigation("RecentEvents");
                 });
 #pragma warning restore 612, 618

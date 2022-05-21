@@ -15,14 +15,18 @@ export interface GetListConversationDTO extends IPageOptions {
 
 export interface AddMembersDTO {
     conversationId: string;
+    memberIds: string[];
 }
 
 export interface RemoveMemberDTO {
     conversationId: string;
+    userMemberId:string;
 }
 
 export interface UpdateMemberRoleDTO {
     conversationId: string;
+    userMemberId: string;
+    role: MemberRole
 }
 
 export interface GetMessagesHistoryDTO extends IPageOptions {

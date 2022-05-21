@@ -113,29 +113,38 @@ namespace ComService.Domain.Services
         public async Task AddEvent(Channel channel, Event evt)
         {
             _eventRepository.Add(evt);
-            //TODO add message to Conversation Channel
+            channel.RecentEvents.Add(evt);
+
+
             var messageId = _idGenerator.GenerateNew();
             var message = new Message(messageId, MessageTypeEnum.Event,
                 evt.UserSenderId, evt);
             _messageRepository.Add(message);
+            channel.RecentMessages.Add(message);
+
 
             channel.UpdatedDate = DateTime.Now;
+
             await _eventRepository.SaveChangesAsync();
 
             // TODO: send ChannelEventAdded
             await _bus.Publish(new ChannelEventAdded());
-            await _bus.Publish(new ConversationMessageAdded());
+            await _bus.Publish(new ConversationMessageAdded()
+            {
+                Conversation = channel,
+                Message = message
+            });
         }
 
         public async Task<IEnumerable<Channel>> GetChannelsByEventCode(string evtCode)
         {
-            var items1 = await _channelRepository.Channels
-                    .Where(o => o.AllowedEventTypeCodes.Contains(evtCode))
+            var items = await _channelRepository.Channels
+                    .Where(o => o.AllowedEventTypes.Any(t => t.EventTypeCode == evtCode))
                     .ToListAsync();
-            var items = await _conversationRepository.Conversations
-                 .OfType<Channel>()
-                 .Where(o => o.AllowedEventTypeCodes.Contains(evtCode))
-                 .ToListAsync();
+            //var items = await _conversationRepository.Conversations
+            //     .OfType<Channel>()
+            //       .Where(o => o.AllowedEventTypes.Any(t => t.EventTypeCode == evtCode))
+            //        .ToListAsync();
             return items;
         }
 

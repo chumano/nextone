@@ -1,6 +1,4 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ChannelPage from "./pages/channel/ChannelPage";
-import Home from "./pages/home/Home";
 import {
     faHome,
     faAddressBook,
@@ -18,6 +16,7 @@ import NotAuthenticated from "./components/auth/NotAuthenticated";
 import AuthCallback from "./components/auth/AuthCallback";
 import AuthRedirect from "./components/auth/AuthRedirect";
 import { Redirect } from "react-router-dom";
+import Home from "./pages/home/Home";
 import TestPage from "./pages/test/TestPage";
 import ChatPage from "./pages/chat/ChatPage";
 import MapPage from "./pages/map/MapPage";
@@ -81,18 +80,12 @@ const routes: Array<IRouteConfig> = [
         component: ChatPage,
         useAuthLayout: true
     },
-    //channel manager
+    //home
     {
         path: "/home",
         component: Home,
         useAuthLayout: true
     },
-    {
-        path: "/channel",
-        component: ChannelPage,
-        useAuthLayout: true
-    },
-
     //admin
     {
         path: "/admin/users",
@@ -126,12 +119,6 @@ const MenuList = [
         title: 'Trang chủ',
         path: '/home',
         icon: <FontAwesomeIcon icon={faHome} />
-    },
-    {
-        id: 10,
-        title: 'Giám sát kênh',
-        path: '/channel',
-        icon: <FontAwesomeIcon icon={faSnowflake} />
     },
     {
         id: 20,

@@ -34,20 +34,6 @@ namespace ComService.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            //Channel
-            modelBuilder.Entity<Channel>(eb =>
-              {
-                  eb.Property(o => o.AllowedEventTypeCodes)
-                  .HasColumnType("nvarchar(max)")
-                  .HasConversion(
-                      v => v.ToDBString(","),
-                      v => v.ToListFromDBString(",")
-                  ).IsRequired();
-
-                  eb.HasMany(o => o.RecentEvents)
-                      .WithOne()
-                      .HasForeignKey(o => o.ChannelId);
-              });
             //Conversation
             modelBuilder.Entity<Conversation>(eb =>
             {
@@ -62,6 +48,7 @@ namespace ComService.Infrastructure
 
                 eb.Property(o => o.Id)
                     .HasColumnType("varchar(36)");
+
                 eb.Property(o => o.Name)
                     .HasColumnType("nvarchar(255)")
                     .IsRequired();
@@ -195,7 +182,37 @@ namespace ComService.Infrastructure
                    .HasColumnType("int");
             });
 
-            
+
+            //=============================
+            //Channel
+            modelBuilder.Entity<Channel>(eb =>
+            {
+                eb.HasMany(o => o.AllowedEventTypes)
+                  .WithOne()
+                  .HasForeignKey(o => o.ChannelId);
+
+                eb.HasMany(o => o.RecentEvents)
+                    .WithOne()
+                    .HasForeignKey(o => o.ChannelId);
+            });
+
+            modelBuilder.Entity<ChannelEventType>(eb =>
+            {
+                eb.ToTable("T_App_ChannelEventTypes", DB_SCHEMA)
+                 .HasKey("ChannelId", "EventTypeCode");
+
+                eb.Property(o => o.ChannelId)
+                .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.EventTypeCode)
+                    .HasColumnType("nvarchar(50)")
+                    .IsRequired();
+
+                eb.HasOne(o => o.EventType)
+                    .WithMany()
+                    .HasForeignKey(o => o.EventTypeCode);
+            });
+
             //=============================
             //Event
             modelBuilder.Entity<Event>(eb =>
@@ -281,11 +298,14 @@ namespace ComService.Infrastructure
                 eb.Property(o => o.FileId)
                     .HasColumnType("varchar(36)");
 
+                eb.Property(o => o.FileName)
+                 .HasColumnType("nvarchar(255)");
+
                 eb.Property(o => o.FileUrl)
                   .HasColumnType("nvarchar(255)");
 
                 eb.Property(o => o.FileType)
-                   .HasColumnType("varchar(50)");
+                   .HasColumnType("int");
             });
 
             //modelBuilder.Entity<EventResponse>(eb =>

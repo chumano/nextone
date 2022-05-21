@@ -1,11 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { comApi } from "../../apis/comApi";
 import { Conversation } from "../../models/conversation/Conversation.model";
-import { CreateChannelDTO, CreateConverationDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, SendMessageDTO } from "../../models/dtos";
+import { ConversationMember } from "../../models/conversation/ConversationMember.model";
+import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendMessageDTO, UpdateMemberRoleDTO } from "../../models/dtos";
 import { GetListUserStatusDTO } from "../../models/dtos/UserStatusDTOs";
 import { Message } from "../../models/message/Message.model";
 import { ChatMesageEventData } from "./chatPayload";
-import { ChatState } from "./ChatState";
+import { ChatState, ConversationState } from "./ChatState";
 
 
 //conversation
@@ -43,6 +44,16 @@ export const deleteConversation = createAsyncThunk(
     }
 )
 
+//message
+export const sendMessage = createAsyncThunk(
+    'chat/sendMessage',
+    async (data: SendMessageDTO, thunkAPI) => {
+        const response = await comApi.sendMessage(data);
+        return response
+    }
+)
+
+//channel
 export const getChannels = createAsyncThunk(
     'chat/getChannels',
     async (data: GetListChannelDTO |undefined, thunkAPI) => {
@@ -51,27 +62,13 @@ export const getChannels = createAsyncThunk(
     }
 )
 
-
-//channel
 export const createChannel = createAsyncThunk(
     'chat/createChannel',
     async (data: CreateChannelDTO, thunkAPI) => {
         const { dispatch } = thunkAPI;
         const createResponse = await comApi.createChannel(data);
-        
-        debugger
         const response = await comApi.getChannel(createResponse.data);
-        debugger
         return response;
-    }
-)
-
-//message
-export const sendMessage = createAsyncThunk(
-    'chat/sendMessage',
-    async (data: SendMessageDTO, thunkAPI) => {
-        const response = await comApi.sendMessage(data);
-        return response
     }
 )
 
@@ -108,8 +105,11 @@ const initialState: ChatState = {
     conversationsLoading: false,
     conversations: [],
     channels: [],
-    modals: {}
+    allConversations: [],
+    modals: {},
+    modalDatas : {}
 }
+
 export const chatSlice = createSlice({
     name: 'chat',
     initialState,
@@ -117,14 +117,50 @@ export const chatSlice = createSlice({
         setUser:(state, action : PayloadAction<string>)=>{
             state.userId = action.payload;
         },
-        showModal:(state, action: PayloadAction<{modal:string, visible:boolean}>)=>{
-            const {modal ,visible } = action.payload
+        showModal:(state, action: PayloadAction<{modal:string, visible:boolean, data?: any}>)=>{
+            const {modal ,visible, data } = action.payload
             state.modals[modal] = visible;
+            if(visible){
+                state.modalDatas[modal] = data;
+            }else{
+                state.modalDatas[modal]= undefined;
+            }
         },
         //conversation
         selectConversation:(state, action: PayloadAction<string>)=>{
             const conversationId = action.payload;
             state.selectedConversationId = conversationId;
+            state.isShowConversationInfo = false;
+        },
+
+        toggleConversationInfo:(state)=>{
+            state.isShowConversationInfo = !state.isShowConversationInfo;
+        },
+
+        //member
+        addMembers : (state, action: PayloadAction<{conversationId:string, members: ConversationMember[]}>)=>{
+            const {conversationId, members} = action.payload;
+            const conversation = state.allConversations.find(o=>o.id === conversationId);
+            if(!conversation) return;
+            conversation.members = [...conversation.members, ...members];
+        },
+
+        updateMemberRole: (state, action: PayloadAction<{conversationId:string, member: ConversationMember}>)=>{
+            const {conversationId, member} = action.payload;
+            const conversation = state.allConversations.find(o=>o.id === conversationId);
+            if(!conversation) return;
+            conversation.members = conversation.members.map(o=>{
+                if(o.userMember.userId== member.userMember.userId){
+                    return member;
+                }
+                return o;
+            })
+        },
+        deleteMember: (state, action: PayloadAction<{conversationId:string, member: ConversationMember}>)=>{
+            const {conversationId, member} = action.payload;
+            const conversation = state.allConversations.find(o=>o.id === conversationId);
+            if(!conversation) return;
+            conversation.members = conversation.members.filter(o=>o.userMember.userId!= member.userMember.userId);
         },
 
         //chat
@@ -134,7 +170,7 @@ export const chatSlice = createSlice({
                 case 'message':
                     {
                         const message = data as Message;
-                        const conversation = state.conversations.find(o=>o.id === message.conversationId);
+                        const conversation = state.allConversations.find(o=>o.id === message.conversationId);
                         if(!conversation) return;
                         
                         if(message.userSender.userId!= state.userId){
@@ -153,7 +189,8 @@ export const chatSlice = createSlice({
             const { payload } = action;
             state.conversationsLoading = false;
             if(payload.isSuccess){
-                state.conversations = payload.data;
+                state.conversations = payload.data as ConversationState[];
+                state.allConversations =[...state.channels, ...state.conversations]
             }
         })
 
@@ -166,18 +203,26 @@ export const chatSlice = createSlice({
             if(payload.isSuccess){
                 state.selectedConversationId = payload.data.id;
                 if(!state.conversations.find(o=>o.id == payload.data.id)){
-                    state.conversations.unshift(payload.data)
+                    state.conversations.unshift(payload.data as ConversationState)
+                    state.allConversations =[...state.channels, ...state.conversations]
                 }
             }
         })
 
         builder.addCase(getConversation.fulfilled, (state, action) => {
             const { payload } = action;
+            
         })
 
-
         builder.addCase(deleteConversation.fulfilled, (state, action) => {
-            const { payload } = action;
+            const { payload , meta} = action;
+            const conversationId = meta.arg;
+            if(payload.isSuccess){
+                state.selectedConversationId = undefined;
+                state.conversations = state.conversations.filter(o=>o.id != conversationId);
+                state.channels = state.channels.filter(o=>o.id != conversationId);
+                state.allConversations =[...state.channels, ...state.conversations]
+            }
         })
 
         //channel
@@ -186,6 +231,7 @@ export const chatSlice = createSlice({
             state.conversationsLoading = false;
             if(payload.isSuccess){
                 state.channels = payload.data;
+                state.allConversations =[...state.channels, ...state.conversations]
             }
         })
         builder.addCase(createChannel.fulfilled, (state, action) => {
@@ -194,17 +240,17 @@ export const chatSlice = createSlice({
                 state.selectedConversationId = payload.data.id;
                 if(!state.channels.find(o=>o.id == payload.data.id)){
                     state.channels.unshift(payload.data)
+                    state.allConversations =[...state.channels, ...state.conversations]
                 }
             }
         })
-        //member
 
         //message 
         builder.addCase(sendMessage.fulfilled, (state, action) => {
             const { payload } = action;
             if(payload.isSuccess){
                 const message = payload.data;
-                const conversation = state.conversations.find(o=>o.id === message.conversationId)
+                const conversation = state.allConversations.find(o=>o.id === message.conversationId)
                 if(conversation){
                     conversation.messages.unshift(message);
                 }
@@ -215,7 +261,7 @@ export const chatSlice = createSlice({
         builder.addCase(getMessageHistory.fulfilled, (state, action) => {
             const { payload, meta :{arg}} = action;
             const conversationId = arg.conversationId;
-            const conversation = state.conversations.find(o=>o.id === conversationId);
+            const conversation = state.allConversations.find(o=>o.id === conversationId);
             if(!conversation) return;
             conversation.messagesLoading = false;
             if(payload.isSuccess){
@@ -239,7 +285,7 @@ export const chatSlice = createSlice({
         builder.addCase(getMessageHistory.pending, (state, action) => {
             const { payload, meta :{arg}} = action;
             const conversationId = arg.conversationId;
-            const conversation = state.conversations.find(o=>o.id === conversationId);
+            const conversation = state.allConversations.find(o=>o.id === conversationId);
             if(!conversation) return;
             conversation.messagesLoading = true;
         })

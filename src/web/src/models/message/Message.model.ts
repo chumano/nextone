@@ -1,3 +1,4 @@
+import { EventInfo } from "../event/Event.model";
 import { UserStatus } from "../user/UserStatus.model";
 import { MessageFile } from "./MessageFile.model";
 import { MessageType } from "./MessageType.model";
@@ -12,4 +13,6 @@ export interface Message {
 
   content: string;
   files: MessageFile[];
+
+  event?: EventInfo
 }

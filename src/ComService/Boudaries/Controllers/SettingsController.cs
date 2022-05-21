@@ -38,6 +38,7 @@ namespace ComService.Boudaries.Controllers
             _idGenerator = idGenerator;
             _userService = userService;
             _channelService = channelService;
+            _comDbContext = comDbContext;
         }
 
         [HttpGet("GetEventTypes")]

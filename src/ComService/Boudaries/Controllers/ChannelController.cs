@@ -2,8 +2,10 @@
 using ComService.Domain.Services;
 using ComService.DTOs.Channel;
 using ComService.DTOs.Event;
+using ComService.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
@@ -24,18 +26,21 @@ namespace ComService.Boudaries.Controllers
         private readonly IUserStatusService _userStatusService;
         private readonly IdGenerator _idGenerator;
         private readonly IChannelService _channelService;
+        private readonly ComDbContext _comDbContext;
         public ChannelController(
             ILogger<ChannelController> logger,
             IUserContext userContext,
             IdGenerator idGenerator,
             IUserStatusService userService,
-            IChannelService channelService)
+            IChannelService channelService,
+            ComDbContext comDbContext)
         {
             _logger = logger;
             _userContext = userContext;
             _idGenerator = idGenerator;
             _userStatusService = userService;
             _channelService = channelService;
+            _comDbContext = comDbContext;
         }
 
 
@@ -47,6 +52,9 @@ namespace ComService.Boudaries.Controllers
             var user = await _userStatusService.GetUser(userId);
             var channels = await _channelService.GetChannelsByUser(user,
                 pageOptions);
+
+            //var eventTypes = await _comDbContext.EventTypes.ToListAsync();
+
             var dtos = channels.Select(o => ChannelDTO.From(o));
             return Ok(ApiResult.Success(dtos));
         }
@@ -110,6 +118,7 @@ namespace ComService.Boudaries.Controllers
                     EventId = evtId,
                     FileId = o.FileId,
                     FileType = o.FileType,
+                    FileName = o.FileName,
                     FileUrl = o.FileUrl
                 }).ToList();
                 var nEvent = new Event(evtId,

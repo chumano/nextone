@@ -21,13 +21,15 @@ interface ModalChannelCreationProps extends FormComponentProps {
 }
 const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onVisible, form}) => {
     const dispatch = useDispatch();
-    const [loading, setLoading] = useState(true);
+    const [usersLoading, setUsersLoading] = useState(true);
     const [useList, setUserList] = useState<UserStatus[]>([]);
+    
     const [eventTypes, setEventTypes] = useState<EventType[]>([]);
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+
     const [isFormSubmit, setIsFormSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-    const [name, setName] = useState<string>('');
+
     const {
 		getFieldDecorator,
 		getFieldsError,
@@ -42,16 +44,16 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
         const fetchUsers = async () => {
             const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
             setUserList(usersReponse.data);
-            setLoading(false);
+            setUsersLoading(false);
         }
 
         const fetcheEventTypes = async () =>{
             const dataReponse = await comApi.getEventTypes();
             setEventTypes(dataReponse.data);
-            setLoading(false);
+            setUsersLoading(false);
         }
 
-        setLoading(true);
+        setUsersLoading(true);
         fetchUsers();
         fetcheEventTypes();
     }, [])
@@ -60,13 +62,15 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 		event.preventDefault();
 		setIsLoading(true);
         setIsFormSubmit(true);
-        validateFields(async (err, { name }) => {
+        validateFields(async (err, { name,eventType }) => {
             if(err){
                 setIsLoading(false);
                 return;
             }
+            form.getFieldValue("")
             const channel : CreateChannelDTO={
                 name: name,
+                eventTypeCodes: [eventType],
                 memberIds: selectedUserIds
             } 
             dispatch(createChannel(channel))
@@ -74,7 +78,7 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
             onVisible(false);
         })
        
-    },[name, selectedUserIds]);
+    },[selectedUserIds]);
 
     const handleCancel = () => {
         onVisible(false);
@@ -131,14 +135,14 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 						],
 					})(
                         <Select  >
-                            {eventTypes.map(o=> <Select.Option value={o.code}>{o.name}</Select.Option>)}
+                            {eventTypes.map(o=> <Select.Option key={o.code} value={o.code}>{o.name}</Select.Option>)}
                         </Select>
 					)}
 				</Form.Item>
             </Form>
 
-            <hr/>
-            <h6>Chọn thành viên trong kênh</h6>
+            {/* <hr/>
+            <h6>Chọn thành viên</h6>
             <Input.Search
                 placeholder="Tìm kiếm"
                 onSearch={value => console.log(value)}
@@ -146,13 +150,13 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
             />
             <List
                 className="user-list"
-                loading={loading}
+                loading={usersLoading}
                 itemLayout="horizontal"
                 dataSource={useList}
                 renderItem={ (item,index) => (
-                    <List.Item
+                    <List.Item key={item.userId}
                         actions={[
-                            <Checkbox  checked={selectedUserIds.indexOf(item.userId)!==-1} onChange={(e) => {
+                            <Checkbox checked={selectedUserIds.indexOf(item.userId)!==-1} onChange={(e) => {
                                 const checked = e.target.checked;
                                 setSelectedUserIds((userids)=>{
                                     if(checked){
@@ -173,7 +177,7 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
                         </Skeleton>
                     </List.Item>
                 )}
-            />
+            /> */}
         </Modal>
     )
 }

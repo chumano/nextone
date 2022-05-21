@@ -1,6 +1,7 @@
+import { UserStatus } from "../user/UserStatus.model";
 import { EventFile } from "./EventFile.model";
 
-export interface Event {
+export interface EventInfo {
   id: string;
   content: string;
   eventTypeCode: string;
@@ -13,7 +14,7 @@ export interface Event {
 
   channelId: string;
   userSenderId: string;
-  userSender: any;
+  userSender: UserStatus;
 
   files: EventFile[];
 }

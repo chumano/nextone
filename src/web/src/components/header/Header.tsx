@@ -7,7 +7,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AuthState,  getAuthState, getCallState, callActions, IAppStore, CallStatus } from '../../store';
+import { AuthState,  getAuthState, getCallState, callActions, IAppStore } from '../../store';
+import { CallStatus } from '../../store/call/callState';
 
 interface IProp {
     toggleDrawer: ()=> void
@@ -32,10 +33,7 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
                 
             </div>
 
-            <div className="header__space clickable" 
-                onClick={()=>{
-                    dispatch(callActions.toggleCall())
-                }}
+            <div className="header__space" 
                 style={{textAlign:'center'}}>
                 {process.env.NODE_ENV} : {CallStatus[callStatus]}
             </div>

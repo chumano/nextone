@@ -1,19 +1,19 @@
 import { debounce } from 'lodash'
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Message } from '../../models/message/Message.model'
-import { IAppStore } from '../../store'
-import { getMessageHistory } from '../../store/chat/chatReducer'
-import { ConversationState } from '../../store/chat/ChatState'
-import Loading from '../controls/loading/Loading'
-import MessageItem from './message/MessageItem'
+import { Message } from '../../../models/message/Message.model'
+import { IAppStore } from '../../../store'
+import { getMessageHistory } from '../../../store/chat/chatReducer'
+import { ConversationState } from '../../../store/chat/ChatState'
+import Loading from '../../controls/loading/Loading'
+import MessageItem from './MessageItem'
 
 interface MessageListProps {
     conversation: ConversationState
 }
 const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
     const dispatch = useDispatch();
-    const {messages, messagesLoading, messagesLoadMoreEmtpy} = conversation
+    const {messages, messagesLoading, messagesLoadMoreEmtpy} = conversation;
     const listRef = useRef<HTMLDivElement>(null);
     const [goToTop, setGoToTop] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -64,12 +64,12 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
 
     return <>
         <div className='message-list' ref={listRef}>
-            {loading &&
-                <Loading/>
-            }
             {messages.map(o =>
                 <MessageItem key={o.id} message={o} />
             )}
+            {loading &&
+                <Loading/>
+            }
         </div>
     </>
 }

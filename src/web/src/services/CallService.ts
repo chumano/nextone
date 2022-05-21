@@ -97,13 +97,13 @@ class CallService {
             })
     }
 
-    public startCall = async () => {
+    public startCall = async (room: string) => {
         const devices = await this.deviceManager.enumerateDevices(); 
         console.log('devices', devices)
 
         this.listenCallMessage();
         this.isSender = true;
-        await this.callSender.startCallRequest('receiver-name');
+        await this.callSender.startCallRequest(room);
     }
 
     public stopCall = async (notifiyOther: boolean = true) => {

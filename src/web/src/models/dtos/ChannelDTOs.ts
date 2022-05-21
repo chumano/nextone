@@ -1,8 +1,9 @@
 import { IPageOptions } from "../apis/PageOptions.model";
 
 export interface CreateChannelDTO{
-    name: string,
-    memberIds: string[]
+    name: string;
+    memberIds: string[];
+    eventTypeCodes: string[];
 }
 export interface GetListChannelDTO extends IPageOptions {
 

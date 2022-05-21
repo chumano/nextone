@@ -73,6 +73,7 @@ namespace ComService.Domain
         public string MessageId { get; private set; }
         public string FileId { get; set; }
         public FileTypeEnum FileType { get; set; }
+        public string FileName { get; set; }
         public string FileUrl { get; set; }
     }
 }

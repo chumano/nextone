@@ -1,9 +1,11 @@
+
 import { Conversation } from "../conversation/Conversation.model";
+import { EventType } from "../event/EventType.model";
 
 export interface Channel extends Conversation {
   id: string;
   name: string;
-  allowedEventTypeCodes: string[];
+  allowedEventTypes: EventType[];
   events: any;
 }
 

@@ -13,8 +13,7 @@ namespace NextOne.Infrastructure.Core.ModelBinding
         public IModelBinder GetBinder(
             ModelBinderProviderContext context)
         {
-            if (CustomDateTimeModelBinder
-                .SUPPORTED_DATETIME_TYPES
+            if (CustomDateTimeModelBinder.SUPPORTED_DATETIME_TYPES
                 .Contains(context.Metadata.ModelType)
                 )
             {

@@ -95,9 +95,9 @@ namespace ComService.Boudaries.Controllers
             var conversation = await _conversationService.Get(addMembersDTO.ConversationId);
 
             //TODO: check user have permission to addMembers 
-            await _conversationService.AddMembers(conversation, addMembersDTO.MemberIds);
+            var members = await _conversationService.AddMembers(conversation, addMembersDTO.MemberIds);
 
-            return Ok(ApiResult.Success(null));
+            return Ok(ApiResult.Success(members));
         }
 
         [HttpPost("RemoveMember")]

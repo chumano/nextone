@@ -3,16 +3,22 @@ import { Conversation } from "../../models/conversation/Conversation.model";
 
 export interface ChatState{
     userId?: string;
-    conversationsLoading: boolean,
-    conversations: ConversationState[],
+    conversationsLoading: boolean;
 
-    channels: Channel[],
-    modals: {[key:string]:boolean},
+    allConversations : ConversationState[];
+    conversations: ConversationState[];
+    channels: ConversationState[];
+    
+    modals: {[key:string]:boolean};
+    modalDatas: {[key:string]:any};
 
-    selectedConversationId?: string
+    isShowConversationInfo?: boolean;
+    selectedConversationId?: string;
+    selectedConversatio?: ConversationState;
 }
 
-export interface ConversationState extends Conversation{
+export interface ConversationState extends  Conversation , Channel
+{
     messagesLoadMoreEmtpy?:boolean,
     messagesLoading?:boolean,
 }

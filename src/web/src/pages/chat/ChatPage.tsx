@@ -10,14 +10,34 @@ import { Button, Icon } from 'antd';
 import ModalFindUser from '../../components/chat/ModalFindUser';
 import no_selected_conversation_bg from '../../assets/images/chat/no_selected_conversation_bg.png';
 import ModalChannelCreation from '../../components/chat/ModalChannelCreation';
+import ConversationInfo from '../../components/chat/ConversationInfo';
+import { ConversationState } from '../../store/chat/ChatState';
+import { ConversationType } from '../../models/conversation/ConversationType.model';
+import ModalMemberRole from '../../components/chat/ModalMemberRole';
+import ModalAddMember from '../../components/chat/ModalAddMember';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
-    const { conversations, channels, modals, selectedConversationId } = useSelector((store: IAppStore) => store.chat);
+    const { conversations, channels, 
+        conversationsLoading,
+        modals,
+        modalDatas,
+        allConversations,
+        selectedConversationId ,
+        isShowConversationInfo
+    } = useSelector((store: IAppStore) => store.chat);
+
     useEffect(() => {
         dispatch(getChannels())
         dispatch(getConversations())
     }, [])
+
+    const [conversation, setConversation] = useState<ConversationState>();
+
+    useEffect(() => {
+        const conversation = allConversations.find(o => o.id == selectedConversationId);
+        setConversation(conversation);
+    }, [selectedConversationId, allConversations])
 
 
     console.log('conversations', conversations)
@@ -40,7 +60,8 @@ const ChatPage: React.FC = () => {
                             <Icon type="plus" />
                         </Button>
                     </div>
-                    <ConversationList conversations={channels} type='channel' />
+                    <ConversationList type='channel' conversations={channels} 
+                        loading={conversationsLoading}/>
                 </div>
 
                 <div className="chat-users-list">
@@ -54,9 +75,12 @@ const ChatPage: React.FC = () => {
                             <Icon type="message" />
                         </Button>
                     </div>
-                    <ConversationList conversations={conversations} type='conversation' />
+                    <ConversationList type='conversation' conversations={conversations} 
+                        loading={conversationsLoading} />
                 </div>
             </div>
+
+            {/* --chatbox-- */}
             <div className="chat-page__main">
                 <div className="chatbox__container">
                     {!selectedConversationId &&
@@ -69,13 +93,22 @@ const ChatPage: React.FC = () => {
                             </p>
                         </div>
                     }
-                    {selectedConversationId &&
-                        <ChatBox />
+                    {conversation &&
+                        <>
+                        <ChatBox conversation={conversation}/>
+                        {isShowConversationInfo &&
+                            
+                            <ConversationInfo conversation={conversation}/>
+                        }
+                        </>
                     }
                 </div>
 
             </div>
+
         </div>
+
+
         {modals['find_user'] &&
             <ModalFindUser onVisible={(visible) => {
                 dispatch(chatActions.showModal({ modal: 'find_user', visible: visible }))
@@ -87,6 +120,22 @@ const ChatPage: React.FC = () => {
                 dispatch(chatActions.showModal({ modal: 'channel_creation', visible: visible }))
             }} />
         }
+
+        {modals['member_role'] &&
+            <ModalMemberRole conversation={modalDatas['member_role'].conversation} 
+                member={modalDatas['member_role'].member}
+                onVisible={(visible) => {
+                dispatch(chatActions.showModal({ modal: 'member_role', visible: visible }))
+            }} />
+        }
+
+        {modals['add_member'] &&
+            <ModalAddMember conversation={modalDatas['add_member']} onVisible={(visible) => {
+                dispatch(chatActions.showModal({ modal: 'add_member', visible: visible }))
+            }} />
+        }
+
+
     </>
 }
 

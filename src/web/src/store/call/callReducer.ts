@@ -1,20 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { IAppStore } from ".";
-
-export enum CallStatus {
-    idle,
-    calling
-}
-
-export interface StartCallPayload{
-    conversationId:string,
-    callType: 'voice' | 'video'
-}
-//=================================
-export interface CallState {
-    status : CallStatus
-    isSender: boolean
-}
+import { IAppStore } from "..";
+import { ReceiveCallPayload, StartCallPayload } from "./callPayload";
+import { CallState, CallStatus } from "./callState";
 
 const initialState: CallState = {
     status: CallStatus.idle,
@@ -25,24 +12,21 @@ export const callSlice = createSlice({
     name: 'call',
     initialState,
     reducers: {
-        receiveCall: (state) => {
+        receiveCall: (state, action: PayloadAction<ReceiveCallPayload>) => {
+            const {payload} = action;
             state.status = CallStatus.calling;
             state.isSender = false;
-        },
-        toggleCall: (state) => {
-            if(state.status==CallStatus.calling){
-                state.status = CallStatus.idle;
-            }else{
-                state.status = CallStatus.calling;
-                state.isSender = true;
-            }
+            state.converstationId = payload.conversationId;
         },
         startCall: (state, action: PayloadAction<StartCallPayload>) => {
+            const {payload} = action;
             state.status = CallStatus.calling;
             state.isSender = true;
+            state.converstationId = payload.conversationId;
         },
         stopCall: (state) => {
             state.status = CallStatus.idle;
+            state.converstationId = undefined;
         }
     },
 })

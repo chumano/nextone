@@ -2,6 +2,7 @@ import axios from "axios";
 import { ApiResult } from "../models/apis/ApiResult.model";
 import { Channel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
+import { ConversationMember } from "../models/conversation/ConversationMember.model";
 import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
 import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
 import { EventType } from "../models/event/EventType.model";
@@ -36,7 +37,7 @@ export const comApi = {
     //member
     addMembers :async (data: AddMembersDTO) =>{
         const responsePromise = comAxiosInstance.post(`/conversation/AddMembers`, data)
-        return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+        return await handleAxiosApi<ApiResult<ConversationMember[]>>(responsePromise);
     },
     removeMember :async (data: RemoveMemberDTO) =>{
         const responsePromise = comAxiosInstance.post(`/conversation/RemoveMember`, data)

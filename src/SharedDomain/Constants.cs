@@ -6,6 +6,6 @@ namespace SharedDomain
 {
     public class Constants
     {
-        public const string DateTimeFormat = "dd/MM/yyyy HH:mm:ss";
+        public const string DateTimeFormat = "HH:mm:ss dd/MM/yyyy";
     }
 }

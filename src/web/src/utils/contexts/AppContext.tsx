@@ -38,11 +38,13 @@ const AppContextProvider = (props: IContextProviderProp) => {
             const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, (room)=>{
                 //show user confirm
                 Modal.confirm({
-                    title: 'Do you Want to accept the call',
+                    title: 'Có cuộc gọi đến',
                     icon: <Icon type="question" />,
-                    content: null,
+                    content: 'Cuộc gọi từ "Admin"',
                     onOk : async ()=> {
-                        dispatch(callActions.receiveCall())
+                        dispatch(callActions.receiveCall({
+                            conversationId: room
+                        }))
                         await CallService.acceptCallRequest(room);
                     },
                     onCancel : async ()=> {

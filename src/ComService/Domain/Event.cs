@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SharedDomain.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -56,7 +57,8 @@ namespace ComService.Domain
     {
         public string EventId { get; set; }
         public string FileId { get; set; }
-        public string FileType { get;  set; }
+        public string FileName { get; set; }
+        public FileTypeEnum FileType { get;  set; }
         public string FileUrl { get; set; }
     }
 

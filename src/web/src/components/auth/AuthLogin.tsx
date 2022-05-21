@@ -52,7 +52,7 @@ const AuthLogin: React.FC = () => {
                         Kênh liên lạc và theo dõi sự cố
                     </div>
                     <div className="intro__img">
-                        <IntroSVG width={'100%'} height={'auto'}/>
+                        <IntroSVG width={'100%'} />
                     </div>
                 </div>
 

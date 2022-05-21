@@ -25,10 +25,12 @@ import { callActions, getCallState } from '../../store';
 
 const CallSession: React.FC = () => {
     const dispatch = useDispatch();
-    const {status : callStatus, isSender} = useSelector(getCallState)
+    const {status : callStatus, isSender, converstationId} = useSelector(getCallState)
     
     const [localStream, setLocalStream] = useState<StreamWithURL>();
     const [remoteStream, setRemoteStream] = useState<StreamWithURL>();
+
+    //lisen on call
     useEffect(()=>{
         const subscriptions : any[]= [];
         const subscription1 = CallService.listen(CallEvents.GOT_LOCAL_STREAM, (mediaStream:MediaStream)=>{
@@ -64,8 +66,8 @@ const CallSession: React.FC = () => {
             subscription.subscribe();
         });
        
-        if(isSender){
-            CallService.startCall().then(()=>{
+        if(isSender && converstationId){
+            CallService.startCall(converstationId).then(()=>{
                 console.log('CallSession call started',);
             }).catch(err=>{
                 console.error(' CallService.startCall error', err)
@@ -79,14 +81,17 @@ const CallSession: React.FC = () => {
             subscriptions.forEach(subscription=>{
                 subscription.unsubscribe();
             });
-            CallService.stopCall().then(()=>{
-                console.log('CallSession call stopped',);
-            }).catch(err=>{
-                console.error(' CallService.stopCall error', err)
-            })
-    
+            onStopCall();
         }
-    },[isSender])
+    },[isSender, callStatus, converstationId])
+
+    const onStopCall = ()=>{
+        CallService.stopCall().then(()=>{
+            console.log('CallSession call stopped',);
+        }).catch(err=>{
+            console.error(' CallService.stopCall error', err)
+        })
+    }
     
     return <>
         <div className="call-session">
@@ -132,7 +137,7 @@ const CallSession: React.FC = () => {
                         <ButtonAction className="on">
                             <VoiceOnIcon />
                         </ButtonAction>
-                        <ButtonAction className="off">
+                        <ButtonAction className="off" onClick={onStopCall}>
                             <CallIcon />
                         </ButtonAction>
                         <ButtonAction className="on">

@@ -5,9 +5,10 @@ import { AuthenticationService } from "../../services";
 import Loading from "../controls/loading/Loading";
 import Backdrop from "./Backdrop";
 import '../../styles/components/layout/auth-layout.scss';
-import { CallStatus, getCallState, IAppStore } from "../../store";
+import { getCallState, IAppStore } from "../../store";
 import { useSelector } from "react-redux";
 import CallSession from "../call/call-session";
+import { CallStatus } from "../../store/call/callState";
 
 const Header = React.lazy(()=> import('../header/Header'));
 const SideBar = React.lazy(()=> import('./SideBar'));

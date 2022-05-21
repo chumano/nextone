@@ -9,15 +9,6 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Hubs
 {
-    class CallSignalingActions
-    {
-        public const string SEND_CALL_REQUEST = "call-send-request";
-        public const string SEND_CALL_REQUEST_RESPONSE = "call-send-request-response";
-        public const string SEND_SESSION_DESCRIPTION = "call-send-session-description";
-        public const string SEND_ICE_CANDIDATE = "call-send-ice-cadidate";
-        public const string SEND_HANG_UP = "call-send-hangup";
-    }
-
     public class ChatHub : Hub
     {
         const string CallRequest = "call-request";
@@ -41,7 +32,7 @@ namespace ComService.Boudaries.Hubs
                         //find client by receiver
 
                         //create  room
-                        var room = Guid.NewGuid().ToString();
+                        var room = (string)data;
                         var emitData = CreateEventData(CallRequest, room);
                         await EmitData(Clients.Others, emitData);
                     }
@@ -118,12 +109,17 @@ namespace ComService.Boudaries.Hubs
         {
             await clientProxy.SendAsync("data", data);
         }
+
+
+
+        //==============================================
         public async Task SendMessage(object message, string roomName)
         {
             await EmitLog("Client " + Context.ConnectionId + " said: " + message, roomName);
 
             await Clients.OthersInGroup(roomName).SendAsync("message", message);
         }
+
 
         public async Task CreateOrJoinRoom(string roomName)
         {

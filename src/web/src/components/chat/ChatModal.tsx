@@ -20,7 +20,7 @@ import {
     faPhotoVideo,
     faTimes
 } from "@fortawesome/free-solid-svg-icons";
-import { messageList } from "../chat/fakedate";
+import { messageList } from "../../pages/chat/fakedate";
 
 interface ChatModalProp{
     isShow : boolean,

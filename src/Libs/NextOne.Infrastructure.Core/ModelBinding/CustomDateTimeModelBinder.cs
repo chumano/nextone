@@ -44,34 +44,11 @@ namespace NextOne.Infrastructure.Core.ModelBinding
                 return Task.CompletedTask;
             }
             var formattedDateTime
-                = ParseDateTime(dateTimeToParse);
+                = DateTimeHelper.ParseDateTime(dateTimeToParse);
             modelBindingContext.Result
                 = ModelBindingResult.Success(formattedDateTime);
             return Task.CompletedTask;
         }
-        static DateTime? ParseDateTime(string date)
-        {
-            var CUSTOM_DATETIME_FORMATS = new string[]
-            {
-            "dd/MM/yyyy HH:mm:ss",
-            "ddMMyyyy",
-            "dd-MM-yyyy-THH-mm-ss",
-            "dd-MM-yyyy-HH-mm-ss",
-            "dd-MM-yyyy-HH-mm",
-
-            };
-            foreach (var format in CUSTOM_DATETIME_FORMATS)
-            {
-                if (DateTime.TryParseExact(
-                    date, format, null,
-                    DateTimeStyles.None,
-                    out DateTime validDate)
-                   )
-                {
-                    return validDate;
-                }
-            }
-            return null;
-        }
+       
     }
 }
