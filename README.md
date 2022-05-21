@@ -28,7 +28,7 @@ docker-compose -f docker-compose.yml up -d
 - npm  >= v8
 
 ## Account
-manager/NextOne@123
+manager/Nextone@123
 
 ## web
 - Setup route

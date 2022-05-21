@@ -1,16 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faHome,
-    faAddressBook,
-    faSnowflake,
-    faMap,
-    faTasks,
-    faComments,
-} from '@fortawesome/free-solid-svg-icons'
+	faHome,
+	faAddressBook,
+	faSnowflake,
+	faMap,
+	faTasks,
+	faComments,
+} from "@fortawesome/free-solid-svg-icons";
 import MapConfig from "./pages/admin/map-config/MapConfig";
 import Channels from "./pages/admin/channels/Channels";
 import AuthLogin from "./components/auth/AuthLogin";
-import Users from "./pages/admin/users/Users";
+
 import AuthSilentCallback from "./components/auth/AuthSilentCallback";
 import NotAuthenticated from "./components/auth/NotAuthenticated";
 import AuthCallback from "./components/auth/AuthCallback";
@@ -20,53 +20,52 @@ import Home from "./pages/home/Home";
 import TestPage from "./pages/test/TestPage";
 import ChatPage from "./pages/chat/ChatPage";
 import MapPage from "./pages/map/MapPage";
-
+import UserPage from "./pages/user/User";
 
 const authRoutes: Array<{
-    path: string,
-    component: any,
-    title: string
+	path: string;
+	component: any;
+	title: string;
 }> = [
-        {
-            path: "/auth/callback",
-            component: AuthCallback,
-            title: "Signin callback"
-        },
-        {
-            path: "/auth/silent-callback",
-            component: AuthSilentCallback,
-            title: "Silent callback"
-        },
-        {
-            path: "/auth/401",
-            component: NotAuthenticated,
-            title: "Not Authenticated"
-        },
-        // {
-        //     path: "/auth/signout-callback",
-        //     component: AuthLogin,
-        //     title: "Login"
-        // },
-        {
-            path: "/intro",
-            component: AuthLogin,
-            title: "Intro"
-        },
-        {
-            path: "/auth/redirect",
-            component: AuthRedirect,
-            title: "Auth Redirect"
-        },
-
-    ]
+	{
+		path: "/auth/callback",
+		component: AuthCallback,
+		title: "Signin callback",
+	},
+	{
+		path: "/auth/silent-callback",
+		component: AuthSilentCallback,
+		title: "Silent callback",
+	},
+	{
+		path: "/auth/401",
+		component: NotAuthenticated,
+		title: "Not Authenticated",
+	},
+	// {
+	//     path: "/auth/signout-callback",
+	//     component: AuthLogin,
+	//     title: "Login"
+	// },
+	{
+		path: "/intro",
+		component: AuthLogin,
+		title: "Intro",
+	},
+	{
+		path: "/auth/redirect",
+		component: AuthRedirect,
+		title: "Auth Redirect",
+	},
+];
 
 export interface IRouteConfig {
-    path: string,
-    component: any,
-    name?: string,
-    title?: string,
-    useAuthLayout?: boolean,
-    exact?: boolean
+	path: string;
+	component: any;
+	name?: string;
+	title?: string;
+	useAuthLayout?: boolean;
+	exact?: boolean;
 }
 const routes: Array<IRouteConfig> = [
     //feature page
@@ -87,11 +86,11 @@ const routes: Array<IRouteConfig> = [
         useAuthLayout: true
     },
     //admin
-    {
-        path: "/admin/users",
-        component: Users,
-        useAuthLayout: true
-    },
+    // {
+    //     path: "/admin/users",
+    //     component: UserPage,
+    //     useAuthLayout: true
+    // },
     {
         path: "/admin/channels",
         component: Channels,
@@ -102,14 +101,19 @@ const routes: Array<IRouteConfig> = [
         component: MapConfig,
         useAuthLayout: true
     },
+	//users
+	{
+		path: "/user",
+		component: UserPage,
+		useAuthLayout: true,
+	},
 
-    //test
-    {
-        path: "/test",
-        component: TestPage,
-        useAuthLayout: true
-    }
-
+	//test
+	{
+		path: "/test",
+		component: TestPage,
+		useAuthLayout: true,
+	},
 ];
 
 const MenuList = [
@@ -132,34 +136,32 @@ const MenuList = [
         path: '/chat',
         icon: <FontAwesomeIcon icon={faComments} />
     },
-
-
-    //manage menu
-    {
-        id: 100,
-        title: 'Quản lý kênh',
-        path: '/admin/channels',
-        icon: <FontAwesomeIcon icon={faSnowflake} />
-    },
-    {
-        id: 101,
-        title: 'Quản lý người dùng',
-        path: '/admin/users',
-        icon: <FontAwesomeIcon icon={faAddressBook} />
-    },
-    {
-        id: 102,
-        title: 'Cấu hình bản đồ',
-        path: '/admin/map-config',
-        icon: <FontAwesomeIcon icon={faMap}/>
-    },
-    //Test components
-    {
-        id: 1000,
-        title: 'Test components',
-        path: '/test',
-        icon: <FontAwesomeIcon icon={faTasks} />
-    }
-]
+	//manage menu
+	{
+		id: 100,
+		title: "Quản lý kênh",
+		path: "/admin/channels",
+		icon: <FontAwesomeIcon icon={faSnowflake} />,
+	},
+	{
+		id: 101,
+		title: "Quản lý người dùng",
+		path: "/user",
+		icon: <FontAwesomeIcon icon={faAddressBook} />,
+	},
+	{
+		id: 102,
+		title: "Cấu hình bản đồ",
+		path: "/admin/map-config",
+		icon: <FontAwesomeIcon icon={faMap} />,
+	},
+	//Test components
+	{
+		id: 1000,
+		title: "Test components",
+		path: "/test",
+		icon: <FontAwesomeIcon icon={faTasks} />,
+	},
+];
 
 export { authRoutes, routes, MenuList };

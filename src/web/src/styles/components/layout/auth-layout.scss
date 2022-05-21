@@ -23,7 +23,7 @@
     }
 
     &__main{
-        min-height: calc(100vh - #{$header-height});
+        height: calc(100vh - #{$header-height});
 
         @include tablet-width{
             min-height: 100vh;
