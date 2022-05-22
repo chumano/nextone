@@ -27,6 +27,8 @@ using Microsoft.IdentityModel.Tokens;
 using NextOne.Infrastructure.Core.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SharedDomain;
+using FluentValidation;
+using MasterService.Validators;
 
 namespace MasterService
 {
@@ -133,6 +135,8 @@ namespace MasterService
 
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IIdentityService, IdentityService>();
+
+            services.AddValidatorsFromAssemblyContaining(typeof(CreateUserValidator));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

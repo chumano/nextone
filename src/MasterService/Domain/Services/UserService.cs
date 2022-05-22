@@ -3,6 +3,7 @@ using MasterService.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
+using NextOne.Shared.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -73,6 +74,13 @@ namespace MasterService.Domain.Services
 
         public async Task<User> CreateUser(string name, string email, string phone)
         {
+            var userHasRegisterWithEmail = await _userRepository.GetUserByEmail(email);
+
+            if(userHasRegisterWithEmail != null)
+            {
+                throw new DomainException("[user/CreateUser]", "Email Already Exist");
+            }
+
             var id = _idGenerator.GenerateNew();
             var user = new User(id, name, email, phone);
 
