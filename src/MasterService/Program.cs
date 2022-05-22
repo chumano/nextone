@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Logging;
 using NextOne.Infrastructure.Core.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,20 @@ namespace MasterService
                 {
                     var appDbContext = services.GetRequiredService<MasterDBContext>();
                     appDbContext.Database.Migrate();
+
+                    if (!appDbContext.Roles.Any())
+                    {
+                        Log.Debug("Roles being populated");
+                        foreach (var role in SeedData.Roles)
+                        {
+                            appDbContext.Roles.Add(role);
+                        }
+                        appDbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        Log.Debug("Roles already populated");
+                    }
                 }
             }
 

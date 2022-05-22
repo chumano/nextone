@@ -2,24 +2,44 @@
 @import "../../abstracts/mixins";
 
 .noauth-layout{
-    display: flex;
-    height: 100%;
+    &__header{
+        border-bottom: 1px solid $color-line;
+        display: flex;
+        flex-direction: row;
+        padding:5px;
+        align-items: center;
+        height: $header-height;
+
+        .header{
+            &__appname{
+                margin-left: 10px;
+                font-size: $font-size-3;
+                font-weight: $font-weight-5;    
+            }
+
+
+        }
+    }
+
+    &__bottom{
+        // position: fixed;
+        // bottom: 10px;
+        // left: 10px;
+        // right: 10px;
+        display: flex;
+        justify-content: center;
+    }
+
     @include tablet-width{
         display: block;
         position: relative;
     }
 
-    &__container {
+    &__body {
         background-color: $color-white;
-        flex-grow: 1;
-        height: 100vh;
+        min-height: 600px;
 
         @include tablet-width{
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 90;
         }
     }
 

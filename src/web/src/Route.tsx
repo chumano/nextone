@@ -6,10 +6,12 @@ import {
 	faMap,
 	faTasks,
 	faComments,
+	faNewspaper,
+	faCog,
 } from "@fortawesome/free-solid-svg-icons";
-import MapConfig from "./pages/admin/map-config/MapConfig";
+import ConfigPage from "./pages/admin/config/ConfigPage";
 import Channels from "./pages/admin/channels/Channels";
-import AuthLogin from "./components/auth/AuthLogin";
+import IntroPage from "./pages/intro/IntroPage";
 
 import AuthSilentCallback from "./components/auth/AuthSilentCallback";
 import NotAuthenticated from "./components/auth/NotAuthenticated";
@@ -21,6 +23,9 @@ import TestPage from "./pages/test/TestPage";
 import ChatPage from "./pages/chat/ChatPage";
 import MapPage from "./pages/map/MapPage";
 import UserPage from "./pages/user/User";
+import NewsList from "./pages/intro/NewsList";
+import NewsPage from "./pages/news/NewsPage";
+import AdminNewsPage from "./pages/admin/news/AdminNewsPage";
 
 const authRoutes: Array<{
 	path: string;
@@ -49,8 +54,13 @@ const authRoutes: Array<{
 	// },
 	{
 		path: "/intro",
-		component: AuthLogin,
-		title: "Intro",
+		component: IntroPage,
+		title: "Giới thiệu",
+	},
+	{
+		path: "/news/:id/:name",
+		component: NewsPage,
+		title: "Tin tức",
 	},
 	{
 		path: "/auth/redirect",
@@ -91,14 +101,14 @@ const routes: Array<IRouteConfig> = [
     //     component: UserPage,
     //     useAuthLayout: true
     // },
+    // {
+    //     path: "/admin/channels",
+    //     component: Channels,
+    //     useAuthLayout: true
+    // },
     {
-        path: "/admin/channels",
-        component: Channels,
-        useAuthLayout: true
-    },
-    {
-        path: "/admin/map-config",
-        component: MapConfig,
+        path: "/admin/config",
+        component: ConfigPage,
         useAuthLayout: true
     },
 	//users
@@ -107,7 +117,11 @@ const routes: Array<IRouteConfig> = [
 		component: UserPage,
 		useAuthLayout: true,
 	},
-
+	{
+        path: "/admin/news",
+        component: AdminNewsPage,
+        useAuthLayout: true
+    },
 	//test
 	{
 		path: "/test",
@@ -126,23 +140,29 @@ const MenuList = [
     },
     {
         id: 20,
+        title: 'Tin nhắn',
+        path: '/chat',
+        icon: <FontAwesomeIcon icon={faComments} />
+    },
+    {
+        id: 30,
         title: 'Bản đồ',
         path: '/map',
         icon: <FontAwesomeIcon icon={faMap} />
     },
     {
-        id: 30,
-        title: 'Tin nhắn',
-        path: '/chat',
-        icon: <FontAwesomeIcon icon={faComments} />
+        id: 90,
+        title: 'Tin tức',
+        path: '/admin/news',
+        icon: <FontAwesomeIcon icon={faNewspaper} />
     },
 	//manage menu
-	{
-		id: 100,
-		title: "Quản lý kênh",
-		path: "/admin/channels",
-		icon: <FontAwesomeIcon icon={faSnowflake} />,
-	},
+	// {
+	// 	id: 100,
+	// 	title: "Quản lý kênh",
+	// 	path: "/admin/channels",
+	// 	icon: <FontAwesomeIcon icon={faSnowflake} />,
+	// },
 	{
 		id: 101,
 		title: "Quản lý người dùng",
@@ -151,9 +171,9 @@ const MenuList = [
 	},
 	{
 		id: 102,
-		title: "Cấu hình bản đồ",
-		path: "/admin/map-config",
-		icon: <FontAwesomeIcon icon={faMap} />,
+		title: "Cấu hình",
+		path: "/admin/config",
+		icon: <FontAwesomeIcon icon={faCog} />,
 	},
 	//Test components
 	{

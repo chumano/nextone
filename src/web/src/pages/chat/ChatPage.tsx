@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import 'react-chat-elements/dist/main.css';
-import '../../styles/pages/chat/chat.scss';
+import '../../styles/pages/chat/chat-page.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { IAppStore } from '../../store';
 import { chatActions, getChannels, getConversations } from '../../store/chat/chatReducer';

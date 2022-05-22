@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { mapApi } from "../../../apis/mapApi";
 import { MapInfo } from "../../../models/map/Map.modal";
-import '../../../styles/pages/admin-map-config/map-config.scss'
+import '../../../styles/pages/admin-config/system-config.scss'
 
-const MapConfig: React.FC = () => {
+const ConfigPage: React.FC = () => {
     const [maps, setMaps] = useState<MapInfo[]>([])
     useEffect(() => {
         const fetchMaps = async () => {
@@ -14,8 +14,8 @@ const MapConfig: React.FC = () => {
         fetchMaps();
     }, [])
     return <>
-        <div className="map-config">
-            MapConfig
+        <div className="system-config">
+            Cấu hình hệ thống
             {maps.map(o =>
                 <>
                 <div className="map-item">
@@ -35,4 +35,4 @@ const MapConfig: React.FC = () => {
     </>;
 }
 
-export default MapConfig;
+export default ConfigPage;
