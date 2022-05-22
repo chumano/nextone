@@ -10,6 +10,7 @@ namespace MasterService.Domain.Repositories
     public interface IRoleRepository
     {
         IQueryable<Role> Roles { get; }
+        IQueryable<Permission> Permissions { get; }
 
         Task<Role> Get(string id);
         void Add(Role role);

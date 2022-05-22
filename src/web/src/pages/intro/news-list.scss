@@ -1,0 +1,56 @@
+@import '../../styles/abstracts/variables';
+
+.news{ 
+    width: 80%;
+    max-width: 900px;
+    margin-bottom: 50px;
+
+    &__header{
+
+    }
+
+    &__body{
+    }
+
+    .news-list{
+
+    }
+    .news-pagination{
+        margin-top: 20px;
+        padding: 10px;
+    }
+
+    .news-item{
+        display: flex;
+        flex-direction: row;
+        box-shadow: 1px 1px 1px 1px $color-grey-2;
+        padding: 10px;
+        margin-top: 40px;
+
+        .news-item-image{
+            width: 200px;
+        }
+
+        .news-item-body{
+            flex-grow: 1;
+            margin-left: 20px;
+        }
+
+        .news-item-title{
+
+        }
+
+        .news-item-date{
+
+        }
+
+        .news-item-user{
+            font-size: $font-size-2;
+            font-weight: $font-weight-5;
+        }
+
+        .news-item-description{
+            margin-top: 5px;
+        }
+    }
+}

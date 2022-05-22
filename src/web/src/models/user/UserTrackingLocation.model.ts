@@ -1,6 +1,6 @@
 export interface UserTrackingLocation {
-  UserId: string;
-  Date: string;
-  Lat: number;
-  Lon: number;
+  userId: string;
+  date: string;
+  lat: number;
+  lon: number;
 }

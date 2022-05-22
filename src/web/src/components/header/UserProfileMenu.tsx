@@ -19,11 +19,11 @@ const ProfileMenus:any[] = [
         path: "/",
         icon: <FontAwesomeIcon icon={faUser} />
     },
-    {
-        label: "Cấu hình",
-        path: "/",
-        icon: <FontAwesomeIcon icon={faCog} />
-    },
+    // {
+    //     label: "Cấu hình",
+    //     path: "/",
+    //     icon: <FontAwesomeIcon icon={faCog} />
+    // },
     {
         label: "Đăng xuất",
         click: (fn:()=>void)=>{ fn() },

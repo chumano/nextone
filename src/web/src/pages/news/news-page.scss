@@ -1,0 +1,21 @@
+@import '../../styles/abstracts/variables';
+.news-page{
+    width: 80%;
+    max-width: 900px;
+    margin-bottom: 50px;
+    margin-top: 50px;
+    margin-left: auto;
+    margin-right: auto;
+
+    padding: 50px;
+    box-shadow: 1px 1px 1px 1px $color-grey-2;
+    
+    .news-page-user{
+        font-size: $font-size-2;
+        font-weight: $font-weight-5;
+    }
+
+    &__content{
+        margin-top: 20px;
+    }
+}

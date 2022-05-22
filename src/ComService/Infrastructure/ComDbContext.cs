@@ -26,6 +26,7 @@ namespace ComService.Infrastructure
         public DbSet<UserStatus> Users { get; set; }
         public DbSet<EventType> EventTypes { get; set; }
 
+        public DbSet<News> News { get; set; }
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
             System.Diagnostics.Debug.WriteLine("ComDbContext::ctor ->" + this.GetHashCode());
@@ -168,7 +169,7 @@ namespace ComService.Infrastructure
             modelBuilder.Entity<MessageFile>(eb =>
             {
                 eb.ToTable("T_App_MessageFiles", DB_SCHEMA)
-                 .HasKey("MessageId","FileId");
+                 .HasKey("MessageId", "FileId");
 
                 eb.Property(o => o.MessageId)
                     .HasColumnType("varchar(36)");
@@ -267,7 +268,7 @@ namespace ComService.Infrastructure
                     .IsRequired();
             });
 
-           
+
 
             modelBuilder.Entity<EventType>(eb =>
             {
@@ -365,6 +366,51 @@ namespace ComService.Infrastructure
 
                 eb.Property(o => o.Lon)
                   .HasColumnType("float");
+            });
+
+            BuildNewsModels(modelBuilder);
+        }
+
+        void BuildNewsModels(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<News>(eb =>
+            {
+                eb.ToTable("T_News", "news")
+                 .HasKey("Id");
+
+                eb.Property(o => o.Id)
+                    .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.Title)
+                    .HasColumnType("nvarchar(255)")
+                    .IsRequired();
+
+                eb.Property(o => o.Description)
+                   .HasColumnType("nvarchar(512)")
+                   .IsRequired();
+
+                eb.Property(o => o.Content)
+                  .HasColumnType("nvarchar(max)")
+                  .IsRequired();
+
+                eb.Property(o => o.PublishedDate)
+                    .HasColumnType("datetime");
+
+                eb.Property(o => o.PublishedBy)
+                        .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.PublishedUserName)
+                        .HasColumnType("nvarchar(255)");
+
+                eb.Property(o => o.IsPublished)
+                  .HasColumnType("bit")
+                  .IsRequired();
+
+                eb.Property(o => o.ImageUrl)
+                      .HasColumnType("nvarchar(255)");
+
+                eb.Property(o => o.ImageDescription)
+                      .HasColumnType("nvarchar(512)");
             });
         }
 

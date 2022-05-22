@@ -10,7 +10,7 @@ interface IProp {
 }
 const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
     const [selectedMenuIndex, setSelectedMenuIndex] = useState(-1);
-    const [menuHasNotification, setMenuHasNotification] = useState<{[key:string]: boolean}>({ 30 : true })
+    const [menuHasNotification, setMenuHasNotification] = useState<{[key:string]: boolean}>({ 20 : true })
     useEffect(() => {
         const path = window.location.pathname.toLowerCase();
         const index = MenuList.findIndex((menu)=>menu.path == path);

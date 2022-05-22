@@ -252,6 +252,46 @@ namespace ComService.Migrations
                     b.ToTable("T_App_MessageFiles", "com");
                 });
 
+            modelBuilder.Entity("ComService.Domain.News", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("ImageDescription")
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PublishedBy")
+                        .HasColumnType("varchar(36)");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("PublishedUserName")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("T_News", "news");
+                });
+
             modelBuilder.Entity("ComService.Domain.UserStatus", b =>
                 {
                     b.Property<string>("UserId")

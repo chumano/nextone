@@ -38,9 +38,9 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
                 {process.env.NODE_ENV} : {CallStatus[callStatus]}
             </div>
 
-            <div className="header__notification">
+            {/* <div className="header__notification">
                 <HeaderNotification />
-            </div>
+            </div> */}
 
 
             <div className="header__profile">

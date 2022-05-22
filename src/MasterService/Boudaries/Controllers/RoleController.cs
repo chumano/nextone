@@ -19,10 +19,10 @@ namespace MasterService.Boudaries.Controllers
     public class RoleController : ControllerBase
     {
         private readonly ILogger<RoleController> _logger;
-        private readonly RoleRepository _roleRepository;
+        private readonly IRoleRepository _roleRepository;
         private readonly IIdentityService _identityService;
         public RoleController(ILogger<RoleController> logger,
-            RoleRepository roleRepository,
+            IRoleRepository roleRepository,
             IIdentityService identityService)
         {
             _logger = logger;

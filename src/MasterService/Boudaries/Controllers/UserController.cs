@@ -50,8 +50,15 @@ namespace MasterService.Controllers
         public async Task<IActionResult> GetList([FromQuery] GetUserListDTO getUserListDTO)
         {
             var actionUser =_userContext.User;
-            var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize));
+            var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize), getUserListDTO.TextSearch);
             return Ok(ApiResult.Success(items));
+        }
+
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
+        {
+            var count = await _userService.Count(getUserListDTO.TextSearch);
+            return Ok(ApiResult.Success(count));
         }
 
         [HttpGet("{id}")]
@@ -78,6 +85,20 @@ namespace MasterService.Controllers
             }
 
             await _userService.UpdateUser(user, userDTO.Name, userDTO.Email, userDTO.Phone, userDTO.RoleCodes);
+
+            return Ok(ApiResult.Success(null));
+        }
+
+        [HttpPost("UpdateUserRoles")]
+        public async Task<IActionResult> UpdateUserRoles(UpdateUserRolesDTO userDTO)
+        {
+            var user = await _userService.Get(userDTO.UserId);
+            if(user == null)
+            {
+                throw new DomainException("", "");
+            }
+
+            await _userService.UpdateUserRoles(user, userDTO.RoleCodes);
 
             return Ok(ApiResult.Success(null));
         }
