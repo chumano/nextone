@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { Provider as StoreProvider } from 'react-redux';
@@ -10,6 +10,7 @@ import RootApp from './src/RootApp';
 import { useSelector } from 'react-redux';
 import { AppState } from 'react-native';
 import LoginScreen from './src/screens/LoginScreen/LoginScreen';
+import { CallScreen } from './src/screens/CallScreen/CallScreen';
 
 const appTheme = {
   ...DefaultTheme,
@@ -22,16 +23,20 @@ const appTheme = {
 
 const AppContainer = () => {
   const { isLogined } = useSelector((store: IAppStore) => store.auth);
-  console.log({isLogined})
+  const { isCalling } = useSelector((store: IAppStore) => store.call);
+  console.log({ isLogined })
   return (
     <NavigationContainer>
-      {!isLogined &&
+      {!isLogined &&!isCalling &&
         <LoginScreen />
       }
-      {isLogined &&
+      {isLogined && !isCalling &&
         <RootApp />
       }
 
+      {isCalling &&
+        <CallScreen />
+      }
     </NavigationContainer>
   )
 };
