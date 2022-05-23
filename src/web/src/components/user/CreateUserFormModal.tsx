@@ -36,6 +36,7 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 	const userApi = useUserApi();
 	const { dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
+	const [emailValidate, setEmailValidate] = useState("");
 
 	const {
 		getFieldDecorator,
@@ -51,12 +52,13 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 
 	const hideModalHandler = () => setIsModalVisible(false);
 
-	const userNameError = isFieldTouched("username") && getFieldError("username");
-	const emailError = isFieldTouched("email") && getFieldError("email");
-	const phoneError = isFieldTouched("phone") && getFieldError("phone");
+	const userNameError = isFieldTouched("Username") && getFieldError("Username");
+	const emailError = isFieldTouched("Email") && getFieldError("Email");
+	const phoneError = isFieldTouched("Phone") && getFieldError("Phone");
 
 	const onFormSubmitHandler = (event: FormEvent) => {
 		event.preventDefault();
+		setEmailValidate("")
 		setIsLoading(true);
 		validateFields(
 			async (_, { Username, Email, Phone }: CreateUserFormData) => {
@@ -68,21 +70,23 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 					});
 
 					setIsLoading(false);
-
 					if (data.isSuccess) {
 						dispatch({
 							type: UserActionType.SET_RELOAD_USER_TABLE,
 							payload: true,
 						});
 						message.success("Thêm người dùng thành công");
+						hideModalHandler();
+						
 					} else {
 						//TODO: Throw error message
-						message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+						setEmailValidate("Địa chỉ email đã có người đăng ký");
 					}
 
-					hideModalHandler();
+				
 				} catch (error) {
 					message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+					setIsLoading(false);
 				}
 			}
 		);
@@ -120,6 +124,10 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 								required: true,
 								message: "Đây là trường bắt buộc",
 							},
+							{
+								min: 4,
+								message: "Tên người dùng phải lớn hơn 4 ký tự"
+							}
 						],
 					})(
 						<Input
@@ -132,6 +140,11 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 				<Form.Item
 					validateStatus={emailError ? "error" : ""}
 					help={emailError || ""}
+
+					{...emailValidate !== '' && {
+						validateStatus:"error",
+						help: emailValidate
+					}}
 				>
 					{getFieldDecorator("Email", {
 						rules: [
@@ -162,6 +175,10 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 								required: true,
 								message: "Đây là trường bắt buộc",
 							},
+							{
+								pattern: /^(\+84|0[1-9])[0-9]{1,12}$/g,
+								message: "Số điện thoại không hợp lệ"
+							}
 						],
 					})(
 						<Input

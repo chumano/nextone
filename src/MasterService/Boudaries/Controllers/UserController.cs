@@ -85,6 +85,13 @@ namespace MasterService.Controllers
                 return new BadRequestObjectResult(ApiResult.Error(combinedErrorString));
             }
 
+            var userHasRegisterWithEmail = await _userService.GetUserByEmail(userDTO.Email);
+
+            if (userHasRegisterWithEmail != null)
+            {
+                return Ok(ApiResult.Error("Email Already Exist"));
+            }
+
             var user = await _userService.CreateUser(userDTO.Name, userDTO.Email, userDTO.Phone);
             return Ok(ApiResult.Success(user));
         }

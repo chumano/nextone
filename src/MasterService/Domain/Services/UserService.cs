@@ -15,6 +15,8 @@ namespace MasterService.Domain.Services
     {
         Task<User> Get(string userId);
 
+        Task<User> GetUserByEmail(string email);
+
         Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch);
         Task<User> CreateUser(string name, string email, string phone);
 
@@ -74,13 +76,6 @@ namespace MasterService.Domain.Services
 
         public async Task<User> CreateUser(string name, string email, string phone)
         {
-            var userHasRegisterWithEmail = await _userRepository.GetUserByEmail(email);
-
-            if(userHasRegisterWithEmail != null)
-            {
-                throw new DomainException("[user/CreateUser]", "Email Already Exist");
-            }
-
             var id = _idGenerator.GenerateNew();
             var user = new User(id, name, email, phone);
 
@@ -182,6 +177,11 @@ namespace MasterService.Domain.Services
             }
 
             return await query.CountAsync();
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _userRepository.GetUserByEmail(email);
         }
     }
 }

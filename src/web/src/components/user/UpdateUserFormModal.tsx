@@ -128,6 +128,10 @@ const UpdateUserFormModal: FC<FormComponentProps & IProps> = ({
 								required: true,
 								message: "Đây là trường bắt buộc",
 							},
+							{
+								min: 4,
+								message: "Tên người dùng phải lớn hơn 4 ký tự"
+							}
 						],
 					})(
 						<Input
@@ -157,6 +161,10 @@ const UpdateUserFormModal: FC<FormComponentProps & IProps> = ({
 								required: true,
 								message: "Đây là trường bắt buộc",
 							},
+							{
+								pattern: /^(\+84|0[1-9])[0-9]{1,12}$/g,
+								message: "Số điện thoại không hợp lệ"
+							}
 						],
 					})(
 						<Input

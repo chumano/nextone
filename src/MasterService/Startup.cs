@@ -152,6 +152,7 @@ namespace MasterService
             app.UseRouting();
 
             app.UseCors(AllowSpecificOrigins);
+            app.UseMiddleware<ExceptionHandlerMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 
