@@ -5,41 +5,43 @@ import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
 import { Provider as StoreProvider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 
-import { appStore } from './src/stores/appStore';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './src/screens/HomeScreen/HomeScreen';
-import ChatScreen from './src/screens/ChatScreen/ChatScreen';
-import AppNavigationBar from './src/components/AppNavigationBar';
-
+import { appStore, IAppStore } from './src/stores/appStore';
+import RootApp from './src/RootApp';
+import { useSelector } from 'react-redux';
+import { AppState } from 'react-native';
+import LoginScreen from './src/screens/LoginScreen/LoginScreen';
 
 const appTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: 'tomato',
-    accent: 'yellow',
+    primary: '#3498db',
+    accent: '#f1c40f',
   },
 };
 
-const Stack = createNativeStackNavigator();
-
-const App = () => {
+const AppContainer = () => {
+  const { isLogined } = useSelector((store: IAppStore) => store.auth);
+  console.log({isLogined})
   return (
-    <StoreProvider store={appStore}>
-      <PaperProvider theme={appTheme}>
-        <NavigationContainer>
-          <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-              header: (props) => <AppNavigationBar {...props} />,
-            }}>
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Chat" component={ChatScreen} />
-          </Stack.Navigator>
-        </NavigationContainer>
-      </PaperProvider>
-    </StoreProvider>
+    <NavigationContainer>
+      {!isLogined &&
+        <LoginScreen />
+      }
+      {isLogined &&
+        <RootApp />
+      }
+
+    </NavigationContainer>
   )
 };
+
+const App = () => {
+  return <StoreProvider store={appStore}>
+    <PaperProvider theme={appTheme}>
+      <AppContainer />
+    </PaperProvider>
+  </StoreProvider>
+}
 
 export default App;
