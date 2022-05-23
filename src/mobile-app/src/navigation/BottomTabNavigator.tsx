@@ -31,19 +31,19 @@ const BottomTabNavigator = () => {
             },
             tabBarIcon: ({ focused, color, size }) => {
                 let iconName = 'ios-information-circle';
-                if (route.name === 'Home') {
+                if (route.name === 'HomeTab') {
                     iconName = focused
                         ? 'home'
                         : 'home-outline';
-                } else if (route.name === 'Chat') {
+                } else if (route.name === 'ChatTab') {
                     iconName = focused
                         ? 'chatbox'
                         : 'chatbox-outline';
-                } else if (route.name === 'Map') {
+                } else if (route.name === 'MapTab') {
                     iconName = focused
                         ? 'map'
                         : 'map-outline';
-                } else if (route.name === 'Event') {
+                } else if (route.name === 'EventTab') {
                     iconName = focused
                         ? 'list-circle'
                         : 'list-circle-outline';
@@ -56,10 +56,10 @@ const BottomTabNavigator = () => {
             tabBarInactiveTintColor: 'gray',
         })}
     >
-        <Tab.Screen name="Home" component={HomeStack} />
-        <Tab.Screen name="Chat" component={ChatStack} />
-        <Tab.Screen name="Map" component={MapStack} />
-        <Tab.Screen name="Event" component={EventStack} />
+        <Tab.Screen name="HomeTab" component={HomeStack} />
+        <Tab.Screen name="ChatTab" component={ChatStack} />
+        <Tab.Screen name="MapTab" component={MapStack} />
+        <Tab.Screen name="EventTab" component={EventStack} />
     </Tab.Navigator>
 }
 
