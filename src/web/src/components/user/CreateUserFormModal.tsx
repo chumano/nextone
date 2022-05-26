@@ -2,7 +2,6 @@ import { faEnvelope, faPhone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Modal, Form, Input, Button, message } from "antd";
-import { FormComponentProps } from "antd/lib/form";
 
 import { FC, FormEvent, useContext, useEffect, useState } from "react";
 
@@ -19,77 +18,62 @@ interface CreateUserFormData {
 	Phone: string;
 }
 
-const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
-	return Object.keys(fieldsError).some((field) => fieldsError[field]);
-};
 
-interface IProps extends FormComponentProps {
+interface IProps {
 	isModalVisible: boolean;
 	setIsModalVisible: (value: boolean) => void;
 }
 
-const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
-	form,
+const CreateUserFormModal: FC<IProps> = ({
 	isModalVisible,
 	setIsModalVisible,
 }) => {
 	const userApi = useUserApi();
 	const { dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
-	const [emailValidate, setEmailValidate] = useState("");
-
-	const {
-		getFieldDecorator,
-		getFieldsError,
-		getFieldError,
-		isFieldTouched,
-		validateFields,
-	} = form;
-
-	useEffect(() => {
-		validateFields();
-	}, []);
+	const [form] = Form.useForm();
 
 	const hideModalHandler = () => setIsModalVisible(false);
 
-	const userNameError = isFieldTouched("Username") && getFieldError("Username");
-	const emailError = isFieldTouched("Email") && getFieldError("Email");
-	const phoneError = isFieldTouched("Phone") && getFieldError("Phone");
+	const handleOk = async () => {
+		await form.validateFields();
+		form.submit();
+	};
 
-	const onFormSubmitHandler = (event: FormEvent) => {
-		event.preventDefault();
-		setEmailValidate("")
+	const onFormFinish = async (values: any) => {
+		console.log({values});
 		setIsLoading(true);
-		validateFields(
-			async (_, { Username, Email, Phone }: CreateUserFormData) => {
-				try {
-					const { data } = await userApi.createUser({
-						Name: Username,
-						Email,
-						Phone,
-					});
+		try {
+			const { data } = await userApi.createUser({
+				Name: values['name'],
+				Email: values['email'],
+				Phone: values['phone'],
+			});
 
-					setIsLoading(false);
-					if (data.isSuccess) {
-						dispatch({
-							type: UserActionType.SET_RELOAD_USER_TABLE,
-							payload: true,
-						});
-						message.success("Thêm người dùng thành công");
-						hideModalHandler();
-						
-					} else {
-						//TODO: Throw error message
-						setEmailValidate("Địa chỉ email đã có người đăng ký");
-					}
+			setIsLoading(false);
+			if (data.isSuccess) {
+				dispatch({
+					type: UserActionType.SET_RELOAD_USER_TABLE,
+					payload: true,
+				});
+				message.success("Thêm người dùng thành công");
+				hideModalHandler();
 
-				
-				} catch (error) {
-					message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
-					setIsLoading(false);
-				}
+			} else {
+				// form.setFields([
+				// 	{
+				// 	  name: 'email',
+				// 	  errors: ["Địa chỉ email đã có người đăng ký"],
+				// 	},
+				//  ]);
+				message.error(data.errorMessage);
 			}
-		);
+
+
+		} catch (error) {
+			message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -98,101 +82,74 @@ const CreateUserFormModal: FC<FormComponentProps & IProps> = ({
 			visible={isModalVisible}
 			onCancel={hideModalHandler}
 			footer={[
-				<Button key="back" onClick={hideModalHandler}>
+				<Button key="canncel" onClick={hideModalHandler}>
 					Huỷ bỏ
 				</Button>,
-				<Button
-					form="create-user-form"
-					key="submit"
+				<Button key='ok'
+					onClick={handleOk}
 					type="primary"
-					htmlType="submit"
-					disabled={hasErrors(getFieldsError())}
+					disabled={
+						!form.isFieldsTouched(true) ||
+						!!form.getFieldsError().filter(({ errors }) => errors.length).length
+					}
 					loading={isLoading}
 				>
 					Đồng ý
 				</Button>,
 			]}
 		>
-			<Form onSubmit={onFormSubmitHandler} id="create-user-form">
-				<Form.Item
-					validateStatus={userNameError ? "error" : ""}
-					help={userNameError || ""}
+			<Form onFinish={onFormFinish} layout='vertical' form={form} >
+				<Form.Item name="name" label="Tên"
+					rules={[
+						{ required: true, message: 'Đây là trường bắt buộc' },
+						{ min: 4, message: "Tên người dùng phải lớn hơn 4 ký tự" }
+					]}
 				>
-					{getFieldDecorator("Username", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-							{
-								min: 4,
-								message: "Tên người dùng phải lớn hơn 4 ký tự"
-							}
-						],
-					})(
-						<Input
-							prefix={<FontAwesomeIcon icon={faUser} />}
-							type="text"
-							placeholder="Tên người dùng"
-						/>
-					)}
+					<Input
+						prefix={<FontAwesomeIcon icon={faUser} />}
+						type="text"
+						placeholder="Tên người dùng"
+					/>
 				</Form.Item>
-				<Form.Item
-					validateStatus={emailError ? "error" : ""}
-					help={emailError || ""}
-
-					{...emailValidate !== '' && {
-						validateStatus:"error",
-						help: emailValidate
-					}}
+				<Form.Item name="email" label="Email"
+					rules={[
+						{
+							required: true,
+							message: "Đây là trường bắt buộc",
+						},
+						{
+							type: "email",
+							message: "Địa chỉ email không hợp lệ",
+						},
+					]}
 				>
-					{getFieldDecorator("Email", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-							{
-								type: "email",
-								message: "Địa chỉ email không hợp lệ",
-							},
-						],
-					})(
-						<Input
-							prefix={<FontAwesomeIcon icon={faEnvelope} />}
-							type="email"
-							placeholder="Địa chỉ email"
-						/>
-					)}
+					<Input
+						prefix={<FontAwesomeIcon icon={faEnvelope} />}
+						type="email"
+						placeholder="Địa chỉ email"
+					/>
 				</Form.Item>
-				<Form.Item
-					validateStatus={phoneError ? "error" : ""}
-					help={phoneError || ""}
+				<Form.Item  name="phone" label="Số điện thoại"
+					rules={[
+						{
+							required: true,
+							message: "Đây là trường bắt buộc",
+						},
+						{
+							pattern: /^(\+84|0[1-9])[0-9]{1,12}$/g,
+							message: "Số điện thoại không hợp lệ"
+						}
+					]}
 				>
-					{getFieldDecorator("Phone", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-							{
-								pattern: /^(\+84|0[1-9])[0-9]{1,12}$/g,
-								message: "Số điện thoại không hợp lệ"
-							}
-						],
-					})(
-						<Input
-							prefix={<FontAwesomeIcon icon={faPhone} />}
-							type="text"
-							placeholder="Số điện thoại"
-						/>
-					)}
+					<Input
+						prefix={<FontAwesomeIcon icon={faPhone} />}
+						type="text"
+						placeholder="Số điện thoại"
+					/>
 				</Form.Item>
 			</Form>
 		</Modal>
 	);
 };
 
-export default Form.create<IProps>({ name: "create-user-form" })(
-	CreateUserFormModal
-);
+export default CreateUserFormModal;

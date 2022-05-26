@@ -82,10 +82,10 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
             visible={true}
             onCancel={handleCancel}
             footer={[
-				<Button key="back" onClick={handleCancel}>
+				<Button key="cancel" onClick={handleCancel}>
 					Huỷ bỏ
 				</Button>,
-				<Button
+				<Button key="ok"
                     onClick={handleOk}
 					type="primary"
                     disabled={
@@ -98,15 +98,15 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 				</Button>,
 			]}
         >
-            <Form onFinish={onFormFinish}>
-                <Form.Item label="Tên kênh"
+            <Form onFinish={onFormFinish} form={form}>
+                <Form.Item name="name" label="Tên kênh"
 					required tooltip=""
                     rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
 					<Input type="text" placeholder="Tên kênh" />
 				</Form.Item>
 
-                <Form.Item label="Loại sự kiện"
+                <Form.Item  name="eventType" label="Loại sự kiện"
 					required tooltip=""
                     rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>

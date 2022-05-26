@@ -7,10 +7,6 @@ import { ConversationMember, MemberRole } from '../../models/conversation/Conver
 import { chatActions } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
 
-const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
-    return Object.keys(fieldsError).some((field) => fieldsError[field]);
-};
-
 interface ModalMemberRoleProps{
     onVisible: (visible: boolean) => void;
     conversation: ConversationState;
@@ -72,10 +68,10 @@ const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, 
             visible={true}
             onCancel={handleCancel}
             footer={[
-                <Button key="back" onClick={handleCancel}>
+                <Button key="cancel" onClick={handleCancel}>
                     Huỷ bỏ
                 </Button>,
-                <Button
+                <Button key="ok"
                     onClick={handleOk}
                     type="primary"
                     disabled={
@@ -88,10 +84,10 @@ const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, 
                 </Button>,
             ]}
         >
-            <Form onFinish={onFormFinish} >
+            <Form onFinish={onFormFinish} form={form}>
                 <Input disabled value={member.userMember.userName}></Input>
                 
-                <Form.Item label="Quyền"
+                <Form.Item name="role" label="Quyền"
                     rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
                     <Select >

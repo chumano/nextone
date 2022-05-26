@@ -9,9 +9,7 @@ import { chatActions } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
 import UserAvatar from './UserAvatar';
 
-const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
-    return Object.keys(fieldsError).some((field) => fieldsError[field]);
-};
+
 
 interface ModalAddMemberProps {
     onVisible: (visible: boolean) => void;
@@ -78,10 +76,10 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
             visible={true}
             onCancel={handleCancel}
             footer={[
-                <Button key="back" onClick={handleCancel}>
+                <Button key="cancel" onClick={handleCancel}>
                     Huỷ bỏ
                 </Button>,
-                <Button
+                <Button key="ok"
                     type="primary"
                     onClick={handleOk}
                     disabled={
@@ -94,7 +92,7 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
                 </Button>,
             ]}
         >
-            <Form onFinish={onFormFinish}>
+            <Form onFinish={onFormFinish} form={form}>
                 <h6>Chọn thành viên</h6>
                 <Input.Search
                     placeholder="Tìm kiếm"
