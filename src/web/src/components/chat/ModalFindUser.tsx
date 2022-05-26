@@ -1,4 +1,4 @@
-import { Avatar, Badge, Checkbox, Icon, Input, List, Modal, Skeleton } from 'antd'
+import { Avatar, Badge, Checkbox, Input, List, Modal, Skeleton } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';

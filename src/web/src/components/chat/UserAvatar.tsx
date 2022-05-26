@@ -1,4 +1,5 @@
-import { Avatar, Badge, Icon } from 'antd'
+import { Avatar, Badge } from 'antd';
+import { UserOutlined} from '@ant-design/icons';
 import React from 'react'
 import { Status, UserStatus } from '../../models/user/UserStatus.model'
 
@@ -11,7 +12,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({user}) => {
     return (
         <Badge status={status} offset={[-5, 5]}>
             <Avatar>
-                <Icon type="user" style={{ color: 'black', fontSize: '20px' }} />
+                <UserOutlined style={{ color: 'black', fontSize: '20px' }} />
             </Avatar>
         </Badge>
     )

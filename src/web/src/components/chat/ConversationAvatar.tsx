@@ -1,4 +1,5 @@
-import { Avatar, Badge, Icon } from 'antd'
+import { Avatar, Badge } from 'antd'
+import { CalendarOutlined} from '@ant-design/icons';
 import React from 'react'
 import { ConversationState } from '../../store/chat/ChatState'
 
@@ -8,7 +9,7 @@ interface ConversationAvatarProps{
 const ConversationAvatar: React.FC<ConversationAvatarProps> = ({conversation}) => {
     return (
         <Avatar>
-            <Icon type="calendar" style={{ color: 'black', fontSize: '20px' }} />
+            <CalendarOutlined  style={{ color: 'black', fontSize: '20px' }} />
         </Avatar>
     )
 }

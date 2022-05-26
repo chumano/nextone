@@ -1,5 +1,5 @@
 import { Button, Input, Modal, Select } from 'antd'
-import Form, { FormComponentProps } from 'antd/lib/form';
+import Form from 'antd/lib/form';
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
@@ -11,76 +11,61 @@ const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
     return Object.keys(fieldsError).some((field) => fieldsError[field]);
 };
 
-interface ModalMemberRoleProps extends FormComponentProps {
+interface ModalMemberRoleProps{
     onVisible: (visible: boolean) => void;
     conversation: ConversationState;
     member : ConversationMember;
 }
-const FORM_ID = 'form-member-role';
-const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, onVisible, form }) => {
+const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, onVisible}) => {
     const dispatch = useDispatch();
-    const [isFormSubmit, setIsFormSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    const {
-        getFieldDecorator,
-        getFieldsError,
-        getFieldError,
-        isFieldTouched,
-        validateFields,
-        setFieldsValue,
-    } = form;
+    const [form] = Form.useForm();
 
     const roles : MemberRole[] = [MemberRole.MANAGER, MemberRole.MEMBER]
-    const roleError = (isFormSubmit || isFieldTouched("role")) && getFieldError("role");
-
+  
     useEffect(()=>{
-        setFieldsValue({
+        form.setFieldsValue({
             "role": member.role
         })
-    },[member,setFieldsValue])
+    },[form,member])
     
     const handleCancel = () => {
         onVisible(false);
     };
 
-    const handleOk = useCallback((event) => {
-		event.preventDefault();
+    const handleOk = async () => {
+        await form.validateFields();
+        form.submit();
+    };
+
+    const onFormFinish = useCallback(async (values:any) => {
 		setIsLoading(true);
-        setIsFormSubmit(true);
-        validateFields(async (err, { role }) => {
-            if(err){
-                setIsLoading(false);
-                return;
-            }
-          
-            //TODO: send dispatch
-            const response = await comApi.updateMemberRole({
-                conversationId: conversation.id,
-                userMemberId: member.userMember.userId,
-                role : role
-            })
-
-            if(!response.isSuccess){
-                setIsLoading(false);
-                return;
-            }
-
-            dispatch(chatActions.updateMemberRole({
-                conversationId : conversation.id,
-                member : {
-                    userMember: member.userMember,
-                    role: role
-                }
-            }));
-            
-            setIsLoading(false);
-            onVisible(false);
+    
+        const role = values['role'];
+        //TODO: send dispatch
+        const response = await comApi.updateMemberRole({
+            conversationId: conversation.id,
+            userMemberId: member.userMember.userId,
+            role : role
         })
+
+        if(!response.isSuccess){
+            setIsLoading(false);
+            return;
+        }
+
+        dispatch(chatActions.updateMemberRole({
+            conversationId : conversation.id,
+            member : {
+                userMember: member.userMember,
+                role: role
+            }
+        }));
+        
+        setIsLoading(false);
+        onVisible(false);
        
     },[conversation, dispatch]);
-
-
     return (
         <Modal
             title={'Cấp quyền cho thành viên'}
@@ -91,36 +76,28 @@ const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, 
                     Huỷ bỏ
                 </Button>,
                 <Button
-                    form={FORM_ID}
-                    key="submit"
+                    onClick={handleOk}
                     type="primary"
-                    htmlType="submit"
-                    disabled={hasErrors(getFieldsError())}
+                    disabled={
+                        !form.isFieldsTouched(true) ||
+                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                    }
                     loading={isLoading}
                 >
                     Đồng ý
                 </Button>,
             ]}
         >
-            <Form onSubmit={handleOk} id={FORM_ID}>
+            <Form onFinish={onFormFinish} >
                 <Input disabled value={member.userMember.userName}></Input>
                 
                 <Form.Item label="Quyền"
-					validateStatus={roleError ? "error" : ""}
-					help={roleError || ""}
+                    rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
-					{getFieldDecorator("role", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-						],
-					})(
-                        <Select >
-                            {roles.map(o=> <Select.Option key={o} value={o}>{MemberRole[o]}</Select.Option>)}
-                        </Select>
-					)}
+                    <Select >
+                        {roles.map(o=> <Select.Option key={o} value={o}>{MemberRole[o]}</Select.Option>)}
+                    </Select>
+					
 				</Form.Item>
 
             </Form>
@@ -129,6 +106,4 @@ const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, 
     )
 }
 
-export default Form.create<ModalMemberRoleProps>({ name: FORM_ID })(
-	ModalMemberRole
-);
+export default ModalMemberRole;
