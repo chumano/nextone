@@ -1,4 +1,5 @@
-﻿using MasterService.Domain.Repositories;
+﻿using FluentValidation;
+using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using MasterService.DTOs.User;
 using MasterService.Utils;
@@ -9,8 +10,6 @@ using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Domain;
 using NextOne.Shared.Security;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -25,17 +24,24 @@ namespace MasterService.Controllers
         private readonly IIdentityService _identityService;
         private readonly IUserActivityRepository _activityRepository;
         private readonly IUserContext _userContext;
+
+        private readonly IValidator<CreateUserDTO> _createUserValidator;
+        private readonly IValidator<UpdateUserDTO> _updateUserValidator;
         public UserController(ILogger<UserController> logger,
             IUserService userService,
             IIdentityService identityService,
             IUserActivityRepository activityRepository,
-            IUserContext userContext)
+            IUserContext userContext,
+            IValidator<CreateUserDTO> createUserValidator,
+            IValidator<UpdateUserDTO> updateUserValidator)
         {
             _logger = logger;
             _userService = userService;
             _identityService = identityService;
             _activityRepository = activityRepository;
             _userContext = userContext;
+            _createUserValidator = createUserValidator;
+            _updateUserValidator = updateUserValidator;
         }
 
         [HttpGet]
@@ -71,6 +77,21 @@ namespace MasterService.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser(CreateUserDTO userDTO)
         {
+            var validationResult = _createUserValidator.Validate(userDTO);
+                
+            if(!validationResult.IsValid)
+            {
+                var combinedErrorString = string.Join(",", validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+                return new BadRequestObjectResult(ApiResult.Error(combinedErrorString));
+            }
+
+            var userHasRegisterWithEmail = await _userService.GetUserByEmail(userDTO.Email);
+
+            if (userHasRegisterWithEmail != null)
+            {
+                return Ok(ApiResult.Error("Email Already Exist"));
+            }
+
             var user = await _userService.CreateUser(userDTO.Name, userDTO.Email, userDTO.Phone);
             return Ok(ApiResult.Success(user));
         }
@@ -78,10 +99,18 @@ namespace MasterService.Controllers
         [HttpPost("UpdateUser")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
+            var validationResult = _updateUserValidator.Validate(userDTO);
+
+            if (!validationResult.IsValid)
+            {
+                var combinedErrorString = string.Join(",", validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+                return new BadRequestObjectResult(ApiResult.Error(combinedErrorString));
+            }
+
             var user = await _userService.Get(userDTO.UserId);
             if(user == null)
             {
-                throw new DomainException("", "");
+                throw new DomainException("[User/UpdateUser]", "User not exist");
             }
 
             await _userService.UpdateUser(user, userDTO.Name, userDTO.Email, userDTO.Phone, userDTO.RoleCodes);
@@ -95,7 +124,7 @@ namespace MasterService.Controllers
             var user = await _userService.Get(userDTO.UserId);
             if(user == null)
             {
-                throw new DomainException("", "");
+                throw new DomainException("[User/UpdateUserRoles]", "User not exist");
             }
 
             await _userService.UpdateUserRoles(user, userDTO.RoleCodes);
@@ -109,7 +138,7 @@ namespace MasterService.Controllers
             var user = await _userService.Get(userDTO.UserId);
             if (user == null)
             {
-                throw new DomainException("", "");
+                throw new DomainException("User/ActivateUser", "User not exist");
             }
 
             await _userService.Active(user, userDTO.IsActive);
@@ -123,7 +152,7 @@ namespace MasterService.Controllers
             var user = await _userService.Get(userDTO.UserId);
             if (user == null)
             {
-                throw new DomainException("", "");
+                throw new DomainException("[User/ResetPassword]", "User not exist");
             }
             var passwordGenerator = new PasswordGenerator();
             var newPassword = passwordGenerator.GenerateRandomPassword();
@@ -138,7 +167,7 @@ namespace MasterService.Controllers
             var user = await _userService.Get(id);
             if (user == null)
             {
-                throw new DomainException("", "");
+                throw new DomainException("[User/DeleteUser]", "User not exist");
             }
 
             await _userService.DeleteUser(user);
