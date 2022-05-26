@@ -36,7 +36,9 @@ class SignalRService {
     }
 
     this.hubConnection = builder.withAutomaticReconnect().build();
-
+    this.hubConnection.onreconnected(()=>{
+      console.log('hubConnection.onreconnected')
+    });
     return this.hubConnection.start()
       .then(async () => {
         if (this.isConnected()) {

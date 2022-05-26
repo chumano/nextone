@@ -13,7 +13,7 @@ export class CallSender extends CallBase {
             super(signaling, deviceManager,pubSub);
     }
 
-    public startCallRequest = async (receiver: string) => {
+    public startCallRequest = async (room: string) => {
         console.log('startCallRequest')
         this.state = 'call-requesting';
         this.onEvent(this.state);       
@@ -22,7 +22,7 @@ export class CallSender extends CallBase {
         console.log('signaling.invoke SEND_CALL_REQUEST' )
         await this.signaling.invoke(
             CallSignalingActions.SEND_CALL_REQUEST, 
-            receiver);
+            room);
         this.state = 'call-requested';
         this.onEvent(this.state);
      

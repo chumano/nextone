@@ -1,6 +1,5 @@
 import { Modal } from "antd";
 import { QuestionOutlined} from '@ant-design/icons';
-import { constant } from "lodash";
 import { User } from "oidc-client";
 import { createContext,  useCallback, useEffect} from "react";
 import { useDispatch } from "react-redux";
@@ -36,20 +35,21 @@ const AppContextProvider = (props: IContextProviderProp) => {
             await registerHub();
             CallService.init();
            
-            const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, (room)=>{
+            const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, 
+                (data: {room:string, userId:string, userName: string})=>{
                 //show user confirm
                 Modal.confirm({
                     title: 'Có cuộc gọi đến',
                     icon: <QuestionOutlined />,
-                    content: 'Cuộc gọi từ "Admin"',
+                    content: `Cuộc gọi từ "${data.userName}"`,
                     onOk : async ()=> {
                         dispatch(callActions.receiveCall({
-                            conversationId: room
+                            conversationId: data.room
                         }))
-                        await CallService.acceptCallRequest(room);
+                        await CallService.acceptCallRequest(data.room);
                     },
                     onCancel : async ()=> {
-                        await CallService.ignoreCallRequest(room);
+                        await CallService.ignoreCallRequest(data.room);
                     },
                 });
             });

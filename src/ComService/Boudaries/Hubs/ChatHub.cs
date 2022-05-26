@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using NextOne.Shared.Extenstions;
+using ComService.Domain.Services;
 
 namespace ComService.Boudaries.Hubs
 {
@@ -14,27 +18,49 @@ namespace ComService.Boudaries.Hubs
         const string CallRequest = "call-request";
         const string CallMessage = "call-message";
         private readonly ILogger<ChatHub> _logger;
-        public ChatHub(ILogger<ChatHub> logger)
+        private readonly IConversationService _conversationService;
+        public ChatHub(ILogger<ChatHub> logger, IConversationService conversationService)
         {
             _logger = logger;
+            _conversationService = conversationService;
 
         }
         public static Dictionary<string, List<string>> ConnectedClients = new Dictionary<string, List<string>>();
+        private static ConcurrentDictionary<string, IOnlineClient> OnlineClients = new ConcurrentDictionary<string, IOnlineClient>();
 
         public async Task SendCallMessage(string action, object data)
         {
-            
+            IOnlineClient client = OnlineClients.GetOrDefault(Context.ConnectionId);
+            if(client == null) return;
+
             switch (action)
             {
                 case CallSignalingActions.SEND_CALL_REQUEST:
                     {
-                        //data is receiver name
-                        //find client by receiver
+                        //data is room (conversationid)
+                        //find users in conversationid by receiver
 
-                        //create  room
-                        var room = (string)data;
-                        var emitData = CreateEventData(CallRequest, room);
-                        await EmitData(Clients.Others, emitData);
+                        var conversationId = (string)data;
+                        var conversation = await _conversationService.Get(conversationId);
+                        if(conversation == null) return;
+                        var memberIds = conversation.Members.Select(o=>o.UserId);
+
+                        var emitData = CreateEventData(CallRequest, new
+                        {
+                            room = conversationId,
+                            userId = client.UserId,
+                            userName = client.UserName
+                        });
+
+                        foreach(var memberId in memberIds)
+                        {
+                            if (memberId != client.UserId)
+                            {
+                                var clientProxy = Clients.Group($"user_{memberId}");
+                                await EmitData(clientProxy, emitData);
+                            }
+                        }
+                        
                     }
                     break;
 
@@ -112,89 +138,6 @@ namespace ComService.Boudaries.Hubs
 
 
 
-        //==============================================
-        public async Task SendMessage(object message, string roomName)
-        {
-            await EmitLog("Client " + Context.ConnectionId + " said: " + message, roomName);
-
-            await Clients.OthersInGroup(roomName).SendAsync("message", message);
-        }
-
-
-        public async Task CreateOrJoinRoom(string roomName)
-        {
-            await EmitLog("Received request to create or join room " + roomName + " from a client " + Context.ConnectionId, roomName);
-
-            if (!ConnectedClients.ContainsKey(roomName))
-            {
-                ConnectedClients.Add(roomName, new List<string>());
-            }
-
-            if (!ConnectedClients[roomName].Contains(Context.ConnectionId))
-            {
-                ConnectedClients[roomName].Add(Context.ConnectionId);
-            }
-
-            await EmitJoinRoom(roomName);
-
-            var numberOfClients = ConnectedClients[roomName].Count;
-
-            if (numberOfClients == 1)
-            {
-                await EmitCreated();
-                await EmitLog("Client " + Context.ConnectionId + " created the room " + roomName, roomName);
-            }
-            else
-            {
-                await EmitJoined(roomName);
-                await EmitLog("Client " + Context.ConnectionId + " joined the room " + roomName, roomName);
-            }
-
-            await EmitLog("Room " + roomName + " now has " + numberOfClients + " client(s)", roomName);
-        }
-
-        public async Task LeaveRoom(string roomName)
-        {
-            await EmitLog("Received request to leave the room " + roomName + " from a client " + Context.ConnectionId, roomName);
-
-            if (ConnectedClients.ContainsKey(roomName) && ConnectedClients[roomName].Contains(Context.ConnectionId))
-            {
-                ConnectedClients[roomName].Remove(Context.ConnectionId);
-                await EmitLog("Client " + Context.ConnectionId + " left the room " + roomName, roomName);
-
-                if (ConnectedClients[roomName].Count == 0)
-                {
-                    ConnectedClients.Remove(roomName);
-                    await EmitLog("Room " + roomName + " is now empty - resetting its state", roomName);
-                }
-            }
-
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, roomName);
-        }
-
-
-
-        private async Task EmitJoinRoom(string roomName)
-        {
-            await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        }
-
-        private async Task EmitCreated()
-        {
-            await Clients.Caller.SendAsync("created");
-        }
-
-        private async Task EmitJoined(string roomName)
-        {
-            await Clients.Group(roomName).SendAsync("joined");
-        }
-
-        private async Task EmitLog(string message, string roomName)
-        {
-            await Clients.Group(roomName).SendAsync("log", "[Server]: " + message);
-        }
-
-
         public async Task<string> Register(string accessToken)
         {
             var jwtHandler = new JwtSecurityTokenHandler();
@@ -221,9 +164,29 @@ namespace ComService.Boudaries.Hubs
                 return "";
             }
 
+            //ClaimsPrincipal principal = jwtHandler.ValidateToken(accessToken, new TokenValidationParameters
+            //{
+            //    ValidateIssuerSigningKey = false,
+            //    ValidateIssuer = false,
+            //    ValidateAudience = false,
+            //    ValidateLifetime = false
+            //},out var securityToken);
+
+            ClaimsPrincipal principal = new ClaimsPrincipal(new ClaimsIdentity(claims));
+
+
+            var httpContext = this.Context.GetHttpContext();
+            var user = httpContext.User;
+            httpContext.User = principal;
+
             //add user to user group
             await Groups.AddToGroupAsync(this.Context.ConnectionId, $"user_{userId}");
-
+            OnlineClients[this.Context.ConnectionId] =
+                new OnlineClient() { 
+                    ConnectionId = this.Context.ConnectionId, 
+                    UserId = userId.ToString(),
+                    UserName = userId.ToString()
+                };
             return userId.ToString();
         }
 
@@ -235,6 +198,9 @@ namespace ComService.Boudaries.Hubs
         public override async Task OnDisconnectedAsync(Exception exception)
         {
             await base.OnDisconnectedAsync(exception);
+            IOnlineClient client = OnlineClients.GetOrDefault(Context.ConnectionId);
+            if (client == null) return;
+            await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"user_{client.UserId}");
         }
     }
 }

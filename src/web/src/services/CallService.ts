@@ -85,7 +85,7 @@ class CallService {
 
     public acceptCallRequest = async(room:string)=>{
         this.listenCallMessage();
-        this.callReceiver.acceptCall(room || 'room-name');
+        this.callReceiver.acceptCall(room);
     }
 
     public ignoreCallRequest = async(room:string)=>{
