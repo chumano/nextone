@@ -35,6 +35,52 @@ pipeline {
 
     stage('NextOne'){
       parallel{
+
+
+          stage('MapWeb') {
+            when{ 
+              anyOf {
+                changeset "cicd/jenkins/Jenkinsfile"
+                changeset "src/web-map/**"
+                expression { service == 'map-web'}
+              }
+            }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/map-web ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:latest'
+              }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
+            }
+          }
+		  
+		  stage('UcomWeb') {
+            when{ 
+              anyOf {
+                changeset "cicd/jenkins/Jenkinsfile"
+                changeset "src/web/**"
+                expression { service == 'ucom-web'}
+              }
+            }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build com-web"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/com-web ${DOCKER_REGISTRY}/nextone/com-web:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/com-web:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/com-web:latest'
+              }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/com-web:${BUILD_NUMBER}'
+            }
+          }
+
           stage('MapService') {
             when{ 
               anyOf{
@@ -58,29 +104,7 @@ pipeline {
             }
 			
           }
-
-          stage('MapWeb') {
-            when{ 
-              anyOf {
-                changeset "cicd/jenkins/Jenkinsfile"
-                changeset "src/web-map/**"
-                expression { service == 'map-web'}
-              }
-            }
-            steps {
-              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build map-web"
-              
-              sh 'docker tag ${DOCKER_REGISTRY}/nextone/map-web ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
-              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
-                sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
-                sh 'docker push ${DOCKER_REGISTRY}/nextone/map-web:latest'
-              }
-
-              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/map-web:${BUILD_NUMBER}'
-            }
-          }
-
+		  
           stage('IdentityService') {
             when{ 
               anyOf {
@@ -106,6 +130,75 @@ pipeline {
               sh 'docker rmi ${DOCKER_REGISTRY}/nextone/identity:${BUILD_NUMBER}'
             }
 			
+          }
+		  
+		  stage('ComService') {
+            when{ 
+              anyOf{
+                changeset "cicd/jenkins/Jenkinsfile"
+                changeset 'src/ComService/**'
+                expression { service == 'com'}
+              }
+              
+            }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build com"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/com ${DOCKER_REGISTRY}/nextone/com:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/com:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/com:latest'
+              }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/com:${BUILD_NUMBER}'
+            }
+          }
+		  
+		  stage('MasterService') {
+            when{ 
+              anyOf{
+                changeset "cicd/jenkins/Jenkinsfile"
+                changeset 'src/MasterService/**'
+                expression { service == 'master'}
+              }
+              
+            }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build master"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/master ${DOCKER_REGISTRY}/nextone/master:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/master:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/master:latest'
+              }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/master:${BUILD_NUMBER}'
+            }
+          }
+		  
+		  stage('FileService') {
+            when{ 
+              anyOf{
+                changeset "cicd/jenkins/Jenkinsfile"
+                changeset 'src/FileService/**'
+                expression { service == 'file'}
+              }
+              
+            }
+            steps {
+              sh "APP_VERSION=${BUILD_NUMBER} docker-compose build file"
+              
+              sh 'docker tag ${DOCKER_REGISTRY}/nextone/file ${DOCKER_REGISTRY}/nextone/file:${BUILD_NUMBER}'
+              withCredentials([usernamePassword( credentialsId: "${registryCredential}", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                sh 'docker login -u ${USERNAME} -p ${PASSWORD} ${registryCredential}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/file:${BUILD_NUMBER}'
+                sh 'docker push ${DOCKER_REGISTRY}/nextone/file:latest'
+              }
+
+              sh 'docker rmi ${DOCKER_REGISTRY}/nextone/file:${BUILD_NUMBER}'
+            }
           }
       }
     }
