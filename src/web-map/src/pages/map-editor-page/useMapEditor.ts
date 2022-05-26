@@ -28,6 +28,8 @@ export interface LayerStyle {
 export interface MapInfoState {
     id: string;
     name: string;
+    offsetX: number;
+    offsetY: number;
     version: number;
     isPublished: boolean;
     boundingBox?: MapBoudingBox
@@ -75,6 +77,8 @@ const setMapInfo = (mapInfo: MapInfo) => {
     setMapInfoState({
         id: mapInfo.id,
         name: mapInfo.name,
+        offsetX: mapInfo.offsetX,
+        offsetY: mapInfo.offsetY,
         version: mapInfo.version || 0,
         boundingBox: mapInfo.boundingBox,
         isPublished: mapInfo.isPublished

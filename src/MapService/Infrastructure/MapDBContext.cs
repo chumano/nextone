@@ -51,6 +51,12 @@ namespace MapService.Infrastructure
                 eb.Property(o => o.IsPublished)
                 .HasColumnType("bit");
 
+                eb.Property("OffsetX")
+                 .HasColumnType("float");
+
+                eb.Property("OffsetY")
+                 .HasColumnType("float");
+
                 eb.Property("_bbMinX")
                .HasColumnType("float");
 

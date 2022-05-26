@@ -55,6 +55,8 @@ namespace MapService.Domain.Services
                 {
                     Id = mapId,
                     Name = mapInfo.Name,
+                    OffsetX = mapInfo.OffsetX,
+                    OffsetY = mapInfo.OffsetY,
                     Version = mapInfo.Version,
                     CreatedDate = System.DateTime.Now,
                     LastUsed = System.DateTime.Now,

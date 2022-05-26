@@ -158,10 +158,15 @@ namespace MapService.Controllers
             }
 
             map.Name = updateMapDTO.Name;
+            map.OffsetX = updateMapDTO.OffsetX;
+            map.OffsetY = updateMapDTO.OffsetY;
             map.Note = updateMapDTO.Note;
 
             _mapRepository.Update(map);
             await _mapRepository.SaveChangesAsync();
+
+            //clear Map Cache
+            await _cacheStore.Remove<MapContainer>(map.Id, out var _);
 
             var mapDto = MapDTO.From(map);
             return Ok(mapDto);

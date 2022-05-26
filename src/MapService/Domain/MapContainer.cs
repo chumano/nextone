@@ -6,6 +6,8 @@ namespace MapService.Domain
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
         public int Version { get; set; }
         public bool IsPublished { get; set; }
 

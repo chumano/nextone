@@ -4,6 +4,8 @@ import { GeoType, MapBoudingBox as MapBoundingBox, PaintPropertyKey } from "./Ty
 export interface MapInfo {
     id: string;
     name: string;
+    offsetX: number;
+    offsetY: number;
     note?: string;
     imageUrl?: string;
     version?: number;

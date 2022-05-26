@@ -17,9 +17,11 @@ const ModalMap: React.FC = () => {
 
     useEffect(()=>{
         form.setFieldsValue({
-            name: mapEditor.mapEditorState.mapInfo?.name
+            name: mapEditor.mapEditorState.mapInfo!.name,
+            offsetX : mapEditor.mapEditorState.mapInfo!.offsetX,
+            offsetY : mapEditor.mapEditorState.mapInfo!.offsetY,
         })
-    },[mapEditor.mapEditorState.mapInfo?.name])
+    },[mapEditor.mapEditorState.mapInfo])
     
     const handleOk = async () => {
         await form.validateFields();
@@ -37,6 +39,8 @@ const ModalMap: React.FC = () => {
         setConfirmLoading(true);
         const item : UpdateMapNameDTO = {
             name: values['name'],
+            offsetX: values['offsetX'] || 0,
+            offsetY: values['offsetY'] || 0
         };
         
         const mapid = mapEditor.mapEditorState.mapInfo!.id;
@@ -49,6 +53,8 @@ const ModalMap: React.FC = () => {
                 description:
                   'Đã lưu thành công',
               });
+
+            mapEditor.showModal('map', false);
         }catch{
             Modal.error({
                 title: 'Có lỗi',
@@ -86,6 +92,16 @@ const ModalMap: React.FC = () => {
                 <Form.Item name="name" label="Name" required tooltip="This is a required field"
                     rules={[{ required: true, message: 'Name is required' }]}>
                     <Input placeholder=""  autoComplete="newpassword"/>
+                </Form.Item>
+
+                <Form.Item name="offsetX" label="Offset X"  
+                    rules={[]}>
+                    <Input type={'number'} placeholder=""  autoComplete="newpassword"/>
+                </Form.Item>
+
+                <Form.Item name="offsetY" label="Offset Y"  
+                    rules={[]}>
+                    <Input type={'number'} placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
             </Form>
         </Modal>

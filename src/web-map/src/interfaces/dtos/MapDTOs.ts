@@ -1,22 +1,24 @@
 import { MapLayer } from "../Map"
 
 export interface CreateMapDTO{
-    name:string,
+    name:string;
 }
 
 export interface UpdateMapNameDTO{
-    name:string,
-    note?:string
+    name:string;
+    offsetX: number;
+    offsetY: number;
+    note?:string;
 }
 
 export interface PublishMapDTO{
-    isPublished: boolean,
+    isPublished: boolean;
 }
 
 export interface UpdateMapLayersDTO{
-    id: string,
-    name: string,
-    layers: MapLayer[]
+    id: string;
+    name: string;
+    layers: MapLayer[];
 }
 
 export interface SearchMapDTO{

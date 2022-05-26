@@ -1,4 +1,4 @@
-import { Button, Modal, notification, Modal as AntDModal, Typography } from "antd";
+import { Button, Modal, notification, Modal as AntDModal, Typography, Spin } from "antd";
 import { SaveOutlined,DeleteOutlined ,ExclamationCircleOutlined, 
     EnvironmentOutlined,PauseOutlined,
     EditOutlined, GlobalOutlined} from '@ant-design/icons';
@@ -18,6 +18,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
     const navigate = useNavigate();
     const mapEditor = useMapEditor();
     const mapInfo = mapEditor.mapEditorState.mapInfo!;
+    const [loading, setLoading] = useState(false);
 
     const [name, setName] = useState(props.map?.name);
     useEffect(()=>{
@@ -26,6 +27,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
 
     const onSave = async () => {
         try{
+            setLoading(true);
             await mapEditor.saveMap();
             
             notification['success']({
@@ -39,6 +41,8 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
                 title: 'Có lỗi',
                 content: `Không thể lưu: ${errMsg}`,
             });
+        }finally{
+            setLoading(false);
         }
      
     }
@@ -130,18 +134,18 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             </h3>
             
             <div>
-                <Button type="primary" onClick={onSave}>
+                <Button type="primary" onClick={onSave} loading={loading}>
                     <SaveOutlined /> Lưu Map
                 </Button>
 
                 {!mapInfo.isPublished &&
-                <Button type="default" onClick={()=>{onPublish(true)}}>
+                <Button type="default" onClick={()=>{onPublish(true)}} >
                     <GlobalOutlined/> Publish
                 </Button>
                 }
 
                 {mapInfo.isPublished &&
-                <Button type="default" onClick={()=>{onPublish(false)}}>
+                <Button type="default" onClick={()=>{onPublish(false)}} >
                     <PauseOutlined /> Unpublish
                 </Button>
                 }
@@ -154,7 +158,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
 
             <div className="flex-spacer"></div>
             <div style={{marginLeft:'20px'}}>
-                <Button className='delete-btn' onClick={onDelete}
+                <Button className='delete-btn' onClick={onDelete} 
                         disabled={!props.map?.id}
                         danger icon={<DeleteOutlined />} >
                         Xóa Map

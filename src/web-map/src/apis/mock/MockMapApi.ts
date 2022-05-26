@@ -7,6 +7,8 @@ const maps: MapInfo[] = [
     {
         id: "Map1",
         name: "Map Khu vực 1",
+        offsetX: 0,
+        offsetY: 0,
         layers: [],
         currentTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
         latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
@@ -15,6 +17,8 @@ const maps: MapInfo[] = [
     {
         id: "Map2",
         name: "Map Tp. HCM",
+        offsetX: 0,
+        offsetY: 0,
         layers: [],
         currentTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",
         latestTileUrl: "{version}/map-{mapid}/{z}/{x}/{y}.{formatExtension}",

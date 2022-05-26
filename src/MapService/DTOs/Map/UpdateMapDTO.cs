@@ -6,6 +6,8 @@ namespace MapService.DTOs.Map
     public class UpdateMapNameDTO
     {
         public string Name { get; set; }
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
         public string Note { get; set; }
     }
 

@@ -12,6 +12,8 @@ namespace MapService.DTOs.Map
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
         public string Note { get; set; }
         public string ImageUrl { get; set; }
         public int Version { get; set; }
@@ -33,6 +35,8 @@ namespace MapService.DTOs.Map
             {
                 Id = o.Id,
                 Name = o.Name,
+                OffsetX = o.OffsetX,
+                OffsetY = o.OffsetY,
                 Note = o.Note,
                 Version = o.Version,
                 IsPublished = o.IsPublished,

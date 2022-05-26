@@ -5,7 +5,10 @@ namespace MapService.Domain
 {
     public class MapInfo
     {
-        private MapInfo() { }
+        private MapInfo() {
+            OffsetX = 0;
+            OffsetY = 0;
+        }
 
         public MapInfo(string id, string name, string note)
         {
@@ -15,6 +18,8 @@ namespace MapService.Domain
             Layers = new List<MapLayer>();
             CreatedDate = DateTime.Now;
             IsPublished = false;
+            OffsetX = 0;
+            OffsetY = 0;
         }
         public string Id { get; private set; }
         public string Name { get; set; }
@@ -22,6 +27,9 @@ namespace MapService.Domain
 
         public int Version { get; set; }
         public bool IsPublished { get; set; }
+
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; } 
 
         private MapBoundingBox _bb;
         public MapBoundingBox BoundingBox

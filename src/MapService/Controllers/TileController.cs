@@ -158,14 +158,16 @@ namespace MapService.Controllers
             var width = _schema.GetTileWidth(ti.Index.Level);
             var height = _schema.GetTileHeight(ti.Index.Level);
 
+            var offsetX = mapContainer.OffsetX;// _mapOptionsMontior.CurrentValue.MapOffsetX;
+            var offsetY = mapContainer.OffsetY;//_mapOptionsMontior.CurrentValue.MapOffsetY;
             var renderOptions = new MapRenderOptions()
             {
                 PixelWidth = width,
                 PixelHeight = height,
-                MinX = bbExtent.MinX + _mapOptionsMontior.CurrentValue.MapOffsetX,
-                MinY = bbExtent.MinY + _mapOptionsMontior.CurrentValue.MapOffsetY,
-                MaxX = bbExtent.MaxX + _mapOptionsMontior.CurrentValue.MapOffsetX,
-                MaxY = bbExtent.MaxY + _mapOptionsMontior.CurrentValue.MapOffsetY,
+                MinX = bbExtent.MinX + offsetX,
+                MinY = bbExtent.MinY + offsetY,
+                MaxX = bbExtent.MaxX + offsetX,
+                MaxY = bbExtent.MaxY + offsetY,
             };
             
             //check intersects
