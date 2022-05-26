@@ -6,7 +6,8 @@ import { IAppStore } from '../../store';
 import { chatActions, getChannels, getConversations } from '../../store/chat/chatReducer';
 import ConversationList from '../../components/chat/ConversationList';
 import ChatBox from '../../components/chat/ChatBox';
-import { Button, Icon } from 'antd';
+import { Button } from 'antd';
+import { PlusOutlined, MessageOutlined} from '@ant-design/icons';
 import ModalFindUser from '../../components/chat/ModalFindUser';
 import no_selected_conversation_bg from '../../assets/images/chat/no_selected_conversation_bg.png';
 import ModalChannelCreation from '../../components/chat/ModalChannelCreation';
@@ -57,7 +58,7 @@ const ChatPage: React.FC = () => {
                             //new channel
                             dispatch(chatActions.showModal({ modal: 'channel_creation', visible: true }))
                         }}>
-                            <Icon type="plus" />
+                            <PlusOutlined />
                         </Button>
                     </div>
                     <ConversationList type='channel' conversations={channels} 
@@ -72,7 +73,7 @@ const ChatPage: React.FC = () => {
                             //new chat
                             dispatch(chatActions.showModal({ modal: 'find_user', visible: true }))
                         }}>
-                            <Icon type="message" />
+                            <MessageOutlined />
                         </Button>
                     </div>
                     <ConversationList type='conversation' conversations={conversations} 

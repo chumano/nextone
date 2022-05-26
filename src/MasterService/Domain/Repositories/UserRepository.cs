@@ -16,6 +16,8 @@ namespace MasterService.Domain.Repositories
         void Update(User user);
         void Delete(User user);
 
+        Task<User> GetUserByEmail(string email);
+
         Task SaveChangesAsync();
     }
     public class UserRepository : IUserRepository
@@ -36,6 +38,11 @@ namespace MasterService.Domain.Repositories
         {
             return await this.Users.FirstOrDefaultAsync(o => o.Id == id);
         }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await this.Users.FirstOrDefaultAsync(o => o.Email == email);
+        } 
 
         public void Add(User user)
         {

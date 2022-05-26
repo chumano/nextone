@@ -3,6 +3,7 @@ using MasterService.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
+using NextOne.Shared.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace MasterService.Domain.Services
     public interface IUserService
     {
         Task<User> Get(string userId);
+
+        Task<User> GetUserByEmail(string email);
 
         Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch);
         Task<User> CreateUser(string name, string email, string phone);
@@ -174,6 +177,11 @@ namespace MasterService.Domain.Services
             }
 
             return await query.CountAsync();
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _userRepository.GetUserByEmail(email);
         }
     }
 }

@@ -1,4 +1,4 @@
-import { Icon } from 'antd';
+import { NotificationOutlined} from '@ant-design/icons';
 import React from 'react'
 import { Message } from '../../../models/message/Message.model'
 import FileView from '../file/FileView';
@@ -11,7 +11,7 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
     return (
         <div className='message-event'>
             <div>
-                <Icon type="notification" style={{ color: 'black', fontSize: '30px' }} />
+                <NotificationOutlined style={{ color: 'black', fontSize: '30px' }} />
             </div>
             <div>
                 {eventInfo.eventTypeCode} -

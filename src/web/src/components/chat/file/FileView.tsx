@@ -1,4 +1,4 @@
-import { Icon } from 'antd'
+import { FileZipOutlined} from '@ant-design/icons';
 import React from 'react'
 import { BaseFile } from '../../../models/file/File.model'
 import { FileType } from '../../../models/file/FileType.model'
@@ -19,7 +19,7 @@ const FileView: React.FC<FileViewProps> = ({file}) => {
         }
         {file.fileType !== FileType.Image &&
             <div className='file-view__other-container'>
-                <Icon type="file-zip" style={{fontSize:'30px'}}/>
+                <FileZipOutlined style={{fontSize:'30px'}}/>
             </div>
         }
     </div>

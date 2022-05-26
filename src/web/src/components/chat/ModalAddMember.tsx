@@ -1,6 +1,7 @@
 import { Button, Checkbox, Input, List, Modal, Skeleton } from 'antd';
-import Form, { FormComponentProps } from 'antd/lib/form';
+import Form from 'antd/lib/form';
 import React, { useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
 import { UserStatus } from '../../models/user/UserStatus.model';
@@ -8,35 +9,23 @@ import { chatActions } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
 import UserAvatar from './UserAvatar';
 
-const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
-    return Object.keys(fieldsError).some((field) => fieldsError[field]);
-};
 
-interface ModalAddMemberProps extends FormComponentProps {
+
+interface ModalAddMemberProps {
     onVisible: (visible: boolean) => void;
     conversation: ConversationState
 }
 
-const FORM_ID = 'form-add-member';
-const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, form, conversation }) => {
+const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation }) => {
     const dispatch = useDispatch();
-    const [isFormSubmit, setIsFormSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const [usersLoading, setUsersLoading] = useState(true);
     const [useList, setUserList] = useState<UserStatus[]>([]);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
-    
-    const {
-        getFieldDecorator,
-        getFieldsError,
-        getFieldError,
-        isFieldTouched,
-        validateFields,
-        setFieldsValue,
-    } = form;
 
-    const roleError = (isFormSubmit || isFieldTouched("role")) && getFieldError("role");
+    const [form] = Form.useForm();
+
     useEffect(() => {
         const fetchUsers = async () => {
             const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
@@ -52,37 +41,33 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, form, conver
     const handleCancel = () => {
         onVisible(false);
     };
+    const handleOk = useCallback(async (event) => {
+        await form.validateFields();
+        form.submit();
+    }, [form]);
 
-    const handleOk = useCallback((event) => {
-        event.preventDefault();
+    const onFormFinish = useCallback(async (values: any) => {
         setIsLoading(true);
-        setIsFormSubmit(true);
-        validateFields(async (err, {  }) => {
-            if (err) {
-                setIsLoading(false);
-                return;
-            }
 
-            const response = await comApi.addMembers({
-                conversationId : conversation.id,
-                memberIds : selectedUserIds
-            })
-
-            if(!response.isSuccess){
-                setIsLoading(false);
-                return;
-            }
-
-            dispatch(chatActions.addMembers({
-                conversationId : conversation.id,
-                members : response.data
-            }));
-
-            setIsLoading(false);
-            onVisible(false);
+        const response = await comApi.addMembers({
+            conversationId: conversation.id,
+            memberIds: selectedUserIds
         })
 
-    }, [dispatch,conversation,selectedUserIds]);
+        if (!response.isSuccess) {
+            setIsLoading(false);
+            return;
+        }
+
+        dispatch(chatActions.addMembers({
+            conversationId: conversation.id,
+            members: response.data
+        }));
+
+        setIsLoading(false);
+        onVisible(false);
+
+    }, [dispatch, conversation, selectedUserIds]);
 
 
     return (
@@ -91,22 +76,23 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, form, conver
             visible={true}
             onCancel={handleCancel}
             footer={[
-                <Button key="back" onClick={handleCancel}>
+                <Button key="cancel" onClick={handleCancel}>
                     Huỷ bỏ
                 </Button>,
-                <Button
-                    form={FORM_ID}
-                    key="submit"
+                <Button key="ok"
                     type="primary"
-                    htmlType="submit"
-                    disabled={hasErrors(getFieldsError())}
+                    onClick={handleOk}
+                    disabled={
+                        !form.isFieldsTouched(true) ||
+                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                    }
                     loading={isLoading}
                 >
                     Đồng ý
                 </Button>,
             ]}
         >
-            <Form onSubmit={handleOk} id={FORM_ID}>
+            <Form onFinish={onFormFinish} form={form}>
                 <h6>Chọn thành viên</h6>
                 <Input.Search
                     placeholder="Tìm kiếm"
@@ -150,6 +136,4 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, form, conver
     )
 }
 
-export default Form.create<ModalAddMemberProps>({ name: FORM_ID })(
-    ModalAddMember
-);
+export default ModalAddMember;

@@ -1,5 +1,5 @@
-import { Icon } from "antd";
 import { EventInfo } from "../../models/event/Event.model";
+import { NotificationOutlined } from '@ant-design/icons';
 
 interface EventViewProp{
     eventItem: EventInfo
@@ -13,7 +13,7 @@ const EventView :React.FC<EventViewProp> = ({eventItem})=>{
                     <img src={eventIcon}/>
                 }
                 {!eventIcon &&
-                    <Icon type="notification" style={{ color: 'black', fontSize: '20px' }} />
+                    <NotificationOutlined style={{ color: 'black', fontSize: '20px' }} />
                 }
                 
             </div>

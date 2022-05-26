@@ -1,4 +1,5 @@
-import { Icon, Modal } from "antd";
+import { Modal } from "antd";
+import { QuestionOutlined} from '@ant-design/icons';
 import { constant } from "lodash";
 import { User } from "oidc-client";
 import { createContext,  useCallback, useEffect} from "react";
@@ -39,7 +40,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
                 //show user confirm
                 Modal.confirm({
                     title: 'Có cuộc gọi đến',
-                    icon: <Icon type="question" />,
+                    icon: <QuestionOutlined />,
                     content: 'Cuộc gọi từ "Admin"',
                     onOk : async ()=> {
                         dispatch(callActions.receiveCall({

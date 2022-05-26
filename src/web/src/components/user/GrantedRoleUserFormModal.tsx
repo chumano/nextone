@@ -27,6 +27,9 @@ const GrantedRoleUserFormModal: FC<IProps> = ({
 	const [roleList, setRoleList] = useState<Role[]>([]);
 	const [arrayRoleCode, setArrayRoleCode] = useState<string[]>([]);
 
+	
+	const [selectedRoles, setSelectedRoles] = useState<string>();
+
 	useEffect(() => {
 		const getRoleListAsync = async () => {
 			try {
@@ -38,7 +41,15 @@ const GrantedRoleUserFormModal: FC<IProps> = ({
 		};
 
 		getRoleListAsync();
+		
 	}, []);
+
+	useEffect(()=>{
+		if(!state.currentUser) return;
+		if(!state.currentUser.roles  ||  state.currentUser.roles?.length == 0) return;
+		//const selectedRole = state.currentUser?.roles?.map((r) => r.roleCode);
+		setSelectedRoles(state.currentUser.roles[0].roleCode);
+	},[state.currentUser, roleList]);
 
 	const hideModalHandler = () => {
 		setIsModalVisible(false);
@@ -72,10 +83,16 @@ const GrantedRoleUserFormModal: FC<IProps> = ({
 		}
 	};
 
-	const onSelectChangeHandler = (values: string[]) => {
-		setArrayRoleCode([...values]);
+	const onSelectChangeHandler = (value: string | string[]) => {
+		if(typeof(value) === 'string'){
+			setArrayRoleCode([value]);
+			setSelectedRoles(value);
+		}else{
+			setArrayRoleCode([...value]);
+			setSelectedRoles(value[0]);
+		}
+		
 	};
-
 	return (
 		<Modal
 			title={`Cấp quyền người dùng`}
@@ -88,9 +105,8 @@ const GrantedRoleUserFormModal: FC<IProps> = ({
 		>
 			<Select
 				style={{ width: "100%" }}
-				mode="multiple"
 				allowClear
-				defaultValue={state.currentUser?.roles?.map((r) => r.roleCode)}
+				value={selectedRoles}
 				onChange={onSelectChangeHandler}
 			>
 				{roleList.map((r) => (

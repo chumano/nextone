@@ -26,6 +26,7 @@ import DeleteUserModal from "./DeleteUserModal";
 import ResetPasswordUserModal from "./ResetPasswordUserModal";
 import UpdateUserFormModal from "./UpdateUserFormModal";
 import GrantedRoleUserFormModal from "./GrantedRoleUserFormModal";
+import type { MenuProps } from 'antd';
 
 import {
 	UserActionType,
@@ -142,6 +143,14 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 			});
 		}
 	};
+	
+	const onMenuClick = (record:User)=>{
+		return (e:any) => {
+			console.log('click ', e);
+			const {key} = e;
+			openModalHandler(record, key);
+		};
+	}
 
 	const openModalHandler = (
 		record: User,
@@ -251,29 +260,19 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 									<FontAwesomeIcon icon={faPencilAlt} />
 								</Button>
 								<Button
-									type="danger"
+									danger
 									onClick={() => openModalHandler(record, "delete")}
 								>
 									<FontAwesomeIcon icon={faTrash} />
 								</Button>
 								<Dropdown
 									overlay={
-										<Menu>
-											<Menu.Item
-												key="1"
-												onClick={() =>
-													openModalHandler(record, "reset-password")
-												}
-											>
-												Đổi mật khẩu
-											</Menu.Item>
-											<Menu.Item
-												key="2"
-												onClick={() => openModalHandler(record, "granted-role")}
-											>
-												Cấp quyền
-											</Menu.Item>
-										</Menu>
+										<Menu items={[
+											{ label: 'Đổi mật khẩu', key: 'reset-password' }, // remember to pass the key prop
+											{ label: 'Cấp quyền', key: 'granted-role' }, // which is required
+										]}
+											onClick={onMenuClick(record)}
+										/>
 									}
 								>
 									<Button type="primary">

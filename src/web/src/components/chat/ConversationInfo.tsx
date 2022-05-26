@@ -1,4 +1,5 @@
-import { Button, Icon, Modal, Tabs } from 'antd'
+import { Button,  Modal, Tabs } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import React, { useCallback } from 'react'
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
@@ -41,9 +42,9 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => 
                             <div className='conversation-info__header'>
                                 <h6 style={{textAlign:'center'}}>{conversation.name}</h6>
                                 <div style={{display:"flex", justifyContent:"center"}}>
-                                    <Button type='danger' className="button-icon" ghost
+                                    <Button danger className="button-icon" ghost
                                         onClick={onDeleteConversation}>
-                                        <Icon type="delete" /> Xóa
+                                        <DeleteOutlined /> Xóa
                                     </Button>
                                 </div>
                             </div>

@@ -1,5 +1,6 @@
 
-import { Button, Icon, List, Modal, Skeleton } from 'antd';
+import { Button,  List, Modal, Skeleton } from 'antd';
+import { DeleteOutlined , PlusOutlined} from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { comApi } from '../../apis/comApi';
 import { ConversationMember, MemberRole } from '../../models/conversation/ConversationMember.model';
@@ -64,7 +65,7 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                             //new channel
                             dispatch(chatActions.showModal({ modal: 'add_member', visible: true, data: conversation }))
                         }}>
-                        <Icon type="plus" />
+                        <PlusOutlined />
                     </Button>
                 </div>
 
@@ -91,8 +92,8 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                                 </>,
                                 <>
                                     {item.userMember.userId !== userId &&
-                                        <Button type='danger' className='button-icon' onClick={onDeleteMember(item)}>
-                                            <Icon type="delete" />
+                                        <Button danger className='button-icon' onClick={onDeleteMember(item)}>
+                                            <DeleteOutlined />
                                         </Button>
                                     }
                                 </>

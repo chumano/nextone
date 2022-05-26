@@ -1,7 +1,7 @@
 import { Button, Checkbox, Input, List, Modal, Select, Skeleton } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 
-import Form, { FormComponentProps } from "antd/lib/form";
+import Form from "antd/lib/form";
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
@@ -15,11 +15,11 @@ const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
 	return Object.keys(fieldsError).some((field) => fieldsError[field]);
 };
 
-interface ModalChannelCreationProps extends FormComponentProps {
+interface ModalChannelCreationProps{
     title?: string,
     onVisible: (visible: boolean) => void;
 }
-const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onVisible, form}) => {
+const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onVisible}) => {
     const dispatch = useDispatch();
     const [usersLoading, setUsersLoading] = useState(true);
     const [useList, setUserList] = useState<UserStatus[]>([]);
@@ -29,17 +29,9 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 
     const [isFormSubmit, setIsFormSubmit] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-
-    const {
-		getFieldDecorator,
-		getFieldsError,
-		getFieldError,
-		isFieldTouched,
-		validateFields,
-	} = form;
-    const nameError = (isFormSubmit || isFieldTouched("name")) && getFieldError("name");
-    const eventTypeError = (isFormSubmit || isFieldTouched("eventType")) && getFieldError("eventType");
-
+    const [form] = Form.useForm();
+    
+ 
     useEffect(() => {
         const fetchUsers = async () => {
             const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
@@ -58,31 +50,31 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
         fetcheEventTypes();
     }, [])
 
-    const handleOk = useCallback((event) => {
-		event.preventDefault();
-		setIsLoading(true);
-        setIsFormSubmit(true);
-        validateFields(async (err, { name,eventType }) => {
-            if(err){
-                setIsLoading(false);
-                return;
-            }
-            form.getFieldValue("")
-            const channel : CreateChannelDTO={
-                name: name,
-                eventTypeCodes: [eventType],
-                memberIds: selectedUserIds
-            } 
-            dispatch(createChannel(channel))
-            setIsLoading(false);
-            onVisible(false);
-        })
-       
-    },[selectedUserIds]);
+    
+    const handleOk = async () => {
+        await form.validateFields();
+        form.submit();
+    };
 
     const handleCancel = () => {
         onVisible(false);
     };
+
+    const onFormFinish = useCallback(async (values:any) => {
+
+		setIsLoading(true);
+     
+        const channel : CreateChannelDTO={
+            name: values['name'],
+            eventTypeCodes: [values['eventType']],
+            memberIds: selectedUserIds
+        } 
+        dispatch(createChannel(channel))
+        setIsLoading(false);
+        onVisible(false);
+        
+       
+    },[form,selectedUserIds]);
 
     return (
         <Modal
@@ -90,54 +82,37 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
             visible={true}
             onCancel={handleCancel}
             footer={[
-				<Button key="back" onClick={handleCancel}>
+				<Button key="cancel" onClick={handleCancel}>
 					Huỷ bỏ
 				</Button>,
-				<Button
-					form="form-channel-creation"
-					key="submit"
+				<Button key="ok"
+                    onClick={handleOk}
 					type="primary"
-					htmlType="submit"
-					disabled={hasErrors(getFieldsError())}
+                    disabled={
+                        !form.isFieldsTouched(true) ||
+                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                    }
 					loading={isLoading}
 				>
 					Đồng ý
 				</Button>,
 			]}
         >
-            <Form onSubmit={handleOk} id="form-channel-creation">
-                <Form.Item label="Tên kênh"
-					validateStatus={nameError ? "error" : ""}
-					help={nameError || ""}
+            <Form onFinish={onFormFinish} form={form}>
+                <Form.Item name="name" label="Tên kênh"
+					required tooltip=""
+                    rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
-					{getFieldDecorator("name", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-						],
-					})(
-						<Input type="text" placeholder="Tên kênh" />
-					)}
+					<Input type="text" placeholder="Tên kênh" />
 				</Form.Item>
 
-                <Form.Item label="Loại sự kiện"
-					validateStatus={eventTypeError ? "error" : ""}
-					help={eventTypeError || ""}
+                <Form.Item  name="eventType" label="Loại sự kiện"
+					required tooltip=""
+                    rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
-					{getFieldDecorator("eventType", {
-						rules: [
-							{
-								required: true,
-								message: "Đây là trường bắt buộc",
-							},
-						],
-					})(
-                        <Select  >
-                            {eventTypes.map(o=> <Select.Option key={o.code} value={o.code}>{o.name}</Select.Option>)}
-                        </Select>
-					)}
+                    <Select  >
+                        {eventTypes.map(o=> <Select.Option key={o.code} value={o.code}>{o.name}</Select.Option>)}
+                    </Select>
 				</Form.Item>
             </Form>
 
@@ -184,6 +159,4 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 
 
 
-export default Form.create<ModalChannelCreationProps>({ name: "form-channel-creation" })(
-	ModalChannelCreation
-);
+export default ModalChannelCreation;

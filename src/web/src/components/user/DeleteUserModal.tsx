@@ -53,7 +53,7 @@ const DeleteUserModal: FC<IProps> = ({ setIsModalVisible, isModalVisible }) => {
 			okText="Đồng ý"
 			cancelText="Huỷ bỏ"
 			visible={isModalVisible}
-			okButtonProps={{ type: "danger", loading: isLoading }}
+			okButtonProps={{ danger: true, loading: isLoading }}
 			onOk={deleteUserHandler}
 			onCancel={hideModalHandler}
 		>
