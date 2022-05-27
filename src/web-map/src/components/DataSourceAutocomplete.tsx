@@ -12,7 +12,8 @@ interface DataSourceAutocompleteProps {
 }
 
 const renderDataSourceOption = (o: DataSource) => {
-    return <AutoComplete.Option key={o.id} value={o.name} label={o.name} data-geotype={o.geoType}>
+    return <AutoComplete.Option key={o.id} value={o.name} label={o.name} 
+        data-geotype={o.geoType} >
         <div style={{
             display: 'flex',
             flexDirection: 'row',
@@ -30,7 +31,8 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
     const [state, setState] = useState({
         loading: false,
         value: value,
-        children: [] as any[]
+        children: [] as any[],
+        datasources: datasources
     })
 
     useEffect(() => {
@@ -38,12 +40,14 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
             return {
                 ...state,
                 loading: false,
-                children: datasources?.map(o => renderDataSourceOption(o))
+                children: datasources?.map(o => renderDataSourceOption(o)),
+                datasources : datasources
             }
         });
     }, [datasources, value])
 
     const fetchData = useCallback(async (textSearch: string) => {
+        console.log("fetchData...: ", textSearch)
         const reponse = api.list({
             textSearch: textSearch,
             offset: 0,
@@ -56,7 +60,8 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
             return {
                 ...state,
                 loading: false,
-                children: children
+                children: children,
+                datasources: nextDataSources
             }
         })
 
@@ -67,13 +72,15 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
     }, [fetchData])
 
     const onSearch = useCallback((value: string) => {
-        console.log("load")
-        setState((state) => {
-            return {
-                ...state,
-                loading: true
-            }
-        });
+        console.log("onSearch...: ", value)
+        if(!state.loading){
+            setState((state) => {
+                return {
+                    ...state,
+                    loading: true
+                }
+            });
+        }
         fetchGood(value);
     }, [fetchGood, state.loading]);
 
@@ -82,7 +89,8 @@ const DataSourceAutocomplete: React.FC<DataSourceAutocompleteProps> = ({ datasou
         onChange && onChange({
             id: option.key,
             name: option.label,
-            geoType: option['data-geotype']
+            geoType: option['data-geotype'],
+            dataSource: state.datasources.find(o=>o.id == option.key)
         })
     }
 

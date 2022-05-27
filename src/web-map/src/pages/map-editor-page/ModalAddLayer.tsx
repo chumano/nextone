@@ -1,10 +1,11 @@
 import { Avatar, Form, Input, Select } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import TextArea from "antd/lib/input/TextArea";
+import { useEffect, useState } from "react";
 import DataSourceAutocomplete from "../../components/DataSourceAutocomplete";
 import DataSourceSelect from "../../components/DataSourceSelect";
 import Modal from "../../components/modals/Modal";
-import { DashStyle, GeoType } from "../../interfaces";
+import { DashStyle, DataSource, GeoType } from "../../interfaces";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
 import { geo2LayerType } from "../../utils/functions";
 import { LayerStyle } from "./useMapEditor";
@@ -82,11 +83,22 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
     const [form] = Form.useForm();
     const sourceStore = useDatasourceStore();
     const { datasources } = sourceStore.datasourceState;
+    const [messageError, setMessageError] = useState<string>();
 
+    useEffect(()=>{
+        setMessageError('');
+    },[])
+    
     const onFormFinish = async (values: any) => {
         //onLayerAdded
-        const source = values['Source']
+        const source = values['Source'] as {id:string, name:string, geoType: GeoType, dataSource: DataSource}
         if (!source) {
+            setMessageError('Chưa chọn Source');
+            return;
+        }
+        const dataSource = source.dataSource;
+        if (!dataSource) {
+            setMessageError('dataSource không xác định');
             return;
         }
 
@@ -96,7 +108,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
             layerType: geo2LayerType(source?.geoType),
             sourceId: source.id,
             sourceName: source.name,
-            dataSource: source,
+            dataSource: dataSource,
             visibility: true,
             note: values['Note'],
             minZoom: 1,
@@ -117,6 +129,9 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
             },
             onCancel: () => { props.onToggle(false); }
         }}>
+            {messageError &&
+                <h6>{messageError}</h6>
+            }
             <Form form={form}
                 labelCol={{ span: 6 }}
                 wrapperCol={{ span: 18 }}
