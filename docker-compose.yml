@@ -7,8 +7,8 @@ services:
           context: ./src
           dockerfile: ./IdentityService/Dockerfile
         container_name: nextone-identity
-        ports:
-          - "5102:5102"
+        #ports:
+        #  - "5102:5102"
         restart: unless-stopped
         depends_on:         
           - nextonedb
@@ -38,8 +38,8 @@ services:
           context: ./src
           dockerfile: ./ComService/Dockerfile
         container_name: nextone-com
-        ports:
-          - "5104:80"
+        #ports:
+        #  - "5104:80"
         restart: unless-stopped
         depends_on:         
           - nextonedb
@@ -68,8 +68,8 @@ services:
           context: ./src
           dockerfile: ./MasterService/Dockerfile
         container_name: nextone-master
-        ports:
-          - "5103:5103"
+        #ports:
+        #  - "5103:5103"
         restart: unless-stopped
         depends_on:         
           - nextonedb
@@ -101,15 +101,15 @@ services:
           context: ./src
           dockerfile: ./MapService/Dockerfile
         container_name: nextone-map
-        ports:
-          - "5105:80"
+        #ports:
+        #  - "5105:80"
         restart: unless-stopped
         depends_on:         
           - nextonedb
         volumes:
-          #- ./Map/MapTiles:/app/Data/MapTiles
-          #- ./Map/ShapeFiles:/app/Data/ShapeFiles
-          - map-data:/app/Data
+          - ./src/MapService/Data/MapTiles:/app/Data/MapTiles
+          - ./src/MapService/Data/ShapeFiles:/app/Data/ShapeFiles
+          #- map-data:/app/Data
         environment:
           - TZ=Asia/Ho_Chi_Minh
           - ASPNETCORE_ENVIRONMENT=Production
@@ -139,8 +139,8 @@ services:
           context: ./src
           dockerfile: ./FileService/Dockerfile
         container_name: nextone-file
-        ports:
-          - "5106:80"
+        #ports:
+        #  - "5106:80"
         restart: unless-stopped
         depends_on:         
           - nextonedb
@@ -173,8 +173,8 @@ services:
           context: ./src/web-map
           dockerfile: ./Dockerfile
         container_name: nextone-map-web
-        ports:
-          - "5107:80"
+        #ports:
+        #  - "5107:80"
         restart: unless-stopped
         volumes:
           - ./configs/mapwebconfig.js:/usr/share/nginx/html/config.js
@@ -195,8 +195,8 @@ services:
           context: ./src/web
           dockerfile: ./Dockerfile
         container_name: nextone-com-web
-        ports:
-          - "5100:80"
+        #ports:
+        #  - "5100:80"
         restart: unless-stopped
         volumes:
           - ./configs/comwebconfig.js:/usr/share/nginx/html/config.js

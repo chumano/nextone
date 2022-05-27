@@ -23,6 +23,12 @@ docker-compose -f docker-compose.infras.yml up -d db
 
 docker-compose -f docker-compose.yml up -d
 ```
+Debug in DockerDesktop :
+```
+apt-get install openssh-server unzip curl
+https://docs.microsoft.com/en-us/visualstudio/debugger/attach-to-process-running-in-docker-container?view=vs-2022
+```
+
 ### Frontend
 - node >=  v16
 - npm  >= v8

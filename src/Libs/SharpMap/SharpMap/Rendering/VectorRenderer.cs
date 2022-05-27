@@ -500,7 +500,10 @@ namespace SharpMap.Rendering
                     background.Inflate(halo.Width / 2f, halo.Width / 2f);
                 }
 
+                //CHUMANO - bi loi tren linux
+                //https://github.com/dotnet/runtime/issues/28989
                 g.FillPath(new SolidBrush(foreColor), path);
+                //g.DrawString(text, font, new SolidBrush(foreColor), labelPoint);
             }
 
             if (origTrans != null)

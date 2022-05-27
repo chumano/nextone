@@ -6,9 +6,11 @@ using ProjNet.CoordinateSystems.Transformations;
 using SharpMap;
 using SharpMap.Data.Providers;
 using SharpMap.Layers;
+using SharpMap.Rendering;
 using SharpMap.Styles;
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.IO;
 
 namespace MapService.Utils
@@ -151,6 +153,38 @@ namespace MapService.Utils
                     width,
                     height
                 ));
+
+            //image.Save($"Data/Maptiles/enlarger_{DateTime.Now.ToString("HH_mm_ss")}.png");
+            //croppedImage.Save($"Data/Maptiles/cropped_{DateTime.Now.ToString("HH_mm_ss")}.png");
+
+            //using(var bmp = new Bitmap(500, 500))
+            //{
+            //    using(Graphics g = Graphics.FromImage(bmp))
+            //    {
+            //        var font =  new Font("Arial", 20, FontStyle.Regular);
+            //        g.DrawString("Nam Đông", font, Brushes.Red, 100, 100);
+            //        g.DrawString("Nam Đông", font, Brushes.Red, 450, 450);
+            //        var labelPoint = new PointF(100, 200);
+            //        var labelSize = VectorRenderer.SizeOfString(g, "Nam Đôngdadsadadadas", font);
+            //        using (var path = new GraphicsPath())
+            //        {
+            //            //path.AddString("Nam Đông", font.FontFamily, (int)font.Style, font.Size,
+            //            //    new RectangleF(labelPoint, labelSize),
+            //            //    new StringFormat { Alignment = StringAlignment.Near });
+
+
+            //            path.AddString("Nam Đông", font.FontFamily, (int)font.Style, font.Size,
+            //               new PointF(100, 300),
+            //               new StringFormat { Alignment = StringAlignment.Near });
+
+            //            //CHUMANO
+            //            g.FillPath(new SolidBrush(Color.Red), path);
+            //            //g.DrawString(text, font, new SolidBrush(Color.Red), labelPoint);
+            //        }
+            //    }
+
+            //    bmp.Save($"Data/Maptiles/text_{DateTime.Now.ToString("HH_mm_ss")}.png");
+            //}
             return croppedImage;
         }
         public Image RenderImageInternal(Map map, MapRenderOptions renderOptions)
