@@ -176,17 +176,17 @@ https://support.kaspersky.com/CyberTrace/1.0/en-US/174127.htm
 drop tables in a schema
 
 ```sql
-DECLARE @sql NVARCHAR(MAX) = N'';
+DECLARE @sql NVARCHAR(MAX) = N''
 
 SELECT @sql += N'
 ALTER TABLE ' + QUOTENAME(OBJECT_SCHEMA_NAME(parent_object_id))
     + '.' + QUOTENAME(OBJECT_NAME(parent_object_id)) + 
     ' DROP CONSTRAINT ' + QUOTENAME(name) + ';'
 FROM sys.foreign_keys
-where OBJECT_SCHEMA_NAME(parent_object_id)='identity';
+where OBJECT_SCHEMA_NAME(parent_object_id)='identity'
 
-PRINT @sql;
--- EXEC sp_executesql @sql;
+PRINT @sql
+ EXEC sp_executesql @sql
 
 ```
 
@@ -198,4 +198,10 @@ FROM INFORMATION_SCHEMA.TABLES
 WHERE TABLE_SCHEMA = 'identity' and TABLE_TYPE = 'BASE TABLE'
 
 PRINT @SqlStatement
+EXEC sp_executesql @SqlStatement
+```
+
+```sql
+delete from __EFMigrationsHistory
+where MigrationId like '%_Identity_%'
 ```

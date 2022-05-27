@@ -18,6 +18,7 @@ namespace MapService
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Map 1.0.0 run....");
             var host = CreateHostBuilder(args).Build();
             DbMigrations(host);
             host.Run();
