@@ -57,6 +57,7 @@ namespace MapService.Domain.Services
 
             var targetCoordinateSystem = _css.GetCoordinateSystem(TargetSRID);;
 
+            var labelLayers = new List<LabelLayer>();
             foreach (var mapLayer in mapInfo.Layers)
             {
                 try
@@ -65,14 +66,25 @@ namespace MapService.Domain.Services
                     {
                         continue;
                     }
-                    var layer = createLayer(mapLayer, targetCoordinateSystem);
+                    var layer = createLayer(mapLayer, targetCoordinateSystem, out LabelLayer labelLayer);
                     layer.Enabled = true;
                     map.Layers.Add(layer);
+
+                    if (labelLayer != null)
+                    {
+                        labelLayers.Add(labelLayer);
+                    }
                 }
                 catch(Exception ex)
                 {
                     _logger.LogError(ex, $"GenerateMap ${mapInfo.Name}(${mapInfo.Id}) - ${mapLayer.LayerName} Error: {ex.Message}");
                 }
+            }
+
+            foreach(var labelLayer in labelLayers)
+            {
+                labelLayer.Enabled = true;
+                map.Layers.Add(labelLayer);
             }
 
             return map;
@@ -100,7 +112,7 @@ namespace MapService.Domain.Services
             return map;
         }
 
-        private Layer createLayer(MapLayer mapLayer, ICoordinateSystem targetCoordinateSystem)
+        private Layer createLayer(MapLayer mapLayer, ICoordinateSystem targetCoordinateSystem,out LabelLayer labelLayer)
         {
             ShapeFile dataProvider = new ShapeFile(mapLayer.DataSource.SourceFile, true, true);
 
@@ -109,24 +121,22 @@ namespace MapService.Domain.Services
 
             
             Layer layer;
-            var textEnabled = GetValue<bool>(mapLayer.PaintProperties, PaintPropertyKeys.TextEnabled, false);
-          
-            if (!textEnabled)
-            {
-                //vectorLayer
-                var style = GetVectorStyle(mapLayer, out var theme);
-                var vectorlayer = new VectorLayer(mapLayer.LayerName, dataProvider);
-                vectorlayer.Style = style;
-                vectorlayer.Theme = theme;
-                layer = vectorlayer;
-            }
-            else
+            labelLayer = null;
+
+            //vectorLayer
+            var vectorStyle = GetVectorStyle(mapLayer, out var theme, out var labelStyle, out var textColumn, out var textRotateColumn);
+            var vectorlayer = new VectorLayer(mapLayer.LayerName, dataProvider);
+            vectorlayer.Style = vectorStyle;
+            vectorlayer.Theme = theme;
+            layer = vectorlayer;
+
+            if (labelStyle != null)
             {
                 //labelLayer
-                var lalbelStyle = GetLabelStyle(mapLayer, out var textColumn, out var textRotateColumn);
+                //var labelStyle = GetLabelStyle(mapLayer, out var textColumn, out var textRotateColumn);
                 var labellayer = new LabelLayer(mapLayer.LayerName);
                 labellayer.DataSource = dataProvider;
-                labellayer.Style = lalbelStyle;
+                labellayer.Style = labelStyle;
                 if (!string.IsNullOrEmpty(textColumn))
                 {
                     labellayer.LabelColumn = textColumn;
@@ -137,9 +147,14 @@ namespace MapService.Domain.Services
                     labellayer.RotationColumn = textRotateColumn;
                 }
 
-                layer = labellayer;
+
+                labellayer.CoordinateTransformation = transform;
+                labellayer.ReverseCoordinateTransformation = reverseTransform;
+                labellayer.MinVisible = mapLayer.MinZoom ?? 1;
+                labellayer.MaxVisible = mapLayer.MaxZoom ?? 19;
+
+                labelLayer = labellayer;
             }
-        
        
             layer.CoordinateTransformation = transform;
             layer.ReverseCoordinateTransformation = reverseTransform;
@@ -150,9 +165,13 @@ namespace MapService.Domain.Services
 
      
 
-        private VectorStyle GetVectorStyle(MapLayer mapLayer, out ITheme theme)
+        private VectorStyle GetVectorStyle(MapLayer mapLayer, out ITheme theme, 
+            out LabelStyle labelStyle, out string textColumn, out string textRotateColumn)
         {
             theme = null;
+            labelStyle = null;
+            textColumn = null;
+            textRotateColumn = null;
             try
             {
                 
@@ -176,6 +195,12 @@ namespace MapService.Domain.Services
                     case GeoTypeEnum.Polygon:
                         SetStyleFill(style, mapLayer.PaintProperties, out theme);
                         break;
+                }
+
+                var textEnabled = GetValue<bool>(mapLayer.PaintProperties, PaintPropertyKeys.TextEnabled, false);
+                if (textEnabled)
+                {
+                    labelStyle = GetLabelStyle(mapLayer, out textColumn, out textRotateColumn);
                 }
 
                 return style;
