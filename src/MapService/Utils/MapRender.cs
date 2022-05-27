@@ -19,10 +19,10 @@ namespace MapService.Utils
         public int? PixelHeight { get; set; }
         public int TargetSRID { get; set; }
 
-        public double? MinX { private get; set; }
-        public double? MinY { private get; set; }
-        public double? MaxX { private get; set; }
-        public double? MaxY { private get; set; }
+        public double? MinX { get; set; }
+        public double? MinY { get; set; }
+        public double? MaxX { get; set; }
+        public double? MaxY { get; set; }
 
         public Color BackgroundColor { get; set; }
 
@@ -36,10 +36,11 @@ namespace MapService.Utils
             IsCalculateZoom = true;
         }
 
-        public Envelope Envelope { 
+        public Envelope Envelope
+        {
             get
             {
-                if(!MinX.HasValue 
+                if (!MinX.HasValue
                     || !MinY.HasValue
                     || !MaxX.HasValue
                     || !MaxY.HasValue)
@@ -48,9 +49,9 @@ namespace MapService.Utils
                 var flipXY = TargetSRID == 4326;
 
                 return flipXY
-                   ? new Envelope(MinY.Value, MaxY.Value,  MinX.Value, MaxX.Value)
-                   : new Envelope(MinX.Value, MaxX.Value,  MinY.Value, MaxY.Value);
-            } 
+                   ? new Envelope(MinY.Value, MaxY.Value, MinX.Value, MaxX.Value)
+                   : new Envelope(MinX.Value, MaxX.Value, MinY.Value, MaxY.Value);
+            }
         }
     }
 
@@ -94,7 +95,7 @@ namespace MapService.Utils
             return RenderImage(map, renderOptions);
         }
 
-        public Image RenderImage(Map  map, MapRenderOptions renderOptions)
+        public Image RenderImage(Map map, MapRenderOptions renderOptions)
         {
             var bbox = renderOptions.Envelope;
             if (bbox == null)
@@ -102,7 +103,7 @@ namespace MapService.Utils
                 if ((map.Layers == null || map.Layers.Count == 0) &&
                   (map.VariableLayers == null || map.VariableLayers.Count == 0) &&
                   (map.BackgroundLayer == null || map.BackgroundLayer.Count == 0))
-                        throw (new InvalidOperationException("No layers to zoom to"));
+                    throw (new InvalidOperationException("No layers to zoom to"));
                 bbox = map.GetExtents();
             }
 
@@ -112,6 +113,50 @@ namespace MapService.Utils
             {
                 height = renderOptions.PixelHeight.Value;
             }
+
+            renderOptions.PixelHeight = height;
+
+            var renderEnlarger = true;
+            if (renderEnlarger)
+            {
+                return RenderImageEnlarger(map, renderOptions);
+            }
+            return RenderImageInternal(map, renderOptions);
+        }
+
+        private Image RenderImageEnlarger(Map map, MapRenderOptions renderOptions)
+        {
+            var width = renderOptions.PixelWidth;
+            var height = renderOptions.PixelHeight.Value;
+
+            var enlargeRenderOptions = new MapRenderOptions()
+            {
+                PixelWidth = width * 2,
+                PixelHeight = height * 2,
+                MinX = renderOptions.MinX - (renderOptions.MaxX - renderOptions.MinX) / 2,
+                MinY = renderOptions.MinY - (renderOptions.MaxY - renderOptions.MinY) / 2,
+                MaxX = renderOptions.MaxX + (renderOptions.MaxX - renderOptions.MinX) / 2,
+                MaxY = renderOptions.MaxY + (renderOptions.MaxY - renderOptions.MinY) / 2,
+            };
+
+            var image = RenderImageInternal(map, enlargeRenderOptions);
+
+            //crop 
+            var croppedImage = ImageHelper.CropImage(image, new Rectangle(
+                    0+ width / 2,
+                    0+ height / 2,
+                    width,
+                    height
+                ));
+            return croppedImage;
+        }
+        public Image RenderImageInternal(Map map, MapRenderOptions renderOptions)
+        {
+            var bbox = renderOptions.Envelope;
+
+            var width = renderOptions.PixelWidth;
+            var height = renderOptions.PixelHeight.Value;
+
             map.BackColor = renderOptions.BackgroundColor; //Color.Transparent; //Color.FromArgb(192, Color.Black)
             map.Size = new Size(width, height);
             map.PixelAspectRatio = (width / (double)height) / (bbox.Width / bbox.Height);
@@ -129,13 +174,14 @@ namespace MapService.Utils
                     layer.MaxVisible = Math.Ceiling(ConvertZoomLevel((int)zoomLvl1, renderOptions.PixelWidth));
                 }
             }
-           
+
 
             var img = map.GetMap();
             //var imageName = Path.ChangeExtension(dataSource.SourceFile, ".jpg");
             //img.Save(imageName, System.Drawing.Imaging.ImageFormat.Jpeg);
             return img;
         }
+
 
         private double ConvertZoomLevel(int lvl, int pixelWith = 256)
         {
@@ -150,9 +196,9 @@ namespace MapService.Utils
                 lvl = 19;
             }
             var resolutionAtLevel = resolutions[lvl.ToString()];
-            return resolutionAtLevel.UnitsPerPixel* pixelWith;
-           //double scale = 2 * 78271.51696401953125 / (1 << lvl);
-           // return scale * pixelWith;
+            return resolutionAtLevel.UnitsPerPixel * pixelWith;
+            //double scale = 2 * 78271.51696401953125 / (1 << lvl);
+            // return scale * pixelWith;
         }
     }
 }
