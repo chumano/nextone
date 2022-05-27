@@ -128,15 +128,18 @@ namespace MapService.Utils
         {
             var width = renderOptions.PixelWidth;
             var height = renderOptions.PixelHeight.Value;
-
+            var bbox = renderOptions.Envelope ?? map.GetExtents();
             var enlargeRenderOptions = new MapRenderOptions()
             {
+                BackgroundColor = renderOptions.BackgroundColor,
+                IsCalculateZoom = renderOptions.IsCalculateZoom,
+                TargetSRID  = renderOptions.TargetSRID,
                 PixelWidth = width * 2,
                 PixelHeight = height * 2,
-                MinX = renderOptions.MinX - (renderOptions.MaxX - renderOptions.MinX) / 2,
-                MinY = renderOptions.MinY - (renderOptions.MaxY - renderOptions.MinY) / 2,
-                MaxX = renderOptions.MaxX + (renderOptions.MaxX - renderOptions.MinX) / 2,
-                MaxY = renderOptions.MaxY + (renderOptions.MaxY - renderOptions.MinY) / 2,
+                MinX = bbox.MinX - (bbox.MaxX - bbox.MinX) / 2,
+                MinY = bbox.MinY - (bbox.MaxY - bbox.MinY) / 2,
+                MaxX = bbox.MaxX + (bbox.MaxX - bbox.MinX) / 2,
+                MaxY = bbox.MaxY + (bbox.MaxY - bbox.MinY) / 2,
             };
 
             var image = RenderImageInternal(map, enlargeRenderOptions);
@@ -152,7 +155,7 @@ namespace MapService.Utils
         }
         public Image RenderImageInternal(Map map, MapRenderOptions renderOptions)
         {
-            var bbox = renderOptions.Envelope;
+            var bbox = renderOptions.Envelope?? map.GetExtents();
 
             var width = renderOptions.PixelWidth;
             var height = renderOptions.PixelHeight.Value;

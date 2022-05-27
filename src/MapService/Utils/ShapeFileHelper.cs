@@ -428,7 +428,7 @@ namespace MapService.Utils
             catch (Exception ex)
             {
                 if (sf != null) sf.Close();
-                throw ex;
+                throw;
             }
            
             return info;
