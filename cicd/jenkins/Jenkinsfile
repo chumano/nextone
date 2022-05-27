@@ -109,7 +109,7 @@ pipeline {
             when{ 
               anyOf {
                 changeset "cicd/jenkins/Jenkinsfile"
-                changeset "src/Identity/**"
+                changeset "src/IdentityService/**"
                 changeset "src/SharedDomain/**"
                 changeset "src/Libs/NextOne.Shared/**"
                 changeset "src/Libs/NextOne.Infrastructure.Core/**"
