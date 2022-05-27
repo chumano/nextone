@@ -71,7 +71,7 @@ namespace MapService.Controllers
         public async Task<IActionResult> GetMaps([FromQuery] GetMapDTO getMapDTO)
         {
             var pagingOptions = new PageOptions(getMapDTO.Offset, getMapDTO.PageSize);
-            var query = _mapRepository.Maps;
+            var query = _mapRepository.MapQuery;
             if(getMapDTO.PublishState!=null && getMapDTO.PublishState!= YesNoEnum.All)
             {
                 bool isPublished = getMapDTO.PublishState == YesNoEnum.Yes;
