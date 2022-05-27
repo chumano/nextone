@@ -69,4 +69,45 @@ namespace MapService.DTOs.Map
             }
         }
     }
+
+    public class MapSimpleDTO
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public double OffsetX { get; set; }
+        public double OffsetY { get; set; }
+        public string Note { get; set; }
+        public string ImageUrl { get; set; }
+        public int Version { get; set; }
+        public bool IsPublished { get; set; }
+        public string CurrentTileUrl { get; set; }
+        public string LatestTileUrl { get; set; }
+     
+        public MapBoundingBox BoundingBox { get; set; }
+
+        public static MapSimpleDTO From(MapInfo o)
+        {
+            string imageUrl = null;
+            if (o.ImageData != null)
+            {
+                imageUrl = ImageHelper.BytesImageToBase64Url(o.ImageData);
+            }
+            return new MapSimpleDTO()
+            {
+                Id = o.Id,
+                Name = o.Name,
+                OffsetX = o.OffsetX,
+                OffsetY = o.OffsetY,
+                Note = o.Note,
+                Version = o.Version,
+                IsPublished = o.IsPublished,
+                BoundingBox = o.BoundingBox,
+                ImageUrl = imageUrl,
+                CurrentTileUrl = $"/tms/{o.Version}/map-{o.Id}" + "/{z}/{x}/{y}.png",
+                LatestTileUrl = $"/tms/latest/map-{o.Id}" + "/{z}/{x}/{y}.png",
+              
+            };
+        }
+
+    }
 }

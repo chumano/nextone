@@ -88,7 +88,7 @@ namespace MapService.Controllers
                 .Skip(pagingOptions.Offset)
                 .Take(pagingOptions.PageSize)
                 .ToListAsync();
-            return Ok(objs.Select(o=> MapDTO.From(o)));
+            return Ok(objs.Select(o=> MapSimpleDTO.From(o)));
         }
 
         [HttpGet("Count")]
