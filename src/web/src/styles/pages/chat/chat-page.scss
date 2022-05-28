@@ -115,14 +115,27 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        .ant-tabs-content-holder {
+          height: 100%;
+        }
         .ant-tabs-content{
           flex-grow: 1;
-          height: 1px;
         }
+      }
+
+      .ant-tabs-nav-list{
+          display: flex;
+          width: 100%; 
+      
+          .ant-tabs-tab {
+            flex-grow: 1;
+            justify-content: center;
+          }
       }
 
       /*00'conversation-info tab */
       .conversation-info{
+        
         &__header {
           border-bottom: 1px solid $color-grey-5;
           padding: 0 5px 10px 5px;

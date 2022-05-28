@@ -32,55 +32,58 @@ class CallService {
         });
 
     }
-    private listenCallMessage = ()=>{
-        this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE, (message: CallMessage) => {
-            console.log("receive-"+ message.type, message.data)
-            switch (message.type) {
-                //sender
-                case 'call-request-response':
-                    const { accepted } = message.data;
-                    if (!accepted) {
-                        this.callSender.hangup();
-                        this.pubSub.publish(CallEvents.CALL_STOPED);
-                        return;
+
+    private callMessageHandler =  (message: CallMessage) => {
+        console.log("receive-"+ message.type, message.data)
+        switch (message.type) {
+            //sender
+            case 'call-request-response':
+                const { accepted } = message.data;
+                if (!accepted) {
+                    this.callSender.hangup();
+                    this.pubSub.publish(CallEvents.CALL_STOPED);
+                    return;
+                }
+                this.callSender.sendOffer();
+
+                break;
+           
+
+            //sender + receiver
+            case 'other-session-description':
+                {
+                    const sdp: RTCSessionDescriptionInit = message.data;
+                    if (sdp.type === 'answer' && this.isSender) {
+                        this.callSender.receiveAnswer(sdp);
+                    }else if (sdp.type === 'offer' && !this.isSender) {
+                        this.callReceiver.receiveOffer(sdp);
                     }
-                    this.callSender.sendOffer();
+                    break;
+                }
+
+            case 'other-ice-candidate':
+                {
+                    const candidateResponse = message.data;
+                    const { label, id, candidate } = message.data;
+                    if (this.isSender) {
+                        this.callSender.addIceCandidate(candidateResponse);
+                    } else {
+                        this.callReceiver.addIceCandidate(candidateResponse);
+                    }
 
                     break;
-               
+                }
+            case 'other-hangup':
+                {
+                    console.log('other-hangup');
+                    this.stopCall();
+                    break;
+                }
+        }
+    }
 
-                //sender + receiver
-                case 'other-session-description':
-                    {
-                        const sdp: RTCSessionDescriptionInit = message.data;
-                        if (sdp.type === 'answer' && this.isSender) {
-                            this.callSender.receiveAnswer(sdp);
-                        }else if (sdp.type === 'offer' && !this.isSender) {
-                            this.callReceiver.receiveOffer(sdp);
-                        }
-                        break;
-                    }
-
-                case 'other-ice-candidate':
-                    {
-                        const candidateResponse = message.data;
-                        const { label, id, candidate } = message.data;
-                        if (this.isSender) {
-                            this.callSender.addIceCandidate(candidateResponse);
-                        } else {
-                            this.callReceiver.addIceCandidate(candidateResponse);
-                        }
-
-                        break;
-                    }
-                case 'other-hangup':
-                    {
-                        console.log('other-hangup');
-                        this.stopCall(false);
-                        break;
-                    }
-            }
-        });
+    private listenCallMessage = ()=>{
+        this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE,this.callMessageHandler.bind(this));
     }
 
     public acceptCallRequest = async(room:string)=>{
@@ -107,9 +110,12 @@ class CallService {
     }
 
     public stopCall = async (notifiyOther: boolean = true) => {
+        let room = '';
         if (this.isSender) {
+            room = this.callSender.getRoom();
             this.callSender.hangup();
         } else {
+            room = this.callReceiver.getRoom();
             this.callReceiver.hangup();
         }
         //remove signaling listen
@@ -118,7 +124,7 @@ class CallService {
 
         this.pubSub.publish(CallEvents.CALL_STOPED);
         if(notifiyOther){
-            this.signaling.invoke(CallSignalingActions.SEND_HANG_UP);
+            this.signaling.invoke(CallSignalingActions.SEND_HANG_UP,room);
         }
     }
 

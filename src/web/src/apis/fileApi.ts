@@ -6,7 +6,7 @@ import { handleAxiosApi } from "../utils/functions";
 const FILE_URL ='http://localhost:5106';
 const comAxiosInstance = createAxios(FILE_URL);
 export const fileApi = {
-    uploadFiles : async (files: FileList, feature?:string)=>{
+    uploadFiles : async (files: File[], onUploadProgress: (progress:any)=>void, feature?:string)=>{
         var formData = new FormData();
         if(feature){
             formData.append("feature", feature);
@@ -21,9 +21,7 @@ export const fileApi = {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 },
-                onUploadProgress : (progressEvent) => {
-                    console.log('upload_file',progressEvent.loaded)
-                }
+                onUploadProgress : onUploadProgress
             }));
     }
 }

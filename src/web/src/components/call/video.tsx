@@ -28,13 +28,13 @@ export interface VideoProps {
       const mediaStream = stream?.stream;
       const url = stream?.url
       if ('srcObject' in video as unknown) {
-        if (video.srcObject !== mediaStream) {
+        if (mediaStream && video.srcObject !== mediaStream) {
           video.srcObject = mediaStream
         }
       } else if (video.src !== url) {
         video.src = url || ''
       }
-      video.muted = props.muted
+      //video.muted = props.muted
     }
     const handleClick: ReactEventHandler<HTMLVideoElement> = () => {
        playVideo();

@@ -16,6 +16,7 @@ export class CallSender extends CallBase {
     public startCallRequest = async (room: string) => {
         console.log('startCallRequest')
         this.state = 'call-requesting';
+        this.room = room;
         this.onEvent(this.state);       
 
         await this.initConnection();
@@ -38,7 +39,7 @@ export class CallSender extends CallBase {
 
     public sendOffer = async () => {
         console.log('Sending offer to peer.');
-        //this.addTransceivers();
+        this.addTransceivers();
 
         const sdp : RTCSessionDescriptionInit =  await this.peerConnection!.createOffer()
         let finalSdp = sdp;
@@ -54,7 +55,11 @@ export class CallSender extends CallBase {
         this.peerConnection!.setLocalDescription(finalSdp);
         await this.signaling.invoke(
             CallSignalingActions.SEND_SESSION_DESCRIPTION,
-            sdp);
+            {
+                room: this.room,
+                sdp :finalSdp
+            }
+        );
     }
 
 }

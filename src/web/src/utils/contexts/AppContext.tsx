@@ -1,7 +1,7 @@
 import { Modal } from "antd";
 import { QuestionOutlined} from '@ant-design/icons';
 import { User } from "oidc-client";
-import { createContext,  useCallback, useEffect} from "react";
+import { createContext,  useCallback, useEffect, useState} from "react";
 import { useDispatch } from "react-redux";
 import { AuthenticationService } from "../../services";
 import { CallEvents } from "../../services/CallBase";
@@ -29,31 +29,13 @@ const registerHub = async ()=>{
 
 const AppContextProvider = (props: IContextProviderProp) => {
     const dispatch = useDispatch();
-    
+    const [isCallInit,setCallInit] = useState(false);
+    const [isHubConnected,setIsHubConnected] = useState(false);
+
     useEffect(()=>{
         const singalRSubsription =SignalR.subscription('connected', async ()=>{
             await registerHub();
-            CallService.init();
-           
-            const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, 
-                (data: {room:string, userId:string, userName: string})=>{
-                //show user confirm
-                Modal.confirm({
-                    title: 'Có cuộc gọi đến',
-                    icon: <QuestionOutlined />,
-                    content: `Cuộc gọi từ "${data.userName}"`,
-                    onOk : async ()=> {
-                        dispatch(callActions.receiveCall({
-                            conversationId: data.room
-                        }))
-                        await CallService.acceptCallRequest(data.room);
-                    },
-                    onCancel : async ()=> {
-                        await CallService.ignoreCallRequest(data.room);
-                    },
-                });
-            });
-            callrequestSubscription.subscribe();
+            setIsHubConnected(true);
         });
         
         singalRSubsription.subscribe();
@@ -65,6 +47,35 @@ const AppContextProvider = (props: IContextProviderProp) => {
         chatSubsription.subscribe();
 
     },[dispatch]);
+
+    useEffect(()=>{
+        if(isCallInit || !isHubConnected){
+            return;
+        }
+        console.log('%c ...................CALL INITED.............', 'color: #ff00ff')
+        setCallInit(true);
+        CallService.init();
+       
+        const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, 
+            (data: {room:string, userId:string, userName: string})=>{
+            //show user confirm
+            Modal.confirm({
+                title: 'Có cuộc gọi đến',
+                icon: <QuestionOutlined />,
+                content: `Cuộc gọi từ "${data.userName}"`,
+                onOk : async ()=> {
+                    dispatch(callActions.receiveCall({
+                        conversationId: data.room
+                    }))
+                    await CallService.acceptCallRequest(data.room);
+                },
+                onCancel : async ()=> {
+                    await CallService.ignoreCallRequest(data.room);
+                },
+            });
+        });
+        callrequestSubscription.subscribe();
+    },[isCallInit,isHubConnected])
 
    const logIn = useCallback(
         (user: User) => {

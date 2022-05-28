@@ -36,8 +36,9 @@ class SignalRService {
     }
 
     this.hubConnection = builder.withAutomaticReconnect().build();
-    this.hubConnection.onreconnected(()=>{
-      console.log('hubConnection.onreconnected')
+    this.hubConnection.onreconnected((connectionId)=>{
+      console.log('hubConnection.onreconnected', connectionId);
+      this.onConnected();
     });
     return this.hubConnection.start()
       .then(async () => {
@@ -45,6 +46,7 @@ class SignalRService {
           this.onConnected();
           console.log('SignalR: Connected to the server: ' + url);
           this.define("data", ( message: {eventKey: string, eventData:any })=>{
+            console.log("SIGNALR receive [data]", message)
             this.pubSub.publish(message.eventKey, message.eventData);
           });
         }

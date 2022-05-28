@@ -15,6 +15,7 @@ export class CallReciver extends CallBase {
 
     public async acceptCall(room: string){
         console.log("accept call...")
+        this.room = room;
         await this.initConnection();
 
         await this.signaling.invoke(
@@ -36,13 +37,17 @@ export class CallReciver extends CallBase {
 
     private sendAnswer = async () => {
         console.log('Sending answer to peer.');
-        //this.addTransceivers();
+        this.addTransceivers();
 
         const sdp = await this.peerConnection!.createAnswer();
         this.peerConnection!.setLocalDescription(sdp);
         await this.signaling.invoke(
             CallSignalingActions.SEND_SESSION_DESCRIPTION,
-            sdp);
+            {
+                room: this.room,
+                sdp
+            }
+        );
     }
 
 }

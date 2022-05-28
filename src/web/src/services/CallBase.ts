@@ -43,6 +43,8 @@ export interface CallMessage {
 }
 
 export abstract class CallBase{
+    protected room: string  ='';
+    public getRoom = () => this.room;
     protected iceServers: RTCIceServer[] = [
         { urls: 'stun:stun.1.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' }
@@ -84,18 +86,21 @@ export abstract class CallBase{
             return;
         }
 
-        if( this.peerConnection && this.localStream){
-            const videoTracks = this.localStream!.getVideoTracks();
-            if(videoTracks.length>0){
-                this.peerConnection.addTrack(videoTracks[0], this.localStream);
-            }
-
-            const audioTracks = this.localStream!.getAudioTracks();
-            if(audioTracks.length>0){
-                this.peerConnection.addTrack(audioTracks[0], this.localStream);
-            }
-
+        if(!this.peerConnection ||  !this.localStream){
+            console.log('Failed to create PeerConnection and LocalStream.');
+            return;
         }
+
+        const videoTracks = this.localStream!.getVideoTracks();
+        if(videoTracks.length>0){
+            this.peerConnection.addTrack(videoTracks[0], this.localStream);
+        }
+
+        const audioTracks = this.localStream!.getAudioTracks();
+        if(audioTracks.length>0){
+            this.peerConnection.addTrack(audioTracks[0], this.localStream);
+        }
+
     }
 
     protected createPeerConnection = (): void => {
@@ -134,23 +139,31 @@ export abstract class CallBase{
         this.peerConnection.onicecandidateerror = (event: Event) =>{
             console.log('peerConnection.onicecandidateerror', event)
         }
-        if (useWebrtcUtils) {
-            this.peerConnection.oniceconnectionstatechange = () => {
-                console.log('peerConnection.oniceconnectionstatechange', this.peerConnection?.iceConnectionState)
-                if (this.peerConnection?.iceConnectionState === 'connected') {
+        this.peerConnection.oniceconnectionstatechange = () => {
+            console.log('peerConnection.oniceconnectionstatechange', this.peerConnection?.iceConnectionState)
+            if (this.peerConnection?.iceConnectionState === 'connected') {
+                if (useWebrtcUtils) {
                     WebrtcUtils.logStats(this.peerConnection, 'all');
-                } else if (this.peerConnection?.iceConnectionState === 'failed') {
+                }
+               
+            } else if (this.peerConnection?.iceConnectionState === 'failed') {
+                if (useWebrtcUtils) {
                     WebrtcUtils.doIceRestart(this.peerConnection, async (sdp)=>{
                         this.peerConnection!.setLocalDescription(sdp);
                         await this.signaling.invoke(
                             CallSignalingActions.SEND_SESSION_DESCRIPTION,
-                            sdp);
+                            {
+                                room: this.room,
+                                sdp
+                            }
+                        );
                     });
-                } else if (this.peerConnection?.iceConnectionState === 'disconnected') {
-                    this.onEvent(CallEvents.CONNECTION_DISCONECTED)
                 }
+            } else if (this.peerConnection?.iceConnectionState === 'disconnected') {
+                this.onEvent(CallEvents.CONNECTION_DISCONECTED)
             }
         }
+       
 
     }
 
@@ -167,15 +180,22 @@ export abstract class CallBase{
     protected sendIceCandidate(event: RTCPeerConnectionIceEvent): void {
         console.log('Sending ice candidate to remote peer.');
         this.signaling.invoke(CallSignalingActions.SEND_ICE_CANDIDATE,{
-            type: 'candidate',
-            label: event?.candidate?.sdpMLineIndex,
-            id: event?.candidate?.sdpMid,
-            candidate: event?.candidate?.candidate
+            room: this.room, 
+            iceCandidate: {
+                type: 'candidate',
+                label: event?.candidate?.sdpMLineIndex,
+                id: event?.candidate?.sdpMid,
+                candidate: event?.candidate?.candidate
+            }
         });
     }
 
-    public addIceCandidate(data: any): void {
-        console.log('Adding ice candidate.');
+    public addIceCandidate(data: {candidate:string, label: number}): void {
+        console.log('Adding ice candidate.', data);
+        if(!data.candidate) {
+            console.log('data.candidate is null');
+            return;
+        }
         const candidate = new RTCIceCandidate({
             sdpMLineIndex: data.label,
             candidate: data.candidate
@@ -196,6 +216,7 @@ export abstract class CallBase{
 
     public hangup() {
         console.log('hangup');
+
         //clear something
         if (this.peerConnection) {
             this.peerConnection.close();

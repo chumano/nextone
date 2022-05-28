@@ -96,10 +96,10 @@ const CallSession: React.FC = () => {
     return <>
         <div className="call-session">
             <div className='call-session__video-container'>
-                {!localStream && <img src={bgImageUrl}/>}
-                <Video stream={localStream}/>
+                {!remoteStream && <img src={bgImageUrl}/>}
+                <Video stream={remoteStream}/>
             </div>
-            {!localStream&&
+            {!remoteStream&&
                 <div className='call-session__voice-container'>
                     <div className='user-view'>
                         <VoiceView />
@@ -153,7 +153,7 @@ const CallSession: React.FC = () => {
                 </div>
 
                 <div className='local-video-container'>
-                    <Video stream={remoteStream}/>
+                    <Video stream={localStream}/>
                 </div>
             </div>
         </div>

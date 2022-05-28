@@ -10,7 +10,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({user}) => {
     const status = user?.status == Status.Online ? 'success' : 
         (user?.status == Status.Offline? 'error' : 'warning')
     return (
-        <Badge status={status} offset={[-5, 5]}>
+        <Badge dot status={status} offset={[-5, 5]}>
             <Avatar>
                 <UserOutlined style={{ color: 'black', fontSize: '20px' }} />
             </Avatar>

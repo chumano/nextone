@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fileApi } from '../../../apis/fileApi';
 import { callActions, IAppStore } from '../../../store';
 import { sendMessage } from '../../../store/chat/chatReducer';
+import FileUploadPreviews from './FileUploadPreviews';
 
 const ChatInput = () => {
     const dispatch = useDispatch();
@@ -24,7 +25,7 @@ const ChatInput = () => {
         setMessageText('');
     }, [selectedConversationId, messageText, setMessageText])
 
- 
+
 
     const onUploadFiles = useCallback((type: string) => {
         if (!fileInputRef.current) return;
@@ -66,7 +67,10 @@ const ChatInput = () => {
             }
         }
         console.log('onFileInputChanged', files)
-        var uploadResponse = await fileApi.uploadFiles(files, 'message');
+        var uploadResponse = await fileApi.uploadFiles(Array.from(files), (progressEvent) => {
+            console.log('upload_file', progressEvent.loaded, progressEvent)
+        }, 'message');
+
         if (!uploadResponse.isSuccess) {
             Modal.error({
                 title: 'Có lỗi khi tải file',
@@ -85,34 +89,38 @@ const ChatInput = () => {
         }))
     }, [])
     return (
-        <div className='chat-input'>
-            <div>
-                <input type="file" multiple ref={fileInputRef} className="display-none"
-                    onChange={onFileInputChanged} />
-                <FontAwesomeIcon icon={faPaperclip} className="input-button clickable"
-                    onClick={() => onUploadFiles('file')} />
-                <FontAwesomeIcon icon={faImages} className="input-button clickable"
-                    onClick={() => onUploadFiles('image')} />
-                <FontAwesomeIcon icon={faPhotoVideo} className="input-button clickable"
-                    onClick={() => onUploadFiles('video')} />
+        <div>
+            {/* <FileUploadPreviews /> */}
+            <div className='chat-input'>
+                <div>
+                    <input type="file" multiple ref={fileInputRef} className="display-none"
+                        onChange={onFileInputChanged} />
+                    <FontAwesomeIcon icon={faPaperclip} className="input-button clickable"
+                        onClick={() => onUploadFiles('file')} />
+                    <FontAwesomeIcon icon={faImages} className="input-button clickable"
+                        onClick={() => onUploadFiles('image')} />
+                    <FontAwesomeIcon icon={faPhotoVideo} className="input-button clickable"
+                        onClick={() => onUploadFiles('video')} />
+                </div>
+                <div className='text-input'>
+                    <Input value={messageText}
+                        onKeyUp={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                onSendMessage();
+                            }
+                        }}
+                        onChange={(e) => {
+                            setMessageText(e.target.value)
+                        }}
+                    />
+                </div>
+                <Button type="primary" onClick={() => {
+                    onSendMessage();
+                }} >Gửi</Button>
             </div>
-            <div className='text-input'>
-                <Input value={messageText}
-                    onKeyUp={(e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            onSendMessage();
-                        }
-                    }}
-                    onChange={(e) => {
-                        setMessageText(e.target.value)
-                    }}
-                />
-            </div>
-            <Button type="primary" onClick={() => {
-                onSendMessage();
-            }} >Gửi</Button>
         </div>
+
     )
 }
 

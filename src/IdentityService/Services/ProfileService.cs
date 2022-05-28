@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Extensions;
+﻿using IdentityModel;
+using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityService.Models;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static IdentityServer4.IdentityServerConstants;
 
@@ -92,9 +94,10 @@ namespace IdentityService.Services
 
                 }
 
+                context.IssuedClaims.Add(new Claim(JwtClaimTypes.Name, user.UserName));
                 string system = user.ApplicationSystem;
                 if (string.IsNullOrEmpty(system)) system = "NextOne";
-                context.IssuedClaims.Add(new System.Security.Claims.Claim("ApplicationSystem", system));
+                context.IssuedClaims.Add(new Claim("ApplicationSystem", system));
             }
         }
 
