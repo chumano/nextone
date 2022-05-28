@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { FC, useContext, useEffect, useState } from "react";
 
 import { ActivateUserRequest, User } from "../../models/user/User.model";
-import { useUserApi } from "../../apis/useUserApi";
+import { userApi } from "../../apis/userApi";
 
 import DeleteUserModal from "./DeleteUserModal";
 import ResetPasswordUserModal from "./ResetPasswordUserModal";
@@ -41,7 +41,6 @@ interface IProps {
 }
 
 const UserList: FC<IProps> = ({ textSearch }) => {
-	const userApi = useUserApi();
 	const { state, dispatch } = useContext(UserCtx) as UserContext;
 
 	const [countUser, setCountUser] = useState(0);

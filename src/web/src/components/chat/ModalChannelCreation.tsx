@@ -8,8 +8,8 @@ import { ConversationType } from '../../models/conversation/ConversationType.mod
 import { CreateChannelDTO } from '../../models/dtos';
 import { UserStatus } from '../../models/user/UserStatus.model';
 import UserAvatar from './UserAvatar';
-import { createChannel } from '../../store/chat/chatReducer';
 import { EventType } from '../../models/event/EventType.model';
+import { createChannel } from '../../store/chat/chatThunks';
 
 const hasErrors = (fieldsError: Record<string, string[] | undefined>) => {
 	return Object.keys(fieldsError).some((field) => fieldsError[field]);
@@ -98,7 +98,7 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 				</Button>,
 			]}
         >
-            <Form onFinish={onFormFinish} form={form}>
+            <Form onFinish={onFormFinish} form={form}  layout='vertical'>
                 <Form.Item name="name" label="Tên kênh"
 					required tooltip=""
                     rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
@@ -110,7 +110,7 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
 					required tooltip=""
                     rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
-                    <Select  >
+                    <Select  style={{ width: '100%' }} >
                         {eventTypes.map(o=> <Select.Option key={o.code} value={o.code}>{o.name}</Select.Option>)}
                     </Select>
 				</Form.Item>

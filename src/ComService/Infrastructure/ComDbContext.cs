@@ -255,7 +255,7 @@ namespace ComService.Infrastructure
                     .IsRequired();
 
                 eb.Property(o => o.UserSenderId)
-                .HasColumnType("varchar(36)");
+                    .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.IsActive)
                    .HasColumnType("bit")
@@ -266,6 +266,10 @@ namespace ComService.Infrastructure
                     .HasColumnType("bit")
                     .HasDefaultValue(false)
                     .IsRequired();
+
+                eb.HasOne(o => o.EventType)
+                    .WithMany()
+                    .HasForeignKey(o => o.EventTypeCode);
             });
 
 

@@ -1,12 +1,17 @@
 import { Button, Checkbox, Input, List, Modal, Skeleton } from 'antd';
 import Form from 'antd/lib/form';
-import React, { useCallback, useEffect, useState } from 'react'
+import { debounce } from 'lodash';
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
+import { userApi } from '../../apis/userApi';
+import { ApiResult } from '../../models/apis/ApiResult.model';
+import { User } from '../../models/user/User.model';
 import { UserStatus } from '../../models/user/UserStatus.model';
 import { chatActions } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
+import { handleAxiosApi } from '../../utils/functions';
 import UserAvatar from './UserAvatar';
 
 
@@ -21,22 +26,28 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
     const [isLoading, setIsLoading] = useState(false);
 
     const [usersLoading, setUsersLoading] = useState(true);
-    const [useList, setUserList] = useState<UserStatus[]>([]);
+    const [useList, setUserList] = useState<User[]>([]);
     const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
 
     const [form] = Form.useForm();
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
-            setUserList(usersReponse.data);
-            setUsersLoading(false);
+    const fetchUsers = useCallback(async (textSearch :string) => {
+        console.log('findUsers' , textSearch);
+        const userResponse = await handleAxiosApi<ApiResult<User[]>>(userApi.list(textSearch, { offset: 0, pageSize: 5 },  true));
+        //const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
+        if(userResponse.isSuccess){
+            setUserList(userResponse.data);
+        }else{
+            setUserList([])
         }
+        
+        setUsersLoading(false);
+    },[userApi, setUserList]);
 
-
+    useEffect(() => {
         setUsersLoading(true);
-        fetchUsers();
-    }, [])
+        fetchUsers('');
+    }, [fetchUsers])
 
     const handleCancel = () => {
         onVisible(false);
@@ -70,6 +81,14 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
     }, [dispatch, conversation, selectedUserIds]);
 
 
+    const fetchGood = useMemo(() => {
+        return debounce(fetchUsers, 500);
+    }, [fetchUsers])
+
+    const onTextSearchChange = useCallback((value: string)=>{
+        fetchGood(value);
+    },[]);
+    
     return (
         <Modal
             title={'Thêm thành viên'}
@@ -84,7 +103,8 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
                     onClick={handleOk}
                     disabled={
                         !form.isFieldsTouched(true) ||
-                        !!form.getFieldsError().filter(({ errors }) => errors.length).length
+                        !!form.getFieldsError().filter(({ errors }) => errors.length).length ||
+                        selectedUserIds.length ==0
                     }
                     loading={isLoading}
                 >
@@ -92,11 +112,12 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
                 </Button>,
             ]}
         >
-            <Form onFinish={onFormFinish} form={form}>
+            <Form onFinish={onFormFinish} form={form} layout='vertical'>
                 <h6>Chọn thành viên</h6>
                 <Input.Search
                     placeholder="Tìm kiếm"
-                    onSearch={value => console.log(value)}
+                    onChange={(event)=> onTextSearchChange(event.target.value)}
+                    onSearch={value => onTextSearchChange(value)}
 
                 />
                 <List
@@ -105,15 +126,25 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
                     itemLayout="horizontal"
                     dataSource={useList}
                     renderItem={(item, index) => (
-                        <List.Item key={item.userId}
+                        <List.Item key={item.id} className="clickable"
+                            onClick={()=>{
+                                console.log("user click" , item)
+                                setSelectedUserIds((userids) => {
+                                    const checked = userids.find(id=> id == item.id);
+                                    if (!checked) {
+                                        return [...userids, item.id]
+                                    }
+                                    return userids.filter(id => id != item.id)
+                                })
+                            }}
                             actions={[
-                                <Checkbox checked={selectedUserIds.indexOf(item.userId) !== -1} onChange={(e) => {
+                                <Checkbox checked={selectedUserIds.indexOf(item.id) !== -1} onChange={(e) => {
                                     const checked = e.target.checked;
                                     setSelectedUserIds((userids) => {
                                         if (checked) {
-                                            return [...userids, item.userId]
+                                            return [...userids, item.id]
                                         }
-                                        return userids.filter(id => id != item.userId)
+                                        return userids.filter(id => id != item.id)
                                     })
                                 }} />
                             ]}
@@ -121,9 +152,9 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
                             <Skeleton avatar title={false} loading={false} active>
                                 <List.Item.Meta
                                     avatar={
-                                        <UserAvatar user={item} />
+                                        <UserAvatar  />
                                     }
-                                    title={item.userName}
+                                    title={item.name}
                                 />
                             </Skeleton>
                         </List.Item>

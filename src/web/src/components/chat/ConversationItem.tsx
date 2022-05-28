@@ -1,6 +1,7 @@
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Channel } from '../../models/channel/Channel.model'
 import { Conversation } from '../../models/conversation/Conversation.model'
 import { ConversationType } from '../../models/conversation/ConversationType.model'
 import { UserStatus } from '../../models/user/UserStatus.model'
@@ -50,6 +51,11 @@ const ConversationItem: React.FC<ConversationItemProps> =
 
                 <div className='conversation-name'>
                     {name}
+                    {conversation.type === ConversationType.Channel && 
+                    <div style={{fontSize:10}}>
+                        {(conversation as Channel).allowedEventTypes[0].name}
+                    </div>
+                    }
                 </div>
                 <div className='flex-spacer'></div>
 

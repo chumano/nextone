@@ -5,10 +5,10 @@ import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
 import { Channel } from '../../models/channel/Channel.model';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
-import { deleteConversation } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
 import ChannelEvents from '../channel/ChannelEvents';
 import ConversationMembers from './ConversationMembers';
+import { deleteConversation } from '../../store/chat/chatThunks';
 const { TabPane } = Tabs;
 
 interface ConversationInfoProps {

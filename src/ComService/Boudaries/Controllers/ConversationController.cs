@@ -198,6 +198,7 @@ namespace ComService.Boudaries.Controllers
                 {
                     FileId = o.FileId,
                     FileType = o.FileType,
+                    FileName = o.FileName,
                     FileUrl = o.FileUrl
                 }).ToList();
             }

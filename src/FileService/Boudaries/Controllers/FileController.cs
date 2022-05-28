@@ -54,14 +54,14 @@ namespace FileService.Boudaries.Controllers
 
                 _fileDbContext.Files.Add(file);
 
-                //local
+                var fileType = GetFileType(formFile.ContentType);
                 result.Add(new UploadFileResponse()
                 {
                     FileId = file.Id,
                     FileName = formFile.FileName,
                     FileContent = formFile.ContentType,
-                    FileType = GetFileType(formFile.ContentType),
-                    FileUrl = GetFileUrl(filePathOrUrl)
+                    FileType = fileType,
+                    FileUrl = GetFileUrl(filePathOrUrl, fileType)
                 });
             }
             await _fileDbContext.SaveChangesAsync();
@@ -90,33 +90,45 @@ namespace FileService.Boudaries.Controllers
             return $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
         }
 
-        private string GetFileUrl(string relativeFilePath)
+        private string GetFileUrl(string relativeFilePath, FileTypeEnum fileType)
         {
             var baseUrl = GetBaseUrl();
             var base64Path = relativeFilePath.UrlEncodeBase64String();
+            if(fileType == FileTypeEnum.Image)
+            {
+                return baseUrl + "/image/" + base64Path;
+            }
             return baseUrl + "/file/" + base64Path;
         }
 
 
         [HttpGet]
         [Route("/file/{key}")]
-        public async Task<IActionResult> GetFile([FromRoute] string key)
+        public async Task<IActionResult> GetFile([FromRoute] string key, [FromQuery] string download= "")
         {
             var relativePath = key.UrlDecodeBase64String();
             var ext = Path.GetExtension(relativePath);
             var objectStream = await _fileStorage.GetStreamAsync(relativePath);
-            return base.File(objectStream, "application/octet-stream", $"{key}{ext}");
+            if (string.IsNullOrEmpty(download))
+            {
+                return base.File(objectStream, "application/octet-stream", $"{key}{ext}");
+            }
+            return base.File(objectStream, "image/jpeg", download);
         }
 
 
         [HttpGet]
         [Route("/image/{key}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetImage([FromRoute] string key)
+        public async Task<IActionResult> GetImage([FromRoute] string key, [FromQuery] string download = "")
         {
             var relativePath = key.UrlDecodeBase64String();
             var objectStream = await _fileStorage.GetStreamAsync(relativePath);
-            return base.File(objectStream, "image/jpeg");
+            if (string.IsNullOrEmpty(download))
+            {
+                return base.File(objectStream, "image/jpeg");
+            }
+            return base.File(objectStream, "image/jpeg", download);
         }
     }
 }

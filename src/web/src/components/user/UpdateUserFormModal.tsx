@@ -2,7 +2,7 @@ import { faEnvelope, faPhone, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button, Form, Input, message, Modal } from "antd";
 import { FC, FormEvent, useContext, useEffect, useState } from "react";
-import { useUserApi } from "../../apis/useUserApi";
+import { userApi } from "../../apis/userApi";
 import {
 	UserActionType,
 	UserContext,
@@ -28,7 +28,6 @@ const UpdateUserFormModal: FC<IProps> = ({
 	isModalVisible,
 	setIsModalVisible,
 }) => {
-	const userApi = useUserApi();
 	const { state, dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 	const [form] = Form.useForm();

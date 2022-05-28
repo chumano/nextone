@@ -1,6 +1,6 @@
 import { Alert, message, Modal } from "antd";
 import { FC, useContext, useState } from "react";
-import { useUserApi } from "../../apis/useUserApi";
+import { userApi } from "../../apis/userApi";
 import {
 	UserActionType,
 	UserContext,
@@ -16,7 +16,6 @@ const ResetPasswordUserModal: FC<IProps> = ({
 	isModalVisible,
 	setIsModalVisible,
 }) => {
-	const userApi = useUserApi();
 	const { state, dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 	const [newPassword, setNewPassword] = useState("");

@@ -20,6 +20,7 @@ namespace MasterService.Controllers
     public class UserController : ControllerBase
     {
         private readonly ILogger<UserController> _logger;
+        private readonly IUserRepository _userRepository;
         private readonly IUserService _userService;
         private readonly IIdentityService _identityService;
         private readonly IUserActivityRepository _activityRepository;
@@ -28,6 +29,7 @@ namespace MasterService.Controllers
         private readonly IValidator<CreateUserDTO> _createUserValidator;
         private readonly IValidator<UpdateUserDTO> _updateUserValidator;
         public UserController(ILogger<UserController> logger,
+            IUserRepository userRepository,
             IUserService userService,
             IIdentityService identityService,
             IUserActivityRepository activityRepository,
@@ -36,6 +38,7 @@ namespace MasterService.Controllers
             IValidator<UpdateUserDTO> updateUserValidator)
         {
             _logger = logger;
+            _userRepository = userRepository;
             _userService = userService;
             _identityService = identityService;
             _activityRepository = activityRepository;
@@ -56,7 +59,24 @@ namespace MasterService.Controllers
         public async Task<IActionResult> GetList([FromQuery] GetUserListDTO getUserListDTO)
         {
             var actionUser =_userContext.User;
-            var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize), getUserListDTO.TextSearch);
+            var pageOptions = new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize);
+            var query = _userRepository.Users.AsNoTracking();
+            if (getUserListDTO.ExcludeMe)
+            {
+                query = query.Where(o => o.Id != actionUser.UserId);
+            }
+            if (!string.IsNullOrWhiteSpace(getUserListDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getUserListDTO.TextSearch));
+            }
+
+            query = query.OrderBy(o => o.Name)
+                  .Skip(pageOptions.Offset)
+                  .Take(pageOptions.PageSize);
+            var items = await query.ToListAsync();
+            
+            //var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize), getUserListDTO.TextSearch);
+            
             return Ok(ApiResult.Success(items));
         }
 

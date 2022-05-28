@@ -1,10 +1,10 @@
 import axios, { AxiosRequestConfig } from "axios";
+import API from "../config/apis";
 import { MapInfo } from "../models/map/Map.modal";
 import { AuthenticationService } from "../services";
 
-const mapUrl = 'http://localhost:5105';
 const axiosInstance = axios.create({
-    baseURL :mapUrl
+    baseURL : API.MAP_SERVICE
 });
 
 const axiosRequestConfig = async (config: AxiosRequestConfig<any>) => {

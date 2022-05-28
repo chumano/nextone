@@ -1,16 +1,20 @@
-import { faImages, faPaperclip, faPhotoVideo } from '@fortawesome/free-solid-svg-icons';
+import { faImages, faPaperclip, faPhotoVideo, faFilm } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Input, Modal } from 'antd';
 import React, { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { fileApi } from '../../../apis/fileApi';
+import { MessageType } from '../../../models/message/MessageType.model';
+import { UserStatus } from '../../../models/user/UserStatus.model';
 import { callActions, IAppStore } from '../../../store';
-import { sendMessage } from '../../../store/chat/chatReducer';
-import FileUploadPreviews from './FileUploadPreviews';
+import { sendMessage } from '../../../store/chat/chatThunks';
+import { getMessageType, nowDate } from '../../../utils/functions';
+import { MessageUpload } from '../message/MessageItemUpload';
+import { chatActions } from '../../../store/chat/chatReducer';
 
 const ChatInput = () => {
     const dispatch = useDispatch();
-    const { selectedConversationId } = useSelector((store: IAppStore) => store.chat);
+    const { selectedConversationId, userId } = useSelector((store: IAppStore) => store.chat);
     const [messageText, setMessageText] = useState<string>();
     const fileInputRef = useRef<HTMLInputElement>(null);
     const onSendMessage = useCallback(() => {
@@ -46,6 +50,38 @@ const ChatInput = () => {
 
     }, [fileInputRef]);
 
+    const handleUploadFiles= useCallback( async (files: File[])=>{
+        fileInputRef.current!.value = '';
+        const send = (i: number)=>{
+            const file = files[i];
+            const messageType = getMessageType(file.type);
+            //create uploadMessage
+            const fakeid = 'fake-' + i + (new Date()).toString();
+            const message : MessageUpload = {
+                conversationId : selectedConversationId!,
+                type: messageType,
+                uploadFile : file,
+                state : 'upload',
+                id: fakeid,
+                content: '',
+                sentDate: nowDate(),
+                userSender:  {
+                    userId: userId!
+                } as UserStatus,
+                files : []
+            }
+
+            //add temp message
+            dispatch(chatActions.addTempMessage(message));
+        }
+        for(let i =0 ;i < files.length; i++){
+            setTimeout(()=>{
+                send(i)
+            }, i*500);
+        }
+
+    },[fileInputRef,userId,selectedConversationId, fileApi])
+
     const onFileInputChanged = useCallback(async (e) => {
         const input = e.target as HTMLInputElement;
         const files = input.files!;
@@ -67,39 +103,21 @@ const ChatInput = () => {
             }
         }
         console.log('onFileInputChanged', files)
-        var uploadResponse = await fileApi.uploadFiles(Array.from(files), (progressEvent) => {
-            console.log('upload_file', progressEvent.loaded, progressEvent)
-        }, 'message');
+        handleUploadFiles(Array.from(files))
 
-        if (!uploadResponse.isSuccess) {
-            Modal.error({
-                title: 'Có lỗi khi tải file',
-                content: uploadResponse.errorMessage
-            });
-            return;
-        }
+    }, [handleUploadFiles])
 
-        fileInputRef.current!.value = '';
-        var uploadedFiles = uploadResponse.data;
-        debugger;
-        dispatch(sendMessage({
-            conversationId: selectedConversationId!,
-            content: '',
-            files: uploadedFiles
-        }))
-    }, [])
     return (
         <div>
-            {/* <FileUploadPreviews /> */}
             <div className='chat-input'>
                 <div>
                     <input type="file" multiple ref={fileInputRef} className="display-none"
                         onChange={onFileInputChanged} />
-                    <FontAwesomeIcon icon={faPaperclip} className="input-button clickable"
+                    <FontAwesomeIcon icon={faPaperclip} className="input-button clickable" title='Tệp tin'
                         onClick={() => onUploadFiles('file')} />
-                    <FontAwesomeIcon icon={faImages} className="input-button clickable"
+                    <FontAwesomeIcon icon={faImages} className="input-button clickable" title='Hình ảnh'
                         onClick={() => onUploadFiles('image')} />
-                    <FontAwesomeIcon icon={faPhotoVideo} className="input-button clickable"
+                    <FontAwesomeIcon icon={faFilm} className="input-button clickable"title='Video'
                         onClick={() => onUploadFiles('video')} />
                 </div>
                 <div className='text-input'>

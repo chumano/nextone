@@ -1,10 +1,10 @@
+import API from "../config/apis";
 import { ApiResult } from "../models/apis/ApiResult.model";
 import { BaseFile } from "../models/file/File.model";
 import { createAxios } from "../utils/axios";
 import { handleAxiosApi } from "../utils/functions";
 
-const FILE_URL ='http://localhost:5106';
-const comAxiosInstance = createAxios(FILE_URL);
+const comAxiosInstance = createAxios(API.FILE_SERVICE);
 export const fileApi = {
     uploadFiles : async (files: File[], onUploadProgress: (progress:any)=>void, feature?:string)=>{
         var formData = new FormData();

@@ -4489,7 +4489,7 @@
   "resolved" "https://registry.npmjs.org/date-fns/-/date-fns-2.28.0.tgz"
   "version" "2.28.0"
 
-"dayjs@1.x":
+"dayjs@^1.11.2", "dayjs@1.x":
   "integrity" "sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw=="
   "resolved" "https://registry.npmjs.org/dayjs/-/dayjs-1.11.2.tgz"
   "version" "1.11.2"

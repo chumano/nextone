@@ -27,7 +27,10 @@ namespace ComService.Domain.Repositories
         public IQueryable<Message> Messages =>
              _dbContext.Messages.AsQueryable()
                 .Include(o=>o.UserSender)
-                .Include(o=>o.Files);
+                .Include(o=>o.Files)
+                //event
+                .Include(o=>o.Event)
+                    .ThenInclude(o=>o.EventType);
 
         public void Add(Message message)
         {

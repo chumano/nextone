@@ -14,5 +14,7 @@ export interface Message {
   content: string;
   files: MessageFile[];
 
-  event?: EventInfo
+  event?: EventInfo,
+
+  state?: 'upload' | 'error'; 
 }

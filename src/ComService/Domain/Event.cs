@@ -10,8 +10,8 @@ namespace ComService.Domain
     {
         private Event() { }
         public Event(string id, 
-            string content, 
-            string eventCode,
+            string content,
+            EventType eventType,
             string userSenderId,
             DateTime dateTime,
             string address,
@@ -20,7 +20,8 @@ namespace ComService.Domain
         {
             Id = id;
             Content = content;
-            EventTypeCode = eventCode;
+            EventTypeCode = eventType.Code;
+            EventType = eventType;
             UserSenderId = userSenderId;
             OccurDate = dateTime;
             Address = address;
@@ -46,7 +47,7 @@ namespace ComService.Domain
 
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
-
+        public EventType EventType { get; private set; }
         public List<EventFile> Files { get; set; }
     }
 

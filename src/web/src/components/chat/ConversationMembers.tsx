@@ -1,6 +1,6 @@
 
-import { Button,  List, Modal, Skeleton } from 'antd';
-import { DeleteOutlined , PlusOutlined} from '@ant-design/icons';
+import { Button, List, Modal, Skeleton } from 'antd';
+import { DeleteOutlined, PlusOutlined, UserSwitchOutlined, MessageOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { comApi } from '../../apis/comApi';
 import { ConversationMember, MemberRole } from '../../models/conversation/ConversationMember.model';
@@ -8,6 +8,9 @@ import { IAppStore } from '../../store';
 import { chatActions } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
 import UserAvatar from './UserAvatar';
+import { CreateConverationDTO } from '../../models/dtos';
+import { ConversationType } from '../../models/conversation/ConversationType.model';
+import { getOrCreateConversation } from '../../store/chat/chatThunks';
 
 interface ConversationMembersProp {
     conversation: ConversationState,
@@ -18,9 +21,22 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
     const user = useSelector((store: IAppStore) => store.auth.user);
     const userId = user!.profile.sub;
     const dispatch = useDispatch();
+
+    const onMemberChat = (item: ConversationMember) => {
+        return () => {
+            const conversation : CreateConverationDTO={
+                name: '',
+                type: ConversationType.Peer2Peer,
+                memberIds: [item.userMember.userId]
+            } 
+            dispatch(getOrCreateConversation(conversation))
+        }
+    }
+
     const onMemberRole = (item: ConversationMember) => {
         return () => {
-            dispatch(chatActions.showModal({ modal: 'member_role', visible: true, 
+            dispatch(chatActions.showModal({
+                modal: 'member_role', visible: true,
                 data: {
                     conversation,
                     member: item
@@ -33,19 +49,19 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
         return () => {
             Modal.confirm({
                 title: 'Bạn có muốn xóa thành viên không?',
-                onOk: async() => {
+                onOk: async () => {
                     const response = await comApi.removeMember({
                         conversationId: conversation.id,
                         userMemberId: item.userMember.userId
                     });
 
-                    if(!response.isSuccess){
+                    if (!response.isSuccess) {
                         return;
                     }
 
                     dispatch(chatActions.deleteMember({
-                        conversationId : conversation.id,
-                        member : item
+                        conversationId: conversation.id,
+                        member: item
                     }));
                 },
                 onCancel() {
@@ -83,20 +99,27 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                     renderItem={(item, index) => (
                         <List.Item
                             actions={[
-                                <>
-                                    {item.userMember.userId !== userId &&
-                                        <Button  className='button-icon'  onClick={onMemberRole(item)}>
-                                            Cấp quyền
-                                        </Button>
-                                    }
-                                </>,
-                                <>
-                                    {item.userMember.userId !== userId &&
-                                        <Button danger className='button-icon' onClick={onDeleteMember(item)}>
-                                            <DeleteOutlined />
-                                        </Button>
-                                    }
-                                </>
+                            <>
+                                {item.userMember.userId !== userId &&
+                                    <Button className='button-icon' onClick={onMemberChat(item)} title="Nhắn tin">
+                                         <MessageOutlined />
+                                    </Button>
+                                }
+                            </>,
+                            <>
+                                {item.userMember.userId !== userId &&
+                                    <Button className='button-icon' onClick={onMemberRole(item)} title="Cấp quyền">
+                                        <UserSwitchOutlined />
+                                    </Button>
+                                }
+                            </>,
+                            <>
+                                {item.userMember.userId !== userId &&
+                                    <Button danger className='button-icon' onClick={onDeleteMember(item)} title="Xóa thành viên">
+                                        <DeleteOutlined />
+                                    </Button>
+                                }
+                            </>
                             ]}
                         >
                             <Skeleton avatar title={true} loading={false} active>

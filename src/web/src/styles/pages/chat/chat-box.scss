@@ -60,12 +60,18 @@
                 background-color: $color-primary;
                 color: white;
             }
+
+            .button-download{
+                background-color: $color-white !important;
+                color: $color-primary;
+            }
         }
 
         .message-content {
             float: left;
             max-width: 50%;
-            padding: 5px;
+            padding: 10px;
+            border-radius: 10px;
             box-shadow: 1px 1px 1px 1px $color-grey-2;
             word-break: break-all;
         }
@@ -80,7 +86,29 @@
             text-align: center;
             padding: 10px;
             box-shadow: 1px 1px 1px 1px $color-grey-2;
+            &__files{
+                margin-top: 10px;
+            }
+            &__files-image{
+                display: flex;
+                flex-direction: row;
+                flex-wrap: wrap;
+                .message-event__files-item{
+                    width: 200px;
+                }
+            }
+
+            &__files-other{
+                .message-event__files-item{
+                    display: flex;
+                    margin-top: 10px;
+                    &-name{
+                        padding: 10px;
+                    }
+                }
+            }
         }
+
     }
 }
 
@@ -102,13 +130,14 @@
 }
 
 .file-view {
-    width: 80px;
-    height: 80px;
-    border: 1px solid $color-grey-5;
+    &__preview{
+        position: relative;
+    }
 
     &__image-container {
-        width: 100%;
-        height: 100%;
+        width: 200px;
+        height: 200px;
+        border: 1px solid $color-grey-5;
         display: flex;
         align-items: center;
         img {
@@ -119,10 +148,38 @@
     }
 
     &__other-container {
-        width: 100%;
-        height: 100%;
+        width: 80px;
+        height: 80px;
+        border: 1px solid $color-grey-5;
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+    .button-download{
+        padding: 5px;
+        width: 30px;
+        height: 30px;
+        display: none !important;
+        background-color: $color-primary;
+        color: $color-white;
+    }
+    &:hover{
+        .button-download{
+            display: flex !important;
+        }
+        
+    }
+}
+
+.message-file-upload{
+    display: flex;
+    flex-direction: row;
+
+    &__file-preview{
+        width: 100px;
+        height: 100px;
+    }
+    &__file-info{
+        padding: 50px;
     }
 }

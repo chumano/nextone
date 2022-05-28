@@ -1,4 +1,5 @@
 import axios from "axios";
+import API from "../config/apis";
 import { ApiResult } from "../models/apis/ApiResult.model";
 import { Channel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
@@ -11,7 +12,7 @@ import { UserStatus } from "../models/user/UserStatus.model";
 import { createAxios } from "../utils";
 import { handleAxiosApi } from "../utils/functions";
 
-const comAxiosInstance = createAxios('http://localhost:5104');
+const comAxiosInstance = createAxios(API.COM_SERVICE);
 export const comApi = {
     //conversation
     getOrCreateConversation : async (data: CreateConverationDTO)=>{

@@ -3,7 +3,7 @@ import 'react-chat-elements/dist/main.css';
 import '../../styles/pages/chat/chat-page.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { IAppStore } from '../../store';
-import { chatActions, getChannels, getConversations } from '../../store/chat/chatReducer';
+import { chatActions } from '../../store/chat/chatReducer';
 import ConversationList from '../../components/chat/ConversationList';
 import ChatBox from '../../components/chat/ChatBox';
 import { Button } from 'antd';
@@ -16,6 +16,7 @@ import { ConversationState } from '../../store/chat/ChatState';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
 import ModalMemberRole from '../../components/chat/ModalMemberRole';
 import ModalAddMember from '../../components/chat/ModalAddMember';
+import { getChannels, getConversations } from '../../store/chat/chatThunks';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();

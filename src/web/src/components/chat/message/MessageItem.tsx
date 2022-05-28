@@ -4,8 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Message } from '../../../models/message/Message.model'
 import { MessageType } from '../../../models/message/MessageType.model';
 import { IAppStore } from '../../../store';
+import { frowNow } from '../../../utils/functions';
 import FileView from '../file/FileView';
 import MessageEvent from './MessageEvent';
+import MessageItemUpload, { MessageUpload } from './MessageItemUpload';
+
+
 
 interface MessageItemProps {
     message: Message
@@ -15,6 +19,8 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
     const user = useSelector((store: IAppStore) => store.auth.user);
     const isOwner = user?.profile.sub == message.userSender.userId;
     console.log('MessageItem rendering...', message.id)
+
+    const displayDate = frowNow(message.sentDate);
     return <>
         {message.type == MessageType.Event &&
             <div className="message-item">
@@ -39,14 +45,24 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
                         {message.content}
                     </div>
 
+
+                    {message.state == 'upload' &&
+                        <MessageItemUpload message={message as MessageUpload} />
+                    }
+                    {message.state == 'error' &&
+                       <div>Có lỗi</div>
+                    }
+
                     {message.files && message.files.length > 0 &&
                         <div className='message-files'>
                             {message.files.map(o =>
-                                <FileView key={o.fileId} file={o}/>
+                                <FileView key={o.fileId} file={o} />
                             )}
                         </div>
                     }
-                    <span className='message-time'>{message.sentDate}</span>
+                    <span className='message-time'>
+                        {displayDate}
+                    </span>
                 </div>
 
             </div>

@@ -1,7 +1,7 @@
 import { message, Modal, Select } from "antd";
 import { FC, useContext, useEffect, useState } from "react";
-import { useRoleApi } from "../../apis/useRoleApi";
-import { useUserApi } from "../../apis/useUserApi";
+import { roleApi } from "../../apis/roleApi";
+import { userApi } from "../../apis/userApi";
 import {
 	UserActionType,
 	UserContext,
@@ -20,8 +20,6 @@ const GrantedRoleUserFormModal: FC<IProps> = ({
 	isModalVisible,
 	setIsModalVisible,
 }) => {
-	const roleApi = useRoleApi();
-	const userApi = useUserApi();
 	const { state, dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 	const [roleList, setRoleList] = useState<Role[]>([]);

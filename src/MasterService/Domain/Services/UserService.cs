@@ -60,18 +60,18 @@ namespace MasterService.Domain.Services
 
         public async Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch)
         {
-            var query = _userRepository.Users
-                    .OrderBy(o => o.Name)
-                    .Skip(pageOptions.Offset)
-                    .Take(pageOptions.PageSize);
-                   
+            var query = _userRepository.Users;
 
             if (!string.IsNullOrWhiteSpace(textSearch))
             {
                 query = query.Where(o => o.Name.Contains(textSearch));
             }
 
-            return await query.ToListAsync() ;
+            query = query.OrderBy(o => o.Name)
+                    .Skip(pageOptions.Offset)
+                    .Take(pageOptions.PageSize);
+
+            return await query.ToListAsync();
         }
 
         public async Task<User> CreateUser(string name, string email, string phone)

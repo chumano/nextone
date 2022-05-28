@@ -5,7 +5,7 @@ import { Modal, Form, Input, Button, message } from "antd";
 
 import { FC, FormEvent, useContext, useEffect, useState } from "react";
 
-import { useUserApi } from "../../apis/useUserApi";
+import { userApi } from "../../apis/userApi";
 import {
 	UserActionType,
 	UserContext,
@@ -28,7 +28,6 @@ const CreateUserFormModal: FC<IProps> = ({
 	isModalVisible,
 	setIsModalVisible,
 }) => {
-	const userApi = useUserApi();
 	const { dispatch } = useContext(UserCtx) as UserContext;
 	const [isLoading, setIsLoading] = useState(false);
 	const [form] = Form.useForm();

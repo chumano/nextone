@@ -1,10 +1,11 @@
 import { debounce } from 'lodash'
+import { Image } from 'antd';
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../../../models/message/Message.model'
 import { IAppStore } from '../../../store'
-import { getMessageHistory } from '../../../store/chat/chatReducer'
 import { ConversationState } from '../../../store/chat/ChatState'
+import { getMessageHistory } from '../../../store/chat/chatThunks'
 import Loading from '../../controls/loading/Loading'
 import MessageItem from './MessageItem'
 
@@ -64,12 +65,15 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
 
     return <>
         <div className='message-list' ref={listRef}>
-            {messages.map(o =>
-                <MessageItem key={o.id} message={o} />
-            )}
+            <Image.PreviewGroup>
+                {messages.map(o =>
+                    <MessageItem key={o.id} message={o} />
+                )}
+             </Image.PreviewGroup>
             {loading &&
                 <Loading/>
             }
+            
         </div>
     </>
 }

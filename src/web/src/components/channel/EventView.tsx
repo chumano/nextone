@@ -19,7 +19,7 @@ const EventView :React.FC<EventViewProp> = ({eventItem})=>{
             </div>
             <div className="event-body">
                 <div className="event--type">
-                    {eventItem.eventTypeCode}
+                    {eventItem.eventType.name}
                 </div>
                 <div className="event--content">
                     {eventItem.content}

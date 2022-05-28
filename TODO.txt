@@ -1,0 +1,73 @@
+-------------------------------------------
+Web-TODO:
+- find users in ModalFindUSer : done
+- find member in ModalAddMemebers : done
+- Open Chat from member : done
+
+- Video Call
+	- Select Devices on Start Call, Receive call
+	- Toggle : Video, Voice
+	- Chat on call
+	- Minize Call screen
+	- Time out 10s when dont receive answer
+
+- Channel Map Monitor, 
+	- user tracking
+	- event  recents
+	- ModalEventView 
+	
+- Profile 
+	- View Profile
+	- Change Name, SDT
+	- Change Password
+	- Forget Password ???
+	
+- Home News
+	News List
+	News View
+
+- Admin News
+	News List
+	News Add
+	News Update
+	News Delete
+	News Publish/ Unpublish
+	
+- Settings
+	- Map settings : Bounding, default zoom, default center
+	- Event Types
+	- 
+- UserStatus
+	- notifiy user online
+
+- Chat
+	Manage Conversation	
+		Delete : delete on the user only => Member.deleteDate
+		Seen : Member.seenDate
+
+
+-------------------------------------------
+Mobile-TODO
+- Login Screen
+- Home Screen
+	Profile
+	Change Password
+	
+- Chat Screen
+	Conversation List
+	Message Screen
+	
+- Call Screen
+	
+- Map Screen 
+	- event position
+	- my position
+	- my channel member position
+	
+- Event Screen
+	Event List
+	Send new Event
+	View Event
+	
+- Component
+	Image View

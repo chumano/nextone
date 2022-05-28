@@ -84,13 +84,13 @@ const ModalMemberRole: React.FC<ModalMemberRoleProps> = ({conversation, member, 
                 </Button>,
             ]}
         >
-            <Form onFinish={onFormFinish} form={form}>
+            <Form onFinish={onFormFinish} form={form}  layout='vertical'>
                 <Input disabled value={member.userMember.userName}></Input>
                 
                 <Form.Item name="role" label="Quyền"
                     rules={[{ required: true, message: 'Đây là trường bắt buộc' }]}
 				>
-                    <Select >
+                    <Select  style={{ width: '100%' }}>
                         {roles.map(o=> <Select.Option key={o} value={o}>{MemberRole[o]}</Select.Option>)}
                     </Select>
 					

@@ -102,11 +102,17 @@ namespace ComService.Boudaries.Controllers
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);
             //TODO : SendEvent
+            var eventType = await _comDbContext.EventTypes.FindAsync(sendEventDTO.EventTypeCode);
+            if (eventType==null)
+            {
+                throw new Exception($"{sendEventDTO.EventTypeCode} is invalid");
+            }
+
             //get channels allow event code
             var channels = await _channelService.GetChannelsByEventCode(sendEventDTO.EventTypeCode);
             if (!channels.Any())
             {
-                throw new Exception($"{sendEventDTO.EventTypeCode} is invalid");
+                throw new Exception($"No channels for event type {eventType.Name}");
             }
 
             //create event for each channel
@@ -121,9 +127,10 @@ namespace ComService.Boudaries.Controllers
                     FileName = o.FileName,
                     FileUrl = o.FileUrl
                 }).ToList();
+
                 var nEvent = new Event(evtId,
                     sendEventDTO.Content,
-                    sendEventDTO.EventTypeCode,
+                    eventType,
                     userId,
                     sendEventDTO.OccurDate,
                     sendEventDTO.Address,

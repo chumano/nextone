@@ -38,6 +38,9 @@ namespace ComService.Domain.Repositories
                 .Include(o => o.RecentEvents)
                     .ThenInclude(o => o.Files)
 
+                .Include(o => o.RecentEvents)
+                        .ThenInclude(o => o.EventType)
+
                 .Include(o => o.Members)
                     .ThenInclude(o => o.UserMember)
                 
