@@ -78,6 +78,7 @@ Gateway route:
 
 
 ### hosts file : C:\Windows\System32\drivers\etc\hosts
+```
 127.0.0.1 nextone.local
 127.0.0.1 map.nextone.local
 127.0.0.1 id.nextone.local
@@ -85,6 +86,7 @@ Gateway route:
 127.0.0.1 gateway.nextone.local
 
 127.0.0.1 seq.nextone.local
+```
 
 #### Migrations and Seed identity data
 Migrations

@@ -1,71 +1,109 @@
 import Pubsub from "../utils/pubSub";
 import { DeviceManager } from "./DeviceManager";
-import {  WebrtcUtils } from "./WebRTCUtils";
+import { WebrtcUtils } from "./WebRTCUtils";
 export const useWebrtcUtils = true;
 
 export const CallSignalingActions = {
-    SEND_CALL_REQUEST : 'call-send-request',
-    SEND_CALL_REQUEST_RESPONSE : 'call-send-request-response',
-    SEND_SESSION_DESCRIPTION : 'call-send-session-description',
-    SEND_ICE_CANDIDATE : 'call-send-ice-cadidate',
-    SEND_HANG_UP : 'call-send-hangup',
+    SEND_CALL_REQUEST: 'call-send-request',
+    SEND_CALL_REQUEST_RESPONSE: 'call-send-request-response',
+    SEND_SESSION_DESCRIPTION: 'call-send-session-description',
+    SEND_ICE_CANDIDATE: 'call-send-ice-cadidate',
+    SEND_HANG_UP: 'call-send-hangup',
 }
 
 export const CallSignalingEvents = {
-    CALL_MESSAGE : 'call-message',
-    CALL_REQUEST : 'call-request'
+    CALL_MESSAGE: 'call-message',
+    CALL_REQUEST: 'call-request'
 }
 
 export const CallEvents = {
-    GOT_LOCAL_STREAM : 'local-stream',
-    GOT_REOMOTE_STREAM : 'remote-stream',
-    RECEIVE_CALL_REQUEST : 'receive-call-request',
-    CONNECTION_DISCONECTED : 'connection-disconnected',
-    CALL_STOPED : 'call-stopped'
+    GOT_LOCAL_STREAM: 'local-stream',
+    GOT_REOMOTE_STREAM: 'remote-stream',
+    RECEIVE_CALL_REQUEST: 'receive-call-request',
+    CONNECTION_DISCONECTED: 'connection-disconnected',
+    CALL_STOPED: 'call-stopped'
 }
 
+export interface MediaConstraints {
+    audio?: {
+        enabled: boolean,
+        deviceId?: string
+    },
+    video?: {
+        enabled: boolean,
+        deviceId?: string
+    }
+}
 
 export interface ISignaling {
     isConnected(): boolean;
 
-    invoke(action: string, 
+    invoke(action: string,
         ...args: any[]): Promise<any>;
 
-    listen(eventName: string, handler: (...args: any[]) => void): ()=>void;
+    listen(eventName: string, handler: (...args: any[]) => void): () => void;
 }
 
 export interface CallMessage {
-    type: 'call-request-response' 
-        | 'other-session-description' 
-        | 'other-ice-candidate'
-        | 'other-hangup',
+    type: 'call-request-response'
+    | 'other-session-description'
+    | 'other-ice-candidate'
+    | 'other-hangup',
     data: any;
 }
 
-export abstract class CallBase{
-    protected room: string  ='';
+export abstract class CallBase {
+    protected room: string = '';
     public getRoom = () => this.room;
     protected iceServers: RTCIceServer[] = [
         { urls: 'stun:stun.1.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' }
     ];
-    
+
+    protected mediaConstraints?: MediaConstraints;
     protected localStream?: MediaStream = undefined;
     protected remoteStream?: MediaStream = undefined;
     protected peerConnection?: RTCPeerConnection;
 
-    constructor (protected signaling: ISignaling,
+    constructor(protected signaling: ISignaling,
         protected deviceManager: DeviceManager,
-        protected pubSub: Pubsub){
+        protected pubSub: Pubsub) {
 
     }
 
-    protected initConnection = async () => {
+    protected initConnection = async (mediaConstraints?: MediaConstraints) => {
         console.log("init connection...");
-        //Dựa vào enumerateDevices đã chọn để tạo constrant cho phù hợp
-        const mediaStream = await this.deviceManager.getDevices({
-            video:true
-        });
+        this.mediaConstraints = mediaConstraints || {};
+        const constraints: MediaStreamConstraints = {
+            audio: false,
+            video: false,
+        }
+
+        if (this.mediaConstraints) {
+            const audio = this.mediaConstraints.audio;
+            const video = this.mediaConstraints.video;
+            if (audio?.enabled) {
+                if (audio.deviceId) {
+                    constraints.audio = {
+                        deviceId: audio.deviceId
+                    }
+                } else {
+                    constraints.audio = true;
+                }
+            }
+
+            if (video?.enabled) {
+                if (video.deviceId) {
+                    constraints.video = {
+                        deviceId: video.deviceId
+                    }
+                } else {
+                    constraints.video = true;
+                }
+            }
+        }
+
+        const mediaStream = await this.deviceManager.getMediaStream(constraints);
 
         if (mediaStream) {
             console.log("get-stream", mediaStream);
@@ -80,24 +118,24 @@ export abstract class CallBase{
 
         try {
             this.createPeerConnection();
-            
+
         } catch (e: any) {
             console.log('Failed to create PeerConnection.', e.message);
             return;
         }
 
-        if(!this.peerConnection ||  !this.localStream){
+        if (!this.peerConnection || !this.localStream) {
             console.log('Failed to create PeerConnection and LocalStream.');
             return;
         }
 
         const videoTracks = this.localStream!.getVideoTracks();
-        if(videoTracks.length>0){
+        if (videoTracks.length > 0) {
             this.peerConnection.addTrack(videoTracks[0], this.localStream);
         }
 
         const audioTracks = this.localStream!.getAudioTracks();
-        if(audioTracks.length>0){
+        if (audioTracks.length > 0) {
             this.peerConnection.addTrack(audioTracks[0], this.localStream);
         }
 
@@ -136,7 +174,7 @@ export abstract class CallBase{
             }
         };
 
-        this.peerConnection.onicecandidateerror = (event: Event) =>{
+        this.peerConnection.onicecandidateerror = (event: Event) => {
             console.log('peerConnection.onicecandidateerror', event)
         }
         this.peerConnection.oniceconnectionstatechange = () => {
@@ -145,10 +183,10 @@ export abstract class CallBase{
                 if (useWebrtcUtils) {
                     WebrtcUtils.logStats(this.peerConnection, 'all');
                 }
-               
+
             } else if (this.peerConnection?.iceConnectionState === 'failed') {
                 if (useWebrtcUtils) {
-                    WebrtcUtils.doIceRestart(this.peerConnection, async (sdp)=>{
+                    WebrtcUtils.doIceRestart(this.peerConnection, async (sdp) => {
                         this.peerConnection!.setLocalDescription(sdp);
                         await this.signaling.invoke(
                             CallSignalingActions.SEND_SESSION_DESCRIPTION,
@@ -163,7 +201,7 @@ export abstract class CallBase{
                 this.onEvent(CallEvents.CONNECTION_DISCONECTED)
             }
         }
-       
+
 
     }
 
@@ -179,8 +217,8 @@ export abstract class CallBase{
 
     protected sendIceCandidate(event: RTCPeerConnectionIceEvent): void {
         console.log('Sending ice candidate to remote peer.');
-        this.signaling.invoke(CallSignalingActions.SEND_ICE_CANDIDATE,{
-            room: this.room, 
+        this.signaling.invoke(CallSignalingActions.SEND_ICE_CANDIDATE, {
+            room: this.room,
             iceCandidate: {
                 type: 'candidate',
                 label: event?.candidate?.sdpMLineIndex,
@@ -190,9 +228,9 @@ export abstract class CallBase{
         });
     }
 
-    public addIceCandidate(data: {candidate:string, label: number}): void {
+    public addIceCandidate(data: { candidate: string, label: number }): void {
         console.log('Adding ice candidate.', data);
-        if(!data.candidate) {
+        if (!data.candidate) {
             console.log('data.candidate is null');
             return;
         }
@@ -203,7 +241,7 @@ export abstract class CallBase{
         this.peerConnection!.addIceCandidate(candidate);
     }
 
-    protected  addTransceivers(): void {
+    protected addTransceivers(): void {
         console.log('Adding transceivers.');
         const init = { direction: 'recvonly', streams: [], sendEncodings: [] } as RTCRtpTransceiverInit;
         this.peerConnection!.addTransceiver('audio', init);

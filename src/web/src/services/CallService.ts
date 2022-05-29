@@ -1,5 +1,5 @@
 import Pubsub from "../utils/pubSub";
-import { CallEvents, CallMessage, CallSignalingActions, CallSignalingEvents, ISignaling, useWebrtcUtils } from "./CallBase";
+import { CallEvents, CallMessage, CallSignalingActions, CallSignalingEvents, ISignaling, MediaConstraints, useWebrtcUtils } from "./CallBase";
 import { CallReciver as CallReceiver } from "./CallReceiver";
 import { CallSender } from "./CallSender";
 import { DeviceManager } from "./DeviceManager";
@@ -86,9 +86,9 @@ class CallService {
         this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE,this.callMessageHandler.bind(this));
     }
 
-    public acceptCallRequest = async(room:string)=>{
+    public acceptCallRequest = async(room:string, mediaConstraints?: MediaConstraints)=>{
         this.listenCallMessage();
-        this.callReceiver.acceptCall(room);
+        this.callReceiver.acceptCall(room, mediaConstraints);
     }
 
     public ignoreCallRequest = async(room:string)=>{
@@ -100,13 +100,10 @@ class CallService {
             })
     }
 
-    public startCall = async (room: string) => {
-        const devices = await this.deviceManager.enumerateDevices(); 
-        console.log('devices', devices)
-
+    public startCall = async (room: string,callType: 'voice' | 'video' ,mediaConstraints?: MediaConstraints) => {
         this.listenCallMessage();
         this.isSender = true;
-        await this.callSender.startCallRequest(room);
+        await this.callSender.startCallRequest(room,callType, mediaConstraints);
     }
 
     public stopCall = async (notifiyOther: boolean = true) => {

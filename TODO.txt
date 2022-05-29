@@ -8,7 +8,7 @@ Web-TODO:
 	- Select Devices on Start Call, Receive call
 	- Toggle : Video, Voice
 	- Chat on call
-	- Minize Call screen
+	- Minimize Call screen
 	- Time out 10s when dont receive answer
 
 - Channel Map Monitor, 
@@ -45,6 +45,14 @@ Web-TODO:
 		Delete : delete on the user only => Member.deleteDate
 		Seen : Member.seenDate
 
+- Permmission
+		Channel
+			Manager ->  Add Memmber, Delete Member, Assign Role
+			Owner -> Delete Channel 
+			Member
+		System-Admin -> Delete Channel, Create Channel
+		System-Manager -> Create Channel
+		Systme-Member -> Chat, Send Event
 
 -------------------------------------------
 Mobile-TODO

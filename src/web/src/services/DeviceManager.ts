@@ -1,5 +1,35 @@
+export interface DeviceInfo {
+    id: string,
+    type: MediaDeviceKind,
+    name: string,
+}
 export class DeviceManager {
-    getDevices = async (constraints: MediaStreamConstraints) => {
+    public enumerateDevices = async () => {
+        // let stream: MediaStream
+        // try {
+        //     stream = await this.getUserMedia({ audio: true, video: true })
+        // } catch (err) {
+        //     stream = new MediaStream()
+        // }
+
+        let devices: MediaDeviceInfo[] = [];
+        try {
+            devices = await navigator.mediaDevices.enumerateDevices()
+        } finally {
+            //stream.getTracks().forEach(track => track.stop())
+        }
+
+        const mappedDevices = devices
+            .map(device => ({
+                id: device.deviceId,
+                type: device.kind,
+                name: device.label,
+            }))
+
+        return mappedDevices
+    }
+
+    public getMediaStream = async (constraints: MediaStreamConstraints) => {
         try {
             const mediaStream = await this.getUserMedia(constraints)
 
@@ -10,7 +40,7 @@ export class DeviceManager {
         return undefined;
     }
 
-    getUserMedia = async (
+    private getUserMedia = async (
         constraints: MediaStreamConstraints,
     ): Promise<MediaStream> => {
         if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -30,32 +60,9 @@ export class DeviceManager {
     }
 
 
-    enumerateDevices = async () => {
-        let stream: MediaStream
-        try {
-            stream = await this.getUserMedia({ audio: true, video: true })
-        } catch (err) {
-            stream = new MediaStream()
-        }
+    
 
-        let devices: MediaDeviceInfo[]
-        try {
-            devices = await navigator.mediaDevices.enumerateDevices()
-        } finally {
-            stream.getTracks().forEach(track => track.stop())
-        }
-
-        const mappedDevices = devices
-            .map(device => ({
-                id: device.deviceId,
-                type: device.kind,
-                name: device.label,
-            }))
-
-        return mappedDevices
-    }
-
-    getUserMediaFail = (
+    private getUserMediaFail = (
         constraints: MediaStreamConstraints,
         resolve: () => void,
         reject: (err: Error) => void,

@@ -27,9 +27,11 @@ interface ChatBoxProps {
 const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
+    const { deviceSettings } = useSelector((store: IAppStore) => store.call);
     const userId = user!.profile.sub;
     const [conversationName, setConversationName] = useState<string>();
     const [otherUser, setOtherUser] = useState<UserStatus>();
+
     useEffect(() => {
         if (conversation.type === ConversationType.Peer2Peer) {
             const otherUsers = conversation.members.filter(o => o.userMember.userId != userId)
@@ -41,11 +43,21 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
     }, [conversation])
 
     const onCall = useCallback((callType: 'video' | 'voice') => {
-        dispatch(callActions.startCall({
-            callType,
-            conversationId: conversation.id
-        }));
-    }, [conversation])
+        //TODO: show Modal select devices
+        if (!deviceSettings) {
+            dispatch(callActions.prepareCall({
+                callType,
+                conversationId: conversation.id
+            }));
+            dispatch(callActions.showModal({ modal: 'device', visible: true }));
+        } else {
+            dispatch(callActions.startCall({
+                callType,
+                conversationId: conversation.id
+            }));
+        }
+
+    }, [conversation, deviceSettings])
 
     const onToggleConversationInfo = useCallback(() => {
         dispatch(chatActions.toggleConversationInfo());

@@ -47,7 +47,9 @@ namespace ComService.Boudaries.Hubs
                 {
                     case CallSignalingActions.SEND_CALL_REQUEST:
                         {
-                            var conversationId = (string)data;
+                            var response = (dynamic)data;
+                            var conversationId = (string)response.room;
+                            var callType = (string)response.callType;
                             var conversation = await _conversationService.Get(conversationId);
                             if (conversation == null) return;
 
@@ -56,7 +58,8 @@ namespace ComService.Boudaries.Hubs
                             {
                                 room = conversationId,
                                 userId = client.UserId,
-                                userName = client.UserName
+                                userName = client.UserName,
+                                callType = callType
                             });
 
                             //create room and join

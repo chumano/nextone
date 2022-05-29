@@ -1,11 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 import { IAppStore } from "..";
-import { ReceiveCallPayload, StartCallPayload } from "./callPayload";
+import { DeviceSettings, PrepareCallPlayload, ReceiveCallPayload, StartCallPayload } from "./callPayload";
 import { CallState, CallStatus } from "./callState";
 
 const initialState: CallState = {
     status: CallStatus.idle,
-    isSender: true
+    isSender: true,
+    callType: 'voice',
+    modals : {}
 }
 
 export const callSlice = createSlice({
@@ -22,11 +24,33 @@ export const callSlice = createSlice({
             const {payload} = action;
             state.status = CallStatus.calling;
             state.isSender = true;
+            state.callType = payload.callType;
             state.converstationId = payload.conversationId;
         },
         stopCall: (state) => {
             state.status = CallStatus.idle;
             state.converstationId = undefined;
+        },
+        prepareCall: (state, action: PayloadAction<PrepareCallPlayload>) =>{
+            const {payload} = action;
+            state.status = CallStatus.settings;
+            state.callType = payload.callType;
+            state.converstationId = payload.conversationId;
+        },
+        setDeviceSettings: (state, action: PayloadAction<DeviceSettings>) =>{
+            state.deviceSettings = action.payload;
+            if(state.status == CallStatus.settings){
+                state.status = CallStatus.calling;
+            }
+        },
+
+        showModal: (state, action: PayloadAction<{ modal: string, visible: boolean, data?: any }>) => {
+            const { modal, visible, data } = action.payload
+            state.modals[modal] = {
+                ...state.modals[modal],
+                visible,
+                data: visible? data: undefined
+            };
         }
     },
 })

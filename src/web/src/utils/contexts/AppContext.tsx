@@ -57,20 +57,30 @@ const AppContextProvider = (props: IContextProviderProp) => {
         CallService.init();
        
         const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, 
-            (data: {room:string, userId:string, userName: string})=>{
+            (data: {room:string, userId:string, userName: string, callType: 'voice' | 'video'})=>{
             //show user confirm
+            const {room,userName, callType} = data;
             Modal.confirm({
                 title: 'Có cuộc gọi đến',
                 icon: <QuestionOutlined />,
-                content: `Cuộc gọi từ "${data.userName}"`,
+                content: `Cuộc gọi từ "${userName}"`,
                 onOk : async ()=> {
                     dispatch(callActions.receiveCall({
-                        conversationId: data.room
+                        conversationId: room
                     }))
-                    await CallService.acceptCallRequest(data.room);
+                    await CallService.acceptCallRequest(room,{
+                        audio : {
+                            enabled:true,
+                        },
+                        video : callType ==='video'? {
+                            enabled: true
+                        }: {
+                            enabled:false
+                        }
+                    });
                 },
                 onCancel : async ()=> {
-                    await CallService.ignoreCallRequest(data.room);
+                    await CallService.ignoreCallRequest(room);
                 },
             });
         });

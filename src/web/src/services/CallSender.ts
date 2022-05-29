@@ -1,5 +1,5 @@
 import Pubsub from "../utils/pubSub";
-import { CallBase, CallMessage, CallSignalingActions, CallSignalingEvents, ISignaling, useWebrtcUtils } from "./CallBase";
+import { CallBase, CallMessage, CallSignalingActions, CallSignalingEvents, ISignaling, MediaConstraints, useWebrtcUtils } from "./CallBase";
 import { DeviceManager } from "./DeviceManager";
 import { WebrtcUtils } from "./WebRTCUtils";
 
@@ -13,17 +13,20 @@ export class CallSender extends CallBase {
             super(signaling, deviceManager,pubSub);
     }
 
-    public startCallRequest = async (room: string) => {
+    public startCallRequest = async (room: string, callType: 'voice' | 'video',mediaConstraints?: MediaConstraints) => {
         console.log('startCallRequest')
         this.state = 'call-requesting';
         this.room = room;
         this.onEvent(this.state);       
 
-        await this.initConnection();
+        await this.initConnection(mediaConstraints);
         console.log('signaling.invoke SEND_CALL_REQUEST' )
         await this.signaling.invoke(
             CallSignalingActions.SEND_CALL_REQUEST, 
-            room);
+            {
+                room,
+                callType
+            });
         this.state = 'call-requested';
         this.onEvent(this.state);
      

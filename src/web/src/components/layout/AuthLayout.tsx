@@ -9,6 +9,7 @@ import { getCallState, IAppStore } from "../../store";
 import { useSelector } from "react-redux";
 import CallSession from "../call/call-session";
 import { CallStatus } from "../../store/call/callState";
+import ModalDeviceSettings from "../call/ModalDeviceSettings";
 
 const Header = React.lazy(()=> import('../header/Header'));
 const SideBar = React.lazy(()=> import('./SideBar'));
@@ -22,7 +23,7 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
     const [authenticated, setAuthenticated] = useState(false);
     const [sideDrawer, setSideDrawer] = useState(false);
     const isLoggedIn = useSelector((state: IAppStore) => state.auth.isLoggedIn);
-    const {status : callStatus} = useSelector(getCallState)
+    const {status : callStatus, modals : callModals} = useSelector(getCallState)
 
     useEffect(() => {
         if(!isLoggedIn){
@@ -57,6 +58,10 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
 
                             {callStatus == CallStatus.calling
                             && <CallSession/>}
+
+                            {callModals['device'] && callModals['device'].visible &&
+                                <ModalDeviceSettings/>
+                            }
                         </div>   
                     </div>
                 </Suspense>

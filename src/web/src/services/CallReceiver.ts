@@ -1,6 +1,7 @@
 import Pubsub from "../utils/pubSub";
 import { CallBase, CallMessage, CallSignalingActions, 
-     ISignaling } from "./CallBase";
+     ISignaling, 
+     MediaConstraints} from "./CallBase";
 import { DeviceManager } from "./DeviceManager";
 
 export class CallReciver extends CallBase {
@@ -13,10 +14,10 @@ export class CallReciver extends CallBase {
             super(signaling, deviceManager,pubSub);
     }
 
-    public async acceptCall(room: string){
+    public async acceptCall(room: string, mediaConstraints?: MediaConstraints){
         console.log("accept call...")
         this.room = room;
-        await this.initConnection();
+        await this.initConnection(mediaConstraints);
 
         await this.signaling.invoke(
             CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
