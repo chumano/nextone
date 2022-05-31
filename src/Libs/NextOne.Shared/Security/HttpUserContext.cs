@@ -12,6 +12,8 @@ namespace NextOne.Shared.Security
     internal class BasicUser : IUser
     {
         public string UserId { get; set; }
+
+        public string Name { get; set; }
     }
     public class HttpUserContext : IUserContext
     {
@@ -39,10 +41,12 @@ namespace NextOne.Shared.Security
             get
             {
                 var user = _httpContextAccessor.HttpContext.User;
-                var claim = user?.FindFirst(ClaimTypes.NameIdentifier);
+                var claimId = user?.FindFirst(ClaimTypes.NameIdentifier);
+                var claimName = user?.FindFirst(ClaimTypes.Name);
                 return new BasicUser()
                 {
-                    UserId = claim?.Value ?? AnonymousUserId
+                    UserId = claimId?.Value ?? AnonymousUserId,
+                    Name = claimName?.Value ?? ""
                 };
             }
         }

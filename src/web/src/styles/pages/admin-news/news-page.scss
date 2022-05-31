@@ -1,0 +1,36 @@
+@import "../../abstracts/variables";
+@import "../../abstracts/mixins";
+
+.admin-news-page{
+    
+    padding: 0 28px;
+    &__head{
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 20px;
+
+        &--left{
+            display: flex;
+            flex-direction: column;
+        }
+
+        &--right{
+            .add-btn{
+                padding: 0 10px;
+            }
+        }
+    }
+
+    &__filter{
+
+    }
+
+    &__body{
+
+    }
+
+    .ant-breadcrumb{
+        font-size: $font-size-3;
+    }
+}

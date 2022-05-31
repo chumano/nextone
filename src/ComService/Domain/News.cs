@@ -8,12 +8,14 @@ namespace ComService.Domain
         public string Title { get; set; }
         public string Description { get; set; }
         public string Content { get; set; }
+
+        public string ImageUrl { get; set; }
+        public string ImageDescription { get; set; }
+
+        public bool IsPublished { get; set; }
+
         public DateTime PublishedDate { get; set; }
         public string PublishedBy { get; set; }
         public string PublishedUserName { get; set; }
-
-        public bool IsPublished { get; set; }
-        public string ImageUrl { get; set; }
-        public string ImageDescription { get; set; }
     }
 }

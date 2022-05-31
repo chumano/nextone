@@ -94,6 +94,21 @@ namespace MasterService
                     {
                         Log.Debug("Roles already populated");
                     }
+
+
+                    if (!appDbContext.Users.Any())
+                    {
+                        Log.Debug("Users being populated");
+                        foreach (var user in SeedData.Users)
+                        {
+                            appDbContext.Users.Add(user);
+                        }
+                        appDbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        Log.Debug("Users already populated");
+                    }
                 }
             }
 

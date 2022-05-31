@@ -7,5 +7,6 @@ namespace NextOne.Shared.Security
     public interface IUser
     {
         string UserId { get; }
+        string Name { get; }
     }
 }
