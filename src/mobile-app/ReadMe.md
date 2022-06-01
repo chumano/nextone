@@ -37,3 +37,8 @@ arch -x86_64 pod install (run at src/ios)
     - npm i
     - vào thư mục src/ios
     - pod install (hoặc arch -x86_64 pod install)
+
+
+# Lỗi khi dùng lệnh npx react-native run-android
+    - cd android
+    - chmod +x gradlew

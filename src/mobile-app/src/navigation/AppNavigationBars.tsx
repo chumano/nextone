@@ -3,7 +3,7 @@ import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import React, { useState } from 'react';
 import { Appbar, Menu } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
-import { authActions } from '../stores/auth/authReducer';
+import { authActions } from '../stores/auth/auth.reducer';
 
 export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({ navigation }) => {
     const dispatch = useDispatch();
