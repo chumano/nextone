@@ -1,14 +1,15 @@
 export interface UserLoginInfo {
-  Email: string;
-  Password: string;
+  email: string;
+  password: string;
 }
 
 export interface UserTokenInfo {
-  AccessToken: string;
-  ExpiresIn: number;
-  RefreshToken: string;
-  Scope: string;
-  TokenType: string;
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+  scope: string;
+  tokenType: string;
+  userId: string;
 }
 
 export interface UserTokenInfoResponse {

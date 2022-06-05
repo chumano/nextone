@@ -1,5 +1,5 @@
 export interface GenericState<T> {
-  Data: T | null;
-  Status: 'pending' | 'loading' | 'success' | 'failed';
-  Error: string | null;
+  data: T | null;
+  status: 'pending' | 'loading' | 'success' | 'failed';
+  error: string | null;
 }

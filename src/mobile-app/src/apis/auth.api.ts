@@ -1,7 +1,7 @@
 import {AxiosResponse} from 'axios';
 import {APP_CONFIG, OAUTH_CONFIG} from './../constants/app.config';
 
-import {UserTokenInfoResponse} from './../types/Auth.type';
+import {UserTokenInfoResponse} from '../types/Auth/Auth.type';
 
 import {createAxios} from './../utils/axios.util';
 

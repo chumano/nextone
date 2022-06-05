@@ -13,11 +13,11 @@ const LoginScreen = () => {
   const authState = useSelector((store: IAppStore) => store.auth);
   const [loginForm, setLoginForm] = useState({
     username: {
-      value: '',
+      value: 'manager',
       isValid: true,
     },
     password: {
-      value: '',
+      value: 'Nextone@123',
       isValid: true,
     },
   });
@@ -43,7 +43,7 @@ const LoginScreen = () => {
       return;
     }
 
-    dispatch(authLogin({Email: username.value, Password: password.value}));
+    dispatch(authLogin({email: username.value, password: password.value}));
   };
 
   const onRegisterHandler = () => {};
@@ -84,15 +84,15 @@ const LoginScreen = () => {
           <HelperText type="error">Password Field is required!</HelperText>
         )}
       </View>
-      {authState.Error && (
-        <HelperText type="error">{authState.Error}</HelperText>
+      {authState.error && (
+        <HelperText type="error">{authState.error}</HelperText>
       )}
       <View style={styles.buttonContainer}>
         <View style={styles.button}>
           <Button
             mode="contained"
             onPress={onLoginHandler}
-            loading={authState.Status === 'loading'}>
+            loading={authState.status === 'loading'}>
             Login
           </Button>
         </View>
