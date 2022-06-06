@@ -25,6 +25,9 @@ import RootApp from './src/RootApp';
 
 import Loading from './src/components/Loading';
 
+import {Platform} from 'react-native';
+import {enableScreens} from 'react-native-screens';
+
 const AppContainer = () => {
   const {isUserLogin} = useSelector((store: IAppStore) => store.auth);
   const {isCalling} = useSelector((store: IAppStore) => store.call);
@@ -64,6 +67,13 @@ const AppContainer = () => {
 
     getUserInfoFromStorage();
   }, [dispatch]);
+
+  // fix error weird behavior on IOS navigation with display none on bottom tabs
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      enableScreens(false);
+    }
+  }, []);
 
   const isShowLoginScreen = !isUserLogin && !isCalling;
   const isShowRootAppScreen = isUserLogin && !isCalling;

@@ -1,8 +1,11 @@
 import React, {useLayoutEffect} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Text} from 'react-native-paper';
-import UserAvatar from '../../components/User/UserAvatar';
+
 import {ChatStackProps} from '../../navigation/ChatStack';
+
+import UserAvatar from '../../components/User/UserAvatar';
+import ChatBox from '../../components/Chat/ChatBox';
 
 const ChatScreen = ({navigation}: ChatStackProps) => {
   useLayoutEffect(() => {
@@ -21,7 +24,7 @@ const ChatScreen = ({navigation}: ChatStackProps) => {
       ),
     });
   }, [navigation]);
-  return <Text>ChatScreen</Text>;
+  return <ChatBox />;
 };
 
 export default ChatScreen;
@@ -37,6 +40,6 @@ const styles = StyleSheet.create({
   },
   userNameText: {
     fontSize: 16,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
 });

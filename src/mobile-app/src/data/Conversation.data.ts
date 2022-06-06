@@ -75,4 +75,34 @@ export const LIST_CONVERSATION: Conversation[] = [
     ],
     updatedDate: '30 minutes ago',
   },
+  {
+    id: 'conversation-03',
+    name: 'conversation-03',
+    type: ConversationType.Peer2Peer,
+    members: [
+      {
+        userMember: {
+          userId: 'user-03',
+          userName: 'alex suprun',
+          userAvatarUrl:
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80',
+          status: Status.Idle,
+          recentTrackingLocations: [],
+        },
+        role: MemberRole.MANAGER,
+      },
+      {
+        userMember: {
+          userId: 'user-02',
+          userName: 'ben parker',
+          userAvatarUrl:
+            'https://images.unsplash.com/photo-1528763380143-65b3ac89a3ff?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=989&q=80',
+          status: Status.Offline,
+          recentTrackingLocations: [],
+        },
+        role: MemberRole.MEMBER,
+      },
+    ],
+    updatedDate: '40 minutes ago',
+  },
 ];

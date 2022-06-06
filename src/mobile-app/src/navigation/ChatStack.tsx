@@ -1,11 +1,13 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import {
   createNativeStackNavigator,
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
+import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 
 import ConversationScreen from '../screens/ChatScreen/ConversationScreen';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
+import {BottomTabProps} from './BottomTabNavigator';
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
@@ -20,7 +22,16 @@ export type ChatStackProps = NativeStackScreenProps<
 
 const Stack = createNativeStackNavigator<ChatStackParamsList>();
 
-const ChatStack = () => {
+const ChatStack = ({navigation, route}: BottomTabProps) => {
+  useLayoutEffect(() => {
+    const routeName = getFocusedRouteNameFromRoute(route);
+    const isRenderBottomTab = routeName !== 'ChatScreen';
+    navigation.setOptions({
+      tabBarStyle: {
+        display: isRenderBottomTab ? 'flex' : 'none',
+      },
+    });
+  }, [navigation, route]);
   return (
     <Stack.Navigator initialRouteName="ConversationScreen">
       <Stack.Screen

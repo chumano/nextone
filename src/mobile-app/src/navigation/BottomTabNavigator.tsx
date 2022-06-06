@@ -1,16 +1,33 @@
 import React from 'react';
 
+import {
+  BottomTabHeaderProps,
+  BottomTabScreenProps,
+  createBottomTabNavigator,
+} from '@react-navigation/bottom-tabs';
+
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 import EventStack from './EventStack';
 import MapStack from './MapStack';
 import ChatStack from './ChatStack';
 import HomeStack from './HomeStack';
-import {
-  BottomTabHeaderProps,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const Tab = createBottomTabNavigator();
+type BottomTabParamsList = {
+  HomeTab: undefined;
+  ChatTab: undefined;
+  MapTab: undefined;
+  EventTab: undefined;
+};
+
+export type BottomTabProps = BottomTabScreenProps<
+  BottomTabParamsList,
+  'HomeTab',
+  'BottomTab'
+>;
+
+const Tab = createBottomTabNavigator<BottomTabParamsList>();
+
 const BottomTabNavigator = () => {
   return (
     <Tab.Navigator
