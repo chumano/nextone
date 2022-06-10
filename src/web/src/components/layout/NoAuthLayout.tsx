@@ -9,6 +9,7 @@ import { useHistory, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { IAppStore } from "../../store";
 import { ReactComponent as LogoSVG } from '../../assets/logo.svg';
+import { DEFAULT_PAGE } from "../../utils";
 
 const loading = () => <Loading />;
 
@@ -20,20 +21,13 @@ const NoAuthLayout: React.FC<IProp> = (props): JSX.Element => {
     const location = useLocation();
     const user = useSelector((store: IAppStore) => store.auth.user);
 
-    useEffect(() => {
-        // AuthenticationService.isAuthenticated().then((authenticated)=>{
-        //     if(authenticated) {
-        //         history.push("/home");
-        //     }
-        // });
-    }, [])
     const login = useCallback(() => {
         if (user) {
-            history.push("/home");
+            history.push(DEFAULT_PAGE);
             return;
         }
 
-        let redirectUrl = "/home";
+        let redirectUrl = DEFAULT_PAGE
         AuthenticationService.signinRedirect(redirectUrl);
     }, [user])
 

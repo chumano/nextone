@@ -127,6 +127,12 @@ table{
     align-items: center;
 }
 
+.list-button-actions {
+    & > * + * {
+        margin-left: 20px;
+    }
+}
+
 .link-clickable{
     color: $color-blue;
     text-decoration: underline;

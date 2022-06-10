@@ -6,5 +6,3 @@ export interface EventType {
   note: string;
 }
 
-export interface CreateEventTypeRequest extends EventType {}
-export interface UpdateEventTypeRequest extends EventType {}

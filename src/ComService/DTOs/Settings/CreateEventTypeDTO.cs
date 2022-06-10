@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ComService.DTOs.Settings
 {
-    public class UpdateEventType
+    public class CreateEventTypeDTO
     {
         public string Code { get; set; }
         public string Name { get; set; }

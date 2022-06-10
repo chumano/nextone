@@ -1,35 +1,28 @@
+import { Tabs } from "antd";
 import { useEffect, useState } from "react";
 import { mapApi } from "../../../apis/mapApi";
 import { MapInfo } from "../../../models/map/Map.modal";
 import '../../../styles/pages/admin-config/system-config.scss'
+import ConfigEventTypes from "./ConfigEventTypes";
+import ConfigMap from "./ConfigMap";
 
 const ConfigPage: React.FC = () => {
-    const [maps, setMaps] = useState<MapInfo[]>([])
-    useEffect(() => {
-        const fetchMaps = async () => {
-            const maps = await mapApi.getMaps()
-            setMaps(maps);
-        }
-
-        fetchMaps();
-    }, [])
+   
     return <>
         <div className="system-config">
-            Cấu hình hệ thống
-            {maps.map(o =>
-                <>
-                <div className="map-item">
-                    <div className="map-item__img-container">
-                        <img src={o.imageUrl} alt="map image" />
-                    </div>
-                    {o.name}
-                    <div>
-                        {o.latestTileUrl}
-                    </div>
-                </div>
-                   
-                </>
-            )}
+            <div className="system-config__head">
+                <span className="page-title">Cấu hình hệ thống</span>
+            </div>
+
+            <Tabs defaultActiveKey="map" tabPosition={'left'} style={{}}>
+                <Tabs.TabPane tab={`Bản đồ`} key={'map'} >
+                   <ConfigMap/>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={`Loại sự kiện`} key={'event-type'} >
+                    <ConfigEventTypes/>
+                </Tabs.TabPane>
+            </Tabs>
+
         </div>
 
     </>;

@@ -5,6 +5,7 @@ import { Channel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { ConversationMember } from "../models/conversation/ConversationMember.model";
 import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
+import { CreateEventTypeDTO, UpdateEventTypeDTO } from "../models/dtos/EventTypeDTO";
 import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
 import { EventType } from "../models/event/EventType.model";
 import { Message } from "../models/message/Message.model";
@@ -94,7 +95,18 @@ export const comApi = {
         const responsePromise = comAxiosInstance.get('/settings/GetEventTypes')
         return await handleAxiosApi<ApiResult<EventType[]>>(responsePromise);
     },
-
+    createEventType : async (data: CreateEventTypeDTO)=>{
+        const responsePromise = comAxiosInstance.post(`/settings/CreateEventType`, data)
+        return await handleAxiosApi<ApiResult<EventType>>(responsePromise);
+    },
+    updateEventType : async (data: UpdateEventTypeDTO)=>{
+        const responsePromise = comAxiosInstance.post(`/settings/UpdateEventType`, data)
+        return await handleAxiosApi<ApiResult<EventType>>(responsePromise);
+    },
+    deleteEventType : async (code: string)  => {
+        const responsePromise = comAxiosInstance.delete(`/settings/EventType/${code}`);
+        return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+    },
     //users
     getUsers : async (data? : GetListUserStatusDTO)=>{
         const responsePromise = comAxiosInstance.get('/userstatus/GetList', {params: data});

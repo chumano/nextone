@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import logo from '../../assets/logo.svg';
 import { MenuList } from "../../Route";
 import '../../styles/components/layout/sidebar.scss';
+import { DEFAULT_PAGE } from "../../utils";
 
 interface IProp {
     show: boolean
@@ -20,7 +21,7 @@ const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
     return <>
         <div className={"sidebar " + (show?"open":"")}>
             <div className="sidebar__logo">
-                <Link to={'/home'} >
+                <Link to={DEFAULT_PAGE} >
                     <img  src={logo} alt='' />
                 </Link>
             </div>

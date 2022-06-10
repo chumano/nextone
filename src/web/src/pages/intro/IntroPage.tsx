@@ -12,28 +12,14 @@ import {
 import { IAppStore } from "../../store";
 import { useSelector } from "react-redux";
 import NewsList from "./NewsList";
+import { DEFAULT_PAGE } from "../../utils";
 
 const IntroPage: React.FC = () => {
     const history = useHistory();
     const location = useLocation();
     const user = useSelector((store: IAppStore) => store.auth.user);
 
-    useEffect(() => {
-        // AuthenticationService.isAuthenticated().then((authenticated)=>{
-        //     if(authenticated) {
-        //         history.push("/home");
-        //     }
-        // });
-    }, [])
-    const login = useCallback(() => {
-        if(user){
-            history.push("/home");
-            return;
-        }
-        
-        let redirectUrl = "/home";
-        AuthenticationService.signinRedirect(redirectUrl);
-    },[user])
+   
     return <>
         <div className="intro-page">
            

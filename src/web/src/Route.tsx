@@ -91,11 +91,11 @@ const routes: Array<IRouteConfig> = [
         useAuthLayout: true
     },
     //home
-    {
-        path: "/home",
-        component: Home,
-        useAuthLayout: true
-    },
+    // {
+    //     path: "/home",
+    //     component: Home,
+    //     useAuthLayout: true
+    // },
 	//profile
 	{
         path: "/profile",
@@ -134,12 +134,12 @@ const routes: Array<IRouteConfig> = [
 
 const MenuList = [
     //feature meanu
-    {
-        id: 0,
-        title: 'Trang chủ',
-        path: '/home',
-        icon: <FontAwesomeIcon icon={faHome} />
-    },
+    // {
+    //     id: 0,
+    //     title: 'Trang chủ',
+    //     path: '/home',
+    //     icon: <FontAwesomeIcon icon={faHome} />
+    // },
     {
         id: 20,
         title: 'Tin nhắn',
@@ -178,12 +178,12 @@ const MenuList = [
 		icon: <FontAwesomeIcon icon={faCog} />,
 	},
 	//Test components
-	{
-		id: 1000,
-		title: "Test components",
-		path: "/test",
-		icon: <FontAwesomeIcon icon={faTasks} />,
-	},
+	// {
+	// 	id: 1000,
+	// 	title: "Test components",
+	// 	path: "/test",
+	// 	icon: <FontAwesomeIcon icon={faTasks} />,
+	// },
 ];
 
 export { authRoutes, routes, MenuList };

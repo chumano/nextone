@@ -62,7 +62,6 @@ const NewsList = () => {
 
   return (
     <div>	<Table
-      className="user-list-table-container"
       dataSource={newsList}
       bordered
       rowKey="id"
