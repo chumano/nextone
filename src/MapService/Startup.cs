@@ -25,7 +25,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace MapService
@@ -71,6 +73,7 @@ namespace MapService
                 jwtOptions.Authority = identityServerOptions.Authority;
                 jwtOptions.Audience = "map"; // ApiResources
                 jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
+                jwtOptions.BackchannelHttpHandler = GetHttpHandler();
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -124,6 +127,15 @@ namespace MapService
             MapUtils.InitSharpMap();
         }
 
+        private static HttpClientHandler GetHttpHandler()
+        {
+            var handler = new HttpClientHandler();
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            handler.SslProtocols = SslProtocols.Tls12;
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            return handler;
+
+        }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

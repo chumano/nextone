@@ -4,6 +4,7 @@ namespace ComService.DTOs.News
 {
     public class GetListNewsDTO
     {
+        public string TextSearch { get; set; }
         public int Offset { get; set; }
         public int PageSize { get; set; }
 

@@ -13,7 +13,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using NextOne.Infrastructure.Core.Identity;
 using NextOne.Infrastructure.Core.ModelBinding;
 using NextOne.Infrastructure.MessageBus.Bus;
@@ -21,11 +23,14 @@ using NextOne.Infrastructure.MessageBus.Notification;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
 using NextOne.Shared.Security;
+using Serilog;
 using SharedDomain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 
 namespace ComService
@@ -76,6 +81,8 @@ namespace ComService
 
 
             var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();
+            IdentityModelEventSource.ShowPII = true;
+            Console.WriteLine("identityServerOptions: "+ JsonConvert.SerializeObject(identityServerOptions));
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -85,9 +92,10 @@ namespace ComService
                 jwtOptions.Authority = identityServerOptions.Authority;
                 jwtOptions.Audience = "com"; // ApiResources
                 jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
+                jwtOptions.BackchannelHttpHandler = GetHttpHandler();
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = true,
+                    ValidateIssuerSigningKey = false,
                     ValidateIssuer = false,
                     ValidateAudience = false,
                 };
@@ -148,6 +156,15 @@ namespace ComService
             services.AddScoped<IChannelService, ChannelService>();
             services.AddScoped<IUserStatusService, UserStatusService>();
             services.AddScoped<IMasterService, MasterService>();
+        }
+
+        private static HttpClientHandler GetHttpHandler()
+        {
+            var handler = new HttpClientHandler();
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            handler.SslProtocols = SslProtocols.Tls12;
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            return handler;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

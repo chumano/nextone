@@ -17,13 +17,14 @@ import bgImageUrl from '../../assets/images/call/bg_sample.png'
 import ButtonAction from './button-action';
 import CallService from '../../services/CallService';
 import { useEffect, useState } from 'react';
-import { CallEvents } from '../../services/CallBase';
+import { CallEvents, MediaConstraints } from '../../services/CallBase';
 import Video, { StreamWithURL } from './video';
 import { useDispatch, useSelector } from 'react-redux';
 import { callActions, getCallState, IAppStore } from '../../store';
 import { ConversationState } from '../../store/chat/ChatState';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
 import { UserStatus } from '../../models/user/UserStatus.model';
+import { message } from 'antd';
 
 
 const CallSession: React.FC = () => {
@@ -54,7 +55,7 @@ const CallSession: React.FC = () => {
 
 
     useEffect(() => {
-        if(!conversation) return;
+        if (!conversation) return;
         if (conversation.type === ConversationType.Peer2Peer) {
             const otherUsers = conversation.members.filter(o => o.userMember.userId != userId)
             setOtherUser(otherUsers[0].userMember);
@@ -64,24 +65,24 @@ const CallSession: React.FC = () => {
         }
     }, [conversation])
 
-    useEffect(()=>{
-        setLocalStream((localStream)=>{
-            if(localStream?.stream){
-                if( localStream.stream.getAudioTracks().length >0){
+    useEffect(() => {
+        setLocalStream((localStream) => {
+            if (localStream?.stream) {
+                if (localStream.stream.getAudioTracks().length > 0) {
                     localStream.stream.getAudioTracks()[0].enabled = voiceEnabled;
                 }
-                if( localStream.stream.getVideoTracks().length >0){
+                if (localStream.stream.getVideoTracks().length > 0) {
                     localStream.stream.getVideoTracks()[0].enabled = videoEnabled;
                 }
             }
-           
+
             return localStream;
         });
-    },[voiceEnabled, videoEnabled])
+    }, [voiceEnabled, videoEnabled])
 
-    useEffect(()=>{
+    useEffect(() => {
         //TODO: replace stream
-    },[deviceSettings])
+    }, [deviceSettings])
 
     //lisen on call
     useEffect(() => {
@@ -120,23 +121,34 @@ const CallSession: React.FC = () => {
         });
 
         if (isSender && converstationId) {
-            CallService.startCall(converstationId, callType, {
-                audio : !!deviceSettings?.audioInputId ? {
-                        enabled : true,
-                        deviceId : deviceSettings?.audioInputId
-                    }: {
-                        enabled: false
-                    },
-                video : !!deviceSettings?.videoInputId && callType =='video' ? {
-                    enabled : true,
-                    deviceId : deviceSettings?.videoInputId
-                }: {
+            let constraint: MediaConstraints = {
+                audio: {
+                    enabled: true
+                }, 
+                video:  callType == 'video' ? {
+                    enabled: true
+                }:{
                     enabled: false
                 }
-            }).then(() => {
-                console.log('CallSession call started',);
+            }
+
+            if(deviceSettings){
+                if(deviceSettings.audioInputId){
+                    constraint.audio!.deviceId = deviceSettings.audioInputId;
+                }
+
+                if(deviceSettings.videoInputId){
+                    constraint.video!.deviceId = deviceSettings.videoInputId;
+                }
+            }
+
+
+            CallService.startCall(converstationId, callType, constraint).then(() => {
+                console.log('CallSession call started');
+                message.info("CallSession call started")
             }).catch(err => {
-                console.error(' CallService.startCall error', err)
+                console.error('CallService.startCall error', err)
+                message.error("CallService.startCall error")
             });
         }
         else {
@@ -152,13 +164,13 @@ const CallSession: React.FC = () => {
     }, [isSender, callStatus, converstationId, deviceSettings, callType])
 
     const onToggle = (type: 'voice' | 'video') => {
-        return ()=>{
-            if(type=='voice'){
+        return () => {
+            if (type == 'voice') {
                 setVoiceEnabled(s => !s)
-            }else{
+            } else {
                 setVideoEnabled(s => !s)
             }
-            
+
         }
     }
 
@@ -211,22 +223,22 @@ const CallSession: React.FC = () => {
                     </div>
                     <div className='flex-spacer'></div>
                     <div className='group-buttons call-buttons'>
-                        <ButtonAction className={voiceEnabled?'on': 'off'}  onClick={onToggle('voice')}>
+                        <ButtonAction className={voiceEnabled ? 'on' : 'off'} onClick={onToggle('voice')}>
                             {!voiceEnabled && <VoiceOnIcon />}
                             {voiceEnabled && <VoiceOffIcon />}
                         </ButtonAction>
                         <ButtonAction className={'stop-call'} onClick={onStopCall}>
                             <CallIcon />
                         </ButtonAction>
-                        <ButtonAction className={videoEnabled?'on': 'off'}   onClick={onToggle('video')}>
+                        <ButtonAction className={videoEnabled ? 'on' : 'off'} onClick={onToggle('video')}>
                             {!videoEnabled && <VideoOnIcon />}
                             {videoEnabled && <VideoOffIcon />}
                         </ButtonAction>
                     </div>
                     <div className='flex-spacer'></div>
                     <div className='group-buttons'>
-                        <ButtonAction  onClick={()=>{
-                             dispatch(callActions.showModal({ modal: 'device', visible: true }));
+                        <ButtonAction onClick={() => {
+                            dispatch(callActions.showModal({ modal: 'device', visible: true }));
                         }}>
                             <CallSettingsIcon />
                         </ButtonAction>

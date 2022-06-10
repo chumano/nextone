@@ -56,3 +56,10 @@ src/obj
 src/web-map/.env.development
 src/MapService/Data/MapTiles
 src/IdentityService/Config/rsakey.json
+src/ComService/Properties/PublishProfiles
+src/FileService/.config
+src/FileService/Properties/PublishProfiles
+src/IdentityService/.config
+src/IdentityService/Properties/PublishProfiles
+src/MapService/Properties/PublishProfiles
+src/MasterService/Properties/PublishProfiles

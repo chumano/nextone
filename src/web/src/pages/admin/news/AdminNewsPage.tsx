@@ -1,21 +1,47 @@
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Input, Select } from 'antd';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
+import { newsApi } from '../../../apis/newsApi';
 import { NewsProvider, useNewsDispatch, useNewsSelector, useNewsStore } from '../../../context/news/newsContext';
 import { getNewsList, newsActions } from '../../../context/news/newsStore';
 import '../../../styles/pages/admin-news/news-page.scss';
 import NewsCreateForm from './NewsCreateForm';
 import NewsList from './NewsList';
 import NewsUpdateForm from './NewsUpdateForm';
-
+const { Option } = Select;
 const AdminNewsPageInternal = () => {
   const dispatch = useNewsDispatch();
-  const { view } = useNewsSelector(o => o);
-  const [filters, setFilters] = useState({})
+  const { view, filters } = useNewsSelector(o => o);
   useEffect(() => {
-    dispatch(newsActions.setNewsList(['123', '999']))
-  }, [])
+    dispatch(newsActions.setView('main'));
+  }, []);
+
+  useEffect(() => {
+    if (view !== 'main') return;
+
+    const fecthData = async () => {
+      const page = filters?.page || 1;
+      const pageSize = filters?.pageSize || 10;
+      const countResponse = await newsApi.count(filters?.textSearch || '', filters?.publishState || 0);
+      const listResponse = await newsApi.list(filters?.textSearch || '',
+        filters?.publishState || 0,
+        {
+          offset: (page - 1) * pageSize,
+          pageSize: pageSize
+        }
+      );
+      if (countResponse.isSuccess) {
+        dispatch(newsActions.setNewsCount(countResponse.data))
+      }
+      if (listResponse.isSuccess) {
+        dispatch(newsActions.setNewsList(listResponse.data))
+      }
+    }
+
+    fecthData();
+  }, [view, filters])
 
   return <div className='admin-news-page'>
     {view === 'main' &&
@@ -41,6 +67,34 @@ const AdminNewsPageInternal = () => {
         </div>
 
         <div className='admin-news-page__filter'>
+          <div className="input-label-group">
+            <Input.Search
+              placeholder="Tìm kiếm"
+              allowClear
+              onSearch={(value) => {
+                const newFilter= {
+                  ...filters,
+                  textSearch: value
+                };
+                dispatch(newsActions.setFilter(newFilter))
+              }}
+              enterButton
+            />
+          </div>
+          <div style={{marginLeft:'10px'}}>
+            <Select defaultValue={0} style={{ width: 120 }} onChange={(value) => {
+              const newFilter= {
+                ...filters,
+                publishState: value as any
+              };
+              dispatch(newsActions.setFilter(newFilter))
+            }}>
+              <Option value={0}>Tất cả</Option> 
+              <Option value={1}>Đã đăng</Option>
+              <Option value={2}>Chưa đăng</Option>
+            </Select>
+          </div>
+
 
         </div>
 
@@ -49,11 +103,11 @@ const AdminNewsPageInternal = () => {
         </div>
       </>
     }
-    {view==='new' &&
-      <NewsCreateForm/>
+    {view === 'new' &&
+      <NewsCreateForm />
     }
-    {view==='update' &&
-      <NewsUpdateForm/>
+    {view === 'update' &&
+      <NewsUpdateForm />
     }
   </div>
 }

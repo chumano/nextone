@@ -7,7 +7,7 @@ export interface News {
     imageUrl: string;
     imageDescription: string;
 
-    isPublished: string;
+    isPublished: boolean;
 
     publishedDate: string;
     publishedBy: string;

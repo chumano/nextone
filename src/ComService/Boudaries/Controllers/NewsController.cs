@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class NewsController : ControllerBase
     {
@@ -30,16 +30,37 @@ namespace ComService.Boudaries.Controllers
             _idGenerator = idGenerator;
             _dbContext = comDbContext;
         }
+
         [AllowAnonymous]
         [HttpGet("GetList")]
         public async Task<IActionResult> GetList([FromQuery] GetListNewsDTO getListDTO)
         {
+            var userId = _userContext.User.UserId;
             var pageOptions = new PageOptions(getListDTO.Offset, getListDTO.PageSize);
             var query = _dbContext.News.AsNoTracking();
-            if(getListDTO.PublishState!= null && getListDTO.PublishState != YesNoEnum.All)
+
+            if (!string.IsNullOrWhiteSpace(getListDTO.TextSearch))
             {
-                bool isPublished = getListDTO.PublishState == YesNoEnum.Yes;
-                query = query.Where(o => o.IsPublished == isPublished);
+                var textSearch = getListDTO.TextSearch.Trim();
+                query = query.Where(o =>
+                    o.Title.Contains(textSearch)
+                    || o.Description.Contains(textSearch)
+                    || o.ImageDescription.Contains(textSearch)
+                    || o.PublishedUserName.Contains(textSearch)
+                    );
+            }
+
+            if (!_userContext.IsAuthenticated)
+            {
+                query = query.Where(o => o.IsPublished == true);
+            }
+            else
+            {
+                if (getListDTO.PublishState != null && getListDTO.PublishState != YesNoEnum.All)
+                {
+                    bool isPublished = getListDTO.PublishState == YesNoEnum.Yes;
+                    query = query.Where(o => o.IsPublished == isPublished);
+                }
             }
 
             if (getListDTO.FromDate != null)
@@ -52,23 +73,45 @@ namespace ComService.Boudaries.Controllers
                 query = query.Where(o => o.PublishedDate <= getListDTO.ToDate);
             }
 
-            var items = await query.Skip(pageOptions.Offset)
+            var items = await query
+                .OrderByDescending(o => o.PublishedDate)
+                .Skip(pageOptions.Offset)
                 .Take(pageOptions.PageSize)
                 .ToListAsync();
 
             return Ok(ApiResult.Success(items));
         }
 
-
+        [AllowAnonymous]
         [HttpGet("Count")]
         public async Task<IActionResult> Count([FromQuery] GetListNewsDTO getListDTO)
         {
+            var userId = _userContext.User.UserId;
             var pageOptions = new PageOptions(getListDTO.Offset, getListDTO.PageSize);
             var query = _dbContext.News.AsNoTracking();
-            if (getListDTO.PublishState != null && getListDTO.PublishState != YesNoEnum.All)
+
+            if (!string.IsNullOrWhiteSpace(getListDTO.TextSearch))
             {
-                bool isPublished = getListDTO.PublishState == YesNoEnum.Yes;
-                query = query.Where(o => o.IsPublished == isPublished);
+                var textSearch = getListDTO.TextSearch.Trim();
+                query = query.Where(o => 
+                    o.Title.Contains(textSearch)
+                    || o.Description.Contains(textSearch)
+                    || o.ImageDescription.Contains(textSearch)
+                    || o.PublishedUserName.Contains(textSearch)
+                    );
+            }
+
+            if (!_userContext.IsAuthenticated)
+            {
+                query = query.Where(o => o.IsPublished == true);
+            }
+            else
+            {
+                if (getListDTO.PublishState != null && getListDTO.PublishState != YesNoEnum.All)
+                {
+                    bool isPublished = getListDTO.PublishState == YesNoEnum.Yes;
+                    query = query.Where(o => o.IsPublished == isPublished);
+                }
             }
 
             if (getListDTO.FromDate != null)
@@ -95,7 +138,7 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(item));
         }
 
-        [HttpPost()]
+        [HttpPost("CreateNews")]
         public async Task<IActionResult> CreateNews(CreateNewsDTO newsDTO)
         {
             var userId = _userContext.User.UserId;
@@ -151,7 +194,7 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpPost("publish/{id}")]
-        public async Task<IActionResult> Publish([FromQuery] string id)
+        public async Task<IActionResult> Publish(string id)
         {
             var userId = _userContext.User.UserId;
             var userName = _userContext.User.Name;
@@ -172,7 +215,7 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpPost("unpublish/{id}")]
-        public async Task<IActionResult> UnPublish([FromQuery] string id)
+        public async Task<IActionResult> UnPublish( string id)
         {
             var userId = _userContext.User.UserId;
             var userName = _userContext.User.Name;
@@ -194,7 +237,7 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete([FromQuery] string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var item = await _dbContext.News.FindAsync(id);
             if(item == null)

@@ -1,3 +1,9 @@
+Cau hinh server
+-- SSL
+https://msftwebcast.com/2019/11/create-and-bind-a-self-signed-certificate-in-iis-10.html
+
+-- IIS - reverse proxy
+https://docs.microfocus.com/OMi/10.62/Content/OMi/AdminGuide/Hardening/RevProxy_IIS.htm
 -------------------------------------------
 Web-TODO:
 - find users in ModalFindUSer : done

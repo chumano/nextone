@@ -17,3 +17,10 @@ export interface UpdateNewsDTO {
     imageDescription: string;
 
 }
+
+export interface NewsFilter{
+    textSearch?: string,
+    publishState?: 0 | 1 | 2,
+    page?: number,
+    pageSize?: number
+}

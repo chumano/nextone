@@ -66,7 +66,7 @@ namespace IdentityService
             {
                 var admin = new ApplicationUser()
                 {
-                    Id = "afbd3f0a-a999-4b67-a8c7-1a4a19347507",
+                    Id = "00000000-0000-0000-0000-000000000001",
                     UserName = "admin",
                     Email = "admin@nomail.com",
                     LockoutEnabled = false,
@@ -78,7 +78,7 @@ namespace IdentityService
 
                 var manager = new ApplicationUser()
                 {
-                    Id = "05d5ce08-6a51-4c90-9f73-163e2bb136ee",
+                    Id = "00000000-0000-0000-0000-000000000002",
                     UserName = "manager",
                     Email = "manager@nomail.com",
                     LockoutEnabled = false,
@@ -88,7 +88,7 @@ namespace IdentityService
 
                 var member = new ApplicationUser()
                 {
-                    Id = "5b256826-3074-4ce6-bb0a-bc6d2885e274",
+                    Id = "00000000-0000-0000-0000-000000000003",
                     UserName = "member",
                     Email = "member@nomail.com",
                     LockoutEnabled = false,

@@ -35,7 +35,7 @@ export class DeviceManager {
 
             return mediaStream;
         } catch (err) {
-            console.error("DeviceManager.getDeveices error", err);
+            console.error("DeviceManager.getMediaStream error", err);
         }
         return undefined;
     }

@@ -112,7 +112,6 @@ export abstract class CallBase {
         } else {
             console.log("get-stream-error");
             this.localStream = undefined;
-
             //check user want to continue
         }
 

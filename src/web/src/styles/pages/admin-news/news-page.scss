@@ -23,14 +23,19 @@
     }
 
     &__filter{
+        display: flex;
+        flex-direction: row;
 
     }
 
     &__body{
-
+        padding-top: 10px;
     }
 
     .ant-breadcrumb{
         font-size: $font-size-3;
+    }
+    .ql-editor{
+        min-height:400px;
     }
 }

@@ -42,7 +42,7 @@ namespace NextOne.Shared.Security
             {
                 var user = _httpContextAccessor.HttpContext.User;
                 var claimId = user?.FindFirst(ClaimTypes.NameIdentifier);
-                var claimName = user?.FindFirst(ClaimTypes.Name);
+                var claimName = user?.FindFirst("name");
                 return new BasicUser()
                 {
                     UserId = claimId?.Value ?? AnonymousUserId,

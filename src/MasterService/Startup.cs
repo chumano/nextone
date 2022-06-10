@@ -29,6 +29,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SharedDomain;
 using FluentValidation;
 using MasterService.Validators;
+using System.Net.Http;
+using System.Security.Authentication;
 
 namespace MasterService
 {
@@ -93,6 +95,7 @@ namespace MasterService
                 jwtOptions.Authority = identityServerOptions.Authority;
                 jwtOptions.Audience = "master"; // ApiResources
                 jwtOptions.RequireHttpsMetadata = identityServerOptions.RequireHttpsMetadata;
+                jwtOptions.BackchannelHttpHandler = GetHttpHandler();
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -137,6 +140,15 @@ namespace MasterService
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddValidatorsFromAssemblyContaining(typeof(CreateUserValidator));
+        }
+
+        private static HttpClientHandler GetHttpHandler()
+        {
+            var handler = new HttpClientHandler();
+            handler.ClientCertificateOptions = ClientCertificateOption.Manual;
+            handler.SslProtocols = SslProtocols.Tls12;
+            handler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+            return handler;
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

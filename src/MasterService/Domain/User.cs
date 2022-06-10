@@ -17,6 +17,8 @@ namespace MasterService.Domain
             Phone = phone;
             IsActive = true;
             IsDeleted = false;
+            CreatedDate = DateTime.Now;
+            UpdatedDate = DateTime.Now;
         }
 
         public string Id { get; private set; }

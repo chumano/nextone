@@ -44,13 +44,14 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
 
     const onCall = useCallback((callType: 'video' | 'voice') => {
         //TODO: show Modal select devices
-        if (!deviceSettings) {
-            dispatch(callActions.prepareCall({
-                callType,
-                conversationId: conversation.id
-            }));
-            dispatch(callActions.showModal({ modal: 'device', visible: true }));
-        } else {
+        // if (!deviceSettings) {
+        //     dispatch(callActions.prepareCall({
+        //         callType,
+        //         conversationId: conversation.id
+        //     }));
+        //     dispatch(callActions.showModal({ modal: 'device', visible: true }));
+        // } else 
+        {
             dispatch(callActions.startCall({
                 callType,
                 conversationId: conversation.id

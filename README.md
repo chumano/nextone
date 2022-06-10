@@ -19,8 +19,6 @@ tye run --tags=core --watch
 
 Run use docker-compose
 ```
-docker-compose -f docker-compose.infras.yml up -d db
-
 docker-compose -f docker-compose.yml up -d
 ```
 Debug in DockerDesktop :
