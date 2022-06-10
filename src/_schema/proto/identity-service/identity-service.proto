@@ -15,6 +15,7 @@ service GrpcIdentityService {
   rpc UpdateIdentityUserRoles(UpdateIdentityUserRolesRequest) returns(UpdateIdentityUserRolesResponse);
 
   rpc ResetPassword(ResetPasswordRequest) returns (ResetPasswordResponse);
+  rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
 
   rpc CreateIdentityRole(CreateIdentityRoleRequest) returns(CreateIdentityRoleResponse);
   rpc UpdateIdentityRole(UpdateIdentityRoleRequest) returns(UpdateIdentityRoleResponse);
@@ -72,6 +73,17 @@ message ResetPasswordRequest{
 }
 
 message ResetPasswordResponse{
+  bool isSuccess = 1;
+  nextone.common.Error error = 2; 
+}
+
+message ChangePasswordRequest{
+  string userId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
+message ChangePasswordResponse{
   bool isSuccess = 1;
   nextone.common.Error error = 2; 
 }

@@ -4,11 +4,9 @@ https://msftwebcast.com/2019/11/create-and-bind-a-self-signed-certificate-in-iis
 
 -- IIS - reverse proxy
 https://docs.microfocus.com/OMi/10.62/Content/OMi/AdminGuide/Hardening/RevProxy_IIS.htm
+
 -------------------------------------------
 Web-TODO:
-- find users in ModalFindUSer : done
-- find member in ModalAddMemebers : done
-- Open Chat from member : done
 
 - Video Call
 	- Select Devices on Start Call, Receive call
@@ -22,22 +20,6 @@ Web-TODO:
 	- event  recents
 	- ModalEventView 
 	
-- Profile 
-	- View Profile
-	- Change Name, SDT
-	- Change Password
-	- Forget Password ???
-	
-- Home News
-	News List
-	News View
-
-- Admin News
-	News List
-	News Add
-	News Update
-	News Delete
-	News Publish/ Unpublish
 	
 - Settings
 	- Map settings : Bounding, default zoom, default center

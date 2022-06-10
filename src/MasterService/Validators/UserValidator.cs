@@ -21,4 +21,13 @@ namespace MasterService.Validators
             RuleFor(r => r.Phone).Matches(@"^(\+84|0[1-9])[0-9]{1,12}$").WithMessage("Not Format Phone Number");
         }
     }
+
+    public class UserProfileValidator : AbstractValidator<UpdateMyProfileDTO>
+    {
+        public UserProfileValidator()
+        {
+            RuleFor(r => r.Name).NotEmpty().MinimumLength(4);
+            RuleFor(r => r.Phone).Matches(@"^(\+84|0[1-9])[0-9]{1,12}$").WithMessage("Not Format Phone Number");
+        }
+    }
 }

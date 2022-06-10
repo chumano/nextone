@@ -26,6 +26,7 @@ import UserPage from "./pages/user/User";
 import NewsList from "./pages/intro/NewsList";
 import NewsPage from "./pages/news/NewsPage";
 import AdminNewsPage from "./pages/admin/news/AdminNewsPage";
+import ProfilePage from "./pages/profile/ProfilePage";
 
 const authRoutes: Array<{
 	path: string;
@@ -95,12 +96,13 @@ const routes: Array<IRouteConfig> = [
         component: Home,
         useAuthLayout: true
     },
+	//profile
+	{
+        path: "/profile",
+        component: ProfilePage,
+        useAuthLayout: true
+    },
     //admin
-    // {
-    //     path: "/admin/users",
-    //     component: UserPage,
-    //     useAuthLayout: true
-    // },
     // {
     //     path: "/admin/channels",
     //     component: Channels,

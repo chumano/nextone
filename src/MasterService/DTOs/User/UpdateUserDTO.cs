@@ -12,6 +12,5 @@ namespace MasterService.DTOs.User
         public string Email { get; set; }
         public string Phone { get; set; }
 
-        public List<string> RoleCodes { get; set; }
     }
 }

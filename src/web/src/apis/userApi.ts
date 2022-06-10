@@ -12,11 +12,12 @@ import { PageOptions } from "../models/apis/PageOptions.model";
 import { CreateUserRequest, User } from "../models/user/User.model";
 import { createAxios } from "../utils";
 import API from "../config/apis";
+import { handleAxiosApi } from "../utils/functions";
 
 const axiosInstance = createAxios(API.MASTER_SERVICE);
 const list = (
 	textSearch: string, searchParams?: PageOptions,
-	excludeMe?: boolean 
+	excludeMe?: boolean
 ): Promise<AxiosResponse<ApiResult<User[]>>> => {
 	if (!searchParams) searchParams = new PageOptions();
 	return axiosInstance.get(`/user/getlist`, {
@@ -27,6 +28,17 @@ const list = (
 			excludeMe
 		},
 	});
+};
+
+const getMyProfile = (): Promise<ApiResult<User>> => {
+	return handleAxiosApi(axiosInstance.get(`/user/myprofile`));
+};
+const updateMyProfile = (profile: { name: string, phone: string }): Promise<ApiResult<null>> => {
+	return handleAxiosApi(axiosInstance.post(`/user/updatemyprofile`, profile));
+};
+
+const changeMyPassword = (data: { oldPassword: string, newPassword: string }): Promise<ApiResult<null>> => {
+	return handleAxiosApi(axiosInstance.post(`/user/changemypassword`, data));
 };
 
 const count = (textSearch?: string): Promise<AxiosResponse<ApiResult<number>>> => {
@@ -80,6 +92,10 @@ const resetPassword = (
 
 
 export const userApi = {
+	getMyProfile,
+	updateMyProfile,
+	changeMyPassword,
+
 	list,
 	count,
 	getUser,

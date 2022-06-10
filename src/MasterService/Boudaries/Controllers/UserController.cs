@@ -10,6 +10,7 @@ using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Domain;
 using NextOne.Shared.Security;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -80,12 +81,68 @@ namespace MasterService.Controllers
             return Ok(ApiResult.Success(items));
         }
 
+        [HttpGet("MyProfile")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var actionUser = _userContext.User;
+            var user = await _userService.Get(actionUser.UserId);
+            return Ok(ApiResult.Success(user));
+        }
+
+        [HttpPost("UpdateMyProfile")]
+        public async Task<IActionResult> UpdateMyProfile(UpdateMyProfileDTO userDTO, [FromServices] IValidator<UpdateMyProfileDTO> validator)
+        {
+            var actionUser = _userContext.User;
+            var validationResult = validator.Validate(userDTO);
+
+            if (!validationResult.IsValid)
+            {
+                var combinedErrorString = string.Join(",", validationResult.Errors.Select(e => e.ErrorMessage).ToList());
+                return new BadRequestObjectResult(ApiResult.Error(combinedErrorString));
+            }
+
+            var user = await _userService.Get(actionUser.UserId);
+            if (user == null)
+            {
+                throw new DomainException("[User/UpdateMyProfile]", "User not exist");
+            }
+
+            await _userService.UpdateUser(user, userDTO.Name, user.Email, userDTO.Phone);
+
+            return Ok(ApiResult.Success(null));
+        }
+
+        [HttpPost("ChangeMyPassword")]
+        public async Task<IActionResult> ChangeMyPassword(ChangeMyPasswordDTO userDTO)
+        {
+            try
+            {
+                var actionUser = _userContext.User;
+
+                var user = await _userService.Get(actionUser.UserId);
+                if (user == null)
+                {
+                    throw new DomainException("[User/UpdateMyProfile]", "User not exist");
+                }
+
+                await _identityService.ChangePassword(actionUser.UserId, userDTO.OldPassword, userDTO.NewPassword);
+
+                return Ok(ApiResult.Success(null));
+            }catch(Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
+          
+        }
+
+
         [HttpGet("Count")]
         public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
         {
             var count = await _userService.Count(getUserListDTO.TextSearch);
             return Ok(ApiResult.Success(count));
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
@@ -133,7 +190,7 @@ namespace MasterService.Controllers
                 throw new DomainException("[User/UpdateUser]", "User not exist");
             }
 
-            await _userService.UpdateUser(user, userDTO.Name, userDTO.Email, userDTO.Phone, userDTO.RoleCodes);
+            await _userService.UpdateUser(user, userDTO.Name, userDTO.Email, userDTO.Phone);
 
             return Ok(ApiResult.Success(null));
         }

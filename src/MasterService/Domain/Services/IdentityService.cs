@@ -17,6 +17,7 @@ namespace MasterService.Domain.Services
         Task UpdateIdentityUserRoles(string userId, IList<string> roleNames);
 
         Task<string> ResetPassword(string userId, string newPassword);
+        Task<string> ChangePassword(string userId, string oldPassword, string newPassword);
 
         Task CreateIdentityRole(string roleName, string displayName);
         Task UpdateIdentityRole(string roleName, string displayName);
@@ -110,6 +111,23 @@ namespace MasterService.Domain.Services
             if (!response.IsSuccess)
             {
                 throw new Exception("ResetPassword: " + response.Error.Message);
+            }
+
+            return newPassword;
+        }
+
+        public async Task<string> ChangePassword(string userId, string oldPassword, string newPassword)
+        {
+            var response = await _grpcServiceClient.ChangePasswordAsync(new ChangePasswordRequest()
+            {
+                UserId = userId,
+                OldPassword = oldPassword,
+                NewPassword = newPassword
+            });
+
+            if (!response.IsSuccess)
+            {
+                throw new Exception("ChangePassword: " + response.Error.Message);
             }
 
             return newPassword;

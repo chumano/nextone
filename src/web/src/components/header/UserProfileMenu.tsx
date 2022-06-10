@@ -16,7 +16,7 @@ import { authActions } from "../../store";
 const ProfileMenus:any[] = [
     {
         label: "Thông tin",
-        path: "/",
+        path: "/profile",
         icon: <FontAwesomeIcon icon={faUser} />
     },
     // {

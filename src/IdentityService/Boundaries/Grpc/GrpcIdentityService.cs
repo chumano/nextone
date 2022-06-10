@@ -224,6 +224,8 @@ namespace IdentityService.Boundaries.Grpc
                 {
                     await _userManager.RemovePasswordAsync(user);
                     await _userManager.AddPasswordAsync(user, request.NewPassword);
+                    await _userManager.ResetAccessFailedCountAsync(user);
+                    await _userManager.SetLockoutEndDateAsync(user, null);
 
                     await transation.CommitAsync();
 
@@ -240,6 +242,57 @@ namespace IdentityService.Boundaries.Grpc
             }
 
             return new ResetPasswordResponse()
+            {
+                IsSuccess = false,
+                Error = new Error()
+                {
+                    Message = errMessage
+                }
+            };
+        }
+
+        public override async Task<ChangePasswordResponse> ChangePassword(ChangePasswordRequest request, ServerCallContext context)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId);
+            var errMessage = "";
+            using (var transation = await _dbContext.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    var checkPassword = await _userManager.CheckPasswordAsync(user, request.OldPassword);
+                    if (!checkPassword)
+                    {
+                        return new ChangePasswordResponse()
+                        {
+                            IsSuccess = false,
+                            Error = new Error()
+                            {
+                                Message = "Mật khẫu cũ không đúng"
+                            }
+                        };
+                    }
+                    await _userManager.RemovePasswordAsync(user);
+                    var addPasswordResult = await _userManager.AddPasswordAsync(user, request.NewPassword);
+                    if (!addPasswordResult.Succeeded)
+                    {
+                        throw new Exception(addPasswordResult.Errors.First().Description);
+                    }
+
+                    await transation.CommitAsync();
+
+                    return new ChangePasswordResponse()
+                    {
+                        IsSuccess = true
+                    };
+                }
+                catch (Exception ex)
+                {
+                    errMessage = ex.Message;
+                    await transation.RollbackAsync();
+                }
+            }
+
+            return new ChangePasswordResponse()
             {
                 IsSuccess = false,
                 Error = new Error()

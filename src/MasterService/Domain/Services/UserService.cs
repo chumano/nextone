@@ -20,8 +20,7 @@ namespace MasterService.Domain.Services
         Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch);
         Task<User> CreateUser(string name, string email, string phone);
 
-        Task<User> UpdateUser(User user, string name, string email, string phone,
-            List<string> roleCodes);
+        Task<User> UpdateUser(User user, string name, string email, string phone);
 
         Task<User> UpdateUserRoles(User user, List<string> roleCodes);
 
@@ -92,8 +91,7 @@ namespace MasterService.Domain.Services
             return user;
         }
 
-        public async Task<User> UpdateUser(User user, string name, string email, string phone,
-            List<string> roleCodes)
+        public async Task<User> UpdateUser(User user, string name, string email, string phone)
         {
             //var roles = await _roleRepository.Roles
             //        .Where(o => roleCodes.Contains(o.Code))
