@@ -1,10 +1,20 @@
-import React from 'react'
-import { Text } from 'react-native-paper'
+import React from 'react';
+import {View, StyleSheet} from 'react-native';
+
+import ConversationList from '../../components/Conversation/ConversationList';
 
 const ConversationScreen = () => {
   return (
-    <Text>ConversationScreen</Text>
-  )
-}
+    <View style={styles.conversationScreenContainer}>
+      <ConversationList />
+    </View>
+  );
+};
 
-export default ConversationScreen
+export default ConversationScreen;
+
+const styles = StyleSheet.create({
+  conversationScreenContainer: {
+    flex: 1,
+  },
+});

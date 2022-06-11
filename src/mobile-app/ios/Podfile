@@ -19,9 +19,7 @@ target 'UCom' do
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 
-  pod 'react-native-webview', :path => '../node_modules/react-native-webview'
 
   target 'UComTests' do
     inherit! :complete

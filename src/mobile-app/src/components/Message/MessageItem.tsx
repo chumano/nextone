@@ -1,0 +1,56 @@
+import React from 'react';
+import {StyleSheet, View} from 'react-native';
+import {Text} from 'react-native-paper';
+import {APP_THEME} from '../../constants/app.theme';
+
+import {MessageEvent} from '../../types/Message/Message.type';
+import UserAvatar from '../User/UserAvatar';
+
+interface IProps {
+  message: MessageEvent;
+}
+
+const MessageItem: React.FC<IProps> = ({message}) => {
+  const isOwnerMessage = message.userSender.userId === 'user-01';
+
+  return (
+    <View
+      style={[
+        styles.messageContainer,
+        isOwnerMessage && styles.ownerMessageContainer,
+      ]}>
+      <UserAvatar imageUri={message.userSender.userAvatarUrl} size={24} />
+      <View
+        style={[
+          styles.messageContentContainer,
+          isOwnerMessage && styles.ownerMessageContentContainer,
+        ]}>
+        <Text>{message.content}</Text>
+      </View>
+    </View>
+  );
+};
+
+export default MessageItem;
+
+const styles = StyleSheet.create({
+  messageContainer: {
+    flexDirection: 'row',
+    padding: 8,
+  },
+  ownerMessageContainer: {
+    flexDirection: 'row-reverse',
+  },
+  messageContentContainer: {
+    marginLeft: 8,
+    marginRight: 0,
+    padding: 8,
+    maxWidth: '80%',
+    borderRadius: 8,
+    backgroundColor: APP_THEME.colors.white,
+  },
+  ownerMessageContentContainer: {
+    marginRight: 8,
+    marginLeft: 0,
+  },
+});
