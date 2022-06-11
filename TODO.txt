@@ -8,6 +8,14 @@ https://docs.microfocus.com/OMi/10.62/Content/OMi/AdminGuide/Hardening/RevProxy_
 -------------------------------------------
 Web-TODO:
 
+- Map page
+	- show events : in day, by eventTypes
+		popup event info
+	- show online user location: users in my channel, location updated in a hour
+		popup user info
+		
+- event view modal
+	
 - Video Call
 	- Select Devices on Start Call, Receive call
 	- Toggle : Video, Voice
@@ -20,11 +28,7 @@ Web-TODO:
 	- event  recents
 	- ModalEventView 
 	
-	
-- Settings
-	- Map settings : Bounding, default zoom, default center
-	- Event Types
-	- 
+
 - UserStatus
 	- notifiy user online
 

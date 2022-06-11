@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NextOne.Infrastructure.Core.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,6 +57,20 @@ namespace ComService
                 {
                     var appDbContext = services.GetRequiredService<ComDbContext>();
                     appDbContext.Database.Migrate();
+
+                    if (!appDbContext.Settings.Any())
+                    {
+                        Log.Debug("Settings being populated");
+                        foreach (var settings in SeedData.Settings)
+                        {
+                            appDbContext.Settings.Add(settings);
+                        }
+                        appDbContext.SaveChanges();
+                    }
+                    else
+                    {
+                        Log.Debug("Settings already populated");
+                    }
                 }
             }
 

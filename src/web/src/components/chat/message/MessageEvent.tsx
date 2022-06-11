@@ -5,6 +5,7 @@ import { EventFile } from '../../../models/event/EventFile.model';
 import { FileType } from '../../../models/file/FileType.model';
 import { Message } from '../../../models/message/Message.model'
 import { frowNow } from '../../../utils/functions';
+import { showModalEvent } from '../../event/ModalEvent';
 import FileView from '../file/FileView';
 
 const groupFileByType = (files: EventFile[]) => {
@@ -36,7 +37,10 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
                 <span style={{ marginLeft: 10 }}>{eventInfo.eventType.name}</span>
             </div>
             <div>
-                <h6> {eventInfo.content}</h6>
+                <h6 className='clickable' onClick={()=>{
+                    showModalEvent(eventInfo);
+                }}> {eventInfo.content}
+                </h6>
             </div>
 
             <div>

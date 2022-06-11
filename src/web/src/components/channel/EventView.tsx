@@ -1,5 +1,6 @@
 import { EventInfo } from "../../models/event/Event.model";
 import { NotificationOutlined } from '@ant-design/icons';
+import { showModalEvent } from "../event/ModalEvent";
 
 interface EventViewProp{
     eventItem: EventInfo
@@ -17,7 +18,9 @@ const EventView :React.FC<EventViewProp> = ({eventItem})=>{
                 }
                 
             </div>
-            <div className="event-body">
+            <div className="event-body clickable" onClick={()=>{
+                showModalEvent(eventItem);
+            }} >
                 <div className="event--type">
                     {eventItem.eventType.name}
                 </div>

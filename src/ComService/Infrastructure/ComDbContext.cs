@@ -25,6 +25,7 @@ namespace ComService.Infrastructure
         public DbSet<Event> Events { get; set; }
         public DbSet<UserStatus> Users { get; set; }
         public DbSet<EventType> EventTypes { get; set; }
+        public DbSet<Settings> Settings { get; set; }
 
         public DbSet<News> News { get; set; }
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
@@ -370,6 +371,26 @@ namespace ComService.Infrastructure
 
                 eb.Property(o => o.Lon)
                   .HasColumnType("float");
+            });
+
+
+            modelBuilder.Entity<Settings>(eb =>
+            {
+                eb.ToTable("T_App_Settings", DB_SCHEMA)
+                 .HasKey("Code");
+
+                eb.Property(o => o.Code)
+                    .HasColumnType("nvarchar(50)");
+
+                eb.Property(o => o.Name)
+                    .HasColumnType("nvarchar(255)")
+                    .IsRequired();
+
+                eb.Property(o => o.Value)
+                    .HasColumnType("nvarchar(max)");
+
+                eb.Property(o => o.Group)
+                  .HasColumnType("nvarchar(255)");
             });
 
             BuildNewsModels(modelBuilder);

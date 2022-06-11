@@ -1,9 +1,95 @@
 @import "../../abstracts/variables";
 @import "../../abstracts/mixins";
 
-.map-page{
-    .leaflet-container{
+.map-page {
+    height: 100%;
+    position: relative;
+
+    .leaflet-container {
         width: 100%;
-        height: 500px;
+        height: 100%;
+    }
+
+    .map-overlay {
+        position: absolute;
+
+        &__content {
+            position: relative;
+        }
+
+        &::before {
+            content: "";
+            background-color: $color-grey-6;
+            background-size: cover;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+            opacity: 0.75;
+        }
+    }
+
+    .map-toolbar {
+        top: 20px;
+        left: 440px;
+        z-index: 1000;
+        padding: 5px;
+    }
+
+    .map-sidebar {
+        top: 20px;
+        left: 20px;
+
+        bottom: auto;
+        width: 400px;
+        z-index: 1000;
+        padding: 5px;
+        .map-overlay__content{
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        &.open {
+            bottom: 20px !important;
+        }
+
+        &__header {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            h6 {
+                margin-bottom: 0;
+            }
+        }
+        &__body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ant-tabs {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+
+            .ant-tabs-content-holder {
+                height: 100%;
+            }
+
+            .ant-tabs-content {
+                flex-grow: 1;
+            }
+        }
+
+        .ant-tabs-nav-list {
+            display: flex;
+            width: 100%;
+
+            .ant-tabs-tab {
+                flex-grow: 1;
+                justify-content: center;
+            }
+        }
     }
 }

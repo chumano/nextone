@@ -41,6 +41,41 @@ namespace ComService.Boudaries.Controllers
             _comDbContext = comDbContext;
         }
 
+        [HttpGet()]
+        public async Task<IActionResult> GetSettings()
+        {
+            var userId = _userContext.User.UserId;
+            var user = await _userService.GetUser(userId);
+            var items = await _comDbContext.Settings.AsQueryable()
+                .ToListAsync();
+            return Ok(ApiResult.Success(items));
+        }
+
+        [HttpPost("Update")]
+        public async Task<IActionResult> UpdateSettings(UpdateSettingsDTO dto)
+        {
+            try
+            {
+                var userId = _userContext.User.UserId;
+                var user = await _userService.GetUser(userId);
+                var existSettings = await _comDbContext.Settings.FindAsync(dto.Code);
+                if (existSettings == null)
+                {
+                    throw new Exception($"{dto.Code} is not found");
+                }
+
+                existSettings.Value = dto.Value;
+
+                _comDbContext.Settings.Update(existSettings);
+                await _comDbContext.SaveChangesAsync();
+                return Ok(ApiResult.Success(existSettings));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
+        }
+
         [HttpGet("GetEventTypes")]
         public async Task<IActionResult> GetList()
         {
@@ -50,7 +85,6 @@ namespace ComService.Boudaries.Controllers
                 .ToListAsync();
             return Ok(ApiResult.Success(items));
         }
-
 
 
         [HttpPost("CreateEventType")]

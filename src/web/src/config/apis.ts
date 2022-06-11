@@ -1,22 +1,4 @@
-export interface AppWindow extends Window {
-    ENV: {
-        Map: {
-            center: [number, number];
-            zoom: number;
-            boundingBox?: [ [number, number], [number, number]] ;
-            googleApiKey: string;
-        },
-        Identity: {
-            identityUrl : string
-        },
-        Apis:{
-            masterUrl : string,
-            comUrl : string,
-            mapUrl : string,
-            fileUrl : string,
-        }
-    }
-}
+import { AppWindow } from "./AppWindow";
 declare let window: AppWindow;
 
 export const IDENTITY_API = window.ENV.Identity.identityUrl;

@@ -1,6 +1,7 @@
 import axios from "axios";
 import API from "../config/apis";
 import { ApiResult } from "../models/apis/ApiResult.model";
+import { AppSettings } from "../models/AppSettings";
 import { Channel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { ConversationMember } from "../models/conversation/ConversationMember.model";
@@ -107,9 +108,23 @@ export const comApi = {
         const responsePromise = comAxiosInstance.delete(`/settings/EventType/${code}`);
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
     },
+
     //users
     getUsers : async (data? : GetListUserStatusDTO)=>{
         const responsePromise = comAxiosInstance.get('/userstatus/GetList', {params: data});
         return await handleAxiosApi<ApiResult<UserStatus[]>>(responsePromise);
+    },
+
+    //settings
+    getSettings: async ()=>{
+        const responsePromise = comAxiosInstance.get('/settings')
+        return await handleAxiosApi<ApiResult<AppSettings[]>>(responsePromise);
+    },
+    updateSettings : async (code: string, value: string )=>{
+        const responsePromise = comAxiosInstance.post(`/settings/Update`, {
+            code,
+            value
+        })
+        return await handleAxiosApi<ApiResult<AppSettings>>(responsePromise);
     },
 }
