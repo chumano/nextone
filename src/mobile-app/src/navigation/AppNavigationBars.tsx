@@ -1,69 +1,80 @@
-import { BottomTabHeaderProps } from '@react-navigation/bottom-tabs';
-import { NativeStackHeaderProps } from '@react-navigation/native-stack';
-import React, { useState } from 'react';
-import { Appbar, Menu } from 'react-native-paper';
-import { useDispatch } from 'react-redux';
-import { authActions } from '../stores/auth/authReducer';
+import {BottomTabHeaderProps} from '@react-navigation/bottom-tabs';
+import {NativeStackHeaderProps} from '@react-navigation/native-stack';
 
-export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({ navigation }) => {
-    const dispatch = useDispatch();
-    
-    const [visible, setVisible] = useState(false);
-    const openMenu = () => setVisible(true);
-    const closeMenu = () => setVisible(false);
+import React, {useState} from 'react';
+import {Appbar, Menu} from 'react-native-paper';
+import {useDispatch} from 'react-redux';
 
-    return (
-        <Appbar.Header>
-            <Appbar.Content title="UCom" />
+import {AppDispatch} from '../stores/app.store';
+import {logout} from '../stores/auth/auth.reducer';
 
-            <Menu
-                visible={visible}
-                onDismiss={closeMenu}
-                anchor={
-                    <Appbar.Action icon="menu" color="white" onPress={openMenu} />
-                }>
-                <Menu.Item title="Tài khoản" onPress={() => { 
-                    console.log('Tài khoản was pressed') 
-                    navigation.navigate("Profile")
-                }}  />
-                <Menu.Item title="Đăng xuất" onPress={() => { 
-                    dispatch(authActions.logout());
-                }} />
-            </Menu>
+export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
+  navigation,
+}) => {
+  const dispatch: AppDispatch = useDispatch();
 
-        </Appbar.Header>
-    );
-}
+  const [isVisible, setVisible] = useState(false);
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
 
-export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({ route, navigation, back }) => {
-    const dispatch = useDispatch();
-    const [visible, setVisible] = useState(false);
-    const openMenu = () => setVisible(true);
-    const closeMenu = () => setVisible(false);
-    const routeName = route.name;
+  const navigateToProfileHandler = () => {
+    navigation.navigate('Profile');
+  };
 
-    return (
-        <Appbar.Header>
-            {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-            <Appbar.Content title="UCOM" />
+  const logoutHandler = () => {
+    dispatch(logout());
+  };
 
-            {!back ? (
-                <Menu
-                    visible={visible}
-                    onDismiss={closeMenu}
-                    anchor={
-                        <Appbar.Action icon="menu" color="white" onPress={openMenu} />
-                    }>
-                    <Menu.Item title="Tài khoản" onPress={() => { 
-                    console.log('Tài khoản was pressed') 
-                    navigation.navigate("Profile")
-                }}  />
-                <Menu.Item title="Đăng xuất" onPress={() => { 
-                    dispatch(authActions.logout());
-                }} />
-                </Menu>
-            ) : null}
+  return (
+    <Appbar.Header>
+      <Appbar.Content title="UCom" />
 
-        </Appbar.Header>
-    );
-}
+      <Menu
+        visible={isVisible}
+        onDismiss={closeMenu}
+        anchor={<Appbar.Action icon="menu" color="white" onPress={openMenu} />}>
+        <Menu.Item title="Tài khoản" onPress={navigateToProfileHandler} />
+        <Menu.Item title="Đăng xuất" onPress={logoutHandler} />
+      </Menu>
+    </Appbar.Header>
+  );
+};
+
+export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
+  route,
+  navigation,
+  back,
+}) => {
+  const dispatch: AppDispatch = useDispatch();
+  const [visible, setVisible] = useState(false);
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+  const routeName = route.name;
+
+  const navigateToProfileHandler = () => {
+    navigation.navigate('Profile');
+  };
+
+  const logoutHandler = () => {
+    dispatch(logout());
+  };
+
+  return (
+    <Appbar.Header>
+      {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
+      <Appbar.Content title="UCOM" />
+
+      {!back ? (
+        <Menu
+          visible={visible}
+          onDismiss={closeMenu}
+          anchor={
+            <Appbar.Action icon="menu" color="white" onPress={openMenu} />
+          }>
+          <Menu.Item title="Tài khoản" onPress={navigateToProfileHandler} />
+          <Menu.Item title="Đăng xuất" onPress={logoutHandler} />
+        </Menu>
+      ) : null}
+    </Appbar.Header>
+  );
+};

@@ -1,16 +1,17 @@
 import React from 'react';
-import { View,  StyleSheet } from 'react-native';
-import { ActivityIndicator, Colors } from 'react-native-paper';
+import {View, StyleSheet} from 'react-native';
+import {ActivityIndicator, Colors} from 'react-native-paper';
 
 type Props = {};
 
 const Loading = () => {
-  return   <View style={styles.activityOverlayStyle}>
+  return (
+    <View style={styles.activityOverlayStyle}>
       <View style={styles.activityIndicatorContainer}>
-          <ActivityIndicator animating={true} color={Colors.red800} />
+        <ActivityIndicator animating={true} color={Colors.red800} />
       </View>
     </View>
-  
+  );
 };
 
 const styles = StyleSheet.create({
