@@ -37,7 +37,7 @@ namespace IdentityService
                 var host = CreateHostBuilder(args).Build();
 
                 DbMigrations(host);
-                Console.WriteLine("Starting host...");
+                Console.WriteLine($"Starting host ...");
                 host.Run();
                 return 0;
             }
@@ -56,6 +56,7 @@ namespace IdentityService
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
+                    Console.WriteLine($"EnvironmentName: {context.HostingEnvironment.EnvironmentName}");
                     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
                         .AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", true, true);
 
@@ -73,6 +74,7 @@ namespace IdentityService
                     webBuilder.ConfigureKestrel((ctx, options) =>
                     {
                         var inDocker = ctx.Configuration.GetSection("DOTNET_RUNNING_IN_CONTAINER").Get<bool>();
+                        var useHttps = ctx.Configuration.GetSection("UseHttps").Get<bool>();
                         if (ctx.HostingEnvironment.IsDevelopment())
                         {
                             IdentityModelEventSource.ShowPII = true;
@@ -86,7 +88,7 @@ namespace IdentityService
                         {
                             options.Listen(IPAddress.Any, 5102, listenOptions =>
                             {
-                                if (!inDocker)
+                                if (!inDocker && useHttps)
                                 {
                                     listenOptions.UseHttps();
                                 }

@@ -8,7 +8,7 @@ const EventList = () => {
             <h6>Không có sự kiện</h6>
         }
         {events.map(o => <>
-            Evet
+            Event
         </>)}
     </div>
 }
