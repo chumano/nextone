@@ -4,10 +4,11 @@ import {
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {BottomTabProps} from './BottomTabNavigator';
 
 import ConversationScreen from '../screens/ChatScreen/ConversationScreen';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
-import {BottomTabProps} from './BottomTabNavigator';
+
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
