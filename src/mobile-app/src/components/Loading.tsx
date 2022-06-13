@@ -2,8 +2,6 @@ import React from 'react';
 import {View, StyleSheet} from 'react-native';
 import {ActivityIndicator, Colors} from 'react-native-paper';
 
-type Props = {};
-
 const Loading = () => {
   return (
     <View style={styles.activityOverlayStyle}>

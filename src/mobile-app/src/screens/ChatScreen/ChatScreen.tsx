@@ -1,30 +1,91 @@
-import React, {useLayoutEffect} from 'react';
+import React, {ReactElement, useLayoutEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {Avatar, Text} from 'react-native-paper';
 
 import {ChatStackProps} from '../../navigation/ChatStack';
 
+import {useSelector} from 'react-redux';
+import {IAppStore} from '../../stores/app.store';
+
 import UserAvatar from '../../components/User/UserAvatar';
 import ChatBox from '../../components/Chat/ChatBox';
+import ConversationAvatar from '../../components/Conversation/ConversationAvatar';
 
-const ChatScreen = ({navigation}: ChatStackProps) => {
+import {ConversationType} from '../../types/Conversation/ConversationType.type';
+import {UserStatus} from '../../types/User/UserStatus.type';
+import {Conversation} from '../../types/Conversation/Conversation.type';
+
+interface ChatParams {
+  conversationId: string;
+  userId: string;
+}
+
+const ChatScreen = ({navigation, route}: ChatStackProps) => {
+  const {data: listConversation} = useSelector(
+    (store: IAppStore) => store.conversation,
+  );
+  const [otherUser, setOtherUser] = useState<UserStatus>();
+  const [conversationName, setConversationName] = useState('');
+  const [selectedConversation, setSelectedConversation] =
+    useState<Conversation>();
+
   useLayoutEffect(() => {
+    const params = route.params;
+    if (!listConversation || !params) return;
+    const {userId, conversationId} = params as ChatParams;
+    const selectedConversation = listConversation.find(
+      c => c.id === conversationId,
+    );
+
+    if (!selectedConversation) return;
+
+    setSelectedConversation(selectedConversation);
+
+    let conversationType: ReactElement<any, any>;
+
+    switch (selectedConversation.type) {
+      case ConversationType.Peer2Peer: {
+        const otherUser = selectedConversation.members.filter(
+          m => m.userMember.userId !== userId,
+        )[0];
+        conversationType =
+          otherUser.userMember.userAvatarUrl !== '' ? (
+            <UserAvatar
+              imageUri={otherUser.userMember.userAvatarUrl}
+              size={24}
+            />
+          ) : (
+            <Avatar.Icon icon="account" size={24} />
+          );
+        setOtherUser(otherUser.userMember);
+        break;
+      }
+      case ConversationType.Channel:
+      case ConversationType.Private:
+      case ConversationType.Group:
+        conversationType = (
+          <ConversationAvatar icon="account-group" size={24} />
+        );
+        setConversationName(selectedConversation.name);
+        break;
+    }
+
+    if (!otherUser) return;
+
     navigation.setOptions({
-      title: 'julian wan',
-      headerTitle: ({children, tintColor}) => (
+      title: `${otherUser.userName}`,
+      headerTitle: ({children}) => (
         <View style={styles.headerContainer}>
-          <UserAvatar
-            imageUri="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80"
-            size={24}
-          />
+          {conversationType}
           <View style={styles.userNameContainer}>
             <Text style={styles.userNameText}>{children}</Text>
           </View>
         </View>
       ),
     });
-  }, [navigation]);
-  return <ChatBox />;
+  }, [navigation, route, listConversation, otherUser, conversationName]);
+
+  return <ChatBox conversation={selectedConversation} />;
 };
 
 export default ChatScreen;

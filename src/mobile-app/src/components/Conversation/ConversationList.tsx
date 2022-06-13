@@ -1,17 +1,28 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {FlatList} from 'react-native';
 
-import {Conversation} from '../../types/Conversation/Conversation.type';
+import {AppDispatch, IAppStore} from '../../stores/app.store';
+import {useDispatch} from 'react-redux';
+import {getListConversation} from '../../stores/conversation/conversation.thunk';
 
+import Loading from '../Loading';
 import ConversationItem from './ConversationItem';
 
-import {LIST_CONVERSATION} from '../../data/Conversation.data';
+import {Conversation} from '../../types/Conversation/Conversation.type';
+import {useSelector} from 'react-redux';
 
 const ConversationList = () => {
+  const dispatch: AppDispatch = useDispatch();
+  const {data, status} = useSelector((store: IAppStore) => store.conversation);
+  useEffect(() => {
+    dispatch(getListConversation());
+  }, [dispatch]);
+  if (status === 'loading') return <Loading />;
+
   return (
     <FlatList
       keyExtractor={(item: Conversation, _) => item.id}
-      data={LIST_CONVERSATION}
+      data={data}
       renderItem={props => <ConversationItem conversation={props.item} />}
     />
   );

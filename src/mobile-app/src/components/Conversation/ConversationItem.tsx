@@ -2,7 +2,7 @@ import React, {ReactElement} from 'react';
 import {View, StyleSheet, Pressable} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 
-import {Text} from 'react-native-paper';
+import {Avatar, Text} from 'react-native-paper';
 import {APP_THEME} from '../../constants/app.theme';
 
 import {Conversation} from '../../types/Conversation/Conversation.type';
@@ -11,35 +11,53 @@ import {ConversationType} from '../../types/Conversation/ConversationType.type';
 import UserAvatar from '../User/UserAvatar';
 import ConversationAvatar from './ConversationAvatar';
 
-import {ChatStackProps} from '../../navigation/ChatStack';
+import {ConversationScreenProp} from '../../navigation/ChatStack';
+
+import {useSelector} from 'react-redux';
+import {IAppStore} from '../../stores/app.store';
 
 interface IProps {
   conversation: Conversation;
 }
 
 const ConversationItem: React.FC<IProps> = ({conversation}) => {
-  const navigation = useNavigation<ChatStackProps>();
+  const navigation = useNavigation<ConversationScreenProp>();
+  const {data} = useSelector((store: IAppStore) => store.auth);
 
   let conversationType: ReactElement<any, any>;
+  let conversationName: string;
 
   switch (conversation.type) {
-    case ConversationType.Peer2Peer:
-      conversationType = (
-        <UserAvatar
-          imageUri={conversation.members[0].userMember.userAvatarUrl}
-          size={48}
-        />
-      );
+    case ConversationType.Peer2Peer: {
+      const otherUser = conversation.members.filter(
+        m => m.userMember.userId !== data?.userId,
+      )[0];
+
+      conversationType =
+        otherUser.userMember.userAvatarUrl !== '' ? (
+          <UserAvatar imageUri={otherUser.userMember.userAvatarUrl} size={48} />
+        ) : (
+          <Avatar.Icon icon="account" size={48} />
+        );
+
+      conversationName = otherUser.userMember.userName;
       break;
+    }
     case ConversationType.Channel:
     case ConversationType.Private:
     case ConversationType.Group:
       conversationType = <ConversationAvatar icon="account-group" size={48} />;
+      conversationName = conversation.name;
       break;
   }
 
   const loadConversationHandler = () => {
-    navigation.navigate('ChatScreen');
+    if (!data) return;
+
+    navigation.navigate('ChatScreen', {
+      userId: data.userId,
+      conversationId: conversation.id,
+    });
   };
 
   return (
@@ -52,11 +70,9 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
       <View style={styles.conversionType}>{conversationType}</View>
       <View style={styles.conversationInformation}>
         <View style={styles.conversationContent}>
-          <Text style={styles.userNameText}>
-            {conversation.members[0].userMember.userName}
-          </Text>
+          <Text style={styles.userNameText}>{conversationName}</Text>
           <View style={styles.lastMessageContainer}>
-            <Text style={styles.lastMessageText}>OK! I got it</Text>
+            <Text style={styles.lastMessageText}>Hi!</Text>
           </View>
         </View>
         <View style={styles.conversationUpdatedDate}>

@@ -4,7 +4,7 @@ import {UserStatus} from './../User/UserStatus.type';
 import {MessageFile} from './MessageFile.type';
 import {MessageType} from './MessageType.type';
 
-export interface MessageEvent {
+export interface Message {
   id: string;
   conversationId: string;
   type: MessageType;
