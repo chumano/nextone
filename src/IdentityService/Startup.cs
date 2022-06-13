@@ -118,14 +118,14 @@ namespace IdentityService
                     });
             });
 
-            //services.Configure<CookieAuthenticationOptions>(
-            //    IdentityServerConstants.DefaultCookieAuthenticationScheme, 
-            //    options =>
-            //{
-            //    options.Cookie.SameSite = SameSiteMode.None;
-            //    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            //    options.Cookie.IsEssential = true;
-            //});
+            services.Configure<CookieAuthenticationOptions>(
+                IdentityServerConstants.DefaultCookieAuthenticationScheme,
+                options =>
+            {
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.IsEssential = true;
+            });
 
             //TODO: AddDeveloperSigningCredential not recommended for production - you need to store your key material somewhere secure
             if (Environment.IsDevelopment())
@@ -167,7 +167,7 @@ namespace IdentityService
             //forward header from nginx proxy to .well-known urls is same domain
             var fordwardedHeaderOptions = new ForwardedHeadersOptions
             {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
             };
             fordwardedHeaderOptions.KnownNetworks.Clear();
             fordwardedHeaderOptions.KnownProxies.Clear();
@@ -176,12 +176,12 @@ namespace IdentityService
             app.UseStaticFiles();
             app.UseCors(AllowSpecificOrigins);
             //Khong can
-            //app.UseCookiePolicy(new CookiePolicyOptions
-            //{
-            //   HttpOnly = HttpOnlyPolicy.None,
-            //   MinimumSameSitePolicy = SameSiteMode.None,
-            //   Secure = CookieSecurePolicy.Always
-            //});
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                HttpOnly = HttpOnlyPolicy.None,
+                MinimumSameSitePolicy = SameSiteMode.None,
+                Secure = CookieSecurePolicy.Always
+            });
 
 
             app.UseRouting();

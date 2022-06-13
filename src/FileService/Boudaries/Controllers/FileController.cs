@@ -87,6 +87,7 @@ namespace FileService.Boudaries.Controllers
 
         private string GetBaseUrl()
         {
+            //TODO: need config file api path
             return $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
         }
 

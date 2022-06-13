@@ -13,7 +13,11 @@ export interface UpdateEventTypesChannelDTO{
 }
 
 export interface GetEventsHistoryDTO{
+    channelId: string;
+    beforeDate?: string;
 
+    offset:number;
+    pageSize:number;
 }
 
 export interface SendEventDTO{

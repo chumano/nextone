@@ -20,7 +20,7 @@ namespace ComService.Domain.Services
         Task AddEvent(Channel channel, Event evt);
         Task<IEnumerable<Channel>> GetChannelsByEventCode(string evtCode);
 
-        Task<IEnumerable<Event>> GetEventsHistory(Channel conversation, DateTime beforeDate, PageOptions pageOptions);
+        Task<IEnumerable<Event>> GetEventsHistory(Channel conversation, DateTime? beforeDate, PageOptions pageOptions);
     }
     public class ChannelService : ConversationService, IChannelService
     {
@@ -148,12 +148,16 @@ namespace ComService.Domain.Services
             return items;
         }
 
-        public async Task<IEnumerable<Event>> GetEventsHistory(Channel channel, DateTime beforeDate, PageOptions pageOptions)
+        public async Task<IEnumerable<Event>> GetEventsHistory(Channel channel, DateTime? beforeDate, PageOptions pageOptions)
         {
-            var query = _eventRepository.Events
-                              .Where(o => o.ChannelId == channel.Id
-                                       && o.OccurDate < beforeDate)
-                              .OrderByDescending(o => o.OccurDate)
+            var query = _eventRepository.Events.AsNoTracking()
+                              .Where(o => o.ChannelId == channel.Id);
+            if (beforeDate.HasValue)
+            {
+                query = query.Where(o => o.OccurDate < beforeDate);
+            }
+
+            query = query.OrderByDescending(o => o.OccurDate)
                               .Skip(pageOptions.Offset)
                               .Take(pageOptions.PageSize);
 

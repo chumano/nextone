@@ -8,6 +8,7 @@ import { ConversationMember } from "../models/conversation/ConversationMember.mo
 import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
 import { CreateEventTypeDTO, UpdateEventTypeDTO } from "../models/dtos/EventTypeDTO";
 import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
+import { EventInfo } from "../models/event/Event.model";
 import { EventType } from "../models/event/EventType.model";
 import { Message } from "../models/message/Message.model";
 import { UserStatus } from "../models/user/UserStatus.model";
@@ -83,10 +84,16 @@ export const comApi = {
     },
     
     //event
-    getEventsHistory : async (data : GetEventsHistoryDTO)=>{
-        const responsePromise = comAxiosInstance.get('/channel/GetEventsHistory', data)
-        return await handleAxiosApi<ApiResult<Message[]>>(responsePromise);
+    getEventsForMap : async (data : { eventTypeCodes : string[]})=>{
+        const responsePromise = comAxiosInstance.get('/event/GetEventsForMap', {params: data})
+        return await handleAxiosApi<ApiResult<EventInfo[]>>(responsePromise);
     },
+
+    getChannelEventsHistory : async (data : GetEventsHistoryDTO)=>{
+        const responsePromise = comAxiosInstance.get('/channel/GetChannelEventsHistory',  {params: data})
+        return await handleAxiosApi<ApiResult<EventInfo[]>>(responsePromise);
+    },
+    
     sendEvent : async (data: SendEventDTO)=>{
         const responsePromise = comAxiosInstance.post(`/channel/SendEvent`, data)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
@@ -112,6 +119,10 @@ export const comApi = {
     //users
     getUsers : async (data? : GetListUserStatusDTO)=>{
         const responsePromise = comAxiosInstance.get('/userstatus/GetList', {params: data});
+        return await handleAxiosApi<ApiResult<UserStatus[]>>(responsePromise);
+    },
+    getOnlineUsersForMap : async (data?: any)=>{
+        const responsePromise = comAxiosInstance.get('/userstatus/GetOnlineUsersForMap', {params: data});
         return await handleAxiosApi<ApiResult<UserStatus[]>>(responsePromise);
     },
 

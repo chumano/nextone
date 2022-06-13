@@ -145,8 +145,8 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(null));
         }
 
-        [HttpGet("GetEventsHistory")]
-        public async Task<IActionResult> GetEventsHistory(GetEventsHistoryDTO getEventsDTO)
+        [HttpGet("GetChannelEventsHistory")]
+        public async Task<IActionResult> GetChannelEventsHistory(GetEventsHistoryDTO getEventsDTO)
         {
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);

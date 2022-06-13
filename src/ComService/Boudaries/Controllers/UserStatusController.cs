@@ -35,6 +35,25 @@ namespace ComService.Boudaries.Controllers
             _userContext = userContext;
         }
 
+        //Get online user with location
+        [HttpGet("GetOnlineUsersForMap")]
+        public async Task<IActionResult> GetOnlineUsersForMap([FromQuery] GetOnlineUsersDTO filterDTO)
+        {
+            var pageOptions = new PageOptions(filterDTO.Offset, filterDTO.PageSize);
+            var actionsUser = _userContext.User;
+
+            var nearDateTime = DateTime.Now.AddMinutes(-15);
+            var query = _userStatusRepository.Users.AsNoTracking()
+                    .Where(o=>o.LastUpdateDate> nearDateTime)
+                    ;
+
+            var users = await query
+                    .OrderByDescending(o=>o.LastUpdateDate)
+                    .Skip(pageOptions.Offset).Take(pageOptions.PageSize)
+                    .ToListAsync();
+            return Ok(ApiResult.Success(users));
+        }
+
         [HttpGet("GetList")]
         public async Task<IActionResult> GetList([FromQuery] GetListUserStatusDTO getListUserStatusDTO)
         {
