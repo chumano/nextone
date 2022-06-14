@@ -95,55 +95,7 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(null));
         }
 
-        //events
-        [HttpPost("SendEvent")]
-        public async Task<IActionResult> SendEvent([FromBody] SendEventDTO sendEventDTO)
-        {
-            var userId = _userContext.User.UserId;
-            var user = await _userStatusService.GetUser(userId);
-            //TODO : SendEvent
-            var eventType = await _comDbContext.EventTypes.FindAsync(sendEventDTO.EventTypeCode);
-            if (eventType==null)
-            {
-                throw new Exception($"{sendEventDTO.EventTypeCode} is invalid");
-            }
-
-            //get channels allow event code
-            var channels = await _channelService.GetChannelsByEventCode(sendEventDTO.EventTypeCode);
-            if (!channels.Any())
-            {
-                throw new Exception($"No channels for event type {eventType.Name}");
-            }
-
-            //create event for each channel
-            foreach (var channel in channels)
-            {
-                var evtId = _idGenerator.GenerateNew();
-                var files = sendEventDTO.Files.Select(o => new EventFile()
-                {
-                    EventId = evtId,
-                    FileId = o.FileId,
-                    FileType = o.FileType,
-                    FileName = o.FileName,
-                    FileUrl = o.FileUrl
-                }).ToList();
-
-                var nEvent = new Event(evtId,
-                    sendEventDTO.Content,
-                    eventType,
-                    userId,
-                    sendEventDTO.OccurDate,
-                    sendEventDTO.Address,
-                    sendEventDTO.Lat,
-                    sendEventDTO.Lon,
-                    files
-                    );
-
-                await _channelService.AddEvent(channel, nEvent);
-            }
-
-            return Ok(ApiResult.Success(null));
-        }
+        
 
         [HttpGet("GetChannelEventsHistory")]
         public async Task<IActionResult> GetChannelEventsHistory(GetEventsHistoryDTO getEventsDTO)

@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer, useMap, ZoomControl } from 'react-leaflet'
 import { comApi } from '../../apis/comApi';
 import API from '../../config/apis';
@@ -9,9 +9,12 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import iconRetinaUrl from 'leaflet/dist/images/marker-icon-2x.png';
 
-import eventIconUrl from '../../assets/logo.png';
+
 import MapDisplayPosition from '../../components/map/MapPositionDisplay';
 import { useMapSelector } from '../../context/map/mapContext';
+import { message } from 'antd';
+import MarkerUser from './MarkerUser';
+import MarkerEvent from './MarkerEvent';
 
 //default icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -21,15 +24,6 @@ L.Icon.Default.mergeOptions({
     shadowUrl: iconShadow
 });
 
-const eventIcon = L.icon({
-    iconUrl: eventIconUrl,
-    iconSize: [32,32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0,0],
-    shadowUrl: undefined,
-    shadowSize: undefined,
-    shadowAnchor: undefined
-});
 
 const MapController = () => {
     const map = useMap();
@@ -44,7 +38,7 @@ const MapController = () => {
 //https://react-leaflet.js.org/docs/start-introduction/
 
 const MapView = () => {
-    const { onlineUsers, events } = useMapSelector(o => o);
+    const { onlineUsers, events, selectedEvent, selectedUser } = useMapSelector(o => o);
     const [map, setMap] = useState<L.Map | undefined>(undefined);
     const [position, setPosition] = useState<L.LatLng | undefined>(undefined);
 
@@ -78,6 +72,26 @@ const MapView = () => {
         }
     }, [mapTileUrl, layerRef.current])
 
+
+    useEffect(() => {
+        if (!map) return;
+        const zoomObjectLvl = 15;
+        if (selectedEvent) {
+            const latlon: L.LatLngTuple = [selectedEvent.lat, selectedEvent.lon];
+            map.flyTo(latlon, zoomObjectLvl)
+        }
+
+        if (selectedUser) {
+            if (!selectedUser.lastLat || !selectedUser.lastLon) {
+                message.info("Không có thông tin tọa độ");
+                return;
+            }
+            const latlon: L.LatLngTuple = [selectedUser.lastLat, selectedUser.lastLon];
+            map.flyTo(latlon, zoomObjectLvl)
+        }
+    }, [map, selectedEvent, selectedUser])
+
+
     const resetMap = useCallback(() => {
         // map?.setView(defaultCenter, defaultZoom)
     }, [map]);
@@ -92,6 +106,25 @@ const MapView = () => {
             map?.off('move', onMove)
         }
     }, [map, onMove])
+
+    const renderUserMarkers = useMemo(() => {
+        return <>
+            {onlineUsers.filter(o => o.lastLat != null && o.lastLon != null)
+                .map(o => <MarkerUser key={'user_' + o.userId} user={o}
+                    openPopup={selectedUser && selectedUser.userId === o.userId} />
+                )}
+        </>
+    }, [onlineUsers, selectedUser])
+
+    const renderEventMarkers = useMemo(() => {
+        return <>
+            {events.filter(o => o.lat != null && o.lon != null)
+                .map(o => <MarkerEvent key={'event_' + o.id}  evt={o}
+                    openPopup={selectedEvent && selectedEvent.id === o.id} />
+                )}
+        </>
+    }, [events, selectedEvent])
+
     return <>
         {mapConfig &&
             <MapContainer center={mapConfig.center}
@@ -112,24 +145,8 @@ const MapView = () => {
                     <TileLayer tms={true} url={mapTileUrl} />
                 }
 
-                {onlineUsers.filter(o => o.lastLat != null && o.lastLon != null)
-                    .map(o => <Marker icon={eventIcon} key={'user_' + o.userId} position={[o.lastLat!, o.lastLon!]}>
-                            <Popup>
-                                <h6>{o.userName}</h6>
-                                {o.lastUpdateDate}
-                            </Popup>
-                        </Marker>
-                    )}
-
-                {events.filter(o => o.lat != null && o.lon != null)
-                    .map(o => <Marker key={'event_' + o.id} position={[o.lat!, o.lon!]}>
-                            <Popup>
-                                <h6>{o.eventType.name}</h6>
-                                {o.content}
-                            </Popup>
-                        </Marker>
-                    )}
-
+                {renderUserMarkers}
+                {renderEventMarkers}
 
             </MapContainer>
         }

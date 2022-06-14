@@ -26,7 +26,9 @@ namespace ComService.DTOs.Channel
                 .Select(t => t.EventType)
                 .ToList();
             }
-               
+
+            var events = channel.RecentEvents.Select(o => o.Event).ToList();
+
             return new ChannelDTO()
             {
                 Id = channel.Id,
@@ -36,7 +38,7 @@ namespace ComService.DTOs.Channel
                 Messages = channel.RecentMessages,
                 UpdatedDate = channel.UpdatedDate,
                 AllowedEventTypes = eventTypes,
-                Events = channel.RecentEvents
+                Events = events
             };
         }
     }

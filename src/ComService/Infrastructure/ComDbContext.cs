@@ -153,8 +153,8 @@ namespace ComService.Infrastructure
 
 
                 eb.HasOne(o => o.Event)
-                    .WithOne()
-                    .HasForeignKey<Message>(o => o.EventId);
+                    .WithMany()
+                    .HasForeignKey(o => o.EventId);
 
                 eb.HasOne(o => o.UserSender)
                     .WithMany()
@@ -215,6 +215,24 @@ namespace ComService.Infrastructure
                     .HasForeignKey(o => o.EventTypeCode);
             });
 
+            modelBuilder.Entity<ChannelEvent>(eb =>
+            {
+                eb.ToTable("T_App_ChannelEvents", DB_SCHEMA)
+                    .HasKey("ChannelId", "EventId");
+
+                eb.Property(o => o.ChannelId)
+                    .HasColumnType("varchar(36)")
+                    .IsRequired();
+
+                eb.Property(o => o.EventId)
+                    .HasColumnType("varchar(36)")
+                    .IsRequired();
+
+                eb.HasOne(o => o.Event)
+                    .WithMany()
+                    .HasForeignKey(o => o.EventId);
+            });
+
             //=============================
             //Event
             modelBuilder.Entity<Event>(eb =>
@@ -250,10 +268,6 @@ namespace ComService.Infrastructure
 
                 eb.Property(o => o.Lon)
                     .HasColumnType("float");
-
-                eb.Property(o => o.ChannelId)
-                    .HasColumnType("varchar(36)")
-                    .IsRequired();
 
                 eb.Property(o => o.UserSenderId)
                     .HasColumnType("varchar(36)");

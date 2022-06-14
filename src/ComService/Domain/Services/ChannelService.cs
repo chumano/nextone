@@ -112,8 +112,11 @@ namespace ComService.Domain.Services
 
         public async Task AddEvent(Channel channel, Event evt)
         {
-            _eventRepository.Add(evt);
-            channel.RecentEvents.Add(evt);
+            channel.RecentEvents.Add(new ChannelEvent()
+            {
+                EventId = evt.Id,
+                Event = evt
+            });
 
 
             var messageId = _idGenerator.GenerateNew();
@@ -124,8 +127,6 @@ namespace ComService.Domain.Services
 
 
             channel.UpdatedDate = DateTime.Now;
-
-            await _eventRepository.SaveChangesAsync();
 
             // TODO: send ChannelEventAdded
             await _bus.Publish(new ChannelEventAdded());
@@ -150,8 +151,12 @@ namespace ComService.Domain.Services
 
         public async Task<IEnumerable<Event>> GetEventsHistory(Channel channel, DateTime? beforeDate, PageOptions pageOptions)
         {
-            var query = _eventRepository.Events.AsNoTracking()
-                              .Where(o => o.ChannelId == channel.Id);
+            var query = _channelRepository.Channels.AsNoTracking()
+                    .Where(o => o.Id == channel.Id)
+                    .Include(o => o.RecentEvents)
+                        .ThenInclude(o => o.Event)
+                    .SelectMany(o => o.RecentEvents)
+                    .Select(o => o.Event);
             if (beforeDate.HasValue)
             {
                 query = query.Where(o => o.OccurDate < beforeDate);

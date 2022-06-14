@@ -41,7 +41,6 @@ namespace ComService.Domain
         public double Lat { get; private set; }
         public double Lon { get; private set; }
 
-        public string ChannelId { get; set; }
         public string UserSenderId { get; set; }
         public UserStatus UserSender { get; set; }
 

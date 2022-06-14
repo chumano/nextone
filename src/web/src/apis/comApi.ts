@@ -98,6 +98,11 @@ export const comApi = {
         const responsePromise = comAxiosInstance.post(`/channel/SendEvent`, data)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
     },
+    
+    getEventTypesForMe: async ()=>{
+        const responsePromise = comAxiosInstance.get('/event/GetEventTypesForMe')
+        return await handleAxiosApi<ApiResult<EventType[]>>(responsePromise);
+    },
 
     getEventTypes: async ()=>{
         const responsePromise = comAxiosInstance.get('/settings/GetEventTypes')

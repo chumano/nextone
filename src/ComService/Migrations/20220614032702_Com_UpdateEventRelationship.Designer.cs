@@ -4,6 +4,7 @@ using ComService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComService.Migrations
 {
     [DbContext(typeof(ComDbContext))]
-    partial class ComDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220614032702_Com_UpdateEventRelationship")]
+    partial class Com_UpdateEventRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,7 +234,9 @@ namespace ComService.Migrations
 
                     b.HasIndex("ConversationId");
 
-                    b.HasIndex("EventId");
+                    b.HasIndex("EventId")
+                        .IsUnique()
+                        .HasFilter("[EventId] IS NOT NULL");
 
                     b.HasIndex("UserSenderId");
 
@@ -483,8 +487,8 @@ namespace ComService.Migrations
                         .IsRequired();
 
                     b.HasOne("ComService.Domain.Event", "Event")
-                        .WithMany()
-                        .HasForeignKey("EventId");
+                        .WithOne()
+                        .HasForeignKey("ComService.Domain.Message", "EventId");
 
                     b.HasOne("ComService.Domain.UserStatus", "UserSender")
                         .WithMany()

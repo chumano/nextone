@@ -28,17 +28,19 @@ namespace ComService.Domain.Repositories
         }
         public IQueryable<Channel> Channels => _dbContext.Channels
                 .Include(o=>o.RecentEvents
-                         .OrderByDescending(x => x.CreatedDate)
+                         .OrderByDescending(x => x.Event.CreatedDate)
                         .Take(20))
-                    .ThenInclude(o => o.UserSender)
+                    .ThenInclude(o => o.Event.UserSender)
 
                 .Include(o => o.AllowedEventTypes)
                     .ThenInclude(o => o.EventType)
 
                 .Include(o => o.RecentEvents)
-                    .ThenInclude(o => o.Files)
+                    .ThenInclude(o=>o.Event)
+                        .ThenInclude(o => o.Files)
 
                 .Include(o => o.RecentEvents)
+                    .ThenInclude(o => o.Event)
                         .ThenInclude(o => o.EventType)
 
                 .Include(o => o.Members)

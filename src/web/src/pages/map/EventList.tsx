@@ -1,13 +1,15 @@
-import React from 'react'
-import { useMapSelector } from '../../context/map/mapContext';
+import React, { useCallback, useEffect } from 'react'
+import { useMapDispatch, useMapSelector } from '../../context/map/mapContext';
 import { EventInfo } from '../../models/event/Event.model';
 import { NotificationOutlined } from '@ant-design/icons';
 import { showModalEvent } from '../../components/event/ModalEvent';
+import { mapActions } from '../../context/map/mapStore';
 
 interface EventViewItemProps{
-    eventItem : EventInfo
+    eventItem : EventInfo,
+    onClick?: ()=>void
 }
-const EventViewItem : React.FC<EventViewItemProps> = ({eventItem})=>{
+const EventViewItem : React.FC<EventViewItemProps> = ({eventItem, onClick})=>{
     const eventIcon = '';
     return  <div  className="event-container">
     <div className="event--icon">
@@ -19,9 +21,7 @@ const EventViewItem : React.FC<EventViewItemProps> = ({eventItem})=>{
         }
         
     </div>
-    <div className="event-body clickable" onClick={()=>{
-        showModalEvent(eventItem);
-    }} >
+    <div className="event-body clickable" onClick={onClick} >
         <div className="event--type">
             {eventItem.eventType.name}
         </div>
@@ -42,11 +42,18 @@ const EventViewItem : React.FC<EventViewItemProps> = ({eventItem})=>{
 }
 const EventList = () => {
     const events = useMapSelector(o=>o.events);
+    const dispatch = useMapDispatch();
+    const onEventClick = useCallback((evt: EventInfo)=>{
+        return ()=>{
+            dispatch(mapActions.selectEvent(evt));
+        }
+    },[dispatch,mapActions.selectEvent])
+
     return <div className='event-list'>
         {events.length === 0 &&
             <h6>Không có sự kiện</h6>
         }
-        {events.map(o => <EventViewItem key={o.id} eventItem={o}/>)}
+        {events.map(o => <EventViewItem key={o.id} eventItem={o} onClick={onEventClick(o)}/>)}
     </div>
 }
 

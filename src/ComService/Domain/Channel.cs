@@ -13,13 +13,13 @@ namespace ComService.Domain
             IList<string> allowedEventTypeCodes) 
             :base(id, name,ConversationTypeEnum.Channel)
         {
-            RecentEvents = new List<Event>();
+            RecentEvents = new List<ChannelEvent>();
             this.UpdateAllowedEventTypeCodes(allowedEventTypeCodes);
         }
 
         public IList<ChannelEventType> AllowedEventTypes { get; private set; }
 
-        public List<Event> RecentEvents { get; private set; }
+        public List<ChannelEvent> RecentEvents { get; private set; }
 
         public void SetName(string name)
         {
@@ -37,6 +37,13 @@ namespace ComService.Domain
             }).ToList();
         }
 
+    }
+
+    public class ChannelEvent
+    {
+        public string ChannelId { get; set; }
+        public string EventId { get; set; }
+        public Event Event { get; set; }
     }
 
     public class ChannelEventType

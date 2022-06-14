@@ -9,13 +9,14 @@ export interface IMapStore {
     events: EventInfo[],
     onlineUsers: UserStatus[], 
 
-    selectedEventTypeCodes: string[]
+    selectedEventTypeCodes?: string[],
+    selectedEvent?: EventInfo,
+    selectedUser?: UserStatus 
 }
 
 const initState: IMapStore = {
     events :[],
-    onlineUsers: [],
-    selectedEventTypeCodes: []
+    onlineUsers: []
 }
 export const mapSlice = createSlice({
     name: 'news',
@@ -26,6 +27,17 @@ export const mapSlice = createSlice({
         },
         setOnlineUsers: (state, action: PayloadAction<UserStatus[]>) =>{
             state.onlineUsers = action.payload;
+        },
+        selectEvent: (state, action: PayloadAction<EventInfo>) =>{
+            state.selectedEvent = action.payload;
+            state.selectedUser = undefined;
+        },
+        selectUser: (state, action: PayloadAction<UserStatus>) =>{
+            state.selectedUser = action.payload;
+            state.selectedEvent = undefined;
+        },
+        updateSelectedEventTypes: (state, action: PayloadAction<string[]>) =>{
+            state.selectedEventTypeCodes = action.payload;
         },
     }
 });
