@@ -1,5 +1,4 @@
-import { Button, Input, Modal, Select } from 'antd'
-import Form from 'antd/lib/form';
+import { Button, Input, Modal, Select, Form} from 'antd'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';

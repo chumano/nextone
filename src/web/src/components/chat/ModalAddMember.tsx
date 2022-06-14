@@ -1,5 +1,4 @@
-import { Button, Checkbox, Input, List, Modal, Skeleton } from 'antd';
-import Form from 'antd/lib/form';
+import { Button, Checkbox, Input, List, Modal, Skeleton, Form } from 'antd';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form';
