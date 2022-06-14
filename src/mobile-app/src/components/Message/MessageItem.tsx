@@ -36,7 +36,7 @@ const MessageItem: React.FC<IProps> = ({message}) => {
           styles.messageContentContainer,
           isOwnerMessage && styles.ownerMessageContentContainer,
         ]}>
-        <Text>{message.content.trim()}</Text>
+        <Text>{message?.content?.trim()}</Text>
       </View>
     </View>
   );

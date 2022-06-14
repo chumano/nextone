@@ -16,10 +16,12 @@ export const conversationSlice = createSlice({
     builder.addCase(getListConversation.pending, state => {
       state.status = 'loading';
     });
+
     builder.addCase(getListConversation.fulfilled, (state, action) => {
       state.data = action.payload as Conversation[];
       state.status = 'success';
     });
+    
     builder.addCase(getListConversation.rejected, (state, action) => {
       state.error = action.payload as string;
       state.status = 'failed';
@@ -60,12 +62,19 @@ export const conversationSlice = createSlice({
     });
     builder.addCase(getMessagesHistory.fulfilled, (state, action) => {
       const listMessage = action.payload;
+      const {arg} = action.meta;
 
-      if (!listMessage || !state.data) return;
+      if (!listMessage || !state.data) {
+        state.allLoaded = true;
+        return;
+      }
 
       state.status = 'success';
 
-      if (listMessage.length === 0) return;
+      if (listMessage.length === 0) {
+        state.allLoaded = true;
+        return;
+      }
 
       const getConversationId = listMessage[0].conversationId;
 

@@ -37,6 +37,7 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
         </View>
         <View style={styles.inputContainer}>
           <TextInput
+            style={{color:'#000'}}
             onChangeText={onChangeTextHandler}
             onKeyPress={onKeyPressHandler}
             multiline={true}
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     justifyContent: 'center',
-    maxHeight: 72
+    maxHeight: 48
   },
   button: {
     padding: 4,

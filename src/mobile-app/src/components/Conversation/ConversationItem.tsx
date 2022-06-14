@@ -53,10 +53,11 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
 
   const loadConversationHandler = () => {
     if (!data) return;
-
     navigation.navigate('ChatScreen', {
       userId: data.userId,
       conversationId: conversation.id,
+      name: conversationName,
+      conversationType: conversation.type
     });
   };
 
@@ -78,8 +79,7 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
             <View style={styles.lastMessageContainer}>
               <Text style={styles.lastMessageText}>
                 {
-                  conversation.messages[0]
-                    .content
+                  conversation.messages[0].content
                 }
               </Text>
             </View>
