@@ -1,29 +1,26 @@
-import React from 'react'
-import { View, Text, Button, StyleSheet } from 'react-native';
-import { NativeStackScreenProps, NativeStackNavigationProp  } from '@react-navigation/native-stack';
-import { useNavigation } from '@react-navigation/native';
+import React from 'react';
+import {View, Text, Button, StyleSheet} from 'react-native';
 
-type RootStackParamList = {
-  Home: undefined;
-  Details: undefined;//{ userId: string };
-};
-
-//https://reactnavigation.org/docs/typescript/
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-
-type DetailsScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Details'
->;
+import {useNavigation} from '@react-navigation/native';
+import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
 
 export const HomeScreen = () => {
   const navigation = useNavigation<DetailsScreenNavigationProp>();
-  return <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+  const onDetailScreenHandler = () => {
+    navigation.navigate('DetailsScreen');
+  };
+  return (
+    <View style={styles.homeScreenContainer}>
       <Text>Home Screen</Text>
-      <Button
-        title="Go to Chat"
-        onPress={() => navigation.navigate('Details')}
-      />
+      <Button title="Go to Chat" onPress={onDetailScreenHandler} />
     </View>
-  
-}
+  );
+};
+
+const styles = StyleSheet.create({
+  homeScreenContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

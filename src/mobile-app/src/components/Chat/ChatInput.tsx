@@ -22,6 +22,7 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
 
   const sendMessageHandler = () => {
     onSendMessage(message);
+    setMessage('');
   };
 
   return (
@@ -41,6 +42,7 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
             multiline={true}
             numberOfLines={3}
             placeholder="Enter your message"
+            value={message}
           />
         </View>
         {isKeyPress ? (
@@ -91,6 +93,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     justifyContent: 'center',
+    maxHeight: 72
   },
   button: {
     padding: 4,

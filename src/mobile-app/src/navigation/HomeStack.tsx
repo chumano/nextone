@@ -1,34 +1,72 @@
-import React from 'react'
-import { createNativeStackNavigator, NativeStackHeaderProps } from "@react-navigation/native-stack";
-import { HomeScreen, ProfileScreen, DetailsScreen } from '../screens/HomeScreen';
-import { AppStackNavigationBar } from './AppNavigationBars';
+import React from 'react';
+import {
+  createNativeStackNavigator,
+  NativeStackHeaderProps,
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack';
+import {
+  HomeScreen,
+  ProfileScreen,
+  DetailsScreen,
+  ChangePasswordScreen,
+} from '../screens/HomeScreen';
+import {AppStackNavigationBar} from './AppNavigationBars';
+
+type HomeStackParamsList = {
+  HomeScreen: undefined;
+  ProfileScreen: undefined;
+  DetailsScreen: undefined;
+  ChangePasswordScreen: undefined;
+};
+
+export type HomeStackProps = NativeStackScreenProps<
+  HomeStackParamsList,
+  'HomeScreen',
+  'HomeStack'
+>;
+
+export type DetailsScreenNavigationProp = NativeStackNavigationProp<
+  HomeStackParamsList,
+  'DetailsScreen'
+>;
 
 const Stack = createNativeStackNavigator();
 
 const HomeStack = () => {
-    return (
-        <Stack.Navigator
-            initialRouteName="Home"
-            screenOptions={{
-                header: (props: NativeStackHeaderProps) => {
-                    return <AppStackNavigationBar {...props}/> 
-                } 
-            }}
-        >
-            <Stack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ title: 'Home Page' }} />
-            <Stack.Screen
-                name="Details"
-                component={DetailsScreen}
-                options={{ title: 'Details Page' }} />
-            <Stack.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{ title: 'Profile Page' }} />
-        </Stack.Navigator>
-    )
-
-}
+  return (
+    <Stack.Navigator
+      initialRouteName="HomeScreen"
+      screenOptions={{
+        header: (props: NativeStackHeaderProps) => {
+          return <AppStackNavigationBar {...props} />;
+        },
+      }}>
+      <Stack.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{title: 'Home Page'}}
+      />
+      <Stack.Screen
+        name="DetailsScreen"
+        component={DetailsScreen}
+        options={{title: 'Details Page'}}
+      />
+      <Stack.Screen
+        name="ProfileScreen"
+        component={ProfileScreen}
+        options={{
+          title: 'Profile Page',
+        }}
+      />
+      <Stack.Screen
+        name="ChangePasswordScreen"
+        component={ChangePasswordScreen}
+        options={{
+          title: 'ChangePassword Page',
+        }}
+      />
+    </Stack.Navigator>
+  );
+};
 export default HomeStack;

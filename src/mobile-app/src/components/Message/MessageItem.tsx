@@ -42,7 +42,9 @@ const MessageItem: React.FC<IProps> = ({message}) => {
   );
 };
 
-export default MessageItem;
+const MessageItemMemo = React.memo(MessageItem);
+
+export default MessageItemMemo;
 
 const styles = StyleSheet.create({
   messageContainer: {
