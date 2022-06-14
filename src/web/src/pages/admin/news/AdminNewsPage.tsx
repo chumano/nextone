@@ -3,9 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Input, Select } from 'antd';
 import React, { useState } from 'react';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { newsApi } from '../../../apis/newsApi';
+import NoPermission from '../../../components/auth/NoPermission';
 import { NewsProvider, useNewsDispatch, useNewsSelector, useNewsStore } from '../../../context/news/newsContext';
 import { getNewsList, newsActions } from '../../../context/news/newsStore';
+import { IAppStore } from '../../../store';
 import '../../../styles/pages/admin-news/news-page.scss';
 import NewsCreateForm from './NewsCreateForm';
 import NewsList from './NewsList';
@@ -113,6 +116,12 @@ const AdminNewsPageInternal = () => {
 }
 
 const AdminNewsPage = () => {
+  const user = useSelector((store: IAppStore) => store.auth.user);
+  const systemUserRole = user?.profile.role;
+  if(systemUserRole !== 'admin' && systemUserRole !== 'manager' ){
+      return <NoPermission/>
+  }
+
   return <NewsProvider>
     <AdminNewsPageInternal />
   </NewsProvider>

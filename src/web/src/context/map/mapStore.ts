@@ -39,6 +39,10 @@ export const mapSlice = createSlice({
         updateSelectedEventTypes: (state, action: PayloadAction<string[]>) =>{
             state.selectedEventTypeCodes = action.payload;
         },
+        clearSelectedObjects: (state, action: PayloadAction) =>{
+            state.selectedUser = undefined;
+            state.selectedEvent = undefined;
+        },
     }
 });
 

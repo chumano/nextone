@@ -233,10 +233,11 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 						dataIndex="isActive"
 						key="isActive"
 						render={(_, value, _1) => {
-							const { id, isActive } = value as User;
+							const { id,name , isActive } = value as User;
 							return (
 								<Checkbox
 									checked={isActive}
+									disabled={name==='admin'}
 									onChange={(e) =>
 										activateUserHandler({
 											UserId: id,
@@ -252,19 +253,19 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 						align="right"
 						render={(_, record: User) => (
 							<div className="list-button-actions">
-								<Button
+								<Button disabled={record.name==='admin'}
 									type="default"
 									onClick={() => openModalHandler(record, "update")}
 								>
 									<FontAwesomeIcon icon={faPencilAlt} />
 								</Button>
-								<Button
+								<Button disabled={record.name==='admin'}
 									danger
 									onClick={() => openModalHandler(record, "delete")}
 								>
 									<FontAwesomeIcon icon={faTrash} />
 								</Button>
-								<Dropdown
+								<Dropdown disabled={record.name==='admin'}
 									overlay={
 										<Menu items={[
 											{ label: 'Đổi mật khẩu', key: 'reset-password' }, // remember to pass the key prop

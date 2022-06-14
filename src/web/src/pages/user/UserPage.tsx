@@ -10,6 +10,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import "../../styles/pages/user/user.scss";
+import { useSelector } from "react-redux";
+import { IAppStore } from "../../store";
+import NoPermission from "../../components/auth/NoPermission";
 
 const UserPage = () => {
 	const [searchInput, setSearchInput] = useState("");
@@ -20,6 +23,12 @@ const UserPage = () => {
 	};
 
 	const onCreateUserModalHandler = () => SetIsOpenCreateUserModal(true);
+
+    const user = useSelector((store: IAppStore) => store.auth.user);
+    const systemUserRole = user?.profile.role;
+    if(systemUserRole !== 'admin'){
+        return <NoPermission/>
+    }
 
 	return (
 		<UserProvider>

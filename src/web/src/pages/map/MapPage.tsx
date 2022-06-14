@@ -35,6 +35,12 @@ const MapPageInternal: React.FC = () => {
     }, [comApi, dispatch, mapActions, selectedEventTypeCodes]);
 
     useEffect(() => {
+        return ()=>{
+            dispatch(mapActions.clearSelectedObjects());
+        }
+    },[dispatch, mapActions.clearSelectedObjects]);
+    
+    useEffect(() => {
         const intervalCall = setInterval(() => {
             fetchEvents();
             fetchUsers();

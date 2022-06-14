@@ -120,7 +120,7 @@ const NewsUpdateForm = () => {
         <Breadcrumb.Item onClick={onClose}>
           <a href="#">Tin tức</a>
         </Breadcrumb.Item>
-        <Breadcrumb.Item>Thêm mới</Breadcrumb.Item>
+        <Breadcrumb.Item>Chỉnh sửa</Breadcrumb.Item>
       </Breadcrumb>
       <div className='flex-spacer'></div>
       <div>

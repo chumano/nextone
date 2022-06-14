@@ -1,13 +1,21 @@
 import { Tabs } from "antd";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { mapApi } from "../../../apis/mapApi";
+import NoPermission from "../../../components/auth/NoPermission";
 import { MapInfo } from "../../../models/map/Map.modal";
+import { IAppStore } from "../../../store";
 import '../../../styles/pages/admin-config/system-config.scss'
 import ConfigEventTypes from "./ConfigEventTypes";
 import ConfigMap from "./ConfigMap";
 
 const ConfigPage: React.FC = () => {
-   
+    const user = useSelector((store: IAppStore) => store.auth.user);
+    const systemUserRole = user?.profile.role;
+    if(systemUserRole !== 'admin'){
+        return <NoPermission/>
+    }
+
     return <>
         <div className="system-config">
             <div className="system-config__head">

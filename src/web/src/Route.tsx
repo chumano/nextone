@@ -22,7 +22,7 @@ import Home from "./pages/home/Home";
 import TestPage from "./pages/test/TestPage";
 import ChatPage from "./pages/chat/ChatPage";
 import MapPage from "./pages/map/MapPage";
-import UserPage from "./pages/user/User";
+import UserPage from "./pages/user/UserPage";
 import NewsList from "./pages/intro/NewsList";
 import NewsPage from "./pages/news/NewsPage";
 import AdminNewsPage from "./pages/admin/news/AdminNewsPage";
@@ -144,19 +144,22 @@ const MenuList = [
         id: 20,
         title: 'Tin nhắn',
         path: '/chat',
-        icon: <FontAwesomeIcon icon={faComments} />
+        icon: <FontAwesomeIcon icon={faComments} />,
+		roles: []
     },
     {
         id: 30,
         title: 'Bản đồ',
         path: '/map',
-        icon: <FontAwesomeIcon icon={faMap} />
+        icon: <FontAwesomeIcon icon={faMap} />,
+		roles: []
     },
     {
         id: 90,
         title: 'Tin tức',
         path: '/admin/news',
-        icon: <FontAwesomeIcon icon={faNewspaper} />
+        icon: <FontAwesomeIcon icon={faNewspaper} />,
+		roles: ['admin', 'manager']
     },
 	//manage menu
 	// {
@@ -170,12 +173,14 @@ const MenuList = [
 		title: "Quản lý người dùng",
 		path: "/user",
 		icon: <FontAwesomeIcon icon={faAddressBook} />,
+		roles: ['admin']
 	},
 	{
 		id: 102,
 		title: "Cấu hình",
 		path: "/admin/config",
 		icon: <FontAwesomeIcon icon={faCog} />,
+		roles: ['admin']
 	},
 	//Test components
 	// {
