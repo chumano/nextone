@@ -20,4 +20,13 @@ namespace ComService.Boudaries.Hubs
         }
         public Message Data { get; set; }
     }
+    public class UserEventData : ChatEventData
+    {
+        public UserEventData()
+        {
+            ChatKey = "user";
+        }
+        public object Data { get; set; }
+    }
+
 }

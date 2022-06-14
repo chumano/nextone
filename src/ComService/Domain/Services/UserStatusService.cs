@@ -107,8 +107,20 @@ namespace ComService.Domain.Services
             }
             else
             {
-                userStatus.LastLat = lat;
-                userStatus.LastLon = lon;
+                if(lat == null || lon == null)
+                {
+                    var offlineDate = DateTime.Now.AddMinutes(-15);
+                    if(userStatus.LastUpdateDate!=null && userStatus.LastUpdateDate > offlineDate)
+                    {
+                        //Dont clear latlong
+                    }
+                    else
+                    {
+                        userStatus.LastLat = lat;
+                        userStatus.LastLon = lon;
+                    }
+                }
+               
                 userStatus.LastUpdateDate = DateTime.Now;
                 userStatus.Status = StatusEnum.Online;
                 _userStatusRepository.Update(userStatus);

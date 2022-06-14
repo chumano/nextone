@@ -15,6 +15,7 @@ using System.IO;
 using FileInfo = FileService.Domain.FileInfo;
 using NextOne.Infrastructure.Core;
 using SharedDomain.Common;
+using Microsoft.Extensions.Configuration;
 
 namespace FileService.Boudaries.Controllers
 {
@@ -25,10 +26,13 @@ namespace FileService.Boudaries.Controllers
         private readonly IFileStorage _fileStorage;
         private readonly IdGenerator _idGenerator;
         private readonly FileDbContext _fileDbContext;
+        private readonly IConfiguration _configuration;
         public FileController(IFileStorage fileStorage, 
+            IConfiguration configuration,
             IdGenerator idGenerator,
             FileDbContext fileDbContext)
         {
+            _configuration = configuration;
             _fileStorage = fileStorage;
             _idGenerator = idGenerator;
             _fileDbContext = fileDbContext;
@@ -87,8 +91,9 @@ namespace FileService.Boudaries.Controllers
 
         private string GetBaseUrl()
         {
+            var hostPath = _configuration.GetValue<string>("HostPath","");
             //TODO: need config file api path
-            return $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}";
+            return $"{this.Request.Scheme}://{this.Request.Host}{this.Request.PathBase}{hostPath}";
         }
 
         private string GetFileUrl(string relativeFilePath, FileTypeEnum fileType)

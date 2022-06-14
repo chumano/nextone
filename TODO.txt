@@ -15,30 +15,12 @@ Web-TODO:
 	- Minimize Call screen
 	- Time out 10s when dont receive answer
 
-- Channel Map Monitor, 
-	- user tracking
-	- event  recents
-	- ModalEventView 
-	
 
-- UserStatus
-	- notifiy user online
 
 - Chat
-	New Message from new Conversation
 	Manage Conversation	
-		Delete : delete on the user only => Member.deleteDate
-		Seen : Member.seenDate
-
-- Permmission
-		Channel
-			Manager ->  Add Memmber, Delete Member, Assign Role
-			Owner -> Delete Channel 
-			Member
-		System-Admin -> Delete Channel, Create Channel
-		System-Manager -> Create Channel
-		Systme-Member -> Chat, Send Event
-
+		Delete Conversation: delete on the user only => Member.deleteDate
+		Seen Conversation: Member.seenDate
 -------------------------------------------
 Mobile-TODO
 - Login Screen

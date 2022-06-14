@@ -7,7 +7,7 @@ import { chatActions } from '../../store/chat/chatReducer';
 import ConversationList from '../../components/chat/ConversationList';
 import ChatBox from '../../components/chat/ChatBox';
 import { Button } from 'antd';
-import { PlusOutlined, MessageOutlined} from '@ant-design/icons';
+import { PlusOutlined, MessageOutlined } from '@ant-design/icons';
 import ModalFindUser from '../../components/chat/ModalFindUser';
 import no_selected_conversation_bg from '../../assets/images/chat/no_selected_conversation_bg.png';
 import ModalChannelCreation from '../../components/chat/ModalChannelCreation';
@@ -17,22 +17,44 @@ import { ConversationType } from '../../models/conversation/ConversationType.mod
 import ModalMemberRole from '../../components/chat/ModalMemberRole';
 import ModalAddMember from '../../components/chat/ModalAddMember';
 import { getChannels, getConversations } from '../../store/chat/chatThunks';
+import { comApi } from '../../apis/comApi';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
-    const { conversations, channels, 
+    const { conversations, channels,
         conversationsLoading,
         modals,
         modalDatas,
         allConversations,
-        selectedConversationId ,
-        isShowConversationInfo
+        selectedConversationId,
+        isShowConversationInfo,
+        notLoadedConversationId
     } = useSelector((store: IAppStore) => store.chat);
+    const user = useSelector((store: IAppStore) => store.auth.user);
+    const systemUserRole = user?.profile.role;
+    useEffect(() => {
+        dispatch(getChannels({
+            offset: 0,
+            pageSize: 20
+        }))
+        dispatch(getConversations({
+            isExcludeChannel: true,
+            offset: 0,
+            pageSize: 20
+        }))
+    }, [dispatch]);
 
     useEffect(() => {
-        dispatch(getChannels())
-        dispatch(getConversations())
-    }, [])
+        if (!notLoadedConversationId) return;
+        const fetchConversation = async () => {
+            const response = await comApi.getConversation(notLoadedConversationId);
+            if (response.isSuccess) {
+                const conversation = response.data;
+                dispatch(chatActions.addConversationOrChannel(conversation));
+            }
+        }
+        fetchConversation();
+    }, [dispatch, notLoadedConversationId])
 
     const [conversation, setConversation] = useState<ConversationState>();
 
@@ -55,15 +77,18 @@ const ChatPage: React.FC = () => {
                     <div className="chat-channel-list__header">
                         Kênh
                         <div className='flex-spacer'></div>
-                        <Button shape="circle" className='button-icon' onClick={() => {
-                            //new channel
-                            dispatch(chatActions.showModal({ modal: 'channel_creation', visible: true }))
-                        }}>
-                            <PlusOutlined />
-                        </Button>
+                        { (systemUserRole === 'admin'|| systemUserRole ==='manager' )&&
+                            <Button shape="circle" className='button-icon' onClick={() => {
+                                //new channel
+                                dispatch(chatActions.showModal({ modal: 'channel_creation', visible: true }))
+                            }}>
+                                <PlusOutlined />
+                            </Button>
+                        }
+
                     </div>
-                    <ConversationList type='channel' conversations={channels} 
-                        loading={conversationsLoading}/>
+                    <ConversationList type='channel' conversations={channels}
+                        loading={conversationsLoading} />
                 </div>
 
                 <div className="chat-users-list">
@@ -77,7 +102,7 @@ const ChatPage: React.FC = () => {
                             <MessageOutlined />
                         </Button>
                     </div>
-                    <ConversationList type='conversation' conversations={conversations} 
+                    <ConversationList type='conversation' conversations={conversations}
                         loading={conversationsLoading} />
                 </div>
             </div>
@@ -97,11 +122,11 @@ const ChatPage: React.FC = () => {
                     }
                     {conversation &&
                         <>
-                        <ChatBox conversation={conversation}/>
-                        {isShowConversationInfo &&
-                            
-                            <ConversationInfo conversation={conversation}/>
-                        }
+                            <ChatBox conversation={conversation} />
+                            {isShowConversationInfo &&
+
+                                <ConversationInfo conversation={conversation} />
+                            }
                         </>
                     }
                 </div>
@@ -124,11 +149,11 @@ const ChatPage: React.FC = () => {
         }
 
         {modals['member_role'] &&
-            <ModalMemberRole conversation={modalDatas['member_role'].conversation} 
+            <ModalMemberRole conversation={modalDatas['member_role'].conversation}
                 member={modalDatas['member_role'].member}
                 onVisible={(visible) => {
-                dispatch(chatActions.showModal({ modal: 'member_role', visible: visible }))
-            }} />
+                    dispatch(chatActions.showModal({ modal: 'member_role', visible: visible }))
+                }} />
         }
 
         {modals['add_member'] &&

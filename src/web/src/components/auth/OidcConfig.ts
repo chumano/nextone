@@ -9,7 +9,7 @@ export const OidcConfig: UserManagerSettings = {
     authority: API.ID_SERVICE,
     response_type: "code",
     post_logout_redirect_uri: `${hostUrl}/auth/signout-callback`,// the page will be returned after logout from SSO
-    scope : "openid profile offline_access gateway master-scope",
+    scope : "openid profile offline_access role gateway master-scope",
     silent_redirect_uri : `${hostUrl}/auth/silent-callback`,
     automaticSilentRenew : true,
     loadUserInfo: true,

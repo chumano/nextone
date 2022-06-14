@@ -1,5 +1,6 @@
 ﻿using ComService.Domain;
 using ComService.Domain.Services;
+using ComService.DTOs.Channel;
 using ComService.DTOs.Conversation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -23,19 +24,22 @@ namespace ComService.Boudaries.Controllers
         private readonly IUserContext _userContext;
         private readonly IUserStatusService _userStatusService;
         private readonly IdGenerator _idGenerator;
+        private readonly IChannelService _channelService;
         private readonly IConversationService _conversationService;
         public ConversationController(
             ILogger<ConversationController> logger,
             IUserContext userContext,
             IdGenerator idGenerator,
             IUserStatusService userService,
-            IConversationService conversationService)
+            IConversationService conversationService,
+            IChannelService channelService)
         {
             _logger = logger;
             _userContext = userContext;
             _idGenerator = idGenerator;
             _userStatusService = userService;
             _conversationService = conversationService;
+            _channelService = channelService;
         }
 
         [HttpGet("GetList")]
@@ -45,7 +49,7 @@ namespace ComService.Boudaries.Controllers
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);
             var conversations = await _conversationService.GetConversationsByUser(user,
-                pageOptions);
+                pageOptions, getListConversationDTO.IsExcludeChannel);
             var dtos = conversations.Select(o => ConversationDTO.From(o));
             return Ok(ApiResult.Success(dtos));
         }
@@ -54,6 +58,11 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var conversation = await _conversationService.Get(id);
+            if(conversation.Type == ConversationTypeEnum.Channel)
+            {
+                var channel = await _channelService.Get(id);
+                return Ok(ApiResult.Success(ChannelDTO.From(channel)));
+            }
 
             return Ok(ApiResult.Success(ConversationDTO.From(conversation)));
         }

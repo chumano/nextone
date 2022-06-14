@@ -58,6 +58,7 @@ namespace ComService.Domain.Services
             var id = _idGenerator.GenerateNew();
             var type = ConversationTypeEnum.Channel;
             var channel = new Channel(id, name, eventTypeCodes);
+            channel.CreatedBy = createdUser.UserId;
 
             if (!memberIds.Contains(createdUser.UserId))
             {

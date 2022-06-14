@@ -2,7 +2,9 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { stat } from "fs";
 import { Conversation } from "../../models/conversation/Conversation.model";
 import { ConversationMember } from "../../models/conversation/ConversationMember.model";
+import { ConversationType } from "../../models/conversation/ConversationType.model";
 import { Message } from "../../models/message/Message.model";
+import { Status } from "../../models/user/UserStatus.model";
 import { ChatMesageEventData } from "./chatPayload";
 import { ChatState, ConversationState } from "./ChatState";
 import { createChannel, deleteConversation, getChannels, getConversation, getConversations, getMessageHistory, getOrCreateConversation, sendMessage } from './chatThunks'
@@ -33,6 +35,20 @@ export const chatSlice = createSlice({
             }
         },
         //conversation
+        addConversationOrChannel : (state, action : PayloadAction<Conversation>)=>{
+            const conversation = action.payload;
+            if (!state.allConversations.find(o => o.id === conversation.id)) {
+               
+                if(conversation.type === ConversationType.Channel){
+                    state.channels.unshift(conversation as ConversationState)
+                }else{
+                    state.conversations.unshift(conversation as ConversationState)
+                }
+                
+                state.allConversations = [...state.channels, ...state.conversations]
+            }
+            
+        },
         selectConversation: (state, action: PayloadAction<string>) => {
             const conversationId = action.payload;
             state.selectedConversationId = conversationId;
@@ -77,15 +93,14 @@ export const chatSlice = createSlice({
                     {
                         const message = data as Message;
                         const conversation = state.allConversations.find(o => o.id === message.conversationId);
-                        if (!conversation) return;
-
-                        //if(message.userSender.userId!= state.userId){
-                        //find message if exist
-
-                        //}
+                        if (!conversation) {
+                            state.notLoadedConversationId = message.conversationId;
+                            return;
+                        }
+                        
                         const existMessageId = message.id;
                         const index = conversation.messages.findIndex(o => {
-                            return o.id == existMessageId;
+                            return o.id === existMessageId;
                         })
 
                         if (index !== -1) {
@@ -93,8 +108,27 @@ export const chatSlice = createSlice({
                         } else {
                             conversation.messages.unshift(message)
                         }
-                        console.log('[MessageAdded]receiveChatEvent-message', message.id, { isExist: index !== -1 })
+                        console.log('[receiveChatEvent]-message', message.id, { isExist: index !== -1 })
 
+
+                    }
+                    break;
+                case 'user':
+                    {
+                        const {userId, isOnline} = data ;
+                        //TODO: update user status of conversation
+                        state.allConversations.forEach(conversation=>{
+                            conversation.members = conversation.members.map(o=>{
+                                if(o.userMember.userId === userId){
+                                    o.userMember = {
+                                        ...o.userMember,
+                                        status : isOnline? Status.Online: Status.Offline
+                                    }
+                                }
+                                return o;
+                            })
+                        })
+                        console.log('[receiveChatEvent]-user', data)
 
                     }
                     break;
@@ -110,14 +144,19 @@ export const chatSlice = createSlice({
 
         },
 
-        updateMessage: (state, action: PayloadAction<{ messageId?: string, message: Message }>) => {
+        updateMessage: (state, action: PayloadAction<{ messageId: string, message: Message }>) => {
             const { message, messageId } = action.payload;
             const conversation = state.allConversations.find(o => o.id === message.conversationId);
             if (!conversation) return;
 
-            const existMessageId = messageId || message.id;
-            conversation.messages = conversation.messages.map(o => {
-                if (o.id == existMessageId) {
+            const existMessageId = messageId;
+            let messages = conversation.messages;
+            if(existMessageId !== message.id){
+                //fake message
+                messages = messages.filter(o=>o.id !== message.id);
+            }
+            conversation.messages = messages.map(o => {
+                if (o.id === existMessageId) {
                     return message
                 }
                 return o;

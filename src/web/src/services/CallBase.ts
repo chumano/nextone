@@ -78,11 +78,14 @@ export abstract class CallBase {
             audio: false,
             video: false,
         }
-
         if (this.mediaConstraints) {
+            const devices = await this.deviceManager.enumerateDevices();
+            const audioInputs = devices.filter(o => o.type == 'audioinput');
+            const videoInputs = devices.filter(o => o.type == 'videoinput');
+            
             const audio = this.mediaConstraints.audio;
             const video = this.mediaConstraints.video;
-            if (audio?.enabled) {
+            if (audio?.enabled && audioInputs.length >0) {
                 if (audio.deviceId) {
                     constraints.audio = {
                         deviceId: audio.deviceId
@@ -92,7 +95,7 @@ export abstract class CallBase {
                 }
             }
 
-            if (video?.enabled) {
+            if (video?.enabled && videoInputs.length >0) {
                 if (video.deviceId) {
                     constraints.video = {
                         deviceId: video.deviceId

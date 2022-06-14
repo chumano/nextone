@@ -28,6 +28,7 @@ export const comApi = {
         return await handleAxiosApi<ApiResult<Conversation[]>>(responsePromise);
     },
 
+    //conversation or channel
     getConversation : async (id: string)=>{
         const responsePromise = comAxiosInstance.get(`/conversation/${id}`)
         return await handleAxiosApi<ApiResult<Conversation>>(responsePromise);
@@ -98,7 +99,7 @@ export const comApi = {
         const responsePromise = comAxiosInstance.post(`/channel/SendEvent`, data)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
     },
-    
+
     getEventTypesForMe: async ()=>{
         const responsePromise = comAxiosInstance.get('/event/GetEventTypesForMe')
         return await handleAxiosApi<ApiResult<EventType[]>>(responsePromise);

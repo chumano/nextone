@@ -13,7 +13,7 @@ namespace ComService.Domain.Services
 {
     public interface IConversationService
     {
-        Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions);
+        Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions, bool isExcludeChannel);
         Task<Conversation> Get(string id);
         Task<string> Create(UserStatus createdUser, string name, ConversationTypeEnum type, IList<string> memberIds);
         Task Delete(Conversation conversation);
@@ -124,10 +124,15 @@ namespace ComService.Domain.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions)
+        public async Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions, bool isExcludeChannel)
         {
-            var items = await _conversationRepository.Conversations
-                .Where(o => o.Type != ConversationTypeEnum.Channel)
+            var query = _conversationRepository.Conversations.AsNoTracking();
+            if (isExcludeChannel)
+            {
+                query = query.Where(o => o.Type != ConversationTypeEnum.Channel);
+            }
+                
+            var items = await query
                 .Where(o => o.Members.Any(m => m.UserId == user.UserId))
                 .OrderByDescending(o => o.UpdatedDate)
                 .Skip(pageOptions.Offset)

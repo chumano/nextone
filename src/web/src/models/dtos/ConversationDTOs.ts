@@ -10,7 +10,7 @@ export interface CreateConverationDTO {
 }
 
 export interface GetListConversationDTO extends IPageOptions {
-
+    isExcludeChannel: boolean
 }
 
 export interface AddMembersDTO {

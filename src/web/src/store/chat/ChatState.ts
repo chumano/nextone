@@ -15,6 +15,8 @@ export interface ChatState{
     isShowConversationInfo?: boolean;
     selectedConversationId?: string;
     selectedConversatio?: ConversationState;
+
+    notLoadedConversationId?: string
 }
 
 export interface ConversationState extends  Conversation , Channel

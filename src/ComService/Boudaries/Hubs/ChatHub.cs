@@ -14,6 +14,8 @@ using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading;
+using NextOne.Shared.Bus;
+using ComService.Domain.DomainEvents;
 
 namespace ComService.Boudaries.Hubs
 {
@@ -24,13 +26,16 @@ namespace ComService.Boudaries.Hubs
         private readonly ILogger<ChatHub> _logger;
         private readonly IConversationService _conversationService;
         private readonly IOptionsMonitor<JwtBearerOptions> _jwtBearerOptions;
+        protected readonly IBus _bus;
         public ChatHub(ILogger<ChatHub> logger,
             IOptionsMonitor<JwtBearerOptions> options,
-            IConversationService conversationService)
+            IConversationService conversationService,
+            IBus bus)
         {
             _logger = logger;
             _jwtBearerOptions = options;
             _conversationService = conversationService;
+            _bus = bus;
 
         }
 
@@ -231,7 +236,6 @@ namespace ComService.Boudaries.Hubs
                     _configuration = await options.ConfigurationManager.GetConfigurationAsync(CancellationToken.None);
                 }
 
-
                 var validationParameters = options.TokenValidationParameters.Clone();
                 validationParameters.IssuerSigningKeys = _configuration.SigningKeys;
                 ClaimsPrincipal principal = jwtHandler.ValidateToken(accessToken, validationParameters, out var securityToken);
@@ -244,13 +248,23 @@ namespace ComService.Boudaries.Hubs
 
                 //add user to user group
                 await Groups.AddToGroupAsync(this.Context.ConnectionId, $"user_{userId}");
-                OnlineClients[this.Context.ConnectionId] =
-                    new OnlineClient()
+
+                var onlineClient =  new OnlineClient()
                     {
                         ConnectionId = this.Context.ConnectionId,
                         UserId = userId.ToString(),
                         UserName = nameClaim?.Value ?? userId.ToString()
                     };
+
+                OnlineClients[this.Context.ConnectionId] = onlineClient;
+
+                //Update user Online
+                await _bus.Publish(new UserOnlineEvent()
+                {
+                    UserId = onlineClient.UserId,
+                    UserName = onlineClient.UserName,
+                    IsOnline = true
+                });
                 return userId.ToString();
             }
             catch (Exception ex)
@@ -272,12 +286,25 @@ namespace ComService.Boudaries.Hubs
             {
                 await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"user_{client.UserId}");
             }
-            //TODO: get room that the user joined, then Emit user disconnected
+
+            //get room that the user joined, then Emit user disconnected
             var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var conversationId);
             if (isRemovedRoom)
             {
                 await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
             }
+
+            //TODO: Update user Offline
+            if (client != null)
+            {
+                await _bus.Publish(new UserOnlineEvent()
+                {
+                    UserId = client.UserId,
+                    UserName = client.UserName,
+                    IsOnline = false
+                });
+            }
+         
         }
     }
 }

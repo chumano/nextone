@@ -16,6 +16,7 @@ namespace ComService.DTOs.Channel
         public IList<Domain.Event> Events { get; set; }
         public DateTime UpdatedDate { get; set; }
         public IList<EventType> AllowedEventTypes { get; set; }
+        public string CreatedBy { get; set; }
 
         public static ChannelDTO From(Domain.Channel channel)
         {
@@ -28,17 +29,26 @@ namespace ComService.DTOs.Channel
             }
 
             var events = channel.RecentEvents.Select(o => o.Event).ToList();
+            var offlineDate = DateTime.Now.AddMinutes(-15);
 
             return new ChannelDTO()
             {
                 Id = channel.Id,
                 Name = channel.Name,
                 Type = channel.Type,
-                Members = channel.Members,
+                Members = channel.Members.Select(o =>
+                {   
+                    if(o.UserMember.LastUpdateDate!=null && o.UserMember.LastUpdateDate < offlineDate)
+                    {
+                        o.UserMember.Status = StatusEnum.Offline;
+                    }
+                    return o;
+                }).ToList(),
                 Messages = channel.RecentMessages,
                 UpdatedDate = channel.UpdatedDate,
                 AllowedEventTypes = eventTypes,
-                Events = events
+                Events = events,
+                CreatedBy = channel.CreatedBy,
             };
         }
     }

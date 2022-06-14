@@ -4,21 +4,11 @@ import React, { useMemo } from 'react'
 import { EventFile } from '../../../models/event/EventFile.model';
 import { FileType } from '../../../models/file/FileType.model';
 import { Message } from '../../../models/message/Message.model'
-import { frowNow } from '../../../utils/functions';
+import { frowNow, groupFileByType } from '../../../utils/functions';
 import { showModalEvent } from '../../event/ModalEvent';
 import FileView from '../file/FileView';
 
-const groupFileByType = (files: EventFile[]) => {
-    let group: { 'image': EventFile[], 'other': EventFile[] } = { 'image': [], 'other': [] };
-    for (const file of files) {
-        if (file.fileType == FileType.Image) {
-            group['image'].push(file);
-        } else {
-            group['other'].push(file);
-        }
-    }
-    return group;
-}
+
 interface MessageEventProps {
     message: Message
 }

@@ -20,10 +20,15 @@ import { chatActions } from '../../store/chat/chatReducer';
 import ChatInput from './input/ChatInput';
 import { UserStatus } from '../../models/user/UserStatus.model';
 import ConversationAvatar from './ConversationAvatar';
+import { DeviceManager } from '../../services/DeviceManager';
+import { message } from 'antd';
 
 interface ChatBoxProps {
     conversation: ConversationState
 }
+
+
+const deviceManager = new DeviceManager();
 const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
@@ -42,7 +47,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
         }
     }, [conversation])
 
-    const onCall = useCallback((callType: 'video' | 'voice') => {
+    const onCall = useCallback(async (callType: 'video' | 'voice') => {
         //TODO: show Modal select devices
         // if (!deviceSettings) {
         //     dispatch(callActions.prepareCall({
@@ -50,7 +55,34 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
         //         conversationId: conversation.id
         //     }));
         //     dispatch(callActions.showModal({ modal: 'device', visible: true }));
-        // } else 
+        // } else
+
+        //TODO: check devices first
+        const devices = await deviceManager.enumerateDevices();
+        const videoInputs = devices.filter(o => o.type == 'videoinput');
+        const audioInputs = devices.filter(o => o.type == 'audioinput');
+        const audioOutputs = devices.filter(o => o.type == 'audiooutput');
+        console.log({
+            devices,
+            videoInputs,
+            audioInputs,
+            //audioOutputs
+        })
+        //if has has device then start
+        if(callType === 'voice'){
+            if(audioInputs.length ==0){
+                message.error('Không tìm thấy audio input')
+                return;
+            }
+        }
+
+        if(callType === 'video'){
+            if(videoInputs.length ==0){
+                message.error('Không tìm thấy video input')
+                return;
+            }
+        }
+
         {
             dispatch(callActions.startCall({
                 callType,

@@ -20,15 +20,16 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
     const { members } = conversation;
     const user = useSelector((store: IAppStore) => store.auth.user);
     const userId = user!.profile.sub;
+    const userRole = members.find(o => o.userMember.userId === userId)?.role;
     const dispatch = useDispatch();
 
     const onMemberChat = (item: ConversationMember) => {
         return () => {
-            const conversation : CreateConverationDTO={
+            const conversation: CreateConverationDTO = {
                 name: '',
                 type: ConversationType.Peer2Peer,
                 memberIds: [item.userMember.userId]
-            } 
+            }
             dispatch(getOrCreateConversation(conversation))
         }
     }
@@ -76,13 +77,16 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                     <h5>Thành viên ({members.length})</h5>
                     <div className='flex-spacer'></div>
 
-                    <Button shape="circle" className='button-icon' title='Thêm thành viên'
-                        onClick={() => {
-                            //new channel
-                            dispatch(chatActions.showModal({ modal: 'add_member', visible: true, data: conversation }))
-                        }}>
-                        <PlusOutlined />
-                    </Button>
+                    {userRole === MemberRole.MANAGER &&
+                        <Button shape="circle" className='button-icon' title='Thêm thành viên'
+                            onClick={() => {
+                                //new channel
+                                dispatch(chatActions.showModal({ modal: 'add_member', visible: true, data: conversation }))
+                            }}>
+                            <PlusOutlined />
+                        </Button>
+                    }
+
                 </div>
 
                 {/* <div className="search-container">
@@ -99,27 +103,27 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                     renderItem={(item, index) => (
                         <List.Item
                             actions={[
-                            <>
-                                {item.userMember.userId !== userId &&
-                                    <Button className='button-icon' onClick={onMemberChat(item)} title="Nhắn tin">
-                                         <MessageOutlined />
-                                    </Button>
-                                }
-                            </>,
-                            <>
-                                {item.userMember.userId !== userId &&
-                                    <Button className='button-icon' onClick={onMemberRole(item)} title="Cấp quyền">
-                                        <UserSwitchOutlined />
-                                    </Button>
-                                }
-                            </>,
-                            <>
-                                {item.userMember.userId !== userId &&
-                                    <Button danger className='button-icon' onClick={onDeleteMember(item)} title="Xóa thành viên">
-                                        <DeleteOutlined />
-                                    </Button>
-                                }
-                            </>
+                                <>
+                                    {item.userMember.userId !== userId &&
+                                        <Button className='button-icon' onClick={onMemberChat(item)} title="Nhắn tin">
+                                            <MessageOutlined />
+                                        </Button>
+                                    }
+                                </>,
+                                <>
+                                    {item.userMember.userId !== userId && userRole === MemberRole.MANAGER &&
+                                        <Button className='button-icon' onClick={onMemberRole(item)} title="Cấp quyền">
+                                            <UserSwitchOutlined />
+                                        </Button>
+                                    }
+                                </>,
+                                <>
+                                    {item.userMember.userId !== userId && userRole === MemberRole.MANAGER &&
+                                        <Button danger className='button-icon' onClick={onDeleteMember(item)} title="Xóa thành viên">
+                                            <DeleteOutlined />
+                                        </Button>
+                                    }
+                                </>
                             ]}
                         >
                             <Skeleton avatar title={true} loading={false} active>
