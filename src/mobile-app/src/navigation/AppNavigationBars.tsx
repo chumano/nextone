@@ -1,12 +1,13 @@
-import {BottomTabHeaderProps} from '@react-navigation/bottom-tabs';
-import {NativeStackHeaderProps} from '@react-navigation/native-stack';
-
 import React, {useState} from 'react';
 import {Appbar, Menu} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 
+import {BottomTabHeaderProps} from '@react-navigation/bottom-tabs';
+import {NativeStackHeaderProps} from '@react-navigation/native-stack';
+
 import {AppDispatch} from '../stores/app.store';
-import {logout} from '../stores/auth/auth.reducer';
+
+import {logout} from '../stores/auth';
 
 export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
   navigation,
@@ -18,7 +19,7 @@ export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
   const closeMenu = () => setVisible(false);
 
   const navigateToProfileHandler = () => {
-    navigation.navigate('Profile');
+    navigation.navigate('ProfileScreen');
   };
 
   const logoutHandler = () => {
@@ -41,7 +42,6 @@ export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
 };
 
 export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
-  route,
   navigation,
   back,
 }) => {
@@ -49,10 +49,9 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   const [visible, setVisible] = useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-  const routeName = route.name;
 
   const navigateToProfileHandler = () => {
-    navigation.navigate('Profile');
+    navigation.navigate('ProfileScreen');
   };
 
   const logoutHandler = () => {

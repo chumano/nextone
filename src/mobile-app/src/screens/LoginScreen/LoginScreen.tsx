@@ -1,12 +1,11 @@
 import React, {useState} from 'react';
+import {useDispatch, useSelector} from 'react-redux';
 
 import {View, StyleSheet} from 'react-native';
-
 import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 
-import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
-import {authLogin} from '../../stores/auth/auth.reducer';
+import { authLogin } from '../../stores/auth';
 
 const LoginScreen = () => {
   const dispatch: AppDispatch = useDispatch();

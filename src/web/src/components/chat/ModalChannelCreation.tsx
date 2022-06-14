@@ -1,7 +1,6 @@
-import { Button, Checkbox, Input, List, Modal, Select, Skeleton } from 'antd';
+import { Button, Checkbox, Input, List, Modal, Select, Form, Skeleton } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react'
 
-import Form from "antd/lib/form";
 import { useDispatch } from 'react-redux';
 import { comApi } from '../../apis/comApi';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
@@ -89,7 +88,7 @@ const ModalChannelCreation: React.FC<ModalChannelCreationProps>  = ({ title, onV
                     onClick={handleOk}
 					type="primary"
                     disabled={
-                        !form.isFieldsTouched(true) ||
+                        //!form.isFieldsTouched(true) ||
                         !!form.getFieldsError().filter(({ errors }) => errors.length).length
                     }
 					loading={isLoading}

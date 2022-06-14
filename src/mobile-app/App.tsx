@@ -9,11 +9,10 @@ import {APP_THEME} from './src/constants/app.theme';
 import {Provider as StoreProvider, useDispatch} from 'react-redux';
 import {useSelector} from 'react-redux';
 
-import {authActions} from './src/stores/auth/auth.reducer';
-
 import {NavigationContainer} from '@react-navigation/native';
 
 import {AppDispatch, appStore, IAppStore} from './src/stores/app.store';
+import {authActions} from './src/stores/auth';
 
 import LoginScreen from './src/screens/LoginScreen/LoginScreen';
 import {CallScreen} from './src/screens/CallScreen/CallScreen';

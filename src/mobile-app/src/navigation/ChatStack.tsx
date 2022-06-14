@@ -2,22 +2,34 @@ import React, {useLayoutEffect} from 'react';
 import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
+  NativeStackScreenProps,
 } from '@react-navigation/native-stack';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import {
+  getFocusedRouteNameFromRoute,
+  RouteProp,
+} from '@react-navigation/native';
+import {BottomTabProps} from './BottomTabNavigator';
 
 import ConversationScreen from '../screens/ChatScreen/ConversationScreen';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
-import {BottomTabProps} from './BottomTabNavigator';
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
-  ChatScreen: undefined;
+  ChatScreen: {
+    userId: string;
+    conversationId: string;
+  };
 };
 
-export type ChatStackProps = NativeStackNavigationProp<
+export type ChatStackProps = NativeStackScreenProps<
   ChatStackParamsList,
   'ConversationScreen',
   'ChatStack'
+>;
+
+export type ConversationScreenProp = NativeStackNavigationProp<
+  ChatStackParamsList,
+  'ConversationScreen'
 >;
 
 const Stack = createNativeStackNavigator<ChatStackParamsList>();

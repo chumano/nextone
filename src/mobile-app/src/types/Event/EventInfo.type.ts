@@ -1,11 +1,12 @@
 import {UserStatus} from './../User/UserStatus.type';
 import {EventFile} from './EventFile.type';
+import {EventType} from './EventType.type';
 
 export interface EventInfo {
   id: string;
   content: string;
   eventTypeCode: string;
-  eventType: string;
+  eventType: EventType;
   occurDate: string;
   address: string;
   lat: number;
