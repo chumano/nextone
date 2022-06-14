@@ -1,18 +1,24 @@
 import React from 'react';
 import {FlatList, Keyboard, TouchableWithoutFeedback} from 'react-native';
-import {LIST_MESSAGE} from '../../data/Message.data';
 
 import MessageItem from './MessageItem';
 
-const MessageList = () => {
+import {Conversation} from '../../types/Conversation/Conversation.type';
+
+interface IProps {
+  conversation: Conversation;
+}
+
+const MessageList: React.FC<IProps> = ({conversation}) => {
   const dismissKeyboardHandler = () => {
     Keyboard.dismiss();
   };
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboardHandler}>
       <FlatList
+        inverted
         renderItem={itemData => <MessageItem message={itemData.item} />}
-        data={LIST_MESSAGE}
+        data={conversation.messages}
         keyExtractor={item => item.id}
       />
     </TouchableWithoutFeedback>

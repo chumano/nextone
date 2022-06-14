@@ -1,12 +1,13 @@
-import {BottomTabHeaderProps} from '@react-navigation/bottom-tabs';
-import {NativeStackHeaderProps} from '@react-navigation/native-stack';
-
 import React, {useState} from 'react';
 import {Appbar, Menu} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 
+import {BottomTabHeaderProps} from '@react-navigation/bottom-tabs';
+import {NativeStackHeaderProps} from '@react-navigation/native-stack';
+
 import {AppDispatch} from '../stores/app.store';
-import {logout} from '../stores/auth/auth.reducer';
+
+import {logout} from '../stores/auth';
 
 export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
   navigation,

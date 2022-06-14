@@ -1,17 +1,28 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {Avatar, Text} from 'react-native-paper';
 import {APP_THEME} from '../../constants/app.theme';
 
-import {MessageEvent} from '../../types/Message/Message.type';
 import UserAvatar from '../User/UserAvatar';
 
+import {Message} from '../../types/Message/Message.type';
+import {useSelector} from 'react-redux';
+import {IAppStore} from '../../stores/app.store';
 interface IProps {
-  message: MessageEvent;
+  message: Message;
 }
 
 const MessageItem: React.FC<IProps> = ({message}) => {
-  const isOwnerMessage = message.userSender.userId === 'user-01';
+  const authState = useSelector((store: IAppStore) => store.auth);
+  const isOwnerMessage =
+    authState.data?.userId === message.userSender.userId ?? false;
+
+  const userAvatar =
+    message.userSender.userAvatarUrl !== '' ? (
+      <UserAvatar imageUri={message.userSender.userAvatarUrl} size={24} />
+    ) : (
+      <Avatar.Icon icon="account" size={24} />
+    );
 
   return (
     <View
@@ -19,13 +30,13 @@ const MessageItem: React.FC<IProps> = ({message}) => {
         styles.messageContainer,
         isOwnerMessage && styles.ownerMessageContainer,
       ]}>
-      <UserAvatar imageUri={message.userSender.userAvatarUrl} size={24} />
+      {userAvatar}
       <View
         style={[
           styles.messageContentContainer,
           isOwnerMessage && styles.ownerMessageContentContainer,
         ]}>
-        <Text>{message.content}</Text>
+        <Text>{message.content.trim()}</Text>
       </View>
     </View>
   );

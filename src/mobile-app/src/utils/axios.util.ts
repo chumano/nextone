@@ -1,12 +1,14 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import qs from 'qs';
+
+import {UserTokenInfoResponse} from '../types/Auth/Auth.type';
 
 export const createAxios = (baseUrl: string) => {
   const newInstance = axios.create({
     baseURL: baseUrl,
     headers: {
-      Authorization: '',
-      'Content-Type': 'application/json',
+      Accept: 'application/json',
     },
     paramsSerializer: params => {
       return qs.stringify(params);
@@ -14,11 +16,18 @@ export const createAxios = (baseUrl: string) => {
   });
 
   newInstance.interceptors.request.use(
-    request => {
+    async request => {
+      const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
+      if (userTokenInfoString) {
+        const userTokenInfoResponse = qs.parse(
+          userTokenInfoString,
+        ) as unknown as UserTokenInfoResponse;
+        request.headers.Authorization = `Bearer ${userTokenInfoResponse.access_token}`;
+      }
+
       if (
         request.data &&
-        request.headers[request.method!]['Content-Type'] ===
-          'application/x-www-form-urlencoded'
+        request.headers['Content-Type'] === 'application/x-www-form-urlencoded'
       ) {
         request.data = qs.stringify(request.data);
       }
