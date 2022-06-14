@@ -3,7 +3,10 @@ import {createAsyncThunk} from '@reduxjs/toolkit';
 import {conversationApi} from './../../apis/conversation.api';
 
 import {IPageOptions, PageOptions} from './../../types/PageOptions.type';
-import {SendMessageDTO} from './../../dto/ConversationDTO.type';
+import {
+  GetMessagesHistoryDTO,
+  SendMessageDTO,
+} from './../../dto/ConversationDTO.type';
 
 export const getListConversation = createAsyncThunk(
   'conversation/getList',
@@ -34,6 +37,20 @@ export const sendMessage = createAsyncThunk(
       else return rejectWithValue(result.errorMessage as string);
     } catch (error) {
       rejectWithValue(`conversation/sendMessage failed: ${error}`);
+    }
+  },
+);
+
+export const getMessagesHistory = createAsyncThunk(
+  'conversation/getMessageHistory',
+  async (data: GetMessagesHistoryDTO, {rejectWithValue}) => {
+    try {
+      const response = await conversationApi.getMessagesHistory(data);
+      const result = response.data;
+      if (result.isSuccess) return result.data;
+      else return rejectWithValue(result.errorMessage as string);
+    } catch (error) {
+      rejectWithValue(`conversation/getMessagesHistory failed: ${error}`);
     }
   },
 );

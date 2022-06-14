@@ -1,6 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
 import {conversationInitialState} from './conversation.state';
-import {getListConversation, sendMessage} from './conversation.thunk';
+import {
+  getListConversation,
+  getMessagesHistory,
+  sendMessage,
+} from './conversation.thunk';
 
 import {Conversation} from './../../types/Conversation/Conversation.type';
 
@@ -22,7 +26,7 @@ export const conversationSlice = createSlice({
     });
 
     builder.addCase(sendMessage.pending, state => {
-      state.status = 'pending';
+      state.status = 'loading';
     });
     builder.addCase(sendMessage.fulfilled, (state, action) => {
       const message = action.payload;
@@ -43,8 +47,44 @@ export const conversationSlice = createSlice({
       } else {
         conversationHaveMessage.messages.unshift(message);
       }
+
+      state.status = 'success';
     });
     builder.addCase(sendMessage.rejected, (state, action) => {
+      state.error = action.payload as string;
+      state.status = 'failed';
+    });
+
+    builder.addCase(getMessagesHistory.pending, state => {
+      state.status = 'loading';
+    });
+    builder.addCase(getMessagesHistory.fulfilled, (state, action) => {
+      const listMessage = action.payload;
+
+      if (!listMessage || !state.data) return;
+
+      state.status = 'success';
+
+      if (listMessage.length === 0) return;
+
+      const getConversationId = listMessage[0].conversationId;
+
+      const conversationHaveMessage = state.data.find(
+        o => o.id === getConversationId,
+      );
+
+      if (!conversationHaveMessage) return;
+
+      for (const oldMessage of listMessage) {
+        const isMessageExist = conversationHaveMessage.messages.find(
+          m => m.id === oldMessage.id,
+        );
+        if (!isMessageExist) {
+          conversationHaveMessage.messages.push(oldMessage);
+        }
+      }
+    });
+    builder.addCase(getMessagesHistory.rejected, (state, action) => {
       state.error = action.payload as string;
       state.status = 'failed';
     });

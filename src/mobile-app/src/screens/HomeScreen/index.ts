@@ -1,3 +1,4 @@
-export * from "./HomeScreen";
-export {default as ProfileScreen } from "./ProfileScreen";
-export * from "./DetailsScreen";
+export * from './ProfileScreen';
+export * from './HomeScreen';
+export * from './DetailsScreen';
+export * from './ChangePasswordScreen';

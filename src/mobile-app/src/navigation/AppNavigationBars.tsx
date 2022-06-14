@@ -19,7 +19,7 @@ export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
   const closeMenu = () => setVisible(false);
 
   const navigateToProfileHandler = () => {
-    navigation.navigate('Profile');
+    navigation.navigate('ProfileScreen');
   };
 
   const logoutHandler = () => {
@@ -42,7 +42,6 @@ export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
 };
 
 export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
-  route,
   navigation,
   back,
 }) => {
@@ -50,10 +49,9 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   const [visible, setVisible] = useState(false);
   const openMenu = () => setVisible(true);
   const closeMenu = () => setVisible(false);
-  const routeName = route.name;
 
   const navigateToProfileHandler = () => {
-    navigation.navigate('Profile');
+    navigation.navigate('ProfileScreen');
   };
 
   const logoutHandler = () => {

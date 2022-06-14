@@ -60,6 +60,9 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
     });
   };
 
+  const isConversationHaveMessage =
+    conversation && conversation.messages && conversation.messages.length > 0;
+
   return (
     <Pressable
       onPress={loadConversationHandler}
@@ -71,9 +74,16 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
       <View style={styles.conversationInformation}>
         <View style={styles.conversationContent}>
           <Text style={styles.userNameText}>{conversationName}</Text>
-          <View style={styles.lastMessageContainer}>
-            <Text style={styles.lastMessageText}>Hi!</Text>
-          </View>
+          {isConversationHaveMessage && (
+            <View style={styles.lastMessageContainer}>
+              <Text style={styles.lastMessageText}>
+                {
+                  conversation.messages[0]
+                    .content
+                }
+              </Text>
+            </View>
+          )}
         </View>
         <View style={styles.conversationUpdatedDate}>
           <Text style={styles.updatedDateText}>{conversation.updatedDate}</Text>

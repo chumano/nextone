@@ -1,4 +1,7 @@
-import {SendMessageDTO} from './../dto/ConversationDTO.type';
+import {
+  GetMessagesHistoryDTO,
+  SendMessageDTO,
+} from './../dto/ConversationDTO.type';
 import {AxiosResponse} from 'axios';
 import {APP_CONFIG} from './../constants/app.config';
 import {createAxios} from './../utils/axios.util';
@@ -34,8 +37,15 @@ const sendMessage = (
   });
 };
 
+const getMessagesHistory = (
+  data: GetMessagesHistoryDTO,
+): Promise<AxiosResponse<ApiResponse<Message[]>>> => {
+  return axiosInstance.get(`/conversation/getMessagesHistory`, {params: data});
+};
+
 export const conversationApi = {
   getListConversation,
   getConversation,
   sendMessage,
+  getMessagesHistory,
 };
