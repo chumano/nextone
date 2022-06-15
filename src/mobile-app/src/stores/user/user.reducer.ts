@@ -38,7 +38,6 @@ export const userSlice = createSlice({
       state.status = 'loading';
     });
     builder.addCase(changeMyPassword.fulfilled, (state, action) => {
-      if (!action.payload) return;
       state.status = 'success';
     });
     builder.addCase(changeMyPassword.rejected, (state, action) => {

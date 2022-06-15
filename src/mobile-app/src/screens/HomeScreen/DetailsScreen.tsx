@@ -13,7 +13,7 @@ export const DetailsScreen = () => {
   const dispatch: AppDispatch = useDispatch();
   const userState = useSelector((store: IAppStore) => store.user);
   const [userInfo, setUserInfo] = useState<User | null>(userState.data);
-  const [isUpdated, setIsNeedUpdated] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(true);
 
   if (!userInfo) return <></>;
 
@@ -28,7 +28,7 @@ export const DetailsScreen = () => {
       };
     });
 
-    setIsNeedUpdated(false);
+    setIsDisabled(false);
   };
 
   const updateProfileHandler = () => {
@@ -62,7 +62,7 @@ export const DetailsScreen = () => {
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
           <Button
-            disabled={isUpdated}
+            disabled={isDisabled}
             mode="contained"
             onPress={updateProfileHandler}
             loading={userState.status === 'loading'}>
