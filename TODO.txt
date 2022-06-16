@@ -24,13 +24,18 @@ Web-TODO:
 -------------------------------------------
 Mobile-TODO
 - Chat Screen
-	SingalR
-	Conversation List
-	Message Screen
+	Message List
+	Message-Event
+	Message-Image
+	Message-File
+	
+- Event Screen
+	Event List
+	Send new Event
+	View Event
 	
 - Home Screen
 	
-
 - Call Screen
 	
 - Map Screen 
@@ -38,13 +43,14 @@ Mobile-TODO
 	- my position
 	- my channel member position
 	
-- Event Screen
-	Event List
-	Send new Event
-	View Event
+- Notification : app in background
+	Firebase
 	
-- Component
+- Components
 	Image View
 	
-- authencation
+- App Icon
+
+- Authentication
+	- AuthService
 	- refresh token

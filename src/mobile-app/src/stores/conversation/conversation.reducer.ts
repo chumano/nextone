@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {conversationInitialState} from './conversation.state';
 import {
   getListConversation,
@@ -7,11 +7,61 @@ import {
 } from './conversation.thunk';
 
 import {Conversation} from './../../types/Conversation/Conversation.type';
+import { ChatData } from './conversation.payloads';
+import { Message } from '../../types/Message/Message.type';
+import { Status } from '../../types/User/UserStatus.type';
 
 export const conversationSlice = createSlice({
   name: 'conversation',
   initialState: conversationInitialState,
-  reducers: {},
+  reducers: {
+    receiveChatData: (state, action: PayloadAction<ChatData>) => {
+      const { chatKey, data } = action.payload;
+      console.log('[receiveChatData] ', action.payload)
+      const conversations = state.data || []
+      switch (chatKey) {
+          case 'message':
+              {
+                  const message = data as Message;
+                  console.log('[receiveChatData]-message', message.id)
+                  const conversation =conversations.find(o => o.id === message.conversationId);
+                  if (!conversation) {
+                      state.notLoadedConversationId = message.conversationId;
+                      return;
+                  }
+                  
+                  const existMessageId = message.id;
+                  const index = conversation.messages.findIndex(o => {
+                      return o.id === existMessageId;
+                  })
+
+                  if (index !== -1) {
+                      conversation.messages[index] = message;
+                  } else {
+                      conversation.messages.unshift(message)
+                  }
+              }
+              break;
+          case 'user':
+              {
+                  const {userId, isOnline} = data ;
+                  //TODO: update user status of conversation
+                  conversations.forEach(conversation=>{
+                      conversation.members = conversation.members.map(o=>{
+                          if(o.userMember.userId === userId){
+                              o.userMember = {
+                                  ...o.userMember,
+                                  status : isOnline? Status.Online: Status.Offline
+                              }
+                          }
+                          return o;
+                      })
+                  })
+              }
+              break;
+      }
+  },
+  },
   extraReducers: builder => {
     //conversation
     builder.addCase(getListConversation.pending, (state,action) => {

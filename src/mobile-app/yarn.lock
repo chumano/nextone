@@ -1094,10 +1094,10 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@microsoft/signalr@^6.0.5":
-  "integrity" "sha512-Y6Mny+z71wv2/FiuoqLcraojQRIbyeF/Ao4y+tcZK28JzGGieoulXBJIVQhoxzeM15Xe8xGOX0/5pVlOpwrI8Q=="
-  "resolved" "https://registry.npmjs.org/@microsoft/signalr/-/signalr-6.0.5.tgz"
-  "version" "6.0.5"
+"@microsoft/signalr@^6.0.6":
+  "integrity" "sha512-3dTLtgwEXUeE9R/3NZQslh1B2WbppeHVXdnpvSZc7Yz+tP5Yiw3KCVUHwKUVnYmd9/2v3DaI/pvCdihrss49zA=="
+  "resolved" "https://registry.npmjs.org/@microsoft/signalr/-/signalr-6.0.6.tgz"
+  "version" "6.0.6"
   dependencies:
     "abort-controller" "^3.0.0"
     "eventsource" "^1.0.7"

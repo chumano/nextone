@@ -3,6 +3,8 @@ import {GenericState} from '../../types/GenericState.type';
 
 export interface ConversationState extends GenericState<Conversation[]> {
 
+  notLoadedConversationId?: string;
+
   conversationsLoading: boolean;
   conversationsOffset: number;
   allLoaded :boolean;
