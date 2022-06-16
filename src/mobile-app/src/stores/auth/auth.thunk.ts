@@ -10,6 +10,7 @@ import {UserLoginInfo} from '../../types/Auth/Auth.type';
 import {JWTDecodeInfo} from '../../types/Auth/JWTDecodeInfo.type';
 
 const loginErrorHandler = (error: AxiosError, rejectWithValue: Function) => {
+  console.log("Error: ", error)
   if (error.response?.status) {
     if (error.response.status < 200 || error.response.status > 400) {
       return rejectWithValue('Something went wrong, Please try again');

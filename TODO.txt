@@ -19,19 +19,18 @@ Web-TODO:
 
 - Chat
 	Manage Conversation	
-		Delete Conversation: delete on the user only => Member.deleteDate
 		Seen Conversation: Member.seenDate
+		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-- Login Screen
-- Home Screen
-	Profile
-	Change Password
-	
 - Chat Screen
+	SingalR
 	Conversation List
 	Message Screen
 	
+- Home Screen
+	
+
 - Call Screen
 	
 - Map Screen 
@@ -46,3 +45,6 @@ Mobile-TODO
 	
 - Component
 	Image View
+	
+- authencation
+	- refresh token

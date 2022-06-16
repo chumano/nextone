@@ -30,41 +30,40 @@ const wait = (timeout: number) => {
 
 const ConversationList = () => {
   const dispatch: AppDispatch = useDispatch();
-  const {data, status} = useSelector((store: IAppStore) => store.conversation);
+  const {data, status, allLoaded, 
+    conversationsLoading,
+    conversationsOffset} = useSelector((store: IAppStore) => store.conversation);
   const [refreshing, setRefreshing] = React.useState(false);
-  const [loadingMore, setLoadingMore] = React.useState(false);
-  const [allLoaded, setAllLoaded] = React.useState(false);
+  const [initLoading, setInitLoading] = React.useState(true);
 
   const onRefresh = React.useCallback(() => {
-    setRefreshing(true);
+    //setRefreshing(true);
     console.log('refreshing............');
-    dispatch(getListConversation());
-    wait(2000).then(() => setRefreshing(false));
+    dispatch(getListConversation({pageOptions: {offset: 0}}));
+    setInitLoading(false);
+    return ()=>{
+    }
   }, []);
 
   useEffect(() => {
-    dispatch(getListConversation());
+    dispatch(getListConversation({pageOptions: {offset: 0}}));
   }, [dispatch]);
 
   const loadMoreResults = React.useCallback(async () => {
-    // if already loading more, or all loaded, return
-    if (loadingMore || allLoaded) return;
-    // set loading more (also updates footer text)
-    setLoadingMore(true);
-    console.log('loadmoreResult...................');
-    // get next results
-    await wait(2000);
-    // load more complete, set loading more to false
-    setLoadingMore(false);
-  }, [loadingMore, allLoaded]);
+    if (conversationsLoading || allLoaded) return;
+
+    console.log('loadmoreResult...................', conversationsOffset);
+    dispatch(getListConversation({pageOptions:{offset: conversationsOffset}, loadMore: true}));
+  }, [conversationsLoading, allLoaded]);
+
 
   const renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!loadingMore) return null;
+    if (!conversationsLoading) return null;
     return <ActivityIndicator style={styles.indicator} />;
   };
 
-  if (status === 'loading') return <Loading />;
+  if (status === 'pending') return <Loading />;
 
   return (
     <FlatList
@@ -73,7 +72,7 @@ const ConversationList = () => {
       keyExtractor={(item: Conversation, _) => item.id}
       data={data}
       renderItem={props => <ConversationItem conversation={props.item} />}
-      onEndReachedThreshold={0.01}
+      onEndReachedThreshold={0.4}
       onEndReached={info => {
         loadMoreResults();
       }}
