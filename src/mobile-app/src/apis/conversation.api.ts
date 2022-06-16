@@ -16,6 +16,7 @@ const axiosInstance = createAxios(APP_CONFIG.COM_HOST);
 const getListConversation = (
   data?: GetListConversationDTO,
 ): Promise<AxiosResponse<ApiResponse<Conversation[]>>> => {
+  console.log('[api] getListConversation', data)
   return axiosInstance.get(`/conversation/getList`, {
     params: data,
   });

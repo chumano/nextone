@@ -7,19 +7,24 @@ import {
   GetMessagesHistoryDTO,
   SendMessageDTO,
 } from './../../dto/ConversationDTO.type';
+import { ConversationState } from './conversation.state';
 
 export const getListConversation = createAsyncThunk(
   'conversation/getList',
-  async (data: IPageOptions | undefined, {rejectWithValue}) => {
-    let pageOptions = data;
-    if (typeof data === undefined) {
+  async ( data: { pageOptions :IPageOptions | undefined, loadMore?: boolean} , {rejectWithValue,getState}) => {
+    const state = getState() as ConversationState;
+
+    let pageOptions = data.pageOptions;
+    if (typeof data === undefined || !data.pageOptions) {
       pageOptions = new PageOptions();
     }
 
     try {
       const response = await conversationApi.getListConversation(pageOptions);
       const result = response.data;
-      if (result.isSuccess) return result.data;
+      if (result.isSuccess) {
+        return result.data;
+      }
       else return rejectWithValue(result.errorMessage as string);
     } catch (error) {
       rejectWithValue(`conversation/getList failed: ${error}`);

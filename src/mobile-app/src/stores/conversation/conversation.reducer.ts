@@ -13,20 +13,43 @@ export const conversationSlice = createSlice({
   initialState: conversationInitialState,
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(getListConversation.pending, state => {
-      state.status = 'loading';
+    //conversation
+    builder.addCase(getListConversation.pending, (state,action) => {
+      const {arg: {loadMore}} = action.meta;
+      state.conversationsLoading =true;
     });
 
     builder.addCase(getListConversation.fulfilled, (state, action) => {
-      state.data = action.payload as Conversation[];
+      const conversations =  action.payload as Conversation[];
+      const {arg: {loadMore}} = action.meta;
+
+      if(conversations.length >0){
+        state.allLoaded = false;
+      }else{
+        state.allLoaded = true;
+      }
+
+      if(loadMore){
+        const existConversations = state.data || [];
+        state.data = [...existConversations,
+        ...conversations]
+      }else{
+        state.data = conversations;
+      }
+      state.conversationsOffset =  state.data.length;
+      state.conversationsLoading = false;
       state.status = 'success';
     });
     
     builder.addCase(getListConversation.rejected, (state, action) => {
+      const {arg: {loadMore}} = action.meta;
       state.error = action.payload as string;
+      state.allLoaded = true;
+      state.conversationsLoading = false;
       state.status = 'failed';
     });
 
+    //message
     builder.addCase(sendMessage.pending, state => {
       state.status = 'loading';
     });

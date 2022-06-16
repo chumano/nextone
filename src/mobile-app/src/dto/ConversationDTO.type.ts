@@ -3,7 +3,9 @@ import {MemberRole} from './../types/Conversation/ConversationMember.type';
 import {ConversationType} from './../types/Conversation/ConversationType.type';
 import {IPageOptions} from './../types/PageOptions.type';
 
-export interface GetListConversationDTO extends IPageOptions {}
+export interface GetListConversationDTO extends IPageOptions {
+  
+}
 
 export interface CreateConversationDTO {
   name: string;
