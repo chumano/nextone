@@ -13,7 +13,9 @@ interface IProps {
 const EventItem: React.FC<IProps> = ({eventInfo}) => {
   const navigation = useNavigation<EventStackProps>();
   const loadEventDetailHandler = () => {
-    navigation.navigate('EventDetailScreen');
+    navigation.navigate('EventDetailScreen', {
+      eventInfo,
+    });
   };
   return (
     <Pressable
@@ -23,20 +25,17 @@ const EventItem: React.FC<IProps> = ({eventInfo}) => {
         pressed && styles.eventInfoPressed,
       ]}>
       <View style={styles.eventTypeIconContainer}>
-        <Avatar.Icon size={36} icon="folder" />
+        <Avatar.Icon size={36} icon="bell-ring" />
       </View>
       <View style={styles.eventInformationContainer}>
         <View style={styles.conversationContent}>
           <Text style={styles.eventTypeNameText}>
-            {eventInfo.eventType.name}
+            [{eventInfo.eventTypeCode}] - {eventInfo.eventType.name}
           </Text>
           <View style={styles.eventContentContainer}>
-            <Text numberOfLines={1} style={styles.eventContentText}>
+            <Text numberOfLines={2} style={styles.eventContentText}>
               {eventInfo.content}
             </Text>
-          </View>
-          <View style={styles.userInfoContainer}>
-            <Text>Send by: {eventInfo.userSender.userName}</Text>
           </View>
         </View>
         <View style={styles.eventOccurredDateContainer}>
@@ -66,7 +65,6 @@ const styles = StyleSheet.create({
     borderBottomColor: APP_THEME.colors.disabled,
     borderBottomWidth: 0.2,
   },
-  userInfoContainer: {},
   conversationContent: {
     flexDirection: 'column',
   },
@@ -78,7 +76,7 @@ const styles = StyleSheet.create({
   },
   eventContentContainer: {
     marginVertical: 4,
-    maxWidth: '80%',
+    maxWidth: '100%',
   },
   eventTypeNameText: {
     fontSize: 16,

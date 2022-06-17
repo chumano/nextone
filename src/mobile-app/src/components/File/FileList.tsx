@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, ListRenderItem} from 'react-native';
+import {FlatList, ListRenderItem, View} from 'react-native';
 
 interface IProps<T> {
   listFile: T[];
@@ -16,6 +16,7 @@ const FileList = <T extends object>({
 }: IProps<T>) => {
   return (
     <FlatList
+      ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
       horizontal={isHorizontal}
       keyExtractor={keyExtractorHandler}
       data={listFile}
