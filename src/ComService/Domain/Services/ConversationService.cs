@@ -131,6 +131,17 @@ namespace ComService.Domain.Services
             {
                 query = query.Where(o => o.Type != ConversationTypeEnum.Channel);
             }
+            else
+            {
+                query = query.Include(o => o.RecentMessages)
+                    .ThenInclude(m => m.Event)
+                        .ThenInclude(o => o.EventType);
+
+                //query = query.OfType<Channel>()
+                //    .Include(o => o.RecentEvents)
+                //    .ThenInclude(o => o.Event)
+                //        .ThenInclude(o => o.EventType);
+            }
                 
             var items = await query
                 .Where(o => o.Members.Any(m => m.UserId == user.UserId))
@@ -200,6 +211,8 @@ namespace ComService.Domain.Services
         {
             _messageRepository.Add(message);
             conversation.RecentMessages.Add(message);
+
+            conversation.UpdatedDate = DateTime.Now;
 
             await _messageRepository.SaveChangesAsync();
 

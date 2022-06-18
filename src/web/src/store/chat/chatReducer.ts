@@ -11,11 +11,23 @@ import { createChannel, deleteConversation, getChannels, getConversation, getCon
 
 const initialState: ChatState = {
     conversationsLoading: false,
+
     conversations: [],
     channels: [],
     allConversations: [],
+
     modals: {},
     modalDatas: {}
+}
+
+const conversationUpdated = (state: ChatState, conversation: ConversationState)=>{
+    if(conversation.type === ConversationType.Channel){
+        state.channels = state.channels.filter(o=>o.id !== conversation.id);
+        state.channels.unshift(conversation as ConversationState);
+    }else{
+        state.conversations = state.conversations.filter(o=>o.id !== conversation.id);
+        state.conversations.unshift(conversation as ConversationState);
+    }
 }
 
 export const chatSlice = createSlice({
@@ -65,6 +77,8 @@ export const chatSlice = createSlice({
             const conversation = state.allConversations.find(o => o.id === conversationId);
             if (!conversation) return;
             conversation.members = [...conversation.members, ...members];
+
+            conversationUpdated(state, conversation);
         },
 
         updateMemberRole: (state, action: PayloadAction<{ conversationId: string, member: ConversationMember }>) => {
@@ -76,13 +90,17 @@ export const chatSlice = createSlice({
                     return member;
                 }
                 return o;
-            })
+            });
+
+            conversationUpdated(state, conversation);
         },
         deleteMember: (state, action: PayloadAction<{ conversationId: string, member: ConversationMember }>) => {
             const { conversationId, member } = action.payload;
             const conversation = state.allConversations.find(o => o.id === conversationId);
             if (!conversation) return;
             conversation.members = conversation.members.filter(o => o.userMember.userId != member.userMember.userId);
+        
+            conversationUpdated(state, conversation);
         },
 
         //chat
@@ -108,9 +126,8 @@ export const chatSlice = createSlice({
                         } else {
                             conversation.messages.unshift(message)
                         }
-                        console.log('[receiveChatEvent]-message', message.id, { isExist: index !== -1 })
 
-
+                        conversationUpdated(state, conversation);
                     }
                     break;
                 case 'user':
@@ -128,7 +145,6 @@ export const chatSlice = createSlice({
                                 return o;
                             })
                         })
-                        console.log('[receiveChatEvent]-user', data)
 
                     }
                     break;
@@ -142,6 +158,7 @@ export const chatSlice = createSlice({
 
             conversation.messages.unshift(message);
 
+            conversationUpdated(state, conversation);
         },
 
         updateMessage: (state, action: PayloadAction<{ messageId: string, message: Message }>) => {
@@ -161,6 +178,8 @@ export const chatSlice = createSlice({
                 }
                 return o;
             })
+
+            conversationUpdated(state, conversation);
         }
 
     },
@@ -245,8 +264,8 @@ export const chatSlice = createSlice({
                 } else {
                     conversation.messages.unshift(message)
                 }
-                console.log('[MessageAdded]sendMessage', message.id)
 
+                conversationUpdated(state, conversation);
             }
         })
 

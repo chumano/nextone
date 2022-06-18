@@ -75,7 +75,7 @@ const AppContainer = () => {
   }, []);
 
   const isShowLoginScreen = !isUserLogin && !isCalling;
-  const isShowRootAppScreen = isUserLogin && !isCalling;
+  const isShowRootAppScreen = isUserLogin ;
   const isShowCallScreen = isCalling;
 
   if (isLoading) return <Loading />;

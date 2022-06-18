@@ -87,7 +87,7 @@ export const CallScreen = () => {
   }, [])
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.root}>
 
       <Text>CallScreen</Text>
       <Button mode="contained"
@@ -120,6 +120,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     flex: 1,
     padding: 20,
+    position: 'absolute',
+    top:0, 
+    bottom:0,
+    left:0,
+    right:0
   },
   inputField: {
     marginBottom: 10,

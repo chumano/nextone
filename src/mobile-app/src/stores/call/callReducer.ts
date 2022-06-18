@@ -9,7 +9,7 @@ const callSlice = createSlice({
     name: "call",
     initialState: callInitialState,
     reducers: {
-        call(state){
+        call: (state, action: PayloadAction<'voice'|'video'>) => {
             state.isCalling = true;
         },
         stopCall(state){

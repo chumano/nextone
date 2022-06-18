@@ -17,6 +17,8 @@ import { Button } from 'react-native-paper';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 import { ConversationType } from '../types/Conversation/ConversationType.type';
 import MembersScreen from '../screens/ChatScreen/MembersScreen';
+import { useDispatch } from 'react-redux';
+import { callActions } from '../stores/call/callReducer';
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
@@ -43,6 +45,7 @@ export type ConversationScreenProp = NativeStackNavigationProp<
 const Stack = createNativeStackNavigator<ChatStackParamsList>();
 
 const ChatStack = ({ navigation, route }: BottomTabProps) => {
+  const dispatch = useDispatch();
   console.log('[ChatStack]route.params', route.params);
   useEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
@@ -74,11 +77,15 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
               return <>
                 {conversationType === ConversationType.Peer2Peer &&
                   <>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={()=>{
+                      dispatch(callActions.call('voice'));
+                    }}>
                       <AwesomeIcon name='phone' size={32} color={'#000'} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={{ marginLeft: 20 }}>
+                    <TouchableOpacity style={{ marginLeft: 20 }} onPress={()=>{
+                      dispatch(callActions.call('video'));
+                    }}>
                       <AwesomeIcon name='video' size={32} color={'#000'} />
                     </TouchableOpacity>
                   </>

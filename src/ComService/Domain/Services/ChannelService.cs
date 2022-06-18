@@ -123,12 +123,14 @@ namespace ComService.Domain.Services
             var messageId = _idGenerator.GenerateNew();
             var message = new Message(messageId, MessageTypeEnum.Event,
                 evt.UserSenderId, evt);
+
             _messageRepository.Add(message);
             channel.RecentMessages.Add(message);
 
 
             channel.UpdatedDate = DateTime.Now;
 
+            await _messageRepository.SaveChangesAsync();
             // TODO: send ChannelEventAdded
             await _bus.Publish(new ChannelEventAdded());
             await _bus.Publish(new ConversationMessageAdded()

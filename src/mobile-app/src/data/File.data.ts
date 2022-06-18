@@ -4,7 +4,7 @@ import {EventFile} from '../types/Event/EventFile.type';
 export const LIST_EVENT_FILE: EventFile[] = [
   {
     eventId: 'event-01',
-    file: 'file-01',
+    fileId: 'file-01',
     fileName: 'fire-01',
     fileType: FileType.Image,
     fileUrl:
@@ -12,7 +12,7 @@ export const LIST_EVENT_FILE: EventFile[] = [
   },
   {
     eventId: 'event-01',
-    file: 'file-02',
+    fileId: 'file-02',
     fileName: 'fire-02',
     fileType: FileType.Image,
     fileUrl:
@@ -20,7 +20,7 @@ export const LIST_EVENT_FILE: EventFile[] = [
   },
   {
     eventId: 'event-01',
-    file: 'file-03',
+    fileId: 'file-03',
     fileName: 'fire-03',
     fileType: FileType.Image,
     fileUrl:
@@ -28,7 +28,7 @@ export const LIST_EVENT_FILE: EventFile[] = [
   },
   {
     eventId: 'event-01',
-    file: 'file-04',
+    fileId: 'file-04',
     fileName: 'fire-04',
     fileType: FileType.Image,
     fileUrl:
@@ -36,7 +36,7 @@ export const LIST_EVENT_FILE: EventFile[] = [
   },
   {
     eventId: 'event-01',
-    file: 'file-05',
+    fileId: 'file-05',
     fileName: 'fire-05',
     fileType: FileType.Image,
     fileUrl:
@@ -44,7 +44,7 @@ export const LIST_EVENT_FILE: EventFile[] = [
   },
   {
     eventId: 'event-01',
-    file: 'file-06',
+    fileId: 'file-06',
     fileName: 'fire-06',
     fileType: FileType.Image,
     fileUrl:

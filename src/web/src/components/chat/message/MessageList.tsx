@@ -16,7 +16,7 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
     const dispatch = useDispatch();
     const {messages, messagesLoading, messagesLoadMoreEmtpy} = conversation;
     const listRef = useRef<HTMLDivElement>(null);
-    const [goToTop, setGoToTop] = useState(false);
+    const [needLoadMore, setNeedLoadMore] = useState(false);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -29,9 +29,9 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
             const currentScrollY =  listRef.current!.scrollTop ;
             const delta = 10;
             if (scrollHeight - divHeight+ currentScrollY < delta) {
-                !goToTop && setGoToTop(true);
+                !needLoadMore && setNeedLoadMore(true);
             }else{
-                goToTop && setGoToTop(false);
+                needLoadMore && setNeedLoadMore(false);
             }
 
             //console.log({goToTop, currentScrollY, divHeight, scrollHeight});
@@ -40,16 +40,18 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
         listRef.current.addEventListener("scroll",  debounce(handleScroll,500));
 
         return () => listRef.current?.removeEventListener("scroll", handleScroll);
-    }, [goToTop, setGoToTop, listRef]);
+    }, [needLoadMore, setNeedLoadMore, listRef]);
 
     useEffect(()=>{
-        if(!goToTop) return;
+        if(!needLoadMore) return;
         //load old message
         if(messages.length==0) return;
         if(loading || messagesLoadMoreEmtpy) return;
+
         console.log('getMessageHistory...')
         const oldestMessage = messages[messages.length-1];
         setLoading(true);
+        setNeedLoadMore(false);
         dispatch(getMessageHistory({
             conversationId: oldestMessage.conversationId,
             beforeDate: oldestMessage.sentDate,
@@ -57,7 +59,7 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
             pageSize:20
         }))
 
-    },[goToTop, messages, loading, messagesLoadMoreEmtpy])
+    },[needLoadMore, messages, loading, messagesLoadMoreEmtpy])
 
     useEffect(()=>{
         setLoading(messagesLoading||false);

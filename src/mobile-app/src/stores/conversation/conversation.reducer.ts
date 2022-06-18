@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {conversationInitialState} from './conversation.state';
+import {conversationInitialState, ConversationState} from './conversation.state';
 import {
   getListConversation,
   getMessagesHistory,
@@ -10,6 +10,12 @@ import {Conversation} from './../../types/Conversation/Conversation.type';
 import { ChatData } from './conversation.payloads';
 import { Message } from '../../types/Message/Message.type';
 import { Status } from '../../types/User/UserStatus.type';
+
+const conversationUpdated = (state: ConversationState, conversation: Conversation)=>{
+  const conversations = state.data || [];
+  state.data = conversations.filter(o=>o.id !== conversation.id);
+  state.data.unshift(conversation);
+}
 
 export const conversationSlice = createSlice({
   name: 'conversation',
@@ -40,6 +46,8 @@ export const conversationSlice = createSlice({
                   } else {
                       conversation.messages.unshift(message)
                   }
+
+                  conversationUpdated(state, conversation);
               }
               break;
           case 'user':
@@ -63,7 +71,8 @@ export const conversationSlice = createSlice({
   },
   },
   extraReducers: builder => {
-    //conversation
+    
+    //conversations
     builder.addCase(getListConversation.pending, (state,action) => {
       const {arg: {loadMore}} = action.meta;
       state.conversationsLoading =true;
@@ -99,10 +108,11 @@ export const conversationSlice = createSlice({
       state.status = 'failed';
     });
 
-    //message
+    //messages
     builder.addCase(sendMessage.pending, state => {
       state.status = 'loading';
     });
+
     builder.addCase(sendMessage.fulfilled, (state, action) => {
       const message = action.payload;
 
@@ -124,7 +134,9 @@ export const conversationSlice = createSlice({
       }
 
       state.status = 'success';
+      conversationUpdated(state, conversationHaveMessage);
     });
+
     builder.addCase(sendMessage.rejected, (state, action) => {
       state.error = action.payload as string;
       state.status = 'failed';
@@ -133,6 +145,7 @@ export const conversationSlice = createSlice({
     builder.addCase(getMessagesHistory.pending, state => {
       state.status = 'loading';
     });
+
     builder.addCase(getMessagesHistory.fulfilled, (state, action) => {
       const listMessage = action.payload;
       const {arg} = action.meta;
@@ -166,6 +179,7 @@ export const conversationSlice = createSlice({
         }
       }
     });
+
     builder.addCase(getMessagesHistory.rejected, (state, action) => {
       state.error = action.payload as string;
       state.status = 'failed';

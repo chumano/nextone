@@ -95,7 +95,7 @@ namespace ComService.Boudaries.Controllers
             {
                 await _channelService.AddEvent(channel, nEvent);
             }
-            await _eventRepository.SaveChangesAsync();
+            //await _eventRepository.SaveChangesAsync();
             return Ok(ApiResult.Success(null));
         }
 

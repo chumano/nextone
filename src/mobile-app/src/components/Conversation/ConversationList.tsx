@@ -30,7 +30,7 @@ const wait = (timeout: number) => {
 
 const ConversationList = () => {
   const dispatch: AppDispatch = useDispatch();
-  const {data, status, allLoaded, 
+  const {data : conversations, status, allLoaded, 
     conversationsLoading,
     conversationsOffset} = useSelector((store: IAppStore) => store.conversation);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -64,13 +64,12 @@ const ConversationList = () => {
   };
 
   if (status === 'pending') return <Loading />;
-
   return (
     <FlatList
       onRefresh={() => onRefresh()}
       refreshing={refreshing}
       keyExtractor={(item: Conversation, _) => item.id}
-      data={data}
+      data={conversations}
       renderItem={props => <ConversationItem conversation={props.item} />}
       onEndReachedThreshold={0.4}
       onEndReached={info => {

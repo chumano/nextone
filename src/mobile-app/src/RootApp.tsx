@@ -37,19 +37,16 @@ const RootApp = () => {
   }, []);
 
   useEffect(() => {
-    if (appStateVisible === 'active') {
-      signalRService.connectHub();
-    } else {
-      signalRService.disconnectHub();
+    const connect = async ()=>{
+      if (appStateVisible === 'active') {
+        await signalRService.connectHub();
+      } else {
+        await signalRService.disconnectHub();
+      }
     }
-  }, [appStateVisible])
 
-  useEffect(() => {
-    signalRService.connectHub();
-    return () => {
-      signalRService.disconnectHub();
-    }
-  }, [])
+    connect();
+  }, [appStateVisible])
 
   useEffect(() => {
     const subscription = signalRService.subscription("chat", (data: ChatData)=>{
