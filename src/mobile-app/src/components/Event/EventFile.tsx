@@ -18,8 +18,7 @@ export default EventFileItem;
 const styles = StyleSheet.create({
   eventImageContainer: {
     width: 164,
-    height: 164,
-    marginHorizontal: 8
+    height: 164
   },
   eventImage: {
     width: '100%',

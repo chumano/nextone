@@ -1,17 +1,24 @@
-import {UserStatus} from './../User/UserStatus.type';
 import {EventFile} from './EventFile.type';
 import {EventType} from './EventType.type';
+import {UserStatus} from './../User/UserStatus.type';
 
-export interface EventInfo {
+export interface Event {
   id: string;
   content: string;
   eventTypeCode: string;
-  eventType: EventType;
   occurDate: string;
+  createdDate: string;
+
   address: string;
   lat: number;
   lon: number;
+
   userSenderId: string;
   userSender: UserStatus;
+
+  eventType: EventType;
   files: EventFile[];
+
+  isActive: boolean;
+  isDeleted: boolean;
 }
