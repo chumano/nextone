@@ -23,20 +23,18 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-- Image View:
-	https://github.com/jobtoday/react-native-image-viewing
+- Chat Screen
+	Message List 
+		loadmore
+	
+
 - Download file
 	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
 	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
 	
 - Upload file
 	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
-- Chat Screen
-	Message List
-	Message-Event
-	Message-Image
-	Message-File
-	
+
 - Event Screen
 	Event List
 	Send new Event

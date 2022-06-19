@@ -7,6 +7,10 @@ import { frowNow } from '../../utils/date.utils'
 import { groupFileByType } from '../../utils/file.utils'
 import FileList from '../File/FileList'
 import FileView from '../File/FileView'
+import ImageView from "react-native-image-viewing";
+import { ImageSource } from 'react-native-image-viewing/dist/@types'
+import ImageViewHeader from '../ImageView/ImageViewHeader'
+import ImageViewFooter from '../ImageView/ImageViewFooter'
 
 interface MessageEventProps {
     message: Message
@@ -18,11 +22,20 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
     }, [eventInfo])
 
     const [imageViewVisible, setImageViewVisible] = useState(false);
-    const [images, setImages] = useState<any[]>([])
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
+    const [images, setImages] = useState<ImageSource[]>([])
 
     const onViewImage = useCallback((index: number) => {
         const images = group['image'];
         return () => {
+            const imageSoruces: ImageSource[] = images.map(o=> {
+                return {
+                    title: o.fileName,
+                    uri: o.fileUrl
+                }
+            })
+            setImages(imageSoruces);
+            setSelectedImageIndex(index);
             setImageViewVisible(true);
         }
     }, [group])
@@ -89,7 +102,24 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
                 </View>
 
             </View>
-       
+
+            <ImageView
+                backgroundColor='white'
+                images={images}
+                imageIndex={selectedImageIndex}
+                visible={imageViewVisible}
+                onRequestClose={() => setImageViewVisible(false)}
+                HeaderComponent={({ imageIndex }) => {
+                          const title = (images[imageIndex] as any).title;
+                          return (
+                            <ImageViewHeader title={title} onRequestClose={() => setImageViewVisible(false)} />
+                          );
+                        }
+                  }
+                FooterComponent={({ imageIndex }) => (
+                <ImageViewFooter imageIndex={imageIndex} imagesCount={images.length} />
+                )}
+            />
         </React.Fragment>
     )
 }
