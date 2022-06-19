@@ -18,12 +18,14 @@ import { FileType } from '../../types/File/FileType.type';
 import ImageView from "react-native-image-viewing";
 import ImageViewHeader from '../ImageView/ImageViewHeader';
 import ImageViewFooter from '../ImageView/ImageViewFooter';
+import { ConversationType } from '../../types/Conversation/ConversationType.type';
 
 interface IProps {
   message: Message;
+  conversationType: ConversationType
 }
 
-const MessageItem: React.FC<IProps> = ({ message }) => {
+const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
   const authState = useSelector((store: IAppStore) => store.auth);
   const isOwnerMessage =
     authState.data?.userId === message.userSender.userId ?? false;
@@ -39,23 +41,23 @@ const MessageItem: React.FC<IProps> = ({ message }) => {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
   const [images, setImages] = useState<ImageSource[]>([])
 
-  const fileImages = useMemo(()=>{
-    return message.files?.filter(o=>o.fileType ===FileType.Image) || [];
-  },[message.files]); 
+  const fileImages = useMemo(() => {
+    return message.files?.filter(o => o.fileType === FileType.Image) || [];
+  }, [message.files]);
 
   const onViewImage = useCallback((index: number) => {
-      const images = fileImages;
-      return () => {
-          const imageSoruces: ImageSource[] = images.map(o=> {
-              return {
-                  title: o.fileName,
-                  uri: o.fileUrl
-              }
-          })
-          setImages(imageSoruces);
-          setSelectedImageIndex(index);
-          setImageViewVisible(true);
-      }
+    const images = fileImages;
+    return () => {
+      const imageSoruces: ImageSource[] = images.map(o => {
+        return {
+          title: o.fileName,
+          uri: o.fileUrl
+        }
+      })
+      setImages(imageSoruces);
+      setSelectedImageIndex(index);
+      setImageViewVisible(true);
+    }
   }, [fileImages])
 
   const displayDate = frowNow(message.sentDate);
@@ -78,35 +80,41 @@ const MessageItem: React.FC<IProps> = ({ message }) => {
               styles.messageContentContainer,
               isOwnerMessage && styles.ownerMessageContentContainer,
             ]}>
-
-            {/* text */}
-            {!!message?.content &&
-              <Text>{message?.content?.trim()}</Text>
+            {conversationType !== ConversationType.Peer2Peer && !isOwnerMessage &&
+              <Text style={{opacity:0.5, marginBottom:5}}>{message.userSender.userName}</Text>
             }
-
-            {/* files */}
-            <View style={styles.filesContainer}>
-              {message.files && message.files.length > 0 &&
-                // <View >
-                //   {message.files.map(o =>
-                //     <FileView key={o.fileId} file={o} />
-                //   )}
-                // </View>
-                <FileList
-                  isHorizontal={true}
-                  renderItem={o => (
-                    <FileView file={o.item} onView={onViewImage(o.index)}/>
-                  )}
-                  keyExtractorHandler={(item, _) => item.fileId}
-                  listFile={message.files}
-                />
+           
+            <View  style={styles.messageContentBubble}>
+              {/* text */}
+              {!!message?.content &&
+                <Text>{message?.content?.trim()}</Text>
               }
-            </View>
+
+              {/* files */}
+              <View style={styles.filesContainer}>
+                {message.files && message.files.length > 0 &&
+                  // <View >
+                  //   {message.files.map(o =>
+                  //     <FileView key={o.fileId} file={o} />
+                  //   )}
+                  // </View>
+                  <FileList
+                    isHorizontal={true}
+                    renderItem={o => (
+                      <FileView file={o.item} onView={onViewImage(o.index)} />
+                    )}
+                    keyExtractorHandler={(item, _) => item.fileId}
+                    listFile={message.files}
+                  />
+                }
+              </View>
 
 
-            <View style={styles.displayDateContainer} >
-              <Text style={styles.displayDateText} >{displayDate}</Text>
+              <View style={styles.displayDateContainer} >
+                <Text style={styles.displayDateText} >{displayDate}</Text>
+              </View>
             </View>
+
           </View>
 
         </View>
@@ -151,15 +159,17 @@ const styles = StyleSheet.create({
 
   messageContentContainer: {
     marginLeft: 8,
-    marginRight: 0,
-    padding: 8,
-    maxWidth: '80%',
-    borderRadius: 8,
-    backgroundColor: APP_THEME.colors.white,
+    marginRight: 0
   },
   ownerMessageContentContainer: {
     marginRight: 8,
     marginLeft: 0,
+    maxWidth: '80%',
+  },
+  messageContentBubble: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: APP_THEME.colors.white,
   },
 
   filesContainer: {

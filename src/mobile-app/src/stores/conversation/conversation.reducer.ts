@@ -21,6 +21,18 @@ export const conversationSlice = createSlice({
   name: 'conversation',
   initialState: conversationInitialState,
   reducers: {
+    selectConversation: (state, action: PayloadAction<string>) => {
+      state.messagesAllLoaded = false;
+    },
+    //conversation
+    addConversation : (state, action : PayloadAction<Conversation>)=>{
+        const conversation = action.payload;
+        const conversations = state.data || []
+        if (!conversations.find(o => o.id === conversation.id)) {
+          conversations.unshift(conversation)
+          state.data = conversations;
+        }
+    },
     receiveChatData: (state, action: PayloadAction<ChatData>) => {
       const { chatKey, data } = action.payload;
       console.log('[receiveChatData] ', action.payload)
@@ -32,6 +44,7 @@ export const conversationSlice = createSlice({
                   console.log('[receiveChatData]-message', message.id)
                   const conversation =conversations.find(o => o.id === message.conversationId);
                   if (!conversation) {
+                      console.log('not exist conversation', message.conversationId)
                       state.notLoadedConversationId = message.conversationId;
                       return;
                   }
@@ -144,26 +157,29 @@ export const conversationSlice = createSlice({
 
     builder.addCase(getMessagesHistory.pending, state => {
       state.status = 'loading';
+      state.messagesLoading = true;
     });
 
     builder.addCase(getMessagesHistory.fulfilled, (state, action) => {
       const listMessage = action.payload;
       const {arg} = action.meta;
 
+      state.messagesLoading = false;
+
       if (!listMessage || !state.data) {
-        state.allLoaded = true;
+        state.messagesAllLoaded = true;
         return;
       }
 
       state.status = 'success';
 
       if (listMessage.length === 0) {
-        state.allLoaded = true;
+        state.messagesAllLoaded = true;
         return;
       }
 
+      state.messagesAllLoaded = false;
       const getConversationId = listMessage[0].conversationId;
-
       const conversationHaveMessage = state.data.find(
         o => o.id === getConversationId,
       );
@@ -178,11 +194,14 @@ export const conversationSlice = createSlice({
           conversationHaveMessage.messages.push(oldMessage);
         }
       }
+
+      
     });
 
     builder.addCase(getMessagesHistory.rejected, (state, action) => {
       state.error = action.payload as string;
       state.status = 'failed';
+      state.messagesLoading = false;
     });
   },
 });

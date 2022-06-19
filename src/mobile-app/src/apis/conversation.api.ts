@@ -4,7 +4,7 @@ import {
 } from './../dto/ConversationDTO.type';
 import {AxiosResponse} from 'axios';
 import {APP_CONFIG} from './../constants/app.config';
-import {createAxios} from './../utils/axios.util';
+import {createAxios, handleAxiosApi} from './../utils/axios.util';
 
 import {GetListConversationDTO} from '../dto/ConversationDTO.type';
 import {Conversation} from './../types/Conversation/Conversation.type';
@@ -24,8 +24,8 @@ const getListConversation = (
 
 const getConversation = (
   conversationId: string,
-): Promise<AxiosResponse<ApiResponse<Conversation>>> => {
-  return axiosInstance.get(`/conversation/${conversationId}`);
+): Promise<ApiResponse<Conversation>> => {
+  return handleAxiosApi(axiosInstance.get(`/conversation/${conversationId}`));
 };
 
 const sendMessage = (

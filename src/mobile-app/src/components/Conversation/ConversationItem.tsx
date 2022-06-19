@@ -15,12 +15,17 @@ import {ConversationScreenProp} from '../../navigation/ChatStack';
 
 import {useSelector} from 'react-redux';
 import {IAppStore} from '../../stores/app.store';
+import { useDispatch } from 'react-redux';
+import { conversationActions } from '../../stores/conversation';
+import { MessageType } from '../../types/Message/MessageType.type';
+import { frowNow } from '../../utils/date.utils';
 
 interface IProps {
   conversation: Conversation;
 }
 
 const ConversationItem: React.FC<IProps> = ({conversation}) => {
+  const dispatch = useDispatch();
   const navigation = useNavigation<ConversationScreenProp>();
   const {data} = useSelector((store: IAppStore) => store.auth);
 
@@ -53,6 +58,7 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
 
   const loadConversationHandler = () => {
     if (!data) return;
+    dispatch(conversationActions.selectConversation(conversation.id))
     navigation.navigate('ChatScreen', {
       userId: data.userId,
       conversationId: conversation.id,
@@ -64,6 +70,26 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
   const isConversationHaveMessage =
     conversation && conversation.messages && conversation.messages.length > 0;
 
+  const renderLastMessageText = ()=>{
+    let lastMessageText = '';
+    if(isConversationHaveMessage){
+      const lastMessage = conversation.messages[0];
+      if(conversation.type !== ConversationType.Peer2Peer){
+        lastMessageText +=  lastMessage.userSender.userName +': ';
+      }
+      if(lastMessage.type === MessageType.Text){
+        lastMessageText += lastMessage.content;
+      }else if(lastMessage.type === MessageType.ImageFile){
+        lastMessageText += 'Hình ảnh';
+      }else if(lastMessage.type === MessageType.OtherFile){
+        lastMessageText += 'Tệp tin';
+      }else if(lastMessage.type === MessageType.Event){
+        lastMessageText += 'Sự kiện';
+      }
+    }
+    return lastMessageText;
+  }
+  const displayDate = frowNow(conversation.updatedDate!);
   return (
     <Pressable
       onPress={loadConversationHandler}
@@ -78,15 +104,13 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
           {isConversationHaveMessage && (
             <View style={styles.lastMessageContainer}>
               <Text style={styles.lastMessageText}>
-                {
-                  conversation.messages[0].content
-                }
+                {renderLastMessageText() }
               </Text>
             </View>
           )}
         </View>
         <View style={styles.conversationUpdatedDate}>
-          <Text style={styles.updatedDateText}>{conversation.updatedDate}</Text>
+          <Text style={styles.updatedDateText}>{displayDate}</Text>
         </View>
       </View>
     </Pressable>
@@ -129,6 +153,7 @@ const styles = StyleSheet.create({
   },
   lastMessageText: {
     fontSize: 12,
+    opacity: 0.5
   },
   updatedDateText: {
     fontSize: 12,

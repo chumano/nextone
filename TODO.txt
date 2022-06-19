@@ -15,8 +15,6 @@ Web-TODO:
 	- Minimize Call screen
 	- Time out 10s when dont receive answer
 
-
-
 - Chat
 	Manage Conversation	
 		Seen Conversation: Member.seenDate
@@ -24,15 +22,25 @@ Web-TODO:
 -------------------------------------------
 Mobile-TODO
 - Chat Screen
-	Message List 
-		loadmore
+	Create new Conversation
 	
+	View Channel members
+	
+	
+- Map Screen 
+	- event position
+	- my position
+	- my channel member position
+	
+- Call Screen
 
+- Home Screen
+	
 - Download file
 	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
 	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
 	
-- Upload file
+- Send Message Upload file
 	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
 
 - Event Screen
@@ -40,20 +48,11 @@ Mobile-TODO
 	Send new Event
 	View Event
 	
-- Home Screen
-	
-- Call Screen
-	
-- Map Screen 
-	- event position
-	- my position
-	- my channel member position
+
 	
 - Notification : app in background
 	Firebase
 	
-- Components
-	Image View
 	
 - App Icon
 

@@ -8,6 +8,10 @@ export interface ConversationState extends GenericState<Conversation[]> {
   conversationsLoading: boolean;
   conversationsOffset: number;
   allLoaded :boolean;
+
+  //message
+  messagesAllLoaded: boolean;
+  messagesLoading: boolean;
 }
 
 export const conversationInitialState: ConversationState = {
@@ -18,4 +22,7 @@ export const conversationInitialState: ConversationState = {
   conversationsLoading: false,
   conversationsOffset: 0,
   allLoaded: false,
+
+  messagesAllLoaded: false,
+  messagesLoading: false
 };

@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import qs from 'qs';
-
+import { AxiosResponse } from 'axios';
 import {UserTokenInfoResponse} from '../types/Auth/Auth.type';
 
 export const createAxios = (baseUrl: string) => {
@@ -41,3 +41,22 @@ export const createAxios = (baseUrl: string) => {
 
   return newInstance;
 };
+
+
+export async function handleAxiosApi<T>(
+  axiosPromises: Promise<AxiosResponse<any>> | Promise<AxiosResponse<any>>[]
+): Promise<T> {
+  axiosPromises = Array.isArray(axiosPromises) ? axiosPromises : [axiosPromises];
+
+  if (axiosPromises.length === 1) {
+    const { data } = await axiosPromises[0];
+    return data;
+  }
+
+  return Promise.all(
+    axiosPromises.map(async (promise) => {
+      const { data } = await promise;
+      return data;
+    })
+  ) as any;
+}

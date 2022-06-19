@@ -1,4 +1,4 @@
-import React, {ReactElement, useLayoutEffect, useState} from 'react';
+import React, {ReactElement, useEffect, useLayoutEffect, useState} from 'react';
 import {StyleSheet, View} from 'react-native';
 import {Avatar, Text} from 'react-native-paper';
 
@@ -14,6 +14,7 @@ import ConversationAvatar from '../../components/Conversation/ConversationAvatar
 import {ConversationType} from '../../types/Conversation/ConversationType.type';
 import {UserStatus} from '../../types/User/UserStatus.type';
 import {Conversation} from '../../types/Conversation/Conversation.type';
+import Loading from '../../components/Loading';
 
 interface ChatParams {
   conversationId: string;
@@ -25,13 +26,21 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
     (store: IAppStore) => store.conversation,
   );
   const [otherUser, setOtherUser] = useState<UserStatus>();
-  const [conversationName, setConversationName] = useState('');
+  const [conversationId, setConversationId] = useState<string>();
+  const [userId, setUserId] = useState<string>();
   const [selectedConversation, setSelectedConversation] = useState<Conversation>();
 
   useLayoutEffect(() => {
     const params = route.params;
-    if (!listConversation || !params) return;
+    if (!params) return;
     const {userId, conversationId} = params as ChatParams;
+    setUserId(userId);
+    setConversationId(conversationId);
+  }, [navigation, route]);
+
+  useEffect(()=>{
+    if (!listConversation || !userId || !conversationId) return;
+
     const selectedConversation = listConversation.find(
       c => c.id === conversationId,
     );
@@ -65,7 +74,6 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
         conversationType = (
           <ConversationAvatar icon="account-group" size={24} />
         );
-        setConversationName(selectedConversation.name);
         break;
     }
 
@@ -82,9 +90,19 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
         </View>
       ),
     });
-  }, [navigation, route, listConversation, otherUser, conversationName]);
-
-  return <ChatBox conversation={selectedConversation} />;
+  },[listConversation,conversationId, userId]);
+  
+  return (
+    <React.Fragment>
+      { selectedConversation &&
+        <ChatBox conversation={selectedConversation} />
+      }
+      { !selectedConversation &&
+        <Loading/>
+      }
+    </React.Fragment>
+   
+  )
 };
 
 export default ChatScreen;
