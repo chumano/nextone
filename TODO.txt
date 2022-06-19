@@ -23,6 +23,14 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
+- Image View:
+	https://github.com/jobtoday/react-native-image-viewing
+- Download file
+	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
+	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
+	
+- Upload file
+	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
 - Chat Screen
 	Message List
 	Message-Event
@@ -54,3 +62,57 @@ Mobile-TODO
 - Authentication
 	- AuthService
 	- refresh token
+	
+===================
+icons: https://oblador.github.io/react-native-vector-icons/
+files
+{
+            "fileId": "dc85f870-898d-42f2-97b7-b9ebda2e1446",
+            "fileName": "pedestrian-man.png",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/image/MTgwNjIwMjJcYTUwOThhOGYtYzJkYi00Nzg2LTkyZDEtMjRjYjQwNWMyZGQyLnBuZw%3d%3d",
+            "fileContent": "image/png",
+            "fileType": 0
+        },
+        {
+            "fileId": "52d4bfe1-8b55-4dfc-99bc-1e83e5605dca",
+            "fileName": "warning.png",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/image/MTkwNjIwMjJcYjQ1YTc4MDctYWMzNC00NzMxLWFjZTctMzEyN2RmMjBlYTY5LnBuZw%3d%3d",
+            "fileContent": "image/png",
+            "fileType": 0
+        },
+        {
+            "fileId": "1c8127ce-80a1-4564-8699-f033b9a30caf",
+            "fileName": "warning.png",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/image/MTkwNjIwMjJcYzY2YTg4YTItYzJiYS00MzE2LThhYjQtYzk1OTlkZjVlMjc5LnBuZw%3d%3d",
+            "fileContent": "image/png",
+            "fileType": 0
+        },
+        {
+            "fileId": "9131f240-590d-43fd-b20d-c6f1a7203389",
+            "fileName": "Cafe.jpg",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/image/MTkwNjIwMjJcOTM3M2ZmYjItMzQxNC00NWU1LTk2NjktYzFiNzk0ZDRkODY3LmpwZw%3d%3d",
+            "fileContent": "image/jpeg",
+            "fileType": 0
+        },
+        {
+            "fileId": "e3ba766b-69ee-41ce-9d20-a4d92f53d4ff",
+            "fileName": "School.jpg",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/image/MTkwNjIwMjJcNGQ0MWQ2MGQtYWE5Ny00MjJjLWJkYjktNmY3YzA0ZWQ0NWU5LmpwZw%3d%3d",
+            "fileContent": "image/jpeg",
+            "fileType": 0
+        },
+
+{
+            "fileId": "3cee1daa-f8ba-4122-8ac2-c9f26397fd5c",
+            "fileName": "phu-luc7-bao-hiem-benh-ly-nghiem-trong.pdf",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/file/MTkwNjIwMjJcM2FkZGE3MzYtZjM3Mi00YTZlLTk0NmMtNjNhYmEwY2ViNGIxLnBkZg%3d%3d",
+            "fileContent": "application/pdf",
+            "fileType": 3
+        },
+		{
+            "fileId": "98e9b25e-3d34-45f3-88ed-3d1dbd2aa690",
+            "fileName": "Implementing_Domain_Driven_Design.pdf",
+            "fileUrl": "http://ucom-apis.dientoan.vn/file/file/MTkwNjIwMjJcNGM4Yjg5MDEtMTQ5Zi00NDk1LTkyODktNTMzYTU1NGFkNGM0LnBkZg%3d%3d",
+            "fileContent": "application/pdf",
+            "fileType": 3
+        }

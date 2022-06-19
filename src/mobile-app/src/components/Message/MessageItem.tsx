@@ -11,6 +11,8 @@ import { IAppStore } from '../../stores/app.store';
 import FileView from '../File/FileView';
 import { MessageType } from '../../types/Message/MessageType.type';
 import MessageEvent from './MessageEvent';
+import { frowNow } from '../../utils/date.utils';
+import FileList from '../File/FileList';
 interface IProps {
   message: Message;
 }
@@ -27,7 +29,7 @@ const MessageItem: React.FC<IProps> = ({ message }) => {
       <Avatar.Icon icon="account" size={24} />
     );
 
-  const displayDate = message.sentDate;//frowNow(message.sentDate);
+  const displayDate = frowNow(message.sentDate);
   return (
     <React.Fragment>
       {message.type == MessageType.Event &&
@@ -47,25 +49,40 @@ const MessageItem: React.FC<IProps> = ({ message }) => {
               styles.messageContentContainer,
               isOwnerMessage && styles.ownerMessageContentContainer,
             ]}>
-            <Text>{message?.content?.trim()}</Text>
-          </View>
 
-          <View>
-            {message.files && message.files.length > 0 &&
-              <View >
-                {message.files.map(o =>
-                  <FileView key={o.fileId} file={o} />
-                )}
-              </View>
+            {/* text */}
+            { !!message?.content &&
+              <Text>{message?.content?.trim()}</Text>
             }
-            <View >
-              <Text>{displayDate}</Text>
+
+            {/* files */}
+            <View style={styles.filesContainer}>
+              {message.files && message.files.length > 0 &&
+                // <View >
+                //   {message.files.map(o =>
+                //     <FileView key={o.fileId} file={o} />
+                //   )}
+                // </View>
+                 <FileList
+                  isHorizontal={true}
+                  renderItem={o => (
+                    <FileView file={o.item} />
+                  )}
+                  keyExtractorHandler={(item, _) => item.fileId}
+                  listFile={message.files}
+                />
+              }
+            </View>
+
+
+            <View style={styles.displayDateContainer} >
+              <Text style={styles.displayDateText} >{displayDate}</Text>
             </View>
           </View>
 
         </View>
       }
-    </React.Fragment>
+    </React.Fragment >
 
   );
 };
@@ -82,6 +99,7 @@ const styles = StyleSheet.create({
   ownerMessageContainer: {
     flexDirection: 'row-reverse',
   },
+
   messageContentContainer: {
     marginLeft: 8,
     marginRight: 0,
@@ -94,4 +112,18 @@ const styles = StyleSheet.create({
     marginRight: 8,
     marginLeft: 0,
   },
+
+  filesContainer: {
+
+  },
+
+  displayDateContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end'
+  },
+  displayDateText: {
+    fontSize: 10,
+    opacity: 0.5
+  }
+
 });
