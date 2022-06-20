@@ -22,8 +22,6 @@ Web-TODO:
 -------------------------------------------
 Mobile-TODO
 - Chat Screen
-	Create new Conversation
-	
 	View Channel members
 	
 	

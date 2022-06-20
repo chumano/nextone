@@ -12,23 +12,25 @@ import { BottomTabProps } from './BottomTabNavigator';
 
 import ConversationScreen from '../screens/ChatScreen/ConversationScreen';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
-import { Text, TouchableOpacity } from 'react-native';
-import { Button } from 'react-native-paper';
+import { ScrollView, Text, TouchableOpacity } from 'react-native';
+import { Button, Dialog, Portal } from 'react-native-paper';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ConversationType } from '../types/Conversation/ConversationType.type';
 import MembersScreen from '../screens/ChatScreen/MembersScreen';
 import { useDispatch } from 'react-redux';
 import { callActions } from '../stores/call/callReducer';
+import FindUsersScreen from '../screens/ChatScreen/ModalCreateConversation';
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
   ChatScreen: {
-    userId: string;
     conversationId: string;
     name: string;
     conversationType: ConversationType
   };
-  MembersScreen: undefined
+  MembersScreen: undefined;
+  FindUsersScreen: undefined;
 };
 
 export type ChatStackProps = NativeStackScreenProps<
@@ -46,10 +48,10 @@ const Stack = createNativeStackNavigator<ChatStackParamsList>();
 
 const ChatStack = ({ navigation, route }: BottomTabProps) => {
   const dispatch = useDispatch();
-  console.log('[ChatStack]route.params', route.params);
+
   useEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
-    const isRenderBottomTab = routeName !== 'ChatScreen';
+    const isRenderBottomTab = routeName !== 'ChatScreen' &&  routeName !== 'FindUsersScreen';
 
     navigation.setOptions({
       tabBarStyle: {
@@ -59,12 +61,24 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
   }, [navigation, route]);
 
   return (
+    <>
     <Stack.Navigator initialRouteName="ConversationScreen">
       <Stack.Screen
         name="ConversationScreen"
         component={ConversationScreen}
-        options={{
-          title: 'Tin nhắn',
+        options={({ route, navigation }) => {
+          return {
+            title: 'Tin nhắn',
+            headerRight: ()=>{
+              return <>
+                <TouchableOpacity onPress={()=>{
+                  navigation.navigate('FindUsersScreen')
+                }}>
+                  <MaterialCommunityIcon name='chat-plus-outline' size={32} color={'#000'} />
+                </TouchableOpacity>
+              </>
+            }
+          }
         }}
       />
       <Stack.Screen name="ChatScreen" component={ChatScreen}
@@ -105,6 +119,14 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
           }
         }} />
         <Stack.Screen
+          name="FindUsersScreen"
+          component={FindUsersScreen}
+          options={{
+            title: 'Tìm người dùng'
+          }}
+        />
+
+        <Stack.Screen
           name="MembersScreen"
           component={MembersScreen}
           options={{
@@ -112,6 +134,12 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
           }}
       />
     </Stack.Navigator>
+
+    <Portal>
+      
+    </Portal>
+    </>
+    
   );
 };
 

@@ -60,7 +60,6 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
     if (!data) return;
     dispatch(conversationActions.selectConversation(conversation.id))
     navigation.navigate('ChatScreen', {
-      userId: data.userId,
       conversationId: conversation.id,
       name: conversationName,
       conversationType: conversation.type

@@ -10,8 +10,14 @@ import {GetListConversationDTO} from '../dto/ConversationDTO.type';
 import {Conversation} from './../types/Conversation/Conversation.type';
 import {ApiResponse} from './../types/ApiResponse.type';
 import {Message} from '../types/Message/Message.type';
+import { CreateConverationDTO } from '../dto/CreateConverationDTO';
 
 const axiosInstance = createAxios(APP_CONFIG.COM_HOST);
+
+const getOrCreateConversation = async (data: CreateConverationDTO)=>{
+  const responsePromise = axiosInstance.post('/conversation/CreateConversation', data)
+  return await handleAxiosApi<ApiResponse<string>>(responsePromise);
+};
 
 const getListConversation = (
   data?: GetListConversationDTO,
@@ -45,6 +51,7 @@ const getMessagesHistory = (
 };
 
 export const conversationApi = {
+  getOrCreateConversation,
   getListConversation,
   getConversation,
   sendMessage,

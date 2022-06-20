@@ -18,28 +18,24 @@ import Loading from '../../components/Loading';
 
 interface ChatParams {
   conversationId: string;
-  userId: string;
 }
 
 const ChatScreen = ({navigation, route}: ChatStackProps) => {
-  const {data: listConversation} = useSelector(
-    (store: IAppStore) => store.conversation,
-  );
+  const {data: listConversation} = useSelector((store: IAppStore) => store.conversation);
+  const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
   const [otherUser, setOtherUser] = useState<UserStatus>();
   const [conversationId, setConversationId] = useState<string>();
-  const [userId, setUserId] = useState<string>();
   const [selectedConversation, setSelectedConversation] = useState<Conversation>();
 
   useLayoutEffect(() => {
     const params = route.params;
     if (!params) return;
-    const {userId, conversationId} = params as ChatParams;
-    setUserId(userId);
+    const {conversationId} = params as ChatParams;
     setConversationId(conversationId);
   }, [navigation, route]);
 
   useEffect(()=>{
-    if (!listConversation || !userId || !conversationId) return;
+    if (!listConversation || !userInfo || !conversationId) return;
 
     const selectedConversation = listConversation.find(
       c => c.id === conversationId,
@@ -54,7 +50,7 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
     switch (selectedConversation.type) {
       case ConversationType.Peer2Peer: {
         const otherUser = selectedConversation.members.filter(
-          m => m.userMember.userId !== userId,
+          m => m.userMember.userId !== userInfo.userId,
         )[0];
         conversationType =
           otherUser.userMember.userAvatarUrl !== '' ? (
@@ -90,7 +86,7 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
         </View>
       ),
     });
-  },[listConversation,conversationId, userId]);
+  },[listConversation,conversationId, userInfo]);
   
   return (
     <React.Fragment>
