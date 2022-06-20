@@ -30,9 +30,7 @@ const FindUsersScreen = ({ navigation, route }: ChatStackProps) => {
 
     const fetchUsers = useCallback(async (textSearch: string) => {
         setLoading(true);
-        console.log('findUsers', textSearch);
-        const userResponse = await userApi.list(textSearch, { offset: 0, pageSize: 5 }, true);
-        //const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
+        const userResponse = await userApi.list(textSearch, { offset: 0, pageSize: 10 }, true);
         if (userResponse.isSuccess) {
             setUserList(userResponse.data);
         } else {

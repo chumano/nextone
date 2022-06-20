@@ -23,6 +23,7 @@ export const conversationSlice = createSlice({
   reducers: {
     selectConversation: (state, action: PayloadAction<string>) => {
       state.messagesAllLoaded = false;
+      state.seletetedConversationId = action.payload;
     },
     //conversation
     addConversation : (state, action : PayloadAction<Conversation>)=>{
