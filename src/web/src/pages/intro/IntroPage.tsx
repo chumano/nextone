@@ -28,7 +28,7 @@ const IntroPage: React.FC = () => {
                 <div className="intro-page__intro">
                     <div className="intro__text">
                         <h2>Hệ thống UCOM</h2>
-                        Kênh liên lạc và theo dõi sự cố
+                        Hệ thống chỉ huy, điều hành thống nhất
                     </div>
                     <div className="intro__img">
                         <IntroSVG width={'100%'} />
