@@ -7,7 +7,40 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from './stores/app.store';
 import { conversationActions } from './stores/conversation';
 import { SignalRService } from './services';
+import messaging, { firebase } from '@react-native-firebase/messaging';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+// Register background handler
+messaging().setBackgroundMessageHandler(async remoteMessage => {
+  console.log('Message handled in the background!', remoteMessage);
+});
+
+
+async function requestUserPermission() {
+  const authStatus = await messaging().requestPermission();
+  const enabled =
+    authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+    authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  if (enabled) {
+    console.log('Authorization status:', authStatus);
+  }
+
+  return enabled;
+}
+
+async function getFCMToken() {
+  let fcmToken = await AsyncStorage.getItem('fcmToken');
+  if (!fcmToken) {
+    fcmToken = await firebase.messaging().getToken();
+    console.log('token = ', fcmToken);
+    if (fcmToken) {
+      // user has a device token
+      await AsyncStorage.setItem('fcmToken', fcmToken);
+    }
+  }
+}
 
 const signalRService = new SignalRService();
 
@@ -16,6 +49,25 @@ const RootApp = () => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
+  
+  useEffect(()=>{
+    const initNotificaiton = async ()=>{
+      const enabled = await requestUserPermission();
+      if(enabled){
+        await getFCMToken();
+      }
+
+     
+    }
+
+    initNotificaiton();
+    //foreground
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+    });
+    return unsubscribe;
+
+  },[])
   useEffect(() => {
     const subscription = AppState.addEventListener("change", nextAppState => {
       if (
