@@ -16,5 +16,9 @@ export interface Message {
 
   event?: EventInfo,
 
+  properites?: {
+    'LOCATION'?: [number, number]
+  }
+
   state?: 'upload' | 'error'; 
 }

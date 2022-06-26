@@ -1,6 +1,8 @@
 import L from 'leaflet';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MapContainer, Marker, Popup, TileLayer, useMap, ZoomControl } from 'react-leaflet'
+import 'leaflet-contextmenu';
+import 'leaflet-contextmenu/dist/leaflet.contextmenu.css';
 import { comApi } from '../../apis/comApi';
 import API from '../../config/apis';
 import { MapConfig, parseMapConfig } from '../../utils/functions';
@@ -15,7 +17,7 @@ import { useMapSelector } from '../../context/map/mapContext';
 import { message } from 'antd';
 import MarkerUser from './MarkerUser';
 import MarkerEvent from './MarkerEvent';
-
+import ModalSendLocation from './ModalSendLocation';
 //default icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -36,7 +38,7 @@ const MapController = () => {
 };
 
 //https://react-leaflet.js.org/docs/start-introduction/
-
+const zoomObjectLvl = 15;
 const MapView = () => {
     const { onlineUsers, events, selectedEvent, selectedUser } = useMapSelector(o => o);
     const [map, setMap] = useState<L.Map | undefined>(undefined);
@@ -45,6 +47,9 @@ const MapView = () => {
     const layerRef = useRef<L.TileLayer>(null);
     const [mapConfig, setMapConfig] = useState<MapConfig>();
     const [mapTileUrl, setMapTileUrl] = useState<string>();
+
+    const [modalSendLocationVisible, setModalSendLocationVisible] = useState(false);
+    const [selectedLatLon, setSelectedLatLon] = useState<L.LatLng>()
 
     const fetchSettings = useCallback(async () => {
         const resposne = await comApi.getSettings();
@@ -62,6 +67,15 @@ const MapView = () => {
 
     }, [comApi]);
 
+    
+    useEffect(()=>{
+        const params = new URLSearchParams(window.location.search)
+        const {lat,lon} = {lat: params.get('lat'), lon: params.get('lon')};
+        if(!lat || !lon || !map) return;
+        //zoom to position
+        map.flyTo([parseFloat(lat),parseFloat(lon)], zoomObjectLvl)
+    },[window.location.search,map])
+
     useEffect(() => {
         fetchSettings();
     }, [])
@@ -75,7 +89,7 @@ const MapView = () => {
 
     useEffect(() => {
         if (!map) return;
-        const zoomObjectLvl = 15;
+       
         if (selectedEvent) {
             const latlon: L.LatLngTuple = [selectedEvent.lat, selectedEvent.lon];
             map.flyTo(latlon, zoomObjectLvl)
@@ -125,6 +139,11 @@ const MapView = () => {
         </>
     }, [events, selectedEvent])
 
+    const onSendLocation = useCallback((latlon: L.LatLng) => {
+       setSelectedLatLon(latlon);
+       setModalSendLocationVisible(true)
+    }, []);
+
     return <>
         {mapConfig &&
             <MapContainer center={mapConfig.center}
@@ -132,7 +151,16 @@ const MapView = () => {
                 maxBounds={mapConfig.boundingBox}
                 scrollWheelZoom={true}
                 zoomControl={false}
-                whenCreated={setMap}>
+                whenCreated={setMap}
+                contextmenu={true}
+                contextmenuItems={[
+                    {
+                      text: 'Gửi tin nhắn vị trí',
+                      callback: (e:any)=>{
+                        onSendLocation(e.latlng)
+                      }
+                    }
+                  ]}>
                 <MapController />
                 <ZoomControl position="topright" />
                 <MapDisplayPosition controlPosition='bottomright' />
@@ -149,6 +177,11 @@ const MapView = () => {
                 {renderEventMarkers}
 
             </MapContainer>
+        }
+        {modalSendLocationVisible &&
+            <ModalSendLocation position={[selectedLatLon!.lat, selectedLatLon!.lng]} onVisible={(visible)=>{
+                setModalSendLocationVisible(visible)
+            }} />
         }
     </>
 }

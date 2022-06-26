@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NextOne.Shared.Extenstions;
+using Newtonsoft.Json;
 
 namespace ComService.Infrastructure
 {
@@ -164,7 +165,12 @@ namespace ComService.Infrastructure
                     .WithOne()
                     .HasForeignKey(o => o.MessageId);
 
-
+                eb.Property(o => o.Properites)
+                  .HasColumnType("nvarchar(max)")
+                  .HasConversion(
+                       v => v!=null ? JsonConvert.SerializeObject(v): null,
+                       v => !string.IsNullOrWhiteSpace(v)? JsonConvert.DeserializeObject<Dictionary<string, object>>(v): null
+                   );
             });
 
             modelBuilder.Entity<MessageFile>(eb =>

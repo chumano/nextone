@@ -54,6 +54,8 @@ namespace ComService.Domain
 
         public string EventId { get; private set; }
         public Event Event { get; private set; } 
+
+        public Dictionary<string, object> Properites { get; set; }
     }
 
     public enum MessageTypeEnum

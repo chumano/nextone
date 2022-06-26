@@ -36,9 +36,11 @@ export interface GetMessagesHistoryDTO extends IPageOptions {
 
 export interface SendMessageDTO {
     conversationId: string;
+    userId?: string; 
     content: string;
 
     files?: BaseFile[];
+    properties?: {[key:string] : any}
 }
 
 

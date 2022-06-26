@@ -68,7 +68,7 @@ namespace ComService.Domain.Services
             {
                 if (memberIds.Count != 2)
                 {
-                    throw new DomainException("", "");
+                    throw new DomainException("", "Phải có 2 người dùng");
                 }
 
                 //check conversation exist
