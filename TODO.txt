@@ -5,6 +5,8 @@ https://msftwebcast.com/2019/11/create-and-bind-a-self-signed-certificate-in-iis
 -- IIS - reverse proxy
 https://docs.microfocus.com/OMi/10.62/Content/OMi/AdminGuide/Hardening/RevProxy_IIS.htm
 
+adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
+
 -------------------------------------------
 Web-TODO:
 
@@ -30,7 +32,7 @@ Mobile-TODO
 	- my channel member position
 	
 - Call Screen
-
+	-ios : setup callkeep
 - Home Screen
 	
 - Download file

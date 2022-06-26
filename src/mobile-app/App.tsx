@@ -23,9 +23,37 @@ import {JWTDecodeInfo} from './src/types/Auth/JWTDecodeInfo.type';
 import RootApp from './src/RootApp';
 
 import Loading from './src/components/Loading';
+import { v4 as uuidv4 } from 'uuid';
 
-import {Platform} from 'react-native';
+import {DeviceEventEmitter, Linking, PermissionsAndroid, Platform} from 'react-native';
 import {enableScreens} from 'react-native-screens';
+import RNCallKeep from 'react-native-callkeep';
+
+const options = {
+  ios: {
+    appName: 'My app name',
+  },
+  android: {
+    alertTitle: 'Permissions required',
+    alertDescription: 'This application needs to access your phone accounts',
+    cancelButton: 'Cancel',
+    okButton: 'ok',
+    imageName: 'phone_account_icon',
+    additionalPermissions: [],
+    // Required to get audio in background when using Android 11
+    foregroundService: {
+      channelId: 'com.ucom',
+      channelName: 'Foreground service for my app',
+      notificationTitle: 'My app is running on background',
+      notificationIcon: 'Path to the resource icon of the notification',
+    }, 
+  }
+};
+
+RNCallKeep.setup(options).then(accepted => {
+  console.log('RNCallKeep', accepted)
+});
+
 
 const AppContainer = () => {
   const {isUserLogin} = useSelector((store: IAppStore) => store.auth);
@@ -33,6 +61,13 @@ const AppContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch: AppDispatch = useDispatch();
+  useEffect(()=>{
+    const getLink = async()=>{
+      const initialUrl = await Linking.getInitialURL();
+      console.log('initialUrl', initialUrl)
+    }
+    getLink();
+  },[])
 
   useEffect(() => {
     const getUserInfoFromStorage = async () => {
