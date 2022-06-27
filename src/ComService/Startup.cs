@@ -2,6 +2,7 @@ using ComService.Boudaries.Hubs;
 using ComService.Domain.Repositories;
 using ComService.Domain.Services;
 using ComService.Infrastructure;
+using ComService.Infrastructure.AppSettings;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -156,6 +157,13 @@ namespace ComService
             services.AddScoped<IChannelService, ChannelService>();
             services.AddScoped<IUserStatusService, UserStatusService>();
             services.AddScoped<IMasterService, MasterService>();
+
+            services.Configure<FireBaseOptions>(Configuration.GetSection("FireBaseOptions"));
+            services.AddSingleton<ICloudService, FireBaseCloudService>();
+            services.AddSingleton<FireBaseClient>();
+
+            var fireBaseOptions = new FireBaseOptions();
+            Configuration.GetSection("FireBaseOptions").Bind(fireBaseOptions);
         }
 
         private static HttpClientHandler GetHttpHandler()

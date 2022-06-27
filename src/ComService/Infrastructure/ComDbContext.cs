@@ -29,6 +29,8 @@ namespace ComService.Infrastructure
         public DbSet<Settings> Settings { get; set; }
 
         public DbSet<News> News { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
+
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
             System.Diagnostics.Debug.WriteLine("ComDbContext::ctor ->" + this.GetHashCode());
@@ -412,6 +414,24 @@ namespace ComService.Infrastructure
                 eb.Property(o => o.Group)
                   .HasColumnType("nvarchar(255)");
             });
+
+            modelBuilder.Entity<UserDeviceToken>(eb =>
+            {
+                eb.ToTable("T_App_UserDeviceTokens", DB_SCHEMA)
+                 .HasKey("UserId", "Token");
+
+                eb.Property(o => o.UserId)
+                    .HasColumnType("nvarchar(36)");
+
+                eb.Property(o => o.Token)
+                    .HasColumnType("nvarchar(255)")
+                    .IsRequired();
+
+                eb.Property(o => o.Date)
+                    .HasColumnType("datetime");
+
+            });
+
 
             BuildNewsModels(modelBuilder);
         }

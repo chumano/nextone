@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
     <PackageReference Include="Grpc.AspNetCore" Version="2.40.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.45.0" />
     <PackageReference Include="Grpc.Tools" Version="2.41.1">
@@ -32,7 +33,6 @@
 
   <ItemGroup>
     <Folder Include="Boudaries\Grpc\" />
-    <Folder Include="Infrastructure\AppSettings\" />
     <Folder Include="UseCases\Commands\" />
     <Folder Include="UseCases\Queries\" />
   </ItemGroup>

@@ -78,6 +78,15 @@ namespace ComService.Boudaries.Hubs
                                     _logger.LogInformation($"[ChatHub] emit SEND_CALL_REQUEST to {member.UserId} - {member.UserMember.UserName}");
                                     var clientProxy = Clients.Group($"user_{member.UserId}");
                                     await EmitData(clientProxy, emitData);
+
+                                    //send cloud message request
+                                    await _bus.Publish(new CallRequetEvent()
+                                    {
+                                        ConversationId = conversationId,
+                                       UserSenderId = client.UserId,
+                                       UserReceiverId = member.UserId,
+                                       CallType = callType
+                                    });
                                 }
                             }
 
