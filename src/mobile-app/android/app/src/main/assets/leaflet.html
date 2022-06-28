@@ -1,6 +1,7 @@
 <html>
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
         integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
         crossorigin="" />
@@ -10,29 +11,306 @@
     <style>
         #map {
             height: 100%;
+
         }
-        body{
+        .leaflet-touch .leaflet-bar a {
+            width: 50px;
+            height: 50px;
+            line-height: 50px;
+        }
+        .leaflet-popup-content h4{
+            margin-bottom: 5px;
+        }
+
+        body {
             height: 100%;
             margin: 0;
+        }
+
+        #debug {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            width: 300px;
+            max-width: 50%;
+            height: 50%;
+            background-color: #000000cc;
+            color: #fff;
+            z-index: 1000;
         }
     </style>
 
 </head>
 
-<body >
+<body>
     <div id="map"></div>
+    <div id="debug"></div>
     <script>
+        function sendMessage(data) {
+            //MAP_READY
+            //ON_VIEW
+            logMessage("[sendMessage] " + data.type, data);
+            window.ReactNativeWebView?.postMessage(JSON.stringify(data));
+        }
 
-        var map = L.map('map').setView([16.5,107.6], 10);
-        var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            id: 'mapbox/streets-v11',
-            tileSize: 512,
-            zoomOffset: -1
-        }).addTo(map);
+        var debugEnabled = true;
+        var debugMessages = [];
+        if (!debugEnabled) {
+            document.getElementById("debug").remove();
+        }
+        function logMessage(...message) {
+            console.log(message)
+            let textMessage = JSON.stringify(message[0]);
+            debugMessages.unshift(textMessage);
+            if (debugMessages.length > 10) {
+                debugMessages.splice(-1)
+            }
 
+            if (!debugEnabled) {
+                return;
+            }
+            let html = debugMessages.map(o=> '<li>' + o +'</li>').join('')
+            document.getElementById("debug").innerHTML 
+                = '<ul>' + html + '</ul>';
+        }
+
+        function onView(data){
+            /*{
+                object: 'user' | 'event',
+                objectId: string
+            }
+            */
+            sendMessage({
+                type: 'ON_VIEW',
+                data: data
+            })
+        }
+
+        var MapManager = new (function () {
+            this.name = "[MapManager]";
+            this.map = undefined;
+            this.defaultMarker = undefined;
+            this.mapMarkers = {}
+            /*
+                'markerid' : marker
+            */
+            this.onMapInited = (map) => {
+                this.map = map;
+                logMessage(this.name + "onMapInited", map.getCenter());
+                this.registerMapEvents();
+                sendMessage({
+                    type: 'MAP_READY'
+                });
+            }
+
+            getMarkerPopupForUser = (user) => {
+                return '<div>'
+                        + '<h4>' + user.userName +'</h4>'
+                        + '<small>' + user.lastUpdate +'</small>'
+                    +'</div>'
+            }
+            getMarkerPopupForEvent= (event) => {
+                return '<div>'
+                        + '<h4>' + event.eventTypeName +'</h4>'
+                        + '<div>' + event.content + '</div>'
+                        + '<small>' + event.occurDate +'</small>'
+                    +'</div>'
+            }
+            this.addOrUpdateMarker = (markerInfo)=>{
+                let markerid = markerInfo.type =='user'?
+                        'user_'+ markerInfo.user.userId
+                        : 'event_'+ markerInfo.event.eventId;
+                if(this.addMarkers[markerid]) return markerid;
+
+                let icon  = markerInfo.type =='user'? userIcon: eventIcon;
+                let onViewData = {
+                    object: markerInfo.type, 
+                    objectId: markerInfo.type =='user'?
+                        markerInfo.user.userId
+                        :markerInfo.event.eventId
+                }
+
+                let popupContent = "<div>"
+                    + (markerInfo.type =='user' ? getMarkerPopupForUser(markerInfo.user) : getMarkerPopupForEvent(markerInfo.event))
+                    + "<a onclick='onView("+JSON.stringify(onViewData) + ")' > Xem chi tiết </a>"
+                    +'</div>'
+
+                const marker = L.marker(markerInfo.position, {icon: icon})
+                    .addTo(this.map).bindPopup(popupContent);
+
+                this.addMarkers[markerid] = marker;
+                return markerid;
+            }
+
+            this.addMarkers = (markers) =>{
+                let useMarkerIds = [];
+                for(let i = 0 ; i < markers.length; i++){
+                   const markerid = this.addOrUpdateMarker(markers[i]);
+                   useMarkerIds.push(markerid);
+                }
+
+               //remove not use
+               let removeIds = Object.keys(this.mapMarkers).filter(id=> useMarkerIds.indexOf(id) === -1);
+               removeIds.forEach(id => {
+                    delete this.mapMarkers[id]
+               });
+            }
+
+            this.onMessage = (message) => {
+                const {type, data} = message;
+                logMessage(this.name + ' onMessage: ' + type, data);
+
+                //MAPCONFIG : layers, center, zoom, bbox
+                //ZOOMTO : position
+                //MARKERS : user, event with popup
+                switch(type){
+                    case 'MAPCONFIG':
+                        const mapconfig = data;
+                        /*
+                        */
+                    break;
+                    case 'MARKERS':
+                        const markers = data;
+                        /*
+                        [
+                            {
+                                position : [number, number],
+                                type: 'user' | 'event',
+                                user? : {
+                                    userId: string,
+                                    userName: string,
+                                    lastUpdate: string,
+                                },
+                                event? : {
+                                    eventId: string,
+                                    eventTypeName: string,
+                                    content: string,
+                                    occurDate: string,
+                                    userSenderName: string
+                                }
+
+                            }
+                        ]
+                        */
+                       this.addMarkers(markers);
+                    break;
+                    case 'ZOOMTO':
+                        const position = data;
+                        let icon = defaultIcon;
+                        if(!this.defaultMarker){
+                            this.defaultMarker = L.marker(position, {icon: icon})
+                                .addTo(this.map)
+                        }else{
+                            this.defaultMarker.setLatLng(position)
+                        }
+                        this.map.flyTo(position, 15);
+                    break;
+                }
+            }
+
+            this.registerMapEvents = function () {
+                this.map.on('moveend', (e) => {
+                    logMessage(this.name + "onMoveEnd", e);
+                });
+                this.map.on('click', (e) => {
+                    logMessage(this.name + "click", e);
+                });
+            }
+
+            registerMesasge = function () {
+                logMessage(this.name + 'registerMesasge...');
+                //register to receive mages
+                window.addEventListener("message", this.onMessage, false);
+            }
+            registerMesasge();
+        })();
+
+    </script>
+    <script>
+        const defaultIconUrl = 'data:image/png;base64,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';
+        const userUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAAAA3NCSVQICAjb4U/gAAAACXBIWXMAAAl2AAAJdgHUMlhUAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAchQTFRF////AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJ2SyBwAAAJd0Uk5TAAECAwQFBwgJCgwODxARFBUWFxgZGhscHSEiJCUoKywuLzAzNDY8PT9AQUVHSUtMTlNUVVZaW1xdXl9hZ2hqbXFyc3d5en2AgoWHiImKjI6QkpOUlZaXmJmcnaGio6anqautrq+ys7S1trq7v8LDxMXGyMnKy8/R09TV2Nna3N3e3+Pl5ufp6+3v8PHy8/T29/j5+vz9/gVID/UAAAJPSURBVBgZxcH7X4thHAbgey3WUVIkRjlMjEqKkkpCySFCpeVQcoiIHHJYSFhDaWvV/e963+8z9W762PPsF9cF/Iu7eWgqPNpZiDR5xylmapGWghD/qEU6BrliphDmyunQCXNNdBiFuX46hGGuiw5TMFdHhyGYK45wVTPS0MoV426kIWOEcSEv0pLRGqFtsADpKq7r6m8qx3+Se7ynT+k9kQVz+RNcdQvm+ugQzYSpoiidcmHqIhNshKG8n0ywFYbOMpEXZrJCTFQGMy1MshdGMj8zyT4YOcZkbTDhestkky4YqObfLsHAc66hFdoqaFsIM8HyUegaoa0nyESxg9Czi7ZoSZBJ5vZAy23ariHIZKHt0LBtkZboFgTpME/bp01IrZe2biBIh8oIbQGk9p6WyGYgSAdPVYyWb0htjJYrAIJ08ODIIskAUit+TX4sANxhOuwHGmb5shA6fDX5APx0GgaQ64OJq3RaKoUh1zRFjMplGPJR6Zij+JEDMxeolN6gUg8zHygmsJvKAIyUUWkHXlB8hZF2KjuBRiplMDFBMQkge4HiFAyUUjkPy1OKBzDQRsUHyzmKSRh4RjHtgsVPEc2AtqIlim7YPFGKEmhrpnIA4hVFBbQ9pphxQ9ylaISuDTGKAJRuig7oaqBSBeU0xU3oukcxux5KPcUYNGXPU9xBnJ/iCzTVUKlDnJdi2QM9fRSRHMRlU9kBPcMU97HiO8Uh6DlDUYkV7yj80JPzhpbrWBWgbTYPmrJOPhw4vA6rvIu0tCB91Y9+PanGWn4D35UsKqnagQAAAAAASUVORK5CYII=';
+        const eventUrl = 'data:image/png;base64,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';
+        var LeafIcon = L.Icon.extend({
+            options: {
+                iconSize: [64, 64],
+                iconAnchor: [32, 64],
+                popupAnchor: [0, -64],
+            }
+        });
+        var defaultIcon = new LeafIcon({iconUrl: defaultIconUrl});
+        var userIcon = new LeafIcon({iconUrl: userUrl}),
+            eventIcon = new LeafIcon({iconUrl: eventUrl});
+        function initMap(){
+            var map = L.map('map',{
+                zoomControl: false,
+                minZoom : 10,
+                maxZoom: 20,
+                maxBounds: [
+                    [16.0,  107],
+                    [17, 108]
+                ]
+            })
+            .setView([16.5, 107.6], 10);
+
+            var zoom = L.control.zoom({
+                position: 'topright'
+            });  
+            zoom.addTo(map);
+
+            var tiles = L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+                maxZoom: 18,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                    'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                id: 'mapbox/streets-v11',
+                tileSize: 512,
+                zoomOffset: -1
+            }).addTo(map);
+
+
+            MapManager.onMapInited(map);
+        }
+
+        initMap();
+        setTimeout(() => {
+            // MapManager.onMessage({
+            //     type: 'ZOOMTO',
+            //     data: [16.5, 107.6]
+            // })
+             MapManager.onMessage({
+                type: 'MARKERS',
+                data: [{
+                    position : [16.5, 107.6],
+                    type: 'user',
+                    user : {
+                        userId: 'userid',
+                        userName: 'User name',
+                        lastUpdate: '2022/06/22',
+                    },
+                },{
+                    position : [16.1, 107.2],
+                    type: 'event',
+                    event : {
+                        eventId: 'eventid',
+                        eventTypeName: 'An ninh',
+                        content: 'Co xung dot',
+                        occurDate:  '2022/06/22',
+                        userSenderName: 'Loc Hoang'
+                    },
+                }]
+            })
+        }, 2000)
+        setTimeout(() => {
+            MapManager.onMessage({
+                type: 'ZOOMTO',
+                data: [16.5, 107.6]
+            })
+            setTimeout(() => {
+                MapManager.onMessage({
+                    type: 'ZOOMTO',
+                    data: [16.54, 107.6]
+                })
+            },3000)
+        },1000)
     </script>
 </body>
 

@@ -9,6 +9,7 @@ import CallService from "../../services/CallService";
 import { SignalR } from "../../services/SignalRService";
 import { IAppStore, authActions, callActions } from "../../store";
 import { chatActions } from "../../store/chat/chatReducer";
+import sound from '../sound';
 
 export const GlobalContext = createContext<any>({});
 
@@ -60,11 +61,13 @@ const AppContextProvider = (props: IContextProviderProp) => {
             (data: {room:string, userId:string, userName: string, callType: 'voice' | 'video'})=>{
             //show user confirm
             const {room,userName, callType} = data;
+            sound.play();
             Modal.confirm({
                 title: 'Có cuộc gọi đến',
                 icon: <QuestionOutlined />,
                 content: `Cuộc gọi từ "${userName}"`,
                 onOk : async ()=> {
+                    sound.stop();
                     dispatch(callActions.receiveCall({
                         conversationId: room
                     }))
@@ -80,6 +83,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
                     });
                 },
                 onCancel : async ()=> {
+                    sound.stop();
                     await CallService.ignoreCallRequest(room);
                 },
             });
