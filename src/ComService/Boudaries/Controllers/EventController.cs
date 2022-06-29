@@ -11,6 +11,7 @@ using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Security;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -103,20 +104,23 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> GetEventTypesForMe()
         {
             var userId = _userContext.User.UserId;
+            var items = await GetEventTypeForUser(userId);
+            return Ok(ApiResult.Success(items));
+        }
+
+        private async Task<IEnumerable<EventType>> GetEventTypeForUser(string userId)
+        {
             var query = _comDbContext.Channels.AsNoTracking()
-                .Include(o => o.Members)
-                .Include(o => o.AllowedEventTypes)
-                    .ThenInclude(o => o.EventType)
-                .Where(o => o.Members.Any(m => m.UserId == userId))
-                .Select(o => o.AllowedEventTypes);
-                //.Select(o => o.EventType);
+               .Include(o => o.Members)
+               .Include(o => o.AllowedEventTypes)
+                   .ThenInclude(o => o.EventType)
+               .Where(o => o.Members.Any(m => m.UserId == userId))
+               .Select(o => o.AllowedEventTypes);
+            //.Select(o => o.EventType);
 
             var items = await query.ToListAsync();
-            return Ok(ApiResult.Success(
-                items.SelectMany(o=>o)
-                .Select(o=>o.EventType)
-                .DistinctBy(o => o.Code))
-               );
+            return items.SelectMany(o => o).Select(o => o.EventType)
+                .DistinctBy(o => o.Code);
         }
 
         //get all events by eventTypes, in current date
@@ -129,10 +133,19 @@ namespace ComService.Boudaries.Controllers
             var query = _comDbContext.Events.AsNoTracking()
                 .Where(o => o.CreatedDate >= startDateTime && o.CreatedDate < endDateTime)
                 ;
+
+            var EventTypeCodes = new List<string>();
             if (filterDTO?.EventTypeCodes != null && filterDTO.EventTypeCodes.Any())
             {
-                query = query.Where(o => filterDTO.EventTypeCodes.Contains(o.EventTypeCode));
+                EventTypeCodes = filterDTO.EventTypeCodes;
             }
+            else
+            {
+                var eventTypes = await GetEventTypeForUser(userId);
+                EventTypeCodes = eventTypes.Select(o => o.Code).ToList();
+            }
+
+            query = query.Where(o => EventTypeCodes.Contains(o.EventTypeCode));
 
             var items = await query
                 .Include(o => o.EventType)

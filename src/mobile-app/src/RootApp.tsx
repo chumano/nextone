@@ -11,33 +11,53 @@ import messaging, { firebase } from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNCallKeep from 'react-native-callkeep';
 import { v4 as uuidv4 } from 'uuid';
+import notifee from '@notifee/react-native';
+
 import { callActions } from './stores/call/callReducer';
+
+const options = {
+  ios: {
+    appName: 'My app name',
+  },
+  android: {
+    alertTitle: 'Permissions required',
+    alertDescription: 'This application needs to access your phone accounts',
+    cancelButton: 'Cancel',
+    okButton: 'ok',
+    imageName: 'phone_account_icon',
+    additionalPermissions: [],
+    // Required to get audio in background when using Android 11
+    foregroundService: {
+      channelId: 'com.ucom',
+      channelName: 'Foreground service for my app',
+      notificationTitle: 'My app is running on background',
+      notificationIcon: 'Path to the resource icon of the notification',
+    }, 
+  }
+};
+
+RNCallKeep.setup(options).then(accepted => {
+  console.log('RNCallKeep', accepted)
+});
+
 // Register background handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
   console.log('Message handled in the background!', remoteMessage);
-  if (Platform.OS === 'android') {
-    // await RNCallKeep.setup({
-    //   ios: {
-    //     appName: 'My app name',
-    //   },
-    //   android: {
-    //     alertTitle: 'Permissions required',
-    //     alertDescription: 'This application needs to access your phone accounts',
-    //     cancelButton: 'Cancel',
-    //     okButton: 'ok',
-    //     imageName: 'phone_account_icon',
-    //     additionalPermissions: [],
-    //     // Required to get audio in background when using Android 11
-    //     foregroundService: {
-    //       channelId: 'com.ucom',
-    //       channelName: 'Foreground service for my app',
-    //       notificationTitle: 'My app is running on background',
-    //       notificationIcon: 'Path to the resource icon of the notification',
-    //     }, 
-    //   }
-    // });
-    // RNCallKeep.setAvailable(true);
-  };
+  // notifee.displayNotification({
+  //   body: 'This message was sent via FCM!',
+  //   android: {
+  //     channelId: 'default',
+  //     actions: [
+  //       {
+  //         title: 'Mark as Read',
+  //         pressAction: {
+  //           id: 'read',
+  //         },
+  //       },
+  //     ],
+  //   },
+  // });
+  // return;
 
   let uuid = uuidv4();
   RNCallKeep.displayIncomingCall(
@@ -96,6 +116,21 @@ const RootApp = () => {
     //foreground
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
+      notifee.displayNotification({
+        body: 'This message was sent via FCM!',
+        android: {
+          channelId: 'default',
+          actions: [
+            {
+              title: 'Mark as Read',
+              pressAction: {
+                id: 'read',
+              },
+            },
+          ],
+        },
+      });
+      return;
       let uuid = uuidv4();
       RNCallKeep.displayIncomingCall(
         uuid,
@@ -114,7 +149,7 @@ const RootApp = () => {
     console.log(`[answerCall]: `, data);
     const {callUUID} = data;
     RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
-    
+
     await Linking.openURL('ucom://')
     //Show App Call Screen
     dispatch(callActions.call('voice'));

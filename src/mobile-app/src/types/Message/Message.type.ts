@@ -13,5 +13,10 @@ export interface Message {
   content: string;
   files: MessageFile[];
   event?: EventInfo;
+  
+  properites?: {
+    'LOCATION'?: [number, number]
+  }
+
   state?: 'upload' | 'error';
 }

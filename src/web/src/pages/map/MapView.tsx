@@ -78,7 +78,7 @@ const MapView = () => {
 
     useEffect(() => {
         fetchSettings();
-    }, [])
+    }, [fetchSettings])
 
     useEffect(() => {
         if (layerRef.current && mapTileUrl) {

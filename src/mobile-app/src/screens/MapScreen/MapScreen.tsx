@@ -1,104 +1,85 @@
-import React, {useCallback, useRef, useState} from 'react';
-import {Platform, StyleSheet, View} from 'react-native';
-import {FAB} from 'react-native-paper';
+import React, { useCallback, useEffect,useLayoutEffect, useRef, useState } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
+import { FAB } from 'react-native-paper';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
+import { conversationApi } from '../../apis';
+import { eventApi } from '../../apis/event.api';
 import Loading from '../../components/Loading';
-//https://github.com/pavel-corsaghin/react-native-leaflet/blob/main/src/LeafletView/index.tsx
-const LEAFLET_HTML_SOURCE = Platform.select({
-  ios: require('../../../android/app/src/main/assets/leaflet.html'),
-  android: {uri: 'file:///android_asset/leaflet.html'},
-});
-const styles = StyleSheet.create({
-  floatBtn: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
-  },
-});
+import { MapStackProps } from '../../navigation/MapStack';
+import { EventInfo } from '../../types/Event/EventInfo.type';
+import { UserStatus } from '../../types/User/UserStatus.type';
+import MapView from './MapView';
 
-const MapScreen = () => {
-  const webViewRef = useRef<WebView>(null);
-  const [initialized, setInitialized] = useState(false);
+
+const MapScreen = ({navigation, route}: MapStackProps)=> {
+
   const [loading, setLoading] = useState(true);
+  const [selectedEventTypeCodes,_] = useState<string[]>([]);
+  const [eventInfos,setEventInfos] = useState<EventInfo[]>()
+  const [users,setUsers] = useState<UserStatus[]>();
+  const [zoomPosition, setZoomPosition] = useState<[number,number]>();
 
-  const sendMessage = useCallback(
-    (payload: any) => {
-      console.log(`sending: ${JSON.stringify(payload)}`);
+  useLayoutEffect(() => {
+    const params: any = route.params;
+    if (!params) return;
+    console.log("MAPSCREEN params", params)
+    const {position} = params
+    if(position){
+      setZoomPosition([position[0], position[1]]);
+    }
+  }, [navigation, route, setZoomPosition]);
 
-      webViewRef.current?.injectJavaScript(
-        `window.postMessage(${JSON.stringify(payload)}, '*');`
-      );
-    },
-    []
-  );
+  // load events, users
+  const fetchEvents = useCallback(async () => {
+    if (!selectedEventTypeCodes) return;
 
-  const sendInitialMessage = useCallback(() => {
-    let startupMessage: any = {};
-    // if (mapLayers) {
-    //   startupMessage.mapLayers = mapLayers;
-    // }
-    // if (mapMarkers) {
-    //   startupMessage.mapMarkers = mapMarkers;
-    // }
-    // if (mapCenterPosition) {
-    //   startupMessage.mapCenterPosition = mapCenterPosition;
-    // }
-    // if (mapShapes) {
-    //   startupMessage.mapShapes = mapShapes;
-    // }
-    // if (ownPositionMarker) {
-    //   startupMessage.ownPositionMarker = {
-    //     ...ownPositionMarker,
-    //     id: OWN_POSTION_MARKER_ID,
-    //   };
-    // }
-    // startupMessage.zoom = zoom;
-    sendMessage(startupMessage);
-    setInitialized(true);
-    console.log('sending initial message');
-  }, [sendMessage]);
+    const response = await eventApi.getEventsForMap({ eventTypeCodes: selectedEventTypeCodes });
+    if (!response.isSuccess) {
+      return;
+    }
+    setEventInfos(response.data);
+  }, [eventApi, dispatch, selectedEventTypeCodes])
 
+  const fetchUsers = useCallback(async () => {
+    const response = await conversationApi.getOnlineUsersForMap({});
+    if (!response.isSuccess) {
+      return;
+    }
+    setUsers(response.data);
+  }, [conversationApi, dispatch])
 
-  const handleMessage = useCallback(
-    (event: WebViewMessageEvent) => {
-      const msg = event?.nativeEvent?.data;
-      if (!msg) {
-        return;
-      }
-      const message: { 
-        type: 'MAP_READY' | 'ON_VIEW',
-        data: any
-      } = JSON.parse(msg);
-      console.log(`received: ${JSON.stringify(message)}`);
+  useEffect(() => {
+    console.log("[init] fectch data")
+    const fetchData = async ()=>{
+      await fetchEvents();
+      await fetchUsers();
+    }
+    fetchData();
+  }, [fetchEvents, fetchUsers]);
 
-      if (message.type === 'MAP_READY') {
-        sendInitialMessage();
-      }
-      if (message.type === 'ON_VIEW') {
-        
-      }
-  }, [sendInitialMessage]);
+  useEffect(() => {
+    const intervalCall = setInterval(async () => {
+        console.log("[interval] fectch data")
+        await fetchEvents();
+        await fetchUsers();
+    }, 60 * 1000);
+    return () => {
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  const onMapInited = useCallback(()=>{
+    setLoading(false);
+  },[setLoading])
+
   return (
-    <View style={{flex: 1, position: 'relative'}}>
-
-      <WebView
-        originWhitelist={['*']}
-        source={LEAFLET_HTML_SOURCE}
-        ref={webViewRef}
-        javaScriptEnabled={true}
-
-        style={{position: 'relative'}}
-
-        onLoadStart={() => {
-          console.log('WebView-onLoadStart');
-          setLoading(true);
-        }}
-        onLoad={() => {
-          setTimeout(() => {
-            setLoading(false);
-          }, 500);
-        }}
-        onMessage={handleMessage}
+    <View style={{ flex: 1, position: 'relative' }}>
+      {loading && <Loading />}
+      <MapView 
+        zoomPosition={zoomPosition}
+        eventInfos={eventInfos}
+        users={users}
+        onMapInited={onMapInited}
       />
 
       <FAB
@@ -107,9 +88,21 @@ const MapScreen = () => {
         icon="plus"
         onPress={() => console.log('Pressed')}
       />
-      {loading && <Loading />}
     </View>
   );
 };
 
 export default MapScreen;
+
+
+const styles = StyleSheet.create({
+  floatBtn: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+  },
+});
+
+function dispatch(arg0: any) {
+  throw new Error('Function not implemented.');
+}

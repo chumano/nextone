@@ -112,13 +112,18 @@ namespace ComService.Domain.Services
                     var offlineDate = DateTime.Now.AddMinutes(-15);
                     if(userStatus.LastUpdateDate!=null && userStatus.LastUpdateDate > offlineDate)
                     {
-                        //Dont clear latlong
+                        //Keep last position
                     }
                     else
                     {
                         userStatus.LastLat = lat;
                         userStatus.LastLon = lon;
                     }
+                }
+                else
+                {
+                    userStatus.LastLat = lat;
+                    userStatus.LastLon = lon;
                 }
                
                 userStatus.LastUpdateDate = DateTime.Now;

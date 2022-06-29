@@ -23,6 +23,8 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
+- update position interval
+- register notification token
 - Chat Screen
 	Send Message Upload file
 	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
@@ -32,6 +34,13 @@ Mobile-TODO
 	- my channel member position
 	
 - Call Screen
+	https://console.firebase.google.com/u/0/project/ucom-94990/notification/compose
+
+	https://rnfirebase.io/messaging/usage#receiving-messages
+	
+	https://blog.theodo.com/2021/03/react-native-incoming-call-ui-callkeep/
+	https://github.com/react-native-webrtc/react-native-callkeep/blob/master/example/App.js
+	
 	-ios : setup callkeep
 - Home Screen
 	

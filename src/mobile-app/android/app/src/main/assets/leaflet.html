@@ -33,10 +33,12 @@
             right: 0;
             width: 300px;
             max-width: 50%;
-            height: 50%;
+            height: 400px;
+            max-height: 40%;
             background-color: #000000cc;
             color: #fff;
             z-index: 1000;
+            overflow-y: auto;
         }
     </style>
 
@@ -87,7 +89,7 @@
         }
 
         var MapManager = new (function () {
-            this.name = "[MapManager]";
+            this.name = "[]";
             this.map = undefined;
             this.defaultMarker = undefined;
             this.mapMarkers = {}
@@ -156,65 +158,90 @@
                });
             }
 
+            this.customTileLayer = undefined;
             this.onMessage = (message) => {
+                logMessage(this.name + ' onMessage: ' + JSON.stringify(message));
                 const {type, data} = message;
-                logMessage(this.name + ' onMessage: ' + type, data);
-
+                logMessage(this.name + ' onMessage: ' + type);
                 //MAPCONFIG : layers, center, zoom, bbox
                 //ZOOMTO : position
                 //MARKERS : user, event with popup
-                switch(type){
-                    case 'MAPCONFIG':
-                        const mapconfig = data;
-                        /*
-                        */
-                    break;
-                    case 'MARKERS':
-                        const markers = data;
-                        /*
-                        [
+                try{
+                    switch(type){
+                        case 'MAPCONFIG':
+                            const mapconfig = data;
+                            /*
                             {
-                                position : [number, number],
-                                type: 'user' | 'event',
-                                user? : {
-                                    userId: string,
-                                    userName: string,
-                                    lastUpdate: string,
-                                },
-                                event? : {
-                                    eventId: string,
-                                    eventTypeName: string,
-                                    content: string,
-                                    occurDate: string,
-                                    userSenderName: string
-                                }
-
+                                center:  [number, number],
+                                zoom: number,
+                                boundingBox: [[number, number], [number, number]],
+                                mapTileUrl: string,
+                                minZoom?: number,
+                                maxZoom?: number,
                             }
-                        ]
-                        */
-                       this.addMarkers(markers);
-                    break;
-                    case 'ZOOMTO':
-                        const position = data;
-                        let icon = defaultIcon;
-                        if(!this.defaultMarker){
-                            this.defaultMarker = L.marker(position, {icon: icon})
-                                .addTo(this.map)
-                        }else{
-                            this.defaultMarker.setLatLng(position)
-                        }
-                        this.map.flyTo(position, 15);
-                    break;
+                            
+                            */
+                            if (mapconfig.mapTileUrl && !this.customTileLayer) {
+                                this.customTileLayer = L.tileLayer(mapconfig.mapTileUrl, {tms: true});
+                                this.map.addLayer(this.customTileLayer);
+                            }
+
+                            this.map.options.minZoom = mapconfig.minZoom;
+                            this.map.options.maxZoom = mapconfig.maxZoom;
+                            this.map.options.maxBounds = L.latLngBounds(mapconfig.boundingBox);
+                            this.map.setView(mapconfig.center, mapconfig.zoom)
+
+                        break;
+                        case 'MARKERS':
+                            const markers = data;
+                            /*
+                            [
+                                {
+                                    position : [number, number],
+                                    type: 'user' | 'event',
+                                    user? : {
+                                        userId: string,
+                                        userName: string,
+                                        lastUpdate: string,
+                                    },
+                                    event? : {
+                                        eventId: string,
+                                        eventTypeName: string,
+                                        content: string,
+                                        occurDate: string,
+                                        userSenderName: string
+                                    }
+
+                                }
+                            ]
+                            */
+                        this.addMarkers(markers);
+                        break;
+                        case 'ZOOMTO':
+                            const position = data;
+                            let icon = defaultIcon;
+                            if(!this.defaultMarker){
+                                this.defaultMarker = L.marker(position, {icon: icon})
+                                    .addTo(this.map)
+                            }else{
+                                this.defaultMarker.setLatLng(position)
+                            }
+                            this.map.flyTo(position, 15);
+                        break;
+                    }
+                    logMessage("[Success] onMessage :"+  type)
+                }catch(err){
+                    logMessage("[ERROR] "+ JSON.stringify(err))
                 }
             }
 
             this.registerMapEvents = function () {
-                this.map.on('moveend', (e) => {
-                    logMessage(this.name + "onMoveEnd", e);
-                });
-                this.map.on('click', (e) => {
-                    logMessage(this.name + "click", e);
-                });
+                // this.map.on('moveend', (e) => {
+                //     logMessage(this.name + "onMoveEnd", e);
+                // });
+                // this.map.on('click', (e) => {
+                //     logMessage(this.name + "click", e);
+                // });
             }
 
             registerMesasge = function () {
@@ -243,6 +270,7 @@
         function initMap(){
             var map = L.map('map',{
                 zoomControl: false,
+                attributionControl: false,
                 minZoom : 10,
                 maxZoom: 20,
                 maxBounds: [
@@ -271,46 +299,49 @@
         }
 
         initMap();
-        setTimeout(() => {
-            // MapManager.onMessage({
-            //     type: 'ZOOMTO',
-            //     data: [16.5, 107.6]
-            // })
-             MapManager.onMessage({
-                type: 'MARKERS',
-                data: [{
-                    position : [16.5, 107.6],
-                    type: 'user',
-                    user : {
-                        userId: 'userid',
-                        userName: 'User name',
-                        lastUpdate: '2022/06/22',
-                    },
-                },{
-                    position : [16.1, 107.2],
-                    type: 'event',
-                    event : {
-                        eventId: 'eventid',
-                        eventTypeName: 'An ninh',
-                        content: 'Co xung dot',
-                        occurDate:  '2022/06/22',
-                        userSenderName: 'Loc Hoang'
-                    },
-                }]
-            })
-        }, 2000)
-        setTimeout(() => {
-            MapManager.onMessage({
-                type: 'ZOOMTO',
-                data: [16.5, 107.6]
-            })
+        
+        function test(){
+            setTimeout(() => {
+                // MapManager.onMessage({
+                //     type: 'ZOOMTO',
+                //     data: [16.5, 107.6]
+                // })
+                MapManager.onMessage({
+                    type: 'MARKERS',
+                    data: [{
+                        position : [16.5, 107.6],
+                        type: 'user',
+                        user : {
+                            userId: 'userid',
+                            userName: 'User name',
+                            lastUpdate: '2022/06/22',
+                        },
+                    },{
+                        position : [16.1, 107.2],
+                        type: 'event',
+                        event : {
+                            eventId: 'eventid',
+                            eventTypeName: 'An ninh',
+                            content: 'Co xung dot',
+                            occurDate:  '2022/06/22',
+                            userSenderName: 'Loc Hoang'
+                        },
+                    }]
+                })
+            }, 2000)
             setTimeout(() => {
                 MapManager.onMessage({
                     type: 'ZOOMTO',
-                    data: [16.54, 107.6]
+                    data: [16.5, 107.6]
                 })
-            },3000)
-        },1000)
+                setTimeout(() => {
+                    MapManager.onMessage({
+                        type: 'ZOOMTO',
+                        data: [16.54, 107.6]
+                    })
+                },3000)
+            },1000)
+        }
     </script>
 </body>
 
