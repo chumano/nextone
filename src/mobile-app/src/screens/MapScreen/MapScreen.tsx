@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect,useLayoutEffect, useRef, useState } from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { PermissionsAndroid, Platform, StyleSheet, View } from 'react-native';
 import { FAB } from 'react-native-paper';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { conversationApi } from '../../apis';
@@ -9,7 +9,7 @@ import { MapStackProps } from '../../navigation/MapStack';
 import { EventInfo } from '../../types/Event/EventInfo.type';
 import { UserStatus } from '../../types/User/UserStatus.type';
 import MapView from './MapView';
-
+import Geolocation from 'react-native-geolocation-service';
 
 const MapScreen = ({navigation, route}: MapStackProps)=> {
 
@@ -18,7 +18,7 @@ const MapScreen = ({navigation, route}: MapStackProps)=> {
   const [eventInfos,setEventInfos] = useState<EventInfo[]>()
   const [users,setUsers] = useState<UserStatus[]>();
   const [zoomPosition, setZoomPosition] = useState<[number,number]>();
-
+  const [myLocation, setMyLocation] = useState<[number,number]>();
   useLayoutEffect(() => {
     const params: any = route.params;
     if (!params) return;
@@ -28,6 +28,20 @@ const MapScreen = ({navigation, route}: MapStackProps)=> {
       setZoomPosition([position[0], position[1]]);
     }
   }, [navigation, route, setZoomPosition]);
+
+  useEffect(() => {
+    const requestPermission = async ()=>{
+      if (Platform.OS === 'ios') {
+        Geolocation.requestAuthorization('always');
+      }else{
+        const permissionStatus =  await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          );
+        console.log('permissionStatus', permissionStatus)
+      }
+    }
+    requestPermission();
+  }, []);
 
   // load events, users
   const fetchEvents = useCallback(async () => {
@@ -68,25 +82,58 @@ const MapScreen = ({navigation, route}: MapStackProps)=> {
     };
   }, []);
 
+  useEffect(()=>{
+    if(!myLocation) return;
+    conversationApi.updateMyStatus({
+      lat: myLocation[0],
+      lon: myLocation[1]
+    })
+  },[myLocation])
+
   const onMapInited = useCallback(()=>{
-    setLoading(false);
+    setTimeout(()=>{
+      setLoading(false);
+    },500)
   },[setLoading])
+
+  const showMyLocation = useCallback(()=>{
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        console.log('showMyLocation', position)
+        setMyLocation([
+          latitude,
+          longitude,
+        ]);
+        setZoomPosition([
+          latitude,
+          longitude,
+        ])
+      },
+      error => {
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  },[setMyLocation])
 
   return (
     <View style={{ flex: 1, position: 'relative' }}>
-      {loading && <Loading />}
       <MapView 
+        currentPosition={myLocation}
         zoomPosition={zoomPosition}
         eventInfos={eventInfos}
         users={users}
         onMapInited={onMapInited}
       />
+      
+      {loading && <Loading />}
 
       <FAB
         style={styles.floatBtn}
         small
         icon="plus"
-        onPress={() => console.log('Pressed')}
+        onPress={showMyLocation}
       />
     </View>
   );

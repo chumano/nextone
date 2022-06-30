@@ -2,7 +2,7 @@ import { AppSettings } from "../types/AppSettings";
 
 const defaultCenter: [number, number] = [0,0];
 const defaultZoom: number = 11;
-const defaultMinZoom: number = 10;
+const defaultMinZoom: number = 7;
 const defaultMaxZoom: number = 20;
 const defaultBoundingBox: [[number, number], [number, number]] | undefined = undefined;
 
@@ -46,3 +46,30 @@ export function parseData<T>(value: string | undefined, defaultValue: T) {
 
     return defaultValue;
 }
+
+export interface LatLngType {
+    lat: number;
+    lon: number;
+  }
+  
+export const getDistanceFromLatLonInM = (
+    latLng1: LatLngType,
+    latLng2: LatLngType
+  ) => {
+    var R = 6371000; // Radius of the earth in m
+    var dLat = deg2rad(latLng2.lat - latLng1.lat); // deg2rad below
+    var dLon = deg2rad(latLng2.lon - latLng1.lon);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(latLng1.lat)) *
+        Math.cos(deg2rad(latLng2.lat)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in m
+    return d;
+};
+  
+const deg2rad = (deg: number) => {
+    return deg * (Math.PI / 180);
+};

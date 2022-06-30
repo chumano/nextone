@@ -1616,6 +1616,11 @@
   "resolved" "https://registry.npmjs.org/@types/qs/-/qs-6.9.7.tgz"
   "version" "6.9.7"
 
+"@types/react-native-background-timer@^2.0.0":
+  "integrity" "sha512-y5VW82dL/ESOLg+5QQHyBdsFVA4ZklENxmOyxv8o06T+3HBG2JOSuz/CIPz1vKdB7dmWDGPZNuPosdtnp+xv2A=="
+  "resolved" "https://registry.npmjs.org/@types/react-native-background-timer/-/react-native-background-timer-2.0.0.tgz"
+  "version" "2.0.0"
+
 "@types/react-native-vector-icons@^6.4.10":
   "integrity" "sha512-z4sexbuZ7nmYsp7Z9YB5fSQoN3KFn6nZA3QsCkQLOYnVmVlxX4U22v/bM9Xx/6dOA1vClxoRZo2CFDX16uryXQ=="
   "resolved" "https://registry.npmjs.org/@types/react-native-vector-icons/-/react-native-vector-icons-6.4.10.tgz"
@@ -6014,6 +6019,11 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-18.1.0.tgz"
   "version" "18.1.0"
 
+"react-native-background-timer@^2.4.1":
+  "integrity" "sha512-TE4Kiy7jUyv+hugxDxitzu38sW1NqjCk4uE5IgU2WevLv7sZacaBc6PZKOShNRPGirLl1NWkaG3LDEkdb9Um5g=="
+  "resolved" "https://registry.npmjs.org/react-native-background-timer/-/react-native-background-timer-2.4.1.tgz"
+  "version" "2.4.1"
+
 "react-native-callkeep@^4.3.3":
   "integrity" "sha512-XfzVBB577qQpjhkdrqLgyyvRFqdvjzR+yamtl7hf0aSSiuIdMNTNJFj5wBoXp0Tffm11Jwl0myKXfxrRy+c45w=="
   "resolved" "https://registry.npmjs.org/react-native-callkeep/-/react-native-callkeep-4.3.3.tgz"
@@ -6028,6 +6038,11 @@
     "flow-parser" "^0.121.0"
     "jscodeshift" "^0.13.1"
     "nullthrows" "^1.1.1"
+
+"react-native-geolocation-service@^5.3.0":
+  "integrity" "sha512-imK/yjxqPMIydSjZLpqPh7U073Fpe1JAaZHiIzLzWnzv89OGey6t4Zj/POg3+xtmGcbDoMcEOx8hbNY/fXaD9Q=="
+  "resolved" "https://registry.npmjs.org/react-native-geolocation-service/-/react-native-geolocation-service-5.3.0.tgz"
+  "version" "5.3.0"
 
 "react-native-get-random-values@^1.8.0":
   "integrity" "sha512-H/zghhun0T+UIJLmig3+ZuBCvF66rdbiWUfRSNS6kv5oDSpa1ZiVyvRWtuPesQpT8dXj+Bv7WJRQOUP+5TB1sA=="
@@ -6098,7 +6113,7 @@
     "escape-string-regexp" "2.0.0"
     "invariant" "2.2.4"
 
-"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.68 || 1000.0.0", "react-native@>=0.40.0", "react-native@>=0.42.0", "react-native@>=0.56", "react-native@>=0.59", "react-native@>=0.60.0", "react-native@>=0.61.3", "react-native@0.68.2":
+"react-native@*", "react-native@^0.0.0-0 || 0.60 - 0.68 || 1000.0.0", "react-native@>=0.40.0", "react-native@>=0.42.0", "react-native@>=0.47.0", "react-native@>=0.56", "react-native@>=0.59", "react-native@>=0.60.0", "react-native@>=0.61.3", "react-native@0.68.2":
   "integrity" "sha512-qNMz+mdIirCEmlrhapAtAG+SWVx6MAiSfCbFNhfHqiqu1xw1OKXdzIrjaBEPihRC2pcORCoCHduHGQe/Pz9Yuw=="
   "resolved" "https://registry.npmjs.org/react-native/-/react-native-0.68.2.tgz"
   "version" "0.68.2"

@@ -23,17 +23,23 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-- update position interval
+
+- Home Screen
 - register notification token
+
 - Chat Screen
 	Send Message Upload file
+		return normal input when input is empty
 	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
-- Map Screen 
-	- event position
-	- my position
-	- my channel member position
+	
+- Download file
+	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
+	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
+	
 	
 - Call Screen
+	 Notification : app in background
+		Firebase
 	https://console.firebase.google.com/u/0/project/ucom-94990/notification/compose
 
 	https://rnfirebase.io/messaging/usage#receiving-messages
@@ -42,22 +48,12 @@ Mobile-TODO
 	https://github.com/react-native-webrtc/react-native-callkeep/blob/master/example/App.js
 	
 	-ios : setup callkeep
-- Home Screen
-	
-- Download file
-	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
-	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
 	
 
 - Event Screen
 	Event List
 	Send new Event
 	View Event
-	
-
-	
-- Notification : app in background
-	Firebase
 	
 	
 - App Icon
@@ -66,6 +62,11 @@ Mobile-TODO
 	- AuthService
 	- refresh token
 	
+=====================================================
+- Appicon
+	https://viblo.asia/p/tao-app-launcher-icon-cho-react-native-app-android-ios-1Je5EyYL5nL
+- update geo location interval
+	https://dev-yakuza.posstree.com/en/react-native/react-native-geolocation-service/
 ===================
 icons: https://oblador.github.io/react-native-vector-icons/
 files

@@ -1,10 +1,16 @@
+import { useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
+import { useDispatch, useSelector } from 'react-redux';
 import { conversationApi } from '../../apis';
 import { APP_CONFIG } from '../../constants/app.config';
+import { IAppStore } from '../../stores/app.store';
+import { conversationActions } from '../../stores/conversation';
+import { ConversationType } from '../../types/Conversation/ConversationType.type';
 import { EventInfo } from '../../types/Event/EventInfo.type';
 import { UserStatus } from '../../types/User/UserStatus.type';
+import { getConversationName } from '../../utils/conversation.utils';
 import { MapConfig, parseMapConfig } from '../../utils/mapUtils';
 //https://github.com/pavel-corsaghin/react-native-leaflet/blob/main/src/LeafletView/index.tsx
 const LEAFLET_HTML_SOURCE = Platform.select({
@@ -16,9 +22,14 @@ interface MapViewProps {
     onMapInited?: () => void;
     eventInfos?: EventInfo[],
     users?: UserStatus[],
-    zoomPosition?:[number, number]
+    zoomPosition?:[number, number],
+    currentPosition?:[number, number]
 }
-const MapView: React.FC<MapViewProps> = ({zoomPosition, eventInfos,users, onMapInited }) => {
+const MapView: React.FC<MapViewProps> =
+     ({zoomPosition, currentPosition, eventInfos,users, onMapInited }) => {
+    const dispatch = useDispatch();
+    const { data: userInfo } = useSelector((store: IAppStore) => store.auth);
+    const navigation = useNavigation<any>();
     const webViewRef = useRef<WebView>(null);
     const [loading, setLoading] = useState(true);
     const [initialized, setInitialized] = useState(false);
@@ -123,19 +134,66 @@ const MapView: React.FC<MapViewProps> = ({zoomPosition, eventInfos,users, onMapI
         });
     },[initialized,mapConfig, users, eventInfos, sendMessage])
 
-    const showUserInfo = useCallback((userId:string)=>{
+    const showUserInfo = useCallback(async (userId:string)=>{
+        if( userInfo!.userId == userId){
+            Alert.alert("Không thể nhắn tín với chính mình")
+            return;
+        }
         //onpen chat
-    },[])
+        //get conversation
+        const response = await conversationApi.getOrCreateConversation({
+            type: ConversationType.Peer2Peer,
+            memberIds: [userId],
+            name: ''
+        })
+
+        if (!response.isSuccess) {
+            Alert.alert(response.errorMessage|| 'Có lỗi bất thường')
+            console.error(response.errorMessage)
+            return;
+        }
+
+        const conversationRepsonse = await conversationApi.getConversation(response.data);
+        if (!conversationRepsonse.isSuccess) {
+            Alert.alert(response.errorMessage|| 'Có lỗi bất thường')
+            console.error(conversationRepsonse.errorMessage)
+            return;
+        }
+        const conversation = conversationRepsonse.data;
+        if(!response.isSuccess){
+            return;
+        }
+
+        console
+
+        const conversationName = getConversationName(conversation, userInfo!.userId);
+        dispatch(conversationActions.selectConversation(conversation.id));
+        navigation.navigate('ChatTab', {
+            screen: 'ChatScreen',
+            params: {
+                conversationId:  conversation.id,
+                name: conversationName,
+                conversationType: conversation.type
+            }
+          });
+    },[userInfo])
 
     const showEventInfo = useCallback((eventId:string)=>{
-
+        navigation.navigate('EventTab', {
+            screen: 'EventDetailScreen',
+            params: {
+                eventId: eventId,
+                eventInfo: undefined
+            }
+          });
     },[])
 
     const sendInitialMessage = useCallback(() => {
         if (!mapConfig) return;
         const config :any =  {
             ...mapConfig,
-            mapTileUrl
+            mapTileUrl,
+            debugEnabled: false
         }
         delete config['layers'];
         let startupMessage: any = {
@@ -162,6 +220,7 @@ const MapView: React.FC<MapViewProps> = ({zoomPosition, eventInfos,users, onMapI
 
             if (message.type === 'MAP_READY') {
                 setInitialized(true);
+                onMapInited && onMapInited();
             }
             if (message.type === 'ON_VIEW') {
                 const {object, objectId} = message.data;

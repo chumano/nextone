@@ -13,6 +13,7 @@ import {Message} from '../types/Message/Message.type';
 import { CreateConverationDTO } from '../dto/CreateConverationDTO';
 import { UserStatus } from '../types/User/UserStatus.type';
 import { AppSettings } from '../types/AppSettings';
+import { UpdateUserStatusDTO } from '../dto/UserStatusDTO';
 
 const axiosInstance = createAxios(APP_CONFIG.COM_HOST);
 
@@ -57,6 +58,16 @@ const getOnlineUsersForMap = async (data?: any)=>{
   return await handleAxiosApi<ApiResponse<UserStatus[]>>(responsePromise);
 };
 
+const updateMyStatus = (
+  data: UpdateUserStatusDTO,
+): Promise<AxiosResponse<ApiResponse<undefined>>> => {
+  return axiosInstance.post(`/userstatus/UpdateUserLocation`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
 //settings
 const getSettings= async ()=>{
   const responsePromise = axiosInstance.get('/settings')
@@ -70,5 +81,6 @@ export const conversationApi = {
   sendMessage,
   getMessagesHistory,
   getOnlineUsersForMap,
-  getSettings
+  getSettings,
+  updateMyStatus
 };

@@ -1,10 +1,11 @@
 import React from 'react';
-import {View, Text, Button, StyleSheet} from 'react-native';
+import {View, Text, Button, StyleSheet, Image} from 'react-native';
 
 import notifee from '@notifee/react-native';
 import {useNavigation} from '@react-navigation/native';
 import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
-
+//import { SvgUri } from 'react-native-svg';
+//const uri = Image.resolveAssetSource(require('../../assets/intro_img.svg'));
 export const HomeScreen = () => {
   const navigation = useNavigation<DetailsScreenNavigationProp>();
   const onDetailScreenHandler = () => {
@@ -30,6 +31,12 @@ export const HomeScreen = () => {
   }
   return (
     <View style={styles.homeScreenContainer}>
+      <Image source={require('../../assets/logo.png')} />
+      {/* <SvgUri
+        width="100%"
+        height="100px"
+        uri={uri.uri}
+      /> */}
       <Text>Home Screen</Text>
       <Button title="Test" onPress={onDisplayNotification} />
     </View>

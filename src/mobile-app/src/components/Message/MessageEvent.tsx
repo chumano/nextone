@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react'
-import { StyleSheet, View } from 'react-native'
+import { StyleSheet, TouchableOpacity, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import { APP_THEME } from '../../constants/app.theme'
 import { Message } from '../../types/Message/Message.type'
@@ -11,11 +11,13 @@ import ImageView from "react-native-image-viewing";
 import { ImageSource } from 'react-native-image-viewing/dist/@types'
 import ImageViewHeader from '../ImageView/ImageViewHeader'
 import ImageViewFooter from '../ImageView/ImageViewFooter'
+import { useNavigation } from '@react-navigation/native'
 
 interface MessageEventProps {
     message: Message
 }
 const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
+    const navigation = useNavigation<any>();
     const eventInfo = message.event!;
     const group = useMemo(() => {
         return groupFileByType(eventInfo?.files || []);
@@ -40,12 +42,23 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
         }
     }, [group])
 
+    const onViewEvent = useCallback(()=>{
+        navigation.navigate('EventTab', {
+            screen: 'EventDetailScreen',
+            params: {
+                eventInfo: eventInfo
+            }
+          });
+    },[eventInfo])
+
     const displayDate = frowNow(message.sentDate);
     return (
         <React.Fragment>
             <View style={styles.messageContainer}>
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>{eventInfo.eventType.name}</Text>
+                    <TouchableOpacity onPress={onViewEvent}>
+                        <Text style={styles.headerText}>{eventInfo.eventType.name}</Text>
+                    </TouchableOpacity>
                 </View>
 
 

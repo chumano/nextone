@@ -55,11 +55,19 @@
             window.ReactNativeWebView?.postMessage(JSON.stringify(data));
         }
 
-        var debugEnabled = true;
+        var debugEnabled = false;
         var debugMessages = [];
-        if (!debugEnabled) {
-            document.getElementById("debug").remove();
+
+        function visibleDebug(){
+            var ele = document.getElementById("debug");
+            if (!debugEnabled) {
+                ele.style.display = 'none' //.remove();
+            }else{
+                ele.style.display = 'block'
+            }
         }
+        visibleDebug();
+        
         function logMessage(...message) {
             console.log(message)
             let textMessage = JSON.stringify(message[0]);
@@ -132,9 +140,10 @@
                         :markerInfo.event.eventId
                 }
 
+                let textClick = markerInfo.type =='user'? 'Liên lạc': 'Xem chi tiết'
                 let popupContent = "<div>"
                     + (markerInfo.type =='user' ? getMarkerPopupForUser(markerInfo.user) : getMarkerPopupForEvent(markerInfo.event))
-                    + "<a onclick='onView("+JSON.stringify(onViewData) + ")' > Xem chi tiết </a>"
+                    + "<a onclick='onView("+JSON.stringify(onViewData) + ")' > "+ textClick + " </a>"
                     +'</div>'
 
                 const marker = L.marker(markerInfo.position, {icon: icon})
@@ -190,6 +199,9 @@
                             this.map.options.maxZoom = mapconfig.maxZoom;
                             this.map.options.maxBounds = L.latLngBounds(mapconfig.boundingBox);
                             this.map.setView(mapconfig.center, mapconfig.zoom)
+
+                            debugEnabled = mapconfig.debugEnabled;
+                            visibleDebug();
 
                         break;
                         case 'MARKERS':

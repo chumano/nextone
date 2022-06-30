@@ -14,6 +14,9 @@ import { v4 as uuidv4 } from 'uuid';
 import notifee from '@notifee/react-native';
 
 import { callActions } from './stores/call/callReducer';
+import { LOCATION, setupLocationWatch } from './utils/location.utils';
+import { startSendHeartBeat, stopSendHeartBeat } from './utils/internet.utils';
+import { conversationApi } from './apis';
 
 const options = {
   ios: {
@@ -215,6 +218,29 @@ const RootApp = () => {
     }
   }, [])
 
+  useEffect(() => {
+    setupLocationWatch((newLatLng) => {
+      console.log('setupLocationWatch', newLatLng)
+    });
+    startSendHeartBeat(async ()=>{
+      const locationString = await AsyncStorage.getItem(LOCATION);
+      console.log('startSendHeartBeat', {locationString})
+      if (locationString) {
+        const location: { lat: number; lon: number } = JSON.parse( locationString  );
+        conversationApi.updateMyStatus({
+            lat: location.lat,
+            lon: location.lon
+        })
+      } else{
+        conversationApi.updateMyStatus({})
+      }
+    });
+    return ()=>{
+      console.log('stopSendHeartBeat')
+      stopSendHeartBeat();
+    }
+  }, []);
+  
   return (
     <>
       <BottomTabNavigator />
