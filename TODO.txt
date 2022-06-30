@@ -59,6 +59,9 @@ Mobile-TODO
 	- AuthService
 	- refresh token
 	
+- Build app:
+	android : https://reactnative.dev/docs/signed-apk-android
+	ios
 =====================================================
 - Appicon
 	https://viblo.asia/p/tao-app-launcher-icon-cho-react-native-app-android-ios-1Je5EyYL5nL
