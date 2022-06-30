@@ -4,8 +4,7 @@ import {View, Text, Button, StyleSheet, Image} from 'react-native';
 import notifee from '@notifee/react-native';
 import {useNavigation} from '@react-navigation/native';
 import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
-//import { SvgUri } from 'react-native-svg';
-//const uri = Image.resolveAssetSource(require('../../assets/intro_img.svg'));
+
 export const HomeScreen = () => {
   const navigation = useNavigation<DetailsScreenNavigationProp>();
   const onDetailScreenHandler = () => {
@@ -31,19 +30,24 @@ export const HomeScreen = () => {
   }
   return (
     <View style={styles.homeScreenContainer}>
-      <Image source={require('../../assets/logo.png')} />
-      {/* <SvgUri
-        width="100%"
-        height="100px"
-        uri={uri.uri}
-      /> */}
-      <Text>Home Screen</Text>
+      <Text style={styles.textHeader}>UCOM</Text>
+      <Text style={styles.text}>Hệ thống chỉ huy, điều hành thống nhất</Text>
+      <Image source={require('../../assets/intro_img.png')} />
+     
       <Button title="Test" onPress={onDisplayNotification} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  textHeader: {
+    color: '#000',
+    fontSize: 32
+  },
+  text: {
+    color: '#000',
+    fontSize: 18
+  },
   homeScreenContainer: {
     flex: 1,
     alignItems: 'center',
