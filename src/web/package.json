@@ -16,6 +16,7 @@
     "dayjs": "^1.11.2",
     "faker": "^5.5.3",
     "leaflet": "^1.7.1",
+    "leaflet-contextmenu": "^1.4.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "oidc-client": "^1.11.5",

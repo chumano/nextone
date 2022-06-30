@@ -1,11 +1,27 @@
 import {
   createNativeStackNavigator,
   NativeStackHeaderProps,
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import React from 'react';
 import MapScreen from '../screens/MapScreen/MapScreen';
 
-const Stack = createNativeStackNavigator();
+type MapStackParamsList = {
+  Map: {
+    position?: [number, number]
+  } | undefined;
+};
+
+export type MapStackProps = NativeStackScreenProps<
+  MapStackParamsList
+>;
+
+export type MapScreenProp = NativeStackNavigationProp<
+  MapStackParamsList
+>;
+
+const Stack = createNativeStackNavigator<MapStackParamsList>();
 const MapStack = () => {
   return (
     <Stack.Navigator

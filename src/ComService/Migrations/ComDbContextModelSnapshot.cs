@@ -219,6 +219,9 @@ namespace ComService.Migrations
                     b.Property<string>("EventId")
                         .HasColumnType("varchar(36)");
 
+                    b.Property<string>("Properites")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("SentDate")
                         .HasColumnType("datetime");
 
@@ -319,6 +322,22 @@ namespace ComService.Migrations
                     b.HasKey("Code");
 
                     b.ToTable("T_App_Settings", "com");
+                });
+
+            modelBuilder.Entity("ComService.Domain.UserDeviceToken", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(36)");
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("UserId", "Token");
+
+                    b.ToTable("T_App_UserDeviceTokens", "com");
                 });
 
             modelBuilder.Entity("ComService.Domain.UserStatus", b =>

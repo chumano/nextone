@@ -5,6 +5,8 @@ https://msftwebcast.com/2019/11/create-and-bind-a-self-signed-certificate-in-iis
 -- IIS - reverse proxy
 https://docs.microfocus.com/OMi/10.62/Content/OMi/AdminGuide/Hardening/RevProxy_IIS.htm
 
+adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
+
 -------------------------------------------
 Web-TODO:
 
@@ -21,32 +23,37 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-- Chat Screen
-	Send Message Upload file
-	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
-- Map Screen 
-	- event position
-	- my position
-	- my channel member position
-	
-- Call Screen
 
 - Home Screen
+- register notification token
+
+- Chat Screen
+	Send Message Upload file
+		return normal input when input is empty
+	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
 	
 - Download file
 	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
 	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
+	
+	
+- Call Screen
+	 Notification : app in background
+		Firebase
+	https://console.firebase.google.com/u/0/project/ucom-94990/notification/compose
+
+	https://rnfirebase.io/messaging/usage#receiving-messages
+	
+	https://blog.theodo.com/2021/03/react-native-incoming-call-ui-callkeep/
+	https://github.com/react-native-webrtc/react-native-callkeep/blob/master/example/App.js
+	
+	-ios : setup callkeep
 	
 
 - Event Screen
 	Event List
 	Send new Event
 	View Event
-	
-
-	
-- Notification : app in background
-	Firebase
 	
 	
 - App Icon
@@ -55,6 +62,11 @@ Mobile-TODO
 	- AuthService
 	- refresh token
 	
+=====================================================
+- Appicon
+	https://viblo.asia/p/tao-app-launcher-icon-cho-react-native-app-android-ios-1Je5EyYL5nL
+- update geo location interval
+	https://dev-yakuza.posstree.com/en/react-native/react-native-geolocation-service/
 ===================
 icons: https://oblador.github.io/react-native-vector-icons/
 files

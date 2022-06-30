@@ -96,8 +96,13 @@ namespace ComService.Boudaries.Controllers
         [HttpPost("UpdateUserLocation")]
         public async Task<IActionResult> UpdateUserLocationAsync(UpdateUserLocationDTO updateUserLocationDTO)
         {
-            var user = _userContext.User;
-            await _userService.AddOrUpdateUserStatus(updateUserLocationDTO.UserId,
+            var currentUserId = _userContext.User.UserId;
+            var userId = updateUserLocationDTO.UserId;
+            if (string.IsNullOrWhiteSpace(updateUserLocationDTO.UserId))
+            {
+                userId = currentUserId;
+            }
+            await _userService.AddOrUpdateUserStatus(userId,
                 updateUserLocationDTO.Lat,
                 updateUserLocationDTO.Lon);
             return Ok(ApiResult.Success(null));

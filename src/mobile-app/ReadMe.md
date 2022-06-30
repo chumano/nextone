@@ -8,6 +8,8 @@ Open cmd then run
 ```
 adb logcat
 ```
+# Deep-link
+https://viblo.asia/p/deep-linking-voi-react-native-GrLZDXGVZk0
 
 # Install IOS
 1. Install XCode (Now 13.4)

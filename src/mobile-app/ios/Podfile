@@ -21,6 +21,8 @@ target 'UCom' do
 
 
 
+  pod 'RNCallKeep', :path => '../node_modules/react-native-callkeep'
+
   target 'UComTests' do
     inherit! :complete
     # Pods for testing

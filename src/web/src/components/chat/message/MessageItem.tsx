@@ -21,6 +21,10 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
     console.log('MessageItem rendering...', message.id)
 
     const displayDate = frowNow(message.sentDate);
+    const properties = message.properites;
+    const gotoMapLocation = (location:[number, number])=>{
+        window.location.href = `/map?lat=${location[0]}&lon=${location[1]}` ;
+    }
     return <>
         {message.type == MessageType.Event &&
             <div className="message-item">
@@ -44,7 +48,13 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
                     <div>
                         {message.content}
                     </div>
-
+                    {properties && properties['LOCATION'] &&
+                    <div>
+                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(properties['LOCATION']!)}>
+                            [{properties['LOCATION']![0].toFixed(2)}, {properties['LOCATION']![1].toFixed(2)}]
+                            </a>
+                    </div>
+                    }
 
                     {message.state == 'upload' &&
                         <MessageItemUpload message={message as MessageUpload} />

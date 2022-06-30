@@ -5,7 +5,7 @@ import { AppSettings } from "../models/AppSettings";
 import { Channel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { ConversationMember } from "../models/conversation/ConversationMember.model";
-import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
+import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SearchDTO, SearchResult, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
 import { CreateEventTypeDTO, UpdateEventTypeDTO } from "../models/dtos/EventTypeDTO";
 import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
 import { EventInfo } from "../models/event/Event.model";
@@ -17,6 +17,11 @@ import { handleAxiosApi } from "../utils/functions";
 
 const comAxiosInstance = createAxios(API.COM_SERVICE);
 export const comApi = {
+    search : async (data: SearchDTO)=>{
+        const responsePromise = comAxiosInstance.get('/search', {params: data})
+        return await handleAxiosApi<ApiResult<SearchResult>>(responsePromise);
+    },
+
     //conversation
     getOrCreateConversation : async (data: CreateConverationDTO)=>{
         const responsePromise = comAxiosInstance.post('/conversation/CreateConversation', data)

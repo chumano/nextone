@@ -15,7 +15,7 @@ namespace ComService.Domain.Repositories
         Task<UserStatus> Get(string userId);
 
         void Add(UserStatus userStatus);
-        void Update(UserStatus userStatus);
+        void Update(UserStatus userStatus, bool isChangeLocation);
 
         Task SaveChangesAsync();
     }
@@ -53,10 +53,10 @@ namespace ComService.Domain.Repositories
             }
            
         }
-        public void Update(UserStatus userStatus)
+        public void Update(UserStatus userStatus, bool isChangeLocation)
         {
             _dbContext.Users.Update(userStatus);
-            if (userStatus.LastLat.HasValue && userStatus.LastLat.HasValue)
+            if (isChangeLocation && userStatus.LastLat.HasValue && userStatus.LastLat.HasValue)
             {
                 _dbContext.Set<UserTrackingLocation>()
                    .Add(new UserTrackingLocation()

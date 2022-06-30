@@ -166,59 +166,89 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpPost("SendMessage")]
-        public  async Task<IActionResult> SendMessage(SendMessageDTO sendMessageDTO)
+        public  async Task<IActionResult> SendMessage([FromBody] SendMessageDTO sendMessageDTO)
         {
-            if(string.IsNullOrWhiteSpace(sendMessageDTO.Content)
-                && (sendMessageDTO.Files == null || sendMessageDTO.Files.Count == 0))
+            try
             {
-                throw new Exception("SendMessage parameters is invalid");
-            }
-            var userId = _userContext.User.UserId;
-            var user = await _userStatusService.GetUser(userId);
-            var conversation = await _conversationService.Get(sendMessageDTO.ConversationId);
 
-            //TODO: check user have permission to SendMessage into the Conversation
-
-            var messageType = MessageTypeEnum.Text;
-            if (sendMessageDTO.Files != null && sendMessageDTO.Files.Count > 0)
-            {
-                var aFile = sendMessageDTO.Files.First();
-                switch(aFile.FileType)
+                if (string.IsNullOrWhiteSpace(sendMessageDTO.Content)
+                    && (sendMessageDTO.Files == null || sendMessageDTO.Files.Count == 0))
                 {
-                    case FileTypeEnum.Image:
-                        messageType = MessageTypeEnum.ImageFile;
-                        break;
-                    case FileTypeEnum.Video:
-                        messageType = MessageTypeEnum.VideoFile;
-                        break;
-                    case FileTypeEnum.TextFile:
-                        messageType = MessageTypeEnum.Text;
-                        break;
-                    case FileTypeEnum.Other:
-                        messageType = MessageTypeEnum.OtherFile;
-                        break;
+                    throw new Exception("SendMessage parameters is invalid");
                 }
-            }
-            var messageId = _idGenerator.GenerateNew();
-            var messageFiles = new List<MessageFile>();
-            if (sendMessageDTO.Files != null)
-            {
-                messageFiles = sendMessageDTO.Files.Select(o => new MessageFile()
+
+                if (string.IsNullOrWhiteSpace(sendMessageDTO.ConversationId)
+                    && string.IsNullOrWhiteSpace(sendMessageDTO.UserId))
                 {
-                    FileId = o.FileId,
-                    FileType = o.FileType,
-                    FileName = o.FileName,
-                    FileUrl = o.FileUrl
-                }).ToList();
+                    throw new Exception("SendMessage parameters is invalid");
+                }
+
+                var userId = _userContext.User.UserId;
+                var user = await _userStatusService.GetUser(userId);
+
+                var conversationId = sendMessageDTO.ConversationId;
+                if (string.IsNullOrEmpty(sendMessageDTO.ConversationId))
+                {
+                    var receiver = await _userStatusService.GetUser(sendMessageDTO.UserId);
+                    if (receiver == null)
+                    {
+                        throw new Exception("User is not found");
+                    }
+                    conversationId = await _conversationService.Create(user,
+                        "",
+                        ConversationTypeEnum.Peer2Peer,
+                        new List<string>() { receiver.UserId });
+                }
+                var conversation = await _conversationService.Get(conversationId);
+
+                //TODO: check user have permission to SendMessage into the Conversation
+
+                var messageType = MessageTypeEnum.Text;
+                if (sendMessageDTO.Files != null && sendMessageDTO.Files.Count > 0)
+                {
+                    var aFile = sendMessageDTO.Files.First();
+                    switch (aFile.FileType)
+                    {
+                        case FileTypeEnum.Image:
+                            messageType = MessageTypeEnum.ImageFile;
+                            break;
+                        case FileTypeEnum.Video:
+                            messageType = MessageTypeEnum.VideoFile;
+                            break;
+                        case FileTypeEnum.TextFile:
+                            messageType = MessageTypeEnum.Text;
+                            break;
+                        case FileTypeEnum.Other:
+                            messageType = MessageTypeEnum.OtherFile;
+                            break;
+                    }
+                }
+                var messageId = _idGenerator.GenerateNew();
+                var messageFiles = new List<MessageFile>();
+                if (sendMessageDTO.Files != null)
+                {
+                    messageFiles = sendMessageDTO.Files.Select(o => new MessageFile()
+                    {
+                        FileId = o.FileId,
+                        FileType = o.FileType,
+                        FileName = o.FileName,
+                        FileUrl = o.FileUrl
+                    }).ToList();
+                }
+
+                Message message = new Message(messageId, messageType, user.UserId,
+                    sendMessageDTO.Content,
+                    messageFiles);
+                message.Properites = sendMessageDTO.Properties;
+
+                await _conversationService.AddMessage(conversation, message);
+                message = await _conversationService.GetMessageById(messageId);
+
+                return Ok(ApiResult.Success(message));
+            }catch(Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
             }
-
-            Message message = new Message(messageId, messageType,user.UserId, 
-                sendMessageDTO.Content,
-                messageFiles);
-            await _conversationService.AddMessage(conversation, message);
-            message = await _conversationService.GetMessageById(messageId);
-
-            return Ok(ApiResult.Success(message));
         }
 
 

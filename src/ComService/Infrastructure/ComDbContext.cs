@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using NextOne.Shared.Extenstions;
+using Newtonsoft.Json;
 
 namespace ComService.Infrastructure
 {
@@ -28,6 +29,8 @@ namespace ComService.Infrastructure
         public DbSet<Settings> Settings { get; set; }
 
         public DbSet<News> News { get; set; }
+        public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
+
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
             System.Diagnostics.Debug.WriteLine("ComDbContext::ctor ->" + this.GetHashCode());
@@ -164,7 +167,12 @@ namespace ComService.Infrastructure
                     .WithOne()
                     .HasForeignKey(o => o.MessageId);
 
-
+                eb.Property(o => o.Properites)
+                  .HasColumnType("nvarchar(max)")
+                  .HasConversion(
+                       v => v!=null ? JsonConvert.SerializeObject(v): null,
+                       v => !string.IsNullOrWhiteSpace(v)? JsonConvert.DeserializeObject<Dictionary<string, object>>(v): null
+                   );
             });
 
             modelBuilder.Entity<MessageFile>(eb =>
@@ -406,6 +414,24 @@ namespace ComService.Infrastructure
                 eb.Property(o => o.Group)
                   .HasColumnType("nvarchar(255)");
             });
+
+            modelBuilder.Entity<UserDeviceToken>(eb =>
+            {
+                eb.ToTable("T_App_UserDeviceTokens", DB_SCHEMA)
+                 .HasKey("UserId", "Token");
+
+                eb.Property(o => o.UserId)
+                    .HasColumnType("nvarchar(36)");
+
+                eb.Property(o => o.Token)
+                    .HasColumnType("nvarchar(255)")
+                    .IsRequired();
+
+                eb.Property(o => o.Date)
+                    .HasColumnType("datetime");
+
+            });
+
 
             BuildNewsModels(modelBuilder);
         }

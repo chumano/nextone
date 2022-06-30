@@ -6,8 +6,8 @@ export interface UserStatus {
   userAvatarUrl: string;
   status: Status;
   lastUpdateDate?: string;
-  lastLat?: string;
-  lastLon?: string;
+  lastLat?: number;
+  lastLon?: number;
   recentTrackingLocations: UserTrackingLocation[];
 }
 

@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Avatar, Text } from 'react-native-paper';
 import { APP_THEME } from '../../constants/app.theme';
 
@@ -19,6 +19,8 @@ import ImageView from "react-native-image-viewing";
 import ImageViewHeader from '../ImageView/ImageViewHeader';
 import ImageViewFooter from '../ImageView/ImageViewFooter';
 import { ConversationType } from '../../types/Conversation/ConversationType.type';
+import { useNavigation } from '@react-navigation/native';
+import { MapScreenProp } from '../../navigation/MapStack';
 
 interface IProps {
   message: Message;
@@ -27,6 +29,7 @@ interface IProps {
 
 const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
   const authState = useSelector((store: IAppStore) => store.auth);
+  const navigation = useNavigation<any>();
   const isOwnerMessage =
     authState.data?.userId === message.userSender.userId ?? false;
 
@@ -61,6 +64,15 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
   }, [fileImages])
 
   const displayDate = frowNow(message.sentDate);
+  const properties = message.properites;
+  const gotoMapLocation = (location:[number, number])=>{
+      //window.location.href = `/map?lat=${location[0]}&lon=${location[1]}` ;
+      navigation.navigate('MapTab', {
+        screen: 'Map',
+        params: {position :location }
+      });
+  }
+
   return (
     <React.Fragment>
       {message.type == MessageType.Event &&
@@ -89,15 +101,17 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
               {!!message?.content &&
                 <Text>{message?.content?.trim()}</Text>
               }
-
+              {properties && properties['LOCATION'] &&
+                  <View>
+                      <Text>Vị trí:</Text>
+                      <TouchableOpacity onPress={()=>gotoMapLocation(properties['LOCATION']!)}>
+                          <Text> [{properties['LOCATION']![0].toFixed(2)}, {properties['LOCATION']![1].toFixed(2)}]</Text>
+                      </TouchableOpacity>
+                  </View>
+              }
               {/* files */}
               <View style={styles.filesContainer}>
                 {message.files && message.files.length > 0 &&
-                  // <View >
-                  //   {message.files.map(o =>
-                  //     <FileView key={o.fileId} file={o} />
-                  //   )}
-                  // </View>
                   <FileList
                     isHorizontal={true}
                     renderItem={o => (

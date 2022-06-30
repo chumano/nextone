@@ -23,8 +23,7 @@ import {JWTDecodeInfo} from './src/types/Auth/JWTDecodeInfo.type';
 import RootApp from './src/RootApp';
 
 import Loading from './src/components/Loading';
-
-import {Platform} from 'react-native';
+import {DeviceEventEmitter, Linking, PermissionsAndroid, Platform} from 'react-native';
 import {enableScreens} from 'react-native-screens';
 
 const AppContainer = () => {
@@ -33,6 +32,13 @@ const AppContainer = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch: AppDispatch = useDispatch();
+  useEffect(()=>{
+    const getLink = async()=>{
+      const initialUrl = await Linking.getInitialURL();
+      console.log('initialUrl', initialUrl)
+    }
+    getLink();
+  },[])
 
   useEffect(() => {
     const getUserInfoFromStorage = async () => {

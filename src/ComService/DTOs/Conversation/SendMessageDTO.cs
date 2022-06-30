@@ -8,8 +8,11 @@ namespace ComService.DTOs.Conversation
     public class SendMessageDTO
     {
         public string ConversationId { get; set; }
+        public string UserId { get; set; }
         public string Content { get; set; }
 
         public IList<FileDTO> Files { get; set; }
+
+        public Dictionary<string, object> Properties { get; set; } 
     }
 }

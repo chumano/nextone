@@ -107,12 +107,13 @@ namespace ComService.Domain.Services
             }
             else
             {
+                bool isChangeLocation = true;
                 if(lat == null || lon == null)
                 {
                     var offlineDate = DateTime.Now.AddMinutes(-15);
                     if(userStatus.LastUpdateDate!=null && userStatus.LastUpdateDate > offlineDate)
                     {
-                        //Dont clear latlong
+                        //Keep last position
                     }
                     else
                     {
@@ -120,10 +121,19 @@ namespace ComService.Domain.Services
                         userStatus.LastLon = lon;
                     }
                 }
+                else
+                {
+                    if(userStatus.LastLat == lat && userStatus.LastLon == lon)
+                    {
+                        isChangeLocation = false;
+                    }
+                    userStatus.LastLat = lat;
+                    userStatus.LastLon = lon;
+                }
                
                 userStatus.LastUpdateDate = DateTime.Now;
                 userStatus.Status = StatusEnum.Online;
-                _userStatusRepository.Update(userStatus);
+                _userStatusRepository.Update(userStatus, isChangeLocation);
             }
            
             await _userStatusRepository.SaveChangesAsync();

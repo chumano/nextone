@@ -63,3 +63,4 @@ src/IdentityService/.config
 src/IdentityService/Properties/PublishProfiles
 src/MapService/Properties/PublishProfiles
 src/MasterService/Properties/PublishProfiles
+firebasekey.json

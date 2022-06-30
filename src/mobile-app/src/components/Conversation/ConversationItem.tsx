@@ -77,7 +77,11 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
         lastMessageText +=  lastMessage.userSender.userName +': ';
       }
       if(lastMessage.type === MessageType.Text){
-        lastMessageText += lastMessage.content;
+        let content = lastMessage.content.replace(/[\r\n]+/g," ");
+        if(content.length > 20){
+          content = content.slice(0, 20).trim() + "...";
+        }
+        lastMessageText += content;
       }else if(lastMessage.type === MessageType.ImageFile){
         lastMessageText += 'Hình ảnh';
       }else if(lastMessage.type === MessageType.OtherFile){

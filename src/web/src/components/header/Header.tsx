@@ -7,8 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useContext, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AuthState,  getAuthState, getCallState, callActions, IAppStore } from '../../store';
-import { CallStatus } from '../../store/call/callState';
+import { AuthState,  getAuthState, IAppStore } from '../../store';
 
 interface IProp {
     toggleDrawer: ()=> void
@@ -17,7 +16,6 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
     const {user} = useSelector(getAuthState);
     const [userName, setUserName] = useState('Guest');
     const dispatch = useDispatch();
-    const {status: callStatus} = useSelector(getCallState);
     useEffect(() => {
         const name:string  = user?.profile?.name || user?.profile?.email || user?.profile?.sub || 'NoName';
         setUserName( name as string )
@@ -35,7 +33,6 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
 
             <div className="header__space" 
                 style={{textAlign:'center'}}>
-                {process.env.NODE_ENV} : {CallStatus[callStatus]}
             </div>
 
             {/* <div className="header__notification">

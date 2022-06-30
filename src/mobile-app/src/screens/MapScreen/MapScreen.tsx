@@ -1,13 +1,147 @@
-import React, {useState} from 'react';
-import {Platform, StyleSheet, View} from 'react-native';
-import {FAB} from 'react-native-paper';
-import WebView from 'react-native-webview';
+import React, { useCallback, useEffect,useLayoutEffect, useRef, useState } from 'react';
+import { PermissionsAndroid, Platform, StyleSheet, View } from 'react-native';
+import { FAB } from 'react-native-paper';
+import WebView, { WebViewMessageEvent } from 'react-native-webview';
+import { conversationApi } from '../../apis';
+import { eventApi } from '../../apis/event.api';
 import Loading from '../../components/Loading';
-//https://github.com/pavel-corsaghin/react-native-leaflet/blob/main/src/LeafletView/index.tsx
-const LEAFLET_HTML_SOURCE = Platform.select({
-  ios: require('../../../android/app/src/main/assets/leaflet.html'),
-  android: {uri: 'file:///android_asset/leaflet.html'},
-});
+import { MapStackProps } from '../../navigation/MapStack';
+import { EventInfo } from '../../types/Event/EventInfo.type';
+import { UserStatus } from '../../types/User/UserStatus.type';
+import MapView from './MapView';
+import Geolocation from 'react-native-geolocation-service';
+
+const MapScreen = ({navigation, route}: MapStackProps)=> {
+
+  const [loading, setLoading] = useState(true);
+  const [selectedEventTypeCodes,_] = useState<string[]>([]);
+  const [eventInfos,setEventInfos] = useState<EventInfo[]>()
+  const [users,setUsers] = useState<UserStatus[]>();
+  const [zoomPosition, setZoomPosition] = useState<[number,number]>();
+  const [myLocation, setMyLocation] = useState<[number,number]>();
+  useLayoutEffect(() => {
+    const params: any = route.params;
+    if (!params) return;
+    console.log("MAPSCREEN params", params)
+    const {position} = params
+    if(position){
+      setZoomPosition([position[0], position[1]]);
+    }
+  }, [navigation, route, setZoomPosition]);
+
+  useEffect(() => {
+    const requestPermission = async ()=>{
+      if (Platform.OS === 'ios') {
+        Geolocation.requestAuthorization('always');
+      }else{
+        const permissionStatus =  await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          );
+        console.log('permissionStatus', permissionStatus)
+      }
+    }
+    requestPermission();
+  }, []);
+
+  // load events, users
+  const fetchEvents = useCallback(async () => {
+    if (!selectedEventTypeCodes) return;
+
+    const response = await eventApi.getEventsForMap({ eventTypeCodes: selectedEventTypeCodes });
+    if (!response.isSuccess) {
+      return;
+    }
+    setEventInfos(response.data);
+  }, [eventApi, dispatch, selectedEventTypeCodes])
+
+  const fetchUsers = useCallback(async () => {
+    const response = await conversationApi.getOnlineUsersForMap({});
+    if (!response.isSuccess) {
+      return;
+    }
+    setUsers(response.data);
+  }, [conversationApi, dispatch])
+
+  useEffect(() => {
+    console.log("[init] fectch data")
+    const fetchData = async ()=>{
+      await fetchEvents();
+      await fetchUsers();
+    }
+    fetchData();
+  }, [fetchEvents, fetchUsers]);
+
+  useEffect(() => {
+    const intervalCall = setInterval(async () => {
+        console.log("[interval] fectch data")
+        await fetchEvents();
+        await fetchUsers();
+    }, 60 * 1000);
+    return () => {
+      clearInterval(intervalCall);
+    };
+  }, []);
+
+  useEffect(()=>{
+    if(!myLocation) return;
+    conversationApi.updateMyStatus({
+      lat: myLocation[0],
+      lon: myLocation[1]
+    })
+  },[myLocation])
+
+  const onMapInited = useCallback(()=>{
+    setTimeout(()=>{
+      setLoading(false);
+    },500)
+  },[setLoading])
+
+  const showMyLocation = useCallback(()=>{
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        console.log('showMyLocation', position)
+        setMyLocation([
+          latitude,
+          longitude,
+        ]);
+        setZoomPosition([
+          latitude,
+          longitude,
+        ])
+      },
+      error => {
+        console.log(error.code, error.message);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+    );
+  },[setMyLocation])
+
+  return (
+    <View style={{ flex: 1, position: 'relative' }}>
+      <MapView 
+        currentPosition={myLocation}
+        zoomPosition={zoomPosition}
+        eventInfos={eventInfos}
+        users={users}
+        onMapInited={onMapInited}
+      />
+      
+      {loading && <Loading />}
+
+      <FAB
+        style={styles.floatBtn}
+        small
+        icon="plus"
+        onPress={showMyLocation}
+      />
+    </View>
+  );
+};
+
+export default MapScreen;
+
+
 const styles = StyleSheet.create({
   floatBtn: {
     position: 'absolute',
@@ -16,34 +150,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const MapScreen = () => {
-  const [loading, setLoading] = useState(true);
-  return (
-    <View style={{flex: 1, position: 'relative'}}>
-      <WebView
-        originWhitelist={['*']}
-        // source={{ uri: 'https://google.com' }}
-        source={LEAFLET_HTML_SOURCE}
-        style={{position: 'relative'}}
-        onLoadStart={() => {
-          console.log('WebView-onLoadStart');
-          setLoading(true);
-        }}
-        onLoad={() => {
-          setTimeout(() => {
-            setLoading(false);
-          }, 500);
-        }}
-      />
-      <FAB
-        style={styles.floatBtn}
-        small
-        icon="plus"
-        onPress={() => console.log('Pressed')}
-      />
-      {loading && <Loading />}
-    </View>
-  );
-};
-
-export default MapScreen;
+function dispatch(arg0: any) {
+  throw new Error('Function not implemented.');
+}

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "414490500746",
+    "project_id": "ucom-94990",
+    "storage_bucket": "ucom-94990.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414490500746:android:e9b711770d43840dbf9773",
+        "android_client_info": {
+          "package_name": "com.ucom"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "414490500746-0uu0479dnfcqnsal7gl6toc43jpem877.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyC7YxfMsQRL1DVgPFk_axSj89xNizWZ0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "414490500746-0uu0479dnfcqnsal7gl6toc43jpem877.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
