@@ -24,7 +24,6 @@ Web-TODO:
 -------------------------------------------
 Mobile-TODO
 
-- Home Screen
 - register notification token
 
 - Chat Screen
@@ -56,8 +55,6 @@ Mobile-TODO
 	View Event
 	
 	
-- App Icon
-
 - Authentication
 	- AuthService
 	- refresh token
