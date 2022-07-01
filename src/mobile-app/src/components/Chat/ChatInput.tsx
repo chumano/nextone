@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {StyleSheet, View, TextInput} from 'react-native';
 import {IconButton} from 'react-native-paper';
 
 import {APP_THEME} from '../../constants/app.theme';
+import {ImageLibraryOptions, launchCamera, 
+  launchImageLibrary} from 'react-native-image-picker';
 
 interface IProps {
   onSendMessage: (message: string) => void;
@@ -10,6 +12,7 @@ interface IProps {
 
 const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
   const [isKeyPress, setIsKeyPress] = useState(false);
+  const [sendBtnVisible, setSendBtnVisible] = useState(false);
   const [message, setMessage] = useState('');
 
   const onKeyPressHandler = () => {
@@ -17,7 +20,13 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
   };
 
   const onChangeTextHandler = (text: string) => {
+    if(text.length>0){
+      setSendBtnVisible(true)
+    }else{
+      setSendBtnVisible(false)
+    }
     setMessage(text);
+    
   };
 
   const sendMessageHandler = () => {
@@ -25,16 +34,28 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
     setMessage('');
   };
 
+  const pickFile = useCallback(()=>{
+
+  },[])
+
+  const pickImage = useCallback(async ()=>{
+    const options :ImageLibraryOptions = {
+      mediaType : 'photo'
+    }
+    const result = await launchImageLibrary(options);
+    console.log('pickImage' , result)
+  },[])
+
   return (
     <View style={styles.chatInputContainer}>
       <View style={styles.chatInputInnerContainer}>
-        <View style={styles.iconButtonContainer}>
+        {/* <View style={styles.iconButtonContainer}>
           <IconButton
             style={styles.button}
             icon="emoticon-happy-outline"
             size={24}
           />
-        </View>
+        </View> */}
         <View style={styles.inputContainer}>
           <TextInput
             style={{color:'#000'}}
@@ -46,7 +67,7 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
             value={message}
           />
         </View>
-        {isKeyPress ? (
+        {sendBtnVisible ? (
           <View style={styles.iconButtonsContainer}>
             <View style={styles.iconButtonContainer}>
               <IconButton
@@ -60,10 +81,10 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
         ) : (
           <View style={styles.iconButtonsContainer}>
             <View style={styles.iconButtonContainer}>
-              <IconButton style={styles.button} icon="file" size={24} />
+              <IconButton style={styles.button} icon="paperclip" size={24} onPress={pickFile} />
             </View>
             <View style={styles.iconButtonContainer}>
-              <IconButton style={styles.button} icon="file-image" size={24} />
+              <IconButton style={styles.button} icon="file-image" size={24} onPress={pickImage}/>
             </View>
           </View>
         )}
@@ -76,7 +97,7 @@ export default ChatInput;
 
 const styles = StyleSheet.create({
   chatInputContainer: {
-    paddingBottom: 24,
+    paddingBottom: 0,
     backgroundColor: APP_THEME.colors.white,
   },
   chatInputInnerContainer: {

@@ -93,7 +93,7 @@ export const conversationSlice = createSlice({
     });
 
     builder.addCase(getListConversation.fulfilled, (state, action) => {
-      const conversations =  action.payload as Conversation[];
+      const conversations =  action.payload as Conversation[] || [];
       const {arg: {loadMore}} = action.meta;
 
       if(conversations.length >0){

@@ -45,7 +45,7 @@ const ChatBox: React.FC<IProps> = ({conversation}) => {
     <KeyboardAvoidingView
       style={styles.chatBoxContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 128}>
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 32}>
       {content}
     </KeyboardAvoidingView>
   );

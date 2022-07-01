@@ -29,8 +29,11 @@ Mobile-TODO
 - Chat Screen
 	Send Message Upload file
 		return normal input when input is empty
+	
+	https://instamobile.io/mobile-development/react-native-firebase-storage/
 	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
 	
+	https://blog.logrocket.com/picking-files-react-native-apps-using-react-native-document-picker/#:~:text=Setting%20up%20react%2Dnative%2Ddocument%2Dpicker&text=%2C%20a%20native%20document%20picker%20window,by%20installing%20the%20npm%20dependency.
 - Download file
 	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
 	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
@@ -67,6 +70,8 @@ Mobile-TODO
 	https://viblo.asia/p/tao-app-launcher-icon-cho-react-native-app-android-ios-1Je5EyYL5nL
 - update geo location interval
 	https://dev-yakuza.posstree.com/en/react-native/react-native-geolocation-service/
+	
+	https://www.npmjs.com/package/react-native-toast-message
 ===================
 icons: https://oblador.github.io/react-native-vector-icons/
 files
