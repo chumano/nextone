@@ -6,6 +6,7 @@ import {createAxios} from './../utils/axios.util';
 
 import {ApiResponse} from './../types/ApiResponse.type';
 import {Event} from '../types/Event/Event.type';
+import qs from 'qs';
 
 const axiosInstance = createAxios(APP_CONFIG.COM_HOST);
 
