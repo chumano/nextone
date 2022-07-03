@@ -3,14 +3,31 @@ import {StyleSheet, View, TextInput} from 'react-native';
 import {IconButton} from 'react-native-paper';
 
 import {APP_THEME} from '../../constants/app.theme';
-import {ImageLibraryOptions, launchCamera, 
+import {Asset, ImageLibraryOptions, launchCamera, 
   launchImageLibrary} from 'react-native-image-picker';
+  import DocumentPicker, {
+    DirectoryPickerResponse,
+    DocumentPickerResponse,
+    isInProgress,
+    types,
+  } from 'react-native-document-picker';
+import { getMessageType } from '../../utils/file.utils';
+import { MessageUpload } from '../Message/MessageItemUpload';
+import { Conversation } from '../../types/Conversation/Conversation.type';
+import { nowDate } from '../../utils/date.utils';
+import { UserStatus } from '../../types/User/UserStatus.type';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, IAppStore } from '../../stores/app.store';
+import { conversationActions } from '../../stores/conversation';
 
 interface IProps {
+  conversation: Conversation,
   onSendMessage: (message: string) => void;
 }
 
-const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
+const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
+  const dispatch: AppDispatch = useDispatch();
+  const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
   const [isKeyPress, setIsKeyPress] = useState(false);
   const [sendBtnVisible, setSendBtnVisible] = useState(false);
   const [message, setMessage] = useState('');
@@ -34,16 +51,73 @@ const ChatInput: React.FC<IProps> = ({onSendMessage}) => {
     setMessage('');
   };
 
-  const pickFile = useCallback(()=>{
+  const send = useCallback((asset: {
+      uri: string,
+      fileName: string,
+      type: string
+  })=>{
+    const messageType = getMessageType(asset.type!);
+    const fakeid = 'fake-' + (new Date()).toString();
+    const message : MessageUpload = {
+        conversationId : conversation.id,
+        type: messageType,
+        uploadFile : {
+          uri: asset.uri!,
+          name: asset.fileName!,
+          type: asset.type!
+        },
+        state : 'upload',
+        id: fakeid,
+        content: '',
+        sentDate: nowDate(),
+        userSender:  {
+            userId: userInfo?.userId
+        } as UserStatus,
+        files : []
+    }
 
+    //add temp message
+    dispatch(conversationActions.addTempMessage(message));
+  },[dispatch, conversation]);
+
+  const pickFile = useCallback(async()=>{
+    const result = await DocumentPicker.pickMultiple();
+    console.log('pickFile' , result)
+    for(let i =0 ;i < result.length; i++){
+      setTimeout(()=>{
+          const file = result[i];
+          send({
+            uri: file.uri,
+            fileName : file.name,
+            type: file.type!
+          })
+      }, i*500);
+    }
   },[])
 
   const pickImage = useCallback(async ()=>{
     const options :ImageLibraryOptions = {
-      mediaType : 'photo'
+      mediaType : 'mixed',
+      selectionLimit : 5
     }
     const result = await launchImageLibrary(options);
     console.log('pickImage' , result)
+    //add UploadMessage
+    const { assets } = result;
+    if(!assets) {
+      return;
+    }
+    for(let i =0 ;i < assets.length; i++){
+      setTimeout(()=>{
+        const file = assets[i];
+          send({
+            uri: file.uri!,
+            fileName : file.fileName!,
+            type: file.type!
+          })
+      }, i*500);
+    }
+
   },[])
 
   return (

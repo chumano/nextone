@@ -82,7 +82,40 @@ export const conversationSlice = createSlice({
               }
               break;
       }
-  },
+      
+ 
+    },
+    
+    addTempMessage: (state, action: PayloadAction<Message>) => {
+      const conversations = state.data || []
+      const message = action.payload;
+      const conversation = conversations.find(o => o.id === message.conversationId);
+      if (!conversation) return;
+
+      conversation.messages.unshift(message);
+      conversationUpdated(state, conversation);
+    },
+    updateMessage: (state, action: PayloadAction<{ messageId: string, message: Message }>) => {
+      const conversations = state.data || []
+      const { message, messageId } = action.payload;
+      const conversation = conversations.find(o => o.id === message.conversationId);
+      if (!conversation) return;
+
+      const existMessageId = messageId;
+      let messages = conversation.messages;
+      if(existMessageId !== message.id){
+          //fake message
+          messages = messages.filter(o=>o.id !== message.id);
+      }
+      conversation.messages = messages.map(o => {
+          if (o.id === existMessageId) {
+              return message
+          }
+          return o;
+      })
+
+      conversationUpdated(state, conversation);
+  }
   },
   extraReducers: builder => {
     
