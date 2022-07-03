@@ -12,7 +12,7 @@ const LoginScreen = () => {
   const authState = useSelector((store: IAppStore) => store.auth);
   const [loginForm, setLoginForm] = useState({
     username: {
-      value: 'manager',
+      value: 'manager@nextone.local',
       isValid: true,
     },
     password: {

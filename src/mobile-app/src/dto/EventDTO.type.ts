@@ -14,6 +14,7 @@ export interface GetEventsHistoryDTO extends IPageOptions {
 export interface SendEventDTO {
   Content: string;
   EventTypeCode: string;
+  OccurDate: string;
 
   Address: string;
   Lat: number;

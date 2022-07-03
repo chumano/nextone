@@ -1,9 +1,7 @@
 import {SendEventDTO, GetEventsByMeDTO} from './../dto/EventDTO.type';
-
 import {AxiosResponse} from 'axios';
 import {APP_CONFIG} from './../constants/app.config';
 import {createAxios, handleAxiosApi} from './../utils/axios.util';
-
 import {ApiResponse} from './../types/ApiResponse.type';
 import {Event} from '../types/Event/Event.type';
 import { EventInfo } from '../types/Event/EventInfo.type';
