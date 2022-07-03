@@ -31,10 +31,7 @@ Mobile-TODO
 - Chat Screen
 	//load messages : when app screen from background 
 	
-- Download file
-	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
-	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
-	
+
 	
 - Call Screen
 	 Notification : app in background
@@ -62,8 +59,14 @@ Mobile-TODO
 	android : https://reactnative.dev/docs/signed-apk-android
 	ios
 =====================================================
+- Download file
+	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
+	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
+	
+	
 - Send Message Upload file
 	return normal input when input is empty
+	https://github.com/rnmods/react-native-document-picker
 	
 	https://instamobile.io/mobile-development/react-native-firebase-storage/
 	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
