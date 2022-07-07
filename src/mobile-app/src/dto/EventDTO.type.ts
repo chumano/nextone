@@ -1,5 +1,6 @@
 import {FileType} from './../types/File/FileType.type';
 import {IPageOptions} from '../types/PageOptions.type';
+import { BaseFile } from '../types/File/BaseFile.type';
 
 export interface GetEventsByMeDTO extends IPageOptions {}
 
@@ -20,12 +21,6 @@ export interface SendEventDTO {
   Lat: number;
   Lon: number;
 
-  Files: SendEventFileDTO[];
+  Files: BaseFile[];
 }
 
-export interface SendEventFileDTO {
-  FileId: string;
-  FileType: FileType;
-  FileName: string;
-  FileUrl: string;
-}

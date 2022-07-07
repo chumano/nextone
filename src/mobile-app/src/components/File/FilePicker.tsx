@@ -6,7 +6,7 @@ import ImagePicker, { ImageLibraryOptions, launchCamera, launchImageLibrary } fr
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-interface MediaItemType {
+export interface MediaItemType {
     uri: string;
     name: string;
     type: string;
