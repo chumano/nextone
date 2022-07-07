@@ -15,7 +15,7 @@ const FileList = <T extends object>({
   isHorizontal,
 }: IProps<T>) => {
   return (
-    <FlatList
+    <FlatList 
       ItemSeparatorComponent={() => <View style={{ width: 8 }} />}
       horizontal={isHorizontal}
       keyExtractor={keyExtractorHandler}

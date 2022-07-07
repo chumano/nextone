@@ -17,13 +17,19 @@ import {BottomTabProps} from './BottomTabNavigator';
 import {IconButton} from 'react-native-paper';
 
 import {EventInfo} from '../types/Event/EventInfo.type';
+import EventTypePickScreen from '../screens/EventScreen/EventTypePickScreen';
 
 type EventStackParamsList = {
   EventScreen: undefined;
   EventDetailScreen: {
     eventInfo: EventInfo;
   };
-  SendEventScreen: undefined;
+
+  EventTypePickScreen: undefined;
+  SendEventScreen: {
+    eventType: any
+  };
+  
 };
 
 export type EventStackProps = NativeStackNavigationProp<
@@ -35,6 +41,11 @@ export type EventStackProps = NativeStackNavigationProp<
 export type EventDetailRouteProp = RouteProp<
   EventStackParamsList,
   'EventDetailScreen'
+>;
+
+export type EventSendRouteProp = RouteProp<
+  EventStackParamsList,
+  'SendEventScreen'
 >;
 
 const Stack = createNativeStackNavigator<EventStackParamsList>();
@@ -57,19 +68,35 @@ const EventStack = ({navigation, route}: BottomTabProps) => {
         component={EventScreen}
         options={({navigation}) => {
           const onNavigateHandler = () => {
-            navigation.navigate('SendEventScreen');
+            navigation.navigate('EventTypePickScreen');
           };
 
           return {
-            title: 'List Event By Me',
+            title: 'Sự kiện',
             headerRight: _ => {
               return <IconButton icon="plus" onPress={onNavigateHandler} />;
             },
           };
         }}
       />
-      <Stack.Screen name="EventDetailScreen" component={EventDetailScreen} />
-      <Stack.Screen name="SendEventScreen" component={SendEventScreen} />
+      <Stack.Screen name="EventDetailScreen" 
+        component={EventDetailScreen} 
+          options={{
+            title: 'Thông tin sự kiện',
+          }} />
+
+      <Stack.Screen name="EventTypePickScreen"
+         component={EventTypePickScreen} 
+         
+         options={{
+          title: 'Gửi sự kiện',
+        }}/>
+      <Stack.Screen name="SendEventScreen"
+         component={SendEventScreen} 
+         
+         options={{
+          title: 'Gửi sự kiện',
+        }}/>
     </Stack.Navigator>
   );
 };

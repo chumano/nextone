@@ -5,6 +5,7 @@ import {createAxios, handleAxiosApi} from './../utils/axios.util';
 import {ApiResponse} from './../types/ApiResponse.type';
 import {Event} from '../types/Event/Event.type';
 import { EventInfo } from '../types/Event/EventInfo.type';
+import { EventType } from '../types/Event/EventType.type';
 
 const axiosInstance = createAxios(APP_CONFIG.COM_HOST);
 
@@ -29,8 +30,20 @@ const getEventsForMap = async (data : { eventTypeCodes : string[]})=>{
   return await handleAxiosApi<ApiResponse<EventInfo[]>>(responsePromise);
 };
 
+const getEventTypesForMe = async ()=>{
+  const responsePromise = axiosInstance.get('/event/GetEventTypesForMe')
+  return await handleAxiosApi<ApiResponse<EventType[]>>(responsePromise);
+};
+
+const getEventTypes = async ()=>{
+  const responsePromise = axiosInstance.get('/settings/GetEventTypes')
+  return await handleAxiosApi<ApiResponse<EventType[]>>(responsePromise);
+};
+
 export const eventApi = {
   sendEvent,
   getEventsByMe,
-  getEventsForMap
+  getEventsForMap,
+  getEventTypesForMe,
+  getEventTypes
 };

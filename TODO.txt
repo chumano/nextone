@@ -25,7 +25,10 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-
+- Event Screen
+	Event List : reload
+	View Event : show images
+	
 - register notification token
 
 - Chat Screen
@@ -45,10 +48,7 @@ Mobile-TODO
 	
 	-ios : setup callkeep
 	
-- Event Screen
-	Event List
-	Send new Event
-	View Event
+
 	
 	
 - Authentication

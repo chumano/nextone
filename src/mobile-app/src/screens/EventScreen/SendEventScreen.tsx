@@ -1,28 +1,22 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, StyleSheet, Text, TextInput, View} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-import {hasLocationPermission} from '../../utils/location.utils';
+import { hasLocationPermission } from '../../utils/location.utils';
 import Geolocation from 'react-native-geolocation-service';
-import {Button, RadioButton} from 'react-native-paper';
+import { Button, RadioButton } from 'react-native-paper';
 
-import {APP_THEME} from '../../constants/app.theme';
-import {eventApi} from '../../apis/event.api';
+import { APP_THEME } from '../../constants/app.theme';
+import { eventApi } from '../../apis/event.api';
+import { EventSendRouteProp, EventStackProps } from '../../navigation/EventStack';
+import FilePiker, { MediaItemType } from '../../components/File/FilePicker';
+import { fileApi } from '../../apis/fileApi';
+import { BaseFile } from '../../types/File/BaseFile.type';
 
-const eventList: {Code: string; Name: string}[] = [
-  {Code: 'ANNINH', Name: 'An ninh'},
-  {Code: 'THIENTAI', Name: 'Thiên tai'},
-];
 
 const SendEventScreen = () => {
-  const [eventCodeType, setEventCodeType] = useState<string>(eventList[0].Code);
-  const [latLon, setLatLon] = useState<
-    | {
-        lat: number;
-        lon: number;
-      }
-    | undefined
-  >(undefined);
+  const [eventCodeType, setEventCodeType] = useState<string>();
+  const [selectedFiles, setSelectedFiles] = useState<MediaItemType[]>([]);
   const [userInput, setUserInput] = useState<{
     content: string;
     address: string;
@@ -30,73 +24,110 @@ const SendEventScreen = () => {
     content: '',
     address: '',
   });
+
   const [isLoading, setIsLoading] = useState(false);
-  const navigation = useNavigation();
+  const navigation = useNavigation<EventStackProps>();
+  const route = useRoute<EventSendRouteProp>();
 
-  useEffect(() => {
-    const getCoordinates = async () => {
-      const hasPermission = await hasLocationPermission();
+  useLayoutEffect(() => {
+    console.log('SendEventScreen-params', route.params)
+    const { eventType } = route.params;
+    navigation.setOptions({
+      title: `Sự kiện : ${eventType.name}`,
+    });
 
-      if (!hasPermission) return;
+    setEventCodeType(eventType.code);
+  }, [navigation, route]);
 
-      Geolocation.getCurrentPosition(
-        position => {
-          const {latitude, longitude} = position.coords;
-          setLatLon({
-            lat: latitude,
-            lon: longitude,
-          });
-        },
-        e => Alert.alert(`Code ${e.code}`, e.message),
-        {
-          timeout: 20000,
-          maximumAge: 1000,
-          distanceFilter: 10,
-          enableHighAccuracy: false,
-          forceRequestLocation: true,
-          forceLocationManager: true,
-          showLocationDialog: true,
-        },
-      );
-    };
+  const getCoordinates = async (callback: (lat: number, lon: number) => void,
+    errCallback: () => void) => {
+    const hasPermission = await hasLocationPermission();
 
-    getCoordinates();
-  }, []);
+    if (!hasPermission) {
+      Alert.alert('Need Location Permission');
+      errCallback();
+      return;
+    }
+
+    Geolocation.getCurrentPosition(
+      position => {
+        const { latitude, longitude } = position.coords;
+        callback(latitude, longitude);
+      },
+      e => {
+        Alert.alert(`Code ${e.code}`, e.message);
+        errCallback();
+      },
+      {
+        timeout: 20000,
+        maximumAge: 1000,
+        distanceFilter: 10,
+        enableHighAccuracy: false,
+        forceRequestLocation: true,
+        forceLocationManager: true,
+        showLocationDialog: true,
+      },
+    );
+  };
+
 
   const onUploadHandler = async () => {
-    if (!latLon) {
-      Alert.alert('Need Location Permission');
-      return;
-    }
-
     setIsLoading(true);
+    getCoordinates(async (lat, lon) => {
+      try {
+        //update files
+        let sendFileDTOs : BaseFile[] = [];
+        if(selectedFiles.length >0){
+          const files = selectedFiles.map(o => (
+            {
+              uri : o.uri,
+              name: o.name,
+              type: o.type
+            }
+          ));
+          const uploadResponse = await fileApi.uploadFiles(files, (progressEvent) => {
+            console.log('upload_file', progressEvent.loaded, progressEvent)
+            const progress = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+            //setUploadProgress(progress);
+    
+          }, 'message');
 
-    try {
-      const rs = await eventApi.sendEvent({
-        Content: userInput.content,
-        EventTypeCode: eventCodeType,
-        Address: userInput.address,
-        Lat: latLon.lat,
-        Lon: latLon.lon,
-        OccurDate: '15:20:00 02/07/2022',
-        Files: [],
-      });
+          if(!uploadResponse.isSuccess){
+            Alert.alert('Api Error', uploadResponse.errorMessage!);
+          }
 
-      setIsLoading(false);
+          sendFileDTOs = uploadResponse.data;
+        }
 
-      const data = rs.data;
+        //send event
+        const rs = await eventApi.sendEvent({
+          Content: userInput.content,
+          EventTypeCode: eventCodeType!,
+          Address: userInput.address,
+          Lat: lat,
+          Lon: lon,
+          OccurDate: '15:20:00 02/07/2022',
+          Files: sendFileDTOs,
+        });
 
-      if (data.isSuccess) {
-        navigation.goBack();
-        return;
+        setIsLoading(false);
+
+        const data = rs.data;
+
+        if (data.isSuccess) {
+          navigation.pop(2);
+          return;
+        }
+
+        Alert.alert('Api Error', data.errorMessage!);
+      } catch (error) {
+        Alert.alert('Something went wrong');
+      }finally{
+        setIsLoading(false);
       }
-
-      Alert.alert('Api Error', data.errorMessage as string);
-      return;
-    } catch (error) {
+    }, () => {
       setIsLoading(false);
-      Alert.alert('Something went wrong');
-    }
+    })
   };
 
   const onChangeTextInput = (updateField: string, updatedText: string) => {
@@ -113,60 +144,44 @@ const SendEventScreen = () => {
     return userInput.address === '' && userInput.content === '';
   }, [userInput.address, userInput.content]);
 
+  const onFileChanged = useCallback((files: MediaItemType[]) => {
+    setSelectedFiles(files);
+  }, [setSelectedFiles])
   return (
     <View style={styles.sendEventScreenContainer}>
       <View style={styles.formContainer}>
         <View style={styles.inputContainer}>
           <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Content</Text>
+            <Text style={styles.labelText}>Nội dung</Text>
           </View>
           <View style={styles.valueContainer}>
-            <TextInput
+            <TextInput style={styles.textInput}
+              placeholderTextColor={'grey'}
               autoCorrect={false}
-              placeholder="Your content"
+              placeholder="Nhập nội dung"
               onChangeText={onChangeTextInput.bind(this, 'content')}
               value={userInput.content}
             />
           </View>
         </View>
-        <View style={styles.eventTypeContainer}>
-          <View style={[styles.labelContainer, {marginBottom: 8}]}>
-            <Text style={styles.labelText}>Code</Text>
-          </View>
-          <View style={styles.radioButtonGroupContainer}>
-            <RadioButton.Group
-              value={eventCodeType}
-              onValueChange={value => setEventCodeType(value)}>
-              {eventList.map(type => (
-                <RadioButton.Item
-                  key={type.Code}
-                  label={type.Name}
-                  value={type.Code}
-                  style={[styles.radioItem, {marginLeft: 16}]}
-                  labelStyle={{marginLeft: -16}}
-                />
-              ))}
-            </RadioButton.Group>
-          </View>
-        </View>
+
         <View style={styles.inputContainer}>
           <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Address</Text>
+            <Text style={styles.labelText}>Địa chỉ</Text>
           </View>
           <View style={styles.valueContainer}>
-            <TextInput
+            <TextInput style={styles.textInput}
+              placeholderTextColor={'grey'}
               autoCorrect={false}
-              placeholder="Your address"
+              placeholder="Nhập địa chỉ"
               onChangeText={onChangeTextInput.bind(this, 'address')}
               value={userInput.address}
             />
           </View>
         </View>
 
-        <View style={{marginVertical: 24}}>
-          <Text style={{paddingHorizontal: 16}}>
-            *TODO*: Attach File Feature
-          </Text>
+        <View style={{ marginVertical: 24 }}>
+          <FilePiker onFileChanged={onFileChanged} />
         </View>
 
         <View style={styles.buttonContainer}>
@@ -175,7 +190,7 @@ const SendEventScreen = () => {
             onPress={onUploadHandler}
             loading={isLoading}
             disabled={checkInputValid()}>
-            Upload
+            Gửi
           </Button>
         </View>
       </View>
@@ -189,7 +204,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     flex: 1,
   },
-  formContainer: {flex: 1},
+  formContainer: { flex: 1 },
   inputContainer: {
     flexDirection: 'row',
     backgroundColor: APP_THEME.colors.background,
@@ -205,18 +220,13 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'center',
   },
-  radioButtonGroupContainer: {
-    backgroundColor: APP_THEME.colors.background,
-  },
-  eventTypeContainer: {
-    marginVertical: 24,
-  },
   buttonContainer: {
     marginTop: 40,
   },
-  labelText: {},
-  radioItem: {
-    borderBottomWidth: 1,
-    borderBottomColor: '#cecece',
+  labelText: {
+    color: 'black'
   },
+  textInput: {
+    color: 'black'
+  }
 });

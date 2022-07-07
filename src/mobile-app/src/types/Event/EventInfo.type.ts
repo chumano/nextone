@@ -14,4 +14,5 @@ export interface EventInfo {
   userSenderId: string;
   userSender: UserStatus;
   files: EventFile[];
+  createdDate: string;
 }
