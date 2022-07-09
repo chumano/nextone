@@ -25,9 +25,6 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-- Event Screen
-	Event List : reload
-	View Event : show images
 	
 - register notification token
 
@@ -35,7 +32,6 @@ Mobile-TODO
 	//load messages : when app screen from background 
 	
 
-	
 - Call Screen
 	 Notification : app in background
 		Firebase
@@ -49,7 +45,6 @@ Mobile-TODO
 	-ios : setup callkeep
 	
 
-	
 	
 - Authentication
 	- AuthService

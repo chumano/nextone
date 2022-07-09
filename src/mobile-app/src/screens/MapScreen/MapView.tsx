@@ -4,6 +4,7 @@ import { Alert, Platform } from 'react-native';
 import WebView, { WebViewMessageEvent } from 'react-native-webview';
 import { useDispatch, useSelector } from 'react-redux';
 import { conversationApi } from '../../apis';
+import { eventApi } from '../../apis/event.api';
 import { APP_CONFIG } from '../../constants/app.config';
 import { IAppStore } from '../../stores/app.store';
 import { conversationActions } from '../../stores/conversation';
@@ -178,15 +179,21 @@ const MapView: React.FC<MapViewProps> =
           });
     },[userInfo])
 
-    const showEventInfo = useCallback((eventId:string)=>{
-        navigation.navigate('EventTab', {
-            screen: 'EventDetailScreen',
-            params: {
-                eventId: eventId,
-                eventInfo: undefined
+    const showEventInfo = useCallback(async (eventId:string)=>{
+        //get eventInfo
+        const eventInfo = eventInfos?.find(o=>o.id === eventId);
+        console.log('showEventInfo',{eventInfo})
+        if(!eventInfo){
+            return;
+        }
+
+        navigation.navigate( 'EventDetailScreen',
+            {
+                eventInfo: eventInfo
             }
-          });
-    },[])
+        );
+       
+    },[navigation,eventInfos])
 
     const sendInitialMessage = useCallback(() => {
         if (!mapConfig) return;
@@ -230,7 +237,7 @@ const MapView: React.FC<MapViewProps> =
                     showEventInfo(objectId)
                 }
             }
-        }, [sendInitialMessage]);
+        }, [sendInitialMessage, showEventInfo, showUserInfo]);
 
     const webView = useMemo(()=>{
         console.log("WEBVIEW change................")

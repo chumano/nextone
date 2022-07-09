@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useState} from 'react';
+import React, {useLayoutEffect, useMemo, useState, useCallback} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {View, StyleSheet} from 'react-native';
 import {Avatar, Text} from 'react-native-paper';
@@ -9,11 +9,13 @@ import {
 } from '../../navigation/EventStack';
 
 import FileList from '../../components/File/FileList';
-
-import {LIST_EVENT_FILE} from '../../data/File.data';
-
 import {EventInfo} from '../../types/Event/EventInfo.type';
 import FileView from '../../components/File/FileView';
+import ImageView from "react-native-image-viewing";
+import { ImageSource } from 'react-native-image-viewing/dist/@types';
+import { groupFileByType } from '../../utils/file.utils';
+import ImageViewHeader from '../../components/ImageView/ImageViewHeader';
+import ImageViewFooter from '../../components/ImageView/ImageViewFooter';
 
 const EventDetailScreen = () => {
   const navigation = useNavigation<EventStackProps>();
@@ -30,6 +32,29 @@ const EventDetailScreen = () => {
     setEventInfo(eventInfo);
   }, [navigation, route]);
 
+  const group = useMemo(() => {
+    return groupFileByType(eventInfo?.files || []);
+  }, [eventInfo])
+
+  const [imageViewVisible, setImageViewVisible] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0)
+  const [images, setImages] = useState<ImageSource[]>([])
+
+  const onViewImage = useCallback((index: number) => {
+      const images = group['image'];
+      return () => {
+          const imageSoruces: ImageSource[] = images.map(o=> {
+              return {
+                  title: o.fileName,
+                  uri: o.fileUrl
+              }
+          })
+          setImages(imageSoruces);
+          setSelectedImageIndex(index);
+          setImageViewVisible(true);
+      }
+  }, [group])
+  
   if (!eventInfo) return <></>;
   return (
     <View style={styles.eventDetailContainer}>
@@ -61,7 +86,7 @@ const EventDetailScreen = () => {
           <FileList
             isHorizontal={true}
             renderItem={itemData => (
-              <FileView file={itemData.item} hiddenName={true}/>
+              <FileView file={itemData.item} hiddenName={true}  onView={onViewImage(itemData.index)}/>
             )}
             keyExtractorHandler={(item, _) => item.fileId}
             listFile={eventInfo.files}
@@ -76,6 +101,24 @@ const EventDetailScreen = () => {
           </Text>
         </View>
       }
+
+      <ImageView
+          backgroundColor='white'
+          images={images}
+          imageIndex={selectedImageIndex}
+          visible={imageViewVisible}
+          onRequestClose={() => setImageViewVisible(false)}
+          HeaderComponent={({ imageIndex }) => {
+                    const title = (images[imageIndex] as any).title;
+                    return (
+                      <ImageViewHeader title={title} onRequestClose={() => setImageViewVisible(false)} />
+                    );
+                  }
+            }
+          FooterComponent={({ imageIndex }) => (
+          <ImageViewFooter imageIndex={imageIndex} imagesCount={images.length} />
+          )}
+        />
       
     </View>
   );

@@ -19,9 +19,10 @@ const sendEvent = (
   });
 };
 
+
 const getEventsByMe = (
   data: GetEventsByMeDTO,
-): Promise<ApiResponse<ApiResponse<Event[]>>> => {
+): Promise<AxiosResponse<ApiResponse<Event[]>>> => {
   return axiosInstance.get(`/event/getEventsByMe`, {params: data});
 };
 

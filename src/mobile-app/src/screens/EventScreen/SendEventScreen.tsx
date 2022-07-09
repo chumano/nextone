@@ -115,7 +115,10 @@ const SendEventScreen = () => {
         const data = rs.data;
 
         if (data.isSuccess) {
-          navigation.pop(2);
+          //navigation.pop(2);
+          navigation.navigate('EventScreen',{
+            reload: true
+          })
           return;
         }
 

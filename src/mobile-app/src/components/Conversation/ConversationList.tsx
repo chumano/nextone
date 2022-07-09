@@ -54,7 +54,7 @@ const ConversationList = () => {
 
     console.log('loadmoreResult...................', conversationsOffset);
     dispatch(getListConversation({pageOptions:{offset: conversationsOffset}, loadMore: true}));
-  }, [conversationsLoading, allLoaded]);
+  }, [conversationsLoading, allLoaded, conversationsOffset]);
 
 
   const renderFooter = () => {

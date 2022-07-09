@@ -10,9 +10,11 @@ import { EventInfo } from '../../types/Event/EventInfo.type';
 import { UserStatus } from '../../types/User/UserStatus.type';
 import MapView from './MapView';
 import Geolocation from 'react-native-geolocation-service';
+import { IAppStore } from '../../stores/app.store';
+import { useSelector } from 'react-redux';
 
 const MapScreen = ({navigation, route}: MapStackProps)=> {
-
+  const { data: userInfo } = useSelector((store: IAppStore) => store.auth);
   const [loading, setLoading] = useState(true);
   const [selectedEventTypeCodes,_] = useState<string[]>([]);
   const [eventInfos,setEventInfos] = useState<EventInfo[]>()
@@ -59,8 +61,9 @@ const MapScreen = ({navigation, route}: MapStackProps)=> {
     if (!response.isSuccess) {
       return;
     }
-    setUsers(response.data);
-  }, [conversationApi, dispatch])
+    const users = response.data.filter(o=>o.userId != userInfo?.userId);
+    setUsers(users);
+  }, [conversationApi, dispatch, userInfo])
 
   useEffect(() => {
     console.log("[init] fectch data")
@@ -80,7 +83,7 @@ const MapScreen = ({navigation, route}: MapStackProps)=> {
     return () => {
       clearInterval(intervalCall);
     };
-  }, []);
+  }, [fetchEvents,fetchUsers]);
 
   useEffect(()=>{
     if(!myLocation) return;

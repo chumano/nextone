@@ -20,7 +20,9 @@ import {EventInfo} from '../types/Event/EventInfo.type';
 import EventTypePickScreen from '../screens/EventScreen/EventTypePickScreen';
 
 type EventStackParamsList = {
-  EventScreen: undefined;
+  EventScreen: {
+    reload? : boolean
+  };
   EventDetailScreen: {
     eventInfo: EventInfo;
   };
@@ -46,6 +48,11 @@ export type EventDetailRouteProp = RouteProp<
 export type EventSendRouteProp = RouteProp<
   EventStackParamsList,
   'SendEventScreen'
+>;
+
+export type EventsRouteProp = RouteProp<
+  EventStackParamsList,
+  'EventScreen'
 >;
 
 const Stack = createNativeStackNavigator<EventStackParamsList>();

@@ -85,11 +85,11 @@ const FileView: React.FC<FileViewProps> = ({ file, hiddenName, onView }) => {
             },
         };
 
+        hideModal();
         config(options)
             .fetch('GET', fileUrl)
             .then((res: any) => {
                 // Alert after successful downloading
-                hideModal();
                 console.log('res -> ', JSON.stringify(res));
             });
     }, []);
