@@ -1,22 +1,31 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
-import { AppState, Linking, Platform } from 'react-native';
-import { ChatData } from './stores/conversation/conversation.payloads';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from './stores/app.store';
-import { conversationActions } from './stores/conversation';
-import { SignalRService } from './services';
-import messaging, { firebase } from '@react-native-firebase/messaging';
+import {AppState, Linking, Platform} from 'react-native';
+import {ChatData} from './stores/conversation/conversation.payloads';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from './stores/app.store';
+import {conversationActions} from './stores/conversation';
+import {SignalRService} from './services';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNCallKeep from 'react-native-callkeep';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import notifee from '@notifee/react-native';
 
-import { callActions } from './stores/call/callReducer';
-import { LOCATION, setupLocationWatch } from './utils/location.utils';
-import { startSendHeartBeat, stopSendHeartBeat } from './utils/internet.utils';
-import { conversationApi } from './apis';
+import {callActions} from './stores/call/callReducer';
+import {LOCATION, setupLocationWatch} from './utils/location.utils';
+import {startSendHeartBeat, stopSendHeartBeat} from './utils/internet.utils';
+import {conversationApi} from './apis';
+
+const registerAppWithFCM = async () => {
+  if (Platform.OS === 'ios') {
+    await messaging().registerDeviceForRemoteMessages();
+    await messaging().setAutoInitEnabled(true);
+  }
+};
+
+// registerAppWithFCM();
 
 const options = {
   ios: {
@@ -35,12 +44,12 @@ const options = {
       channelName: 'Foreground service for my app',
       notificationTitle: 'My app is running on background',
       notificationIcon: 'Path to the resource icon of the notification',
-    }, 
-  }
+    },
+  },
 };
 
 RNCallKeep.setup(options).then(accepted => {
-  console.log('RNCallKeep', accepted)
+  console.log('RNCallKeep', accepted);
 });
 
 // Register background handler
@@ -66,19 +75,20 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   RNCallKeep.displayIncomingCall(
     uuid,
     'payload.caller_name',
-    'Incoming Call from ...' ,
+    'Incoming Call from ...',
     'generic',
     true,
-    {}
+    {},
   );
 });
-
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  // await registerAppWithFCM();
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
@@ -106,14 +116,13 @@ const RootApp = () => {
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
-
   useEffect(() => {
     const initNotificaiton = async () => {
       const enabled = await requestUserPermission();
       if (enabled) {
         await getFCMToken();
       }
-    }
+    };
 
     initNotificaiton();
     //foreground
@@ -141,19 +150,18 @@ const RootApp = () => {
         'Incoming Call from ...',
         'generic',
         true,
-        {}
+        {},
       );
     });
     return unsubscribe;
-
-  }, [])
+  }, []);
 
   const answerCall = async (data: any) => {
     console.log(`[answerCall]: `, data);
     const {callUUID} = data;
     RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
 
-    await Linking.openURL('ucom://')
+    await Linking.openURL('ucom://');
     //Show App Call Screen
     dispatch(callActions.call('voice'));
     // setTimeout(() => {
@@ -177,21 +185,21 @@ const RootApp = () => {
   }, []);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", nextAppState => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
+        nextAppState === 'active'
       ) {
-        console.log("App has come to the foreground!");
+        console.log('App has come to the foreground!');
       }
 
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
-      console.log("AppState", appState.current);
+      console.log('AppState', appState.current);
     });
 
     return () => {
-      console.log("RootApp unmounted")
+      console.log('RootApp unmounted');
       subscription.remove();
     };
   }, []);
@@ -203,44 +211,47 @@ const RootApp = () => {
       } else {
         await signalRService.disconnectHub();
       }
-    }
+    };
 
     connect();
-  }, [appStateVisible])
+  }, [appStateVisible]);
 
   useEffect(() => {
-    const subscription = signalRService.subscription("chat", (data: ChatData) => {
-      console.log('[chat]', data)
-      dispatch(conversationActions.receiveChatData(data))
-    });
+    const subscription = signalRService.subscription(
+      'chat',
+      (data: ChatData) => {
+        console.log('[chat]', data);
+        dispatch(conversationActions.receiveChatData(data));
+      },
+    );
     return () => {
       subscription.unsubscribe();
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
-    setupLocationWatch((newLatLng) => {
-      console.log('setupLocationWatch', newLatLng)
+    setupLocationWatch(newLatLng => {
+      console.log('setupLocationWatch', newLatLng);
     });
-    startSendHeartBeat(async ()=>{
+    startSendHeartBeat(async () => {
       const locationString = await AsyncStorage.getItem(LOCATION);
-      console.log('startSendHeartBeat', {locationString})
+      console.log('startSendHeartBeat', {locationString});
       if (locationString) {
-        const location: { lat: number; lon: number } = JSON.parse( locationString  );
+        const location: {lat: number; lon: number} = JSON.parse(locationString);
         conversationApi.updateMyStatus({
-            lat: location.lat,
-            lon: location.lon
-        })
-      } else{
-        conversationApi.updateMyStatus({})
+          lat: location.lat,
+          lon: location.lon,
+        });
+      } else {
+        conversationApi.updateMyStatus({});
       }
     });
-    return ()=>{
-      console.log('stopSendHeartBeat')
+    return () => {
+      console.log('stopSendHeartBeat');
       stopSendHeartBeat();
-    }
+    };
   }, []);
-  
+
   return (
     <>
       <BottomTabNavigator />
