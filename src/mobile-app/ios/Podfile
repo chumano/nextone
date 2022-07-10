@@ -6,8 +6,8 @@ install! 'cocoapods', :deterministic_uuids => false
 
 target 'UCom' do
   config = use_native_modules!
-
-  use_frameworks!
+  use_modular_headers!
+  use_frameworks! :linkage => :dynamic
   
   $RNFirebaseAsStaticFramework = true
   $FirebaseSDKVersion = '9.2.0'
@@ -23,7 +23,6 @@ target 'UCom' do
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
-
 
   target 'UComTests' do
     inherit! :complete
