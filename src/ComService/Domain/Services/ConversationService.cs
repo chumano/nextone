@@ -139,8 +139,10 @@ namespace ComService.Domain.Services
                             .ThenInclude(o => o.EventType)
                    .Include(o => o.RecentMessages)
                         .ThenInclude(o => o.Event)
-                            .ThenInclude(o => o.Files);
-
+                            .ThenInclude(o => o.Files)
+                   .Include(o => o.RecentMessages)
+                        .ThenInclude(o => o.Event)
+                            .ThenInclude(o => o.UserSender);
                 //query = query.OfType<Channel>()
                 //    .Include(o => o.RecentEvents)
                 //    .ThenInclude(o => o.Event)

@@ -43,12 +43,17 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
     }, [group])
 
     const onViewEvent = useCallback(()=>{
-        navigation.navigate('EventTab', {
-            screen: 'EventDetailScreen',
-            params: {
+        // navigation.navigate('EventTab', {
+        //     screen: 'EventDetailScreen',
+        //     params: {
+        //         eventInfo: eventInfo
+        //     }
+        //   });
+        navigation.navigate( 'ChatEventDetailScreen',
+            {
                 eventInfo: eventInfo
             }
-          });
+        );
     },[eventInfo])
 
     const displayDate = frowNow(message.sentDate);

@@ -21,6 +21,8 @@ import MembersScreen from '../screens/ChatScreen/MembersScreen';
 import { useDispatch } from 'react-redux';
 import { callActions } from '../stores/call/callReducer';
 import FindUsersScreen from '../screens/ChatScreen/ModalCreateConversation';
+import EventDetailScreen from '../screens/EventScreen/EventDetailScreen';
+import { EventInfo } from '../types/Event/EventInfo.type';
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
@@ -31,6 +33,10 @@ type ChatStackParamsList = {
   };
   MembersScreen: undefined;
   FindUsersScreen: undefined;
+  
+  ChatEventDetailScreen: {
+    eventInfo: EventInfo;
+  };
 };
 
 export type ChatStackProps = NativeStackScreenProps<
@@ -132,7 +138,13 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
           options={{
             title: 'Thành viên',
           }}
-      />
+        />
+
+        <Stack.Screen name="ChatEventDetailScreen" 
+        component={EventDetailScreen} 
+          options={{
+            title: 'Thông tin sự kiện',
+          }} />
     </Stack.Navigator>
 
     <Portal>
