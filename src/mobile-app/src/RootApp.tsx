@@ -171,8 +171,8 @@ const RootApp = () => {
     RNCallKeep.addEventListener('endCall', endCall);
 
     return () => {
-      RNCallKeep.removeEventListener('answerCall', answerCall);
-      RNCallKeep.removeEventListener('endCall', endCall);
+      (RNCallKeep as any).removeEventListener('answerCall', answerCall);
+      (RNCallKeep as any).removeEventListener('endCall', endCall);
     }
   }, []);
 
