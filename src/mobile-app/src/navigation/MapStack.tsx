@@ -8,13 +8,12 @@ import React from 'react';
 import EventDetailScreen from '../screens/EventScreen/EventDetailScreen';
 import MapScreen from '../screens/MapScreen/MapScreen';
 import { EventInfo } from '../types/Event/EventInfo.type';
-import { AppStackNavigationBar } from './AppNavigationBars';
 
 type MapStackParamsList = {
   Map: {
     position?: [number, number]
   } | undefined;
-  EventDetailScreen: {
+  MapEventDetailScreen: {
     eventInfo: EventInfo;
   };
 };
@@ -44,7 +43,7 @@ const MapStack = () => {
       }}>
       <Stack.Screen name="Map" component={MapScreen} options={{title: 'Map', headerShown:false}} />
    
-      <Stack.Screen name="EventDetailScreen" 
+      <Stack.Screen name="MapEventDetailScreen" 
         component={EventDetailScreen} 
           options={{
             title: 'Thông tin sự kiện',

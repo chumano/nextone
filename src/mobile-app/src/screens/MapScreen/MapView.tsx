@@ -187,7 +187,7 @@ const MapView: React.FC<MapViewProps> =
             return;
         }
 
-        navigation.navigate( 'EventDetailScreen',
+        navigation.navigate( 'MapEventDetailScreen',
             {
                 eventInfo: eventInfo
             }
