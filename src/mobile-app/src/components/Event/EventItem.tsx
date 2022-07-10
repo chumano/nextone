@@ -5,6 +5,7 @@ import {Avatar, Text} from 'react-native-paper';
 import {APP_THEME} from '../../constants/app.theme';
 import {EventStackProps} from '../../navigation/EventStack';
 import {EventInfo} from '../../types/Event/EventInfo.type';
+import { frowNow } from '../../utils/date.utils';
 
 interface IProps {
   eventInfo: EventInfo;
@@ -17,6 +18,8 @@ const EventItem: React.FC<IProps> = ({eventInfo}) => {
       eventInfo,
     });
   };
+
+  const displayDate = frowNow(eventInfo.createdDate);
   return (
     <Pressable
       onPress={loadEventDetailHandler}
@@ -30,7 +33,7 @@ const EventItem: React.FC<IProps> = ({eventInfo}) => {
       <View style={styles.eventInformationContainer}>
         <View style={styles.conversationContent}>
           <Text style={styles.eventTypeNameText}>
-            [{eventInfo.eventTypeCode}] - {eventInfo.eventType.name}
+            {eventInfo.eventType.name}
           </Text>
           <View style={styles.eventContentContainer}>
             <Text numberOfLines={2} style={styles.eventContentText}>
@@ -39,7 +42,7 @@ const EventItem: React.FC<IProps> = ({eventInfo}) => {
           </View>
         </View>
         <View style={styles.eventOccurredDateContainer}>
-          <Text style={styles.eventOccurredDateText}>12 minutes ago</Text>
+          <Text style={styles.eventOccurredDateText}>{displayDate}</Text>
         </View>
       </View>
     </Pressable>

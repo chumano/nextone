@@ -21,6 +21,7 @@ import ImageViewFooter from '../ImageView/ImageViewFooter';
 import { ConversationType } from '../../types/Conversation/ConversationType.type';
 import { useNavigation } from '@react-navigation/native';
 import { MapScreenProp } from '../../navigation/MapStack';
+import MessageItemUpload, { MessageUpload } from './MessageItemUpload';
 
 interface IProps {
   message: Message;
@@ -109,6 +110,11 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
                       </TouchableOpacity>
                   </View>
               }
+              
+              {message.state == 'upload' &&
+                  <MessageItemUpload message={message as MessageUpload} />
+              }
+                    
               {/* files */}
               <View style={styles.filesContainer}>
                 {message.files && message.files.length > 0 &&

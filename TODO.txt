@@ -6,10 +6,12 @@ https://msftwebcast.com/2019/11/create-and-bind-a-self-signed-certificate-in-iis
 https://docs.microfocus.com/OMi/10.62/Content/OMi/AdminGuide/Hardening/RevProxy_IIS.htm
 
 adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
+[{"fileCopyUri": null, "name": "20220703_075910.jpg", "size": 4194527, "type": "image/jpeg", "uri": "content://com.android.providers.media.documents/document/image%3A957"}]
 
+{"assets": [{"fileName": "rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "fileSize": 4194527, "height": 3120, "type": "image/jpeg", "uri": "file:///data/user/0/com.ucom/cache/rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "width": 4160}]}
 -------------------------------------------
 Web-TODO:
-
+- fix down load assets This file should be served over HTTPS. This download has been blocked
 - Video Call
 	- Select Devices on Start Call, Receive call
 	- Toggle : Video, Voice
@@ -23,19 +25,13 @@ Web-TODO:
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
-
+	
 - register notification token
 
 - Chat Screen
-	Send Message Upload file
-		return normal input when input is empty
-	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
+	//load messages : when app screen from background 
 	
-- Download file
-	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
-	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
-	
-	
+
 - Call Screen
 	 Notification : app in background
 		Firebase
@@ -49,11 +45,6 @@ Mobile-TODO
 	-ios : setup callkeep
 	
 
-- Event Screen
-	Event List
-	Send new Event
-	View Event
-	
 	
 - Authentication
 	- AuthService
@@ -63,10 +54,26 @@ Mobile-TODO
 	android : https://reactnative.dev/docs/signed-apk-android
 	ios
 =====================================================
+- Download file
+	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
+	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/
+	
+	
+- Send Message Upload file
+	return normal input when input is empty
+	https://github.com/rnmods/react-native-document-picker
+	
+	https://instamobile.io/mobile-development/react-native-firebase-storage/
+	https://javascript.plainenglish.io/how-to-upload-files-in-react-native-using-rnfetchblob-d6920f2a660c
+	
+	https://blog.logrocket.com/picking-files-react-native-apps-using-react-native-document-picker/#:~:text=Setting%20up%20react%2Dnative%2Ddocument%2Dpicker&text=%2C%20a%20native%20document%20picker%20window,by%20installing%20the%20npm%20dependency.
+	
 - Appicon
 	https://viblo.asia/p/tao-app-launcher-icon-cho-react-native-app-android-ios-1Je5EyYL5nL
 - update geo location interval
 	https://dev-yakuza.posstree.com/en/react-native/react-native-geolocation-service/
+	
+	https://www.npmjs.com/package/react-native-toast-message
 ===================
 icons: https://oblador.github.io/react-native-vector-icons/
 files

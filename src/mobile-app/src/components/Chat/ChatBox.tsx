@@ -33,7 +33,7 @@ const ChatBox: React.FC<IProps> = ({conversation}) => {
   let content: ReactElement<any, any> = conversation ? (
     <>
       <MessageList conversation={conversation} />
-      <ChatInput onSendMessage={onSendMessageHandler} />
+      <ChatInput conversation={conversation} onSendMessage={onSendMessageHandler} />
     </>
   ) : (
     <View>
@@ -45,7 +45,7 @@ const ChatBox: React.FC<IProps> = ({conversation}) => {
     <KeyboardAvoidingView
       style={styles.chatBoxContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 128}>
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 96}>
       {content}
     </KeyboardAvoidingView>
   );

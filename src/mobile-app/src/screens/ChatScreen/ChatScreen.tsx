@@ -28,6 +28,7 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
   const [selectedConversation, setSelectedConversation] = useState<Conversation>();
 
   useLayoutEffect(() => {
+    console.log('ChatScreen....')
     const params = route.params;
     if (!params) return;
     const {conversationId} = params as ChatParams;

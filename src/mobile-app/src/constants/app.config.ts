@@ -1,11 +1,11 @@
 import {AppConfig, OAuthConfig} from './../types/AppConfig.type';
 
 export const APP_CONFIG: AppConfig = {
-  IDENTITY_HOST: 'https://id.tris.vn', //'https://192.168.1.101:5102',
-  MASTER_HOST: 'http://192.168.1.101:5103',
-  COM_HOST: 'http://192.168.1.101:5104',
-  MAP_HOST: 'http://192.168.1.101:5105',
-  FILE_HOST: 'http://192.168.1.101:5106',
+  IDENTITY_HOST: 'https://ucom-id.dientoan.vn',
+  MASTER_HOST: 'https://ucom-apis.dientoan.vn/master',
+  COM_HOST: 'https://ucom-apis.dientoan.vn/com',
+  MAP_HOST: 'https://ucom-apis.dientoan.vn/map',
+  FILE_HOST: 'https://ucom-apis.dientoan.vn/file',
 };
 
 export const OAUTH_CONFIG: OAuthConfig = {

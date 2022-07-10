@@ -150,6 +150,7 @@ namespace ComService.Boudaries.Controllers
             var items = await query
                 .Include(o => o.EventType)
                 .Include(o => o.UserSender)
+                .Include(o=> o.Files)
                 .OrderByDescending(o => o.CreatedDate)
                 .ToListAsync();
             return Ok(ApiResult.Success(items));
@@ -173,6 +174,7 @@ namespace ComService.Boudaries.Controllers
                 .Take(filterDTO.PageSize)
                 .Include(o => o.EventType)
                 .Include(o => o.UserSender)
+                .Include(o => o.Files)
                 .ToListAsync();
             return Ok(ApiResult.Success(items));
         }
