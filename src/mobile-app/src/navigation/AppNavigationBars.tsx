@@ -61,7 +61,7 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   return (
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-      <Appbar.Content title="UCOM" />
+      <Appbar.Content title="UCOM" color='white'/>
 
       {!back ? (
         <Menu

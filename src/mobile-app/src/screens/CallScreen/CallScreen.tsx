@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, View } from 'react-native';
+import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper'
 
 import { useDispatch } from 'react-redux';
@@ -87,7 +87,7 @@ export const CallScreen = () => {
   }, [])
 
   return (
-    <View style={styles.root}>
+    <SafeAreaView style={styles.root}>
 
       <Text>CallScreen</Text>
       <Button mode="contained"
@@ -111,7 +111,7 @@ export const CallScreen = () => {
           />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   )
 }
 
