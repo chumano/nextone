@@ -64,11 +64,13 @@ namespace ComService.Boudaries.Controllers
                     {
                         UserId = user.UserId,
                         Token = registerTokenDTO.Token,
+                        OS = registerTokenDTO.Os,
                         Date = DateTime.Now
                     });
                 }
                 else
                 {
+                    userToken.OS = registerTokenDTO.Os;
                     userToken.Date = DateTime.Now;
                     _comDbContext.UserDeviceTokens.Update(userToken);
                 }

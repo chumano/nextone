@@ -8,6 +8,8 @@ import {NativeStackHeaderProps} from '@react-navigation/native-stack';
 import {AppDispatch} from '../stores/app.store';
 
 import {logout} from '../stores/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { notificationApi } from '../apis/notificationApi';
 
 export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
   navigation,
@@ -54,7 +56,13 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
     navigation.navigate('ProfileScreen');
   };
 
-  const logoutHandler = () => {
+  const logoutHandler = async () => {
+    let fcmToken = await AsyncStorage.getItem('fcmToken');
+    if(fcmToken){
+      const response = await notificationApi.removeToken(fcmToken);
+      console.log('removeToken: ', response)
+      await AsyncStorage.removeItem('fcmToken');
+    }
     dispatch(logout());
   };
 

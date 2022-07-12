@@ -6,6 +6,7 @@ namespace ComService.Domain
     {
         public string UserId { get; set; }
         public string Token { get; set; }
+        public string OS { get; set; }
 
         public DateTime Date { get; set; }
     }

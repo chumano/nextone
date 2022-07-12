@@ -17,6 +17,7 @@ import {callActions} from './stores/call/callReducer';
 import {LOCATION, setupLocationWatch} from './utils/location.utils';
 import {startSendHeartBeat, stopSendHeartBeat} from './utils/internet.utils';
 import {conversationApi} from './apis';
+import { notificationApi } from './apis/notificationApi';
 
 const registerAppWithFCM = async () => {
   if (Platform.OS === 'ios') {
@@ -106,7 +107,9 @@ async function getFCMToken() {
       await AsyncStorage.setItem('fcmToken', fcmToken);
     }
   }
+
   console.log('token = ', fcmToken);
+  return [fcmToken, undefined];
 }
 
 const signalRService = new SignalRService();
@@ -117,32 +120,42 @@ const RootApp = () => {
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   useEffect(() => {
-    const initNotificaiton = async () => {
+    const initNotification = async () => {
+      console.log('initNotification')
       const enabled = await requestUserPermission();
-      if (enabled) {
-        await getFCMToken();
+      if (!enabled) {
+        return;
       }
+
+      const [token, oldToken] = await getFCMToken();
+
+      if(!token) {
+        return;
+      }
+      const response = await notificationApi.registerToken(token, oldToken);
+      console.log('registerToken: ', response)
     };
 
-    initNotificaiton();
+    initNotification();
+
     //foreground
     const unsubscribe = messaging().onMessage(async remoteMessage => {
       console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      notifee.displayNotification({
-        body: 'This message was sent via FCM!',
-        android: {
-          channelId: 'default',
-          actions: [
-            {
-              title: 'Mark as Read',
-              pressAction: {
-                id: 'read',
-              },
-            },
-          ],
-        },
-      });
-      return;
+      // notifee.displayNotification({
+      //   body: 'This message was sent via FCM!',
+      //   android: {
+      //     channelId: 'default',
+      //     actions: [
+      //       {
+      //         title: 'Mark as Read',
+      //         pressAction: {
+      //           id: 'read',
+      //         },
+      //       },
+      //     ],
+      //   },
+      // });
+      // return;
       let uuid = uuidv4();
       RNCallKeep.displayIncomingCall(
         uuid,

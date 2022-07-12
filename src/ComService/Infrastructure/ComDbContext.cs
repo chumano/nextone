@@ -427,6 +427,9 @@ namespace ComService.Infrastructure
                     .HasColumnType("nvarchar(255)")
                     .IsRequired();
 
+                eb.Property(o => o.OS)
+                 .HasColumnType("nvarchar(255)");
+
                 eb.Property(o => o.Date)
                     .HasColumnType("datetime");
 
