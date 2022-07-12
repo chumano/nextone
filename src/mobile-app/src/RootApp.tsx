@@ -100,16 +100,26 @@ async function requestUserPermission() {
 
 async function getFCMToken() {
   let fcmToken = await AsyncStorage.getItem('fcmToken');
+  let hasNewToken = false;
   if (!fcmToken) {
     fcmToken = await firebase.messaging().getToken();
     if (fcmToken) {
+      hasNewToken = true;
       // user has a device token
       await AsyncStorage.setItem('fcmToken', fcmToken);
     }
   }
 
-  console.log('token = ', fcmToken);
-  return [fcmToken, undefined];
+  console.log('getFCMToken = ', {
+    hasNewToken,
+    token: fcmToken, 
+    oldToken: undefined
+  });
+  return {
+    hasNewToken,
+    token: fcmToken, 
+    oldToken: undefined
+  };
 }
 
 const signalRService = new SignalRService();
@@ -127,9 +137,9 @@ const RootApp = () => {
         return;
       }
 
-      const [token, oldToken] = await getFCMToken();
+      const {token, oldToken, hasNewToken} = await getFCMToken();
 
-      if(!token) {
+      if(!token || !hasNewToken) {
         return;
       }
       const response = await notificationApi.registerToken(token, oldToken);
