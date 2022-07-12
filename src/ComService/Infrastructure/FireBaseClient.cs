@@ -47,11 +47,19 @@ namespace ComService.Infrastructure
 
         public async Task SendMessage(IList<string> tokens, MulticastMessage message)
         {
-
+            _logger.LogInformation("FileBaseClient- SendMessage-Tokens: "
+                    + string.Join(",", tokens)
+                    + JsonConvert.SerializeObject(message));
             var listTokenEnumerable = tokens.ToList().SplitList(_sendBatchMessageNumber);
+            _logger.LogInformation("FileBaseClient- SendMessage-Count: " + listTokenEnumerable.Count());
             foreach (var list in listTokenEnumerable)
             {
                 message.Tokens = list;
+
+
+                _logger.LogInformation("FileBaseClient- SendMessage: "
+                    + string.Join(",", list)
+                    + JsonConvert.SerializeObject(message));
                 await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
             }
         }

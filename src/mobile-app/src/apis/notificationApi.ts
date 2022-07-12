@@ -21,5 +21,13 @@ export const notificationApi = {
             token
         }
         return await handleAxiosApi<ApiResponse<undefined>>(axiosInstance.post('/notification/RemoveToken', data));
+    },
+
+    testCall : async (userId: string, callType: string ='voice')=>{
+        const data = {
+            receiverId: userId,
+            callType
+        }
+        return await handleAxiosApi<ApiResponse<undefined>>(axiosInstance.post('/notification/call', data));
     }
 }

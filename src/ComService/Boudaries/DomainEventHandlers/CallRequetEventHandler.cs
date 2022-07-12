@@ -5,6 +5,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Threading;
@@ -44,17 +45,22 @@ namespace ComService.Boudaries.DomainEventHandlers
 
                     var message = new CloudMessage()
                     {
-                        IsNotification = false,
+                        IsNotification = true,
+                        Title = "Call Request",
+                        Body = "Có cuộc gọi",
                         Data = new System.Collections.Generic.Dictionary<string, string>
                         {
                             { "Type",  "Call" },
                             { "ConversationId" , notification.ConversationId },
                             { "SenderId" , senderUser.UserId },
                             { "SenderName" , senderUser.UserName },
-                            { "SenderId", notification.CallType }
+                            { "CallType", notification.CallType }
                             
                         }
                     };
+
+                    _logger.LogInformation("_cloudService.SendMessage : " + string.Join(",", userTokens)
+                        + "." + JsonConvert.SerializeObject(message));
                     await _cloudService.SendMessage(userTokens, message);
                 }
             }catch(Exception ex)
