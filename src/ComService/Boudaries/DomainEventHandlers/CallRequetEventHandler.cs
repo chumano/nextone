@@ -50,11 +50,11 @@ namespace ComService.Boudaries.DomainEventHandlers
                         Body = "Có cuộc gọi",
                         Data = new System.Collections.Generic.Dictionary<string, string>
                         {
-                            { "Type",  "Call" },
-                            { "ConversationId" , notification.ConversationId },
-                            { "SenderId" , senderUser.UserId },
-                            { "SenderName" , senderUser.UserName },
-                            { "CallType", notification.CallType }
+                            { "type",  "call" },
+                            { "conversationId" , notification.ConversationId },
+                            { "senderId" , senderUser.UserId },
+                            { "senderName" , senderUser.UserName },
+                            { "callType", notification.CallType }
                             
                         }
                     };

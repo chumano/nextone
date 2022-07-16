@@ -40,15 +40,20 @@ namespace ComService.Infrastructure
                         Title = message.Title,
                         Body = message.Body
                     }: null ,
-                Android = new AndroidConfig()
+                
+            };
+
+            if (message.IsNotification)
+            {
+                fbmessage.Android = new AndroidConfig()
                 {
                     Priority = Priority.High,
                     Notification = new AndroidNotification()
                     {
                         ClickAction = "FLUTTER_NOTIFICATION_CLICK",
                     }
-                },
-                Apns = new ApnsConfig()
+                };
+                fbmessage.Apns = new ApnsConfig()
                 {
                     Aps = new Aps()
                     {
@@ -56,8 +61,8 @@ namespace ComService.Infrastructure
                         Sound = "default",
                         Category = "NEW_MESSAGE_CATEGORY"
                     }
-                }
-            };
+                };
+            }
 
             return fbmessage;
         }

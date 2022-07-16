@@ -38,6 +38,8 @@ namespace ComService.Infrastructure
                 {
                     Credential = GoogleCredential.FromJson(filekeyjson)
                 });
+
+                var defaultAuth = FirebaseAuth.DefaultInstance;
             }
             catch (Exception ex)
             {
@@ -60,7 +62,11 @@ namespace ComService.Infrastructure
                 _logger.LogInformation("FileBaseClient- SendMessage: "
                     + string.Join(",", list)
                     + JsonConvert.SerializeObject(message));
-                await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+                var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+                if(response.FailureCount > 0)
+                {
+                    _logger.LogError("FileBaseClient- SendMessage: " + JsonConvert.SerializeObject(response.Responses));
+                }
             }
         }
 

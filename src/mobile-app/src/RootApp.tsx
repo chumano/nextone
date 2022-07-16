@@ -6,18 +6,20 @@ import {ChatData} from './stores/conversation/conversation.payloads';
 import {useDispatch} from 'react-redux';
 import {AppDispatch} from './stores/app.store';
 import {conversationActions} from './stores/conversation';
-import {SignalRService} from './services';
+import signalRService from './services/SignalRService';
 import messaging, {firebase} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNCallKeep from 'react-native-callkeep';
 import {v4 as uuidv4} from 'uuid';
 import notifee from '@notifee/react-native';
+import CallService from './services/CallService';
 
 import {callActions} from './stores/call/callReducer';
 import {LOCATION, setupLocationWatch} from './utils/location.utils';
 import {startSendHeartBeat, stopSendHeartBeat} from './utils/internet.utils';
 import {conversationApi} from './apis';
 import { notificationApi } from './apis/notificationApi';
+import { CallMessageData } from './types/CallMessageData';
 
 const registerAppWithFCM = async () => {
   if (Platform.OS === 'ios') {
@@ -50,37 +52,30 @@ const options = {
 };
 
 RNCallKeep.setup(options).then(accepted => {
-  console.log('RNCallKeep', accepted);
+  console.log('RNCallKeep setup: ', accepted);
 });
 
 // Register background handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('Message handled in the background!', remoteMessage);
-  // notifee.displayNotification({
-  //   body: 'This message was sent via FCM!',
-  //   android: {
-  //     channelId: 'default',
-  //     actions: [
-  //       {
-  //         title: 'Mark as Read',
-  //         pressAction: {
-  //           id: 'read',
-  //         },
-  //       },
-  //     ],
-  //   },
-  // });
-  // return;
+  console.log(`[${new Date()}] ` +'Message handled in the background!', remoteMessage);
+
+  const message : CallMessageData = remoteMessage.data as any;
+  if(message.type != 'call')
+  {
+    return;
+  }
 
   let uuid = uuidv4();
   RNCallKeep.displayIncomingCall(
     uuid,
-    'payload.caller_name',
-    'Incoming Call from ...',
+    message.senderName,
+    `Có cuộc gọi đới từ ${message.senderName}`,
     'generic',
-    true,
+    message.callType === 'video',
     {},
   );
+
+  CallService.storeCallInfo(uuid, message);
 });
 
 async function requestUserPermission() {
@@ -122,7 +117,6 @@ async function getFCMToken() {
   };
 }
 
-const signalRService = new SignalRService();
 
 const RootApp = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -150,31 +144,23 @@ const RootApp = () => {
 
     //foreground
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      // notifee.displayNotification({
-      //   body: 'This message was sent via FCM!',
-      //   android: {
-      //     channelId: 'default',
-      //     actions: [
-      //       {
-      //         title: 'Mark as Read',
-      //         pressAction: {
-      //           id: 'read',
-      //         },
-      //       },
-      //     ],
-      //   },
-      // });
-      // return;
+      console.log(`[${new Date()}] ` +'A new FCM message arrived!', JSON.stringify(remoteMessage));
+      const message : CallMessageData = remoteMessage.data as any;
+      if(message.type != 'call')
+      {
+        return;
+      }
+      
       let uuid = uuidv4();
       RNCallKeep.displayIncomingCall(
         uuid,
-        'payload.caller_name',
-        'Incoming Call from ...',
+        message.senderName,
+        `Có cuộc gọi đới từ ${message.senderName}`,
         'generic',
-        true,
+        message.callType === 'video',
         {},
       );
+      CallService.storeCallInfo(uuid, message);
     });
     return unsubscribe;
   }, []);
@@ -184,12 +170,16 @@ const RootApp = () => {
     const {callUUID} = data;
     RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
 
-    await Linking.openURL('ucom://');
+    //await Linking.openURL('ucom://');
     //Show App Call Screen
-    dispatch(callActions.call('voice'));
-    // setTimeout(() => {
-    //   RNCallKeep.setCurrentCallActive(callUUID);
-    // }, 1000);
+    const callInfo = CallService.getCallInfo(callUUID);
+    if(callInfo){
+      CallService.clearCallInfo(callUUID);
+      dispatch(callActions.call({
+        callInfo: callInfo
+      }));
+    }
+    
   };
 
   const endCall = (data: any) => {
