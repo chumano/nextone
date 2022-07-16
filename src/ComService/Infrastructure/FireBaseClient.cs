@@ -38,6 +38,8 @@ namespace ComService.Infrastructure
                 {
                     Credential = GoogleCredential.FromJson(filekeyjson)
                 });
+
+                var defaultAuth = FirebaseAuth.DefaultInstance;
             }
             catch (Exception ex)
             {
@@ -47,12 +49,24 @@ namespace ComService.Infrastructure
 
         public async Task SendMessage(IList<string> tokens, MulticastMessage message)
         {
-
+            _logger.LogInformation("FileBaseClient- SendMessage-Tokens: "
+                    + string.Join(",", tokens)
+                    + JsonConvert.SerializeObject(message));
             var listTokenEnumerable = tokens.ToList().SplitList(_sendBatchMessageNumber);
+            _logger.LogInformation("FileBaseClient- SendMessage-Count: " + listTokenEnumerable.Count());
             foreach (var list in listTokenEnumerable)
             {
                 message.Tokens = list;
-                await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+
+
+                _logger.LogInformation("FileBaseClient- SendMessage: "
+                    + string.Join(",", list)
+                    + JsonConvert.SerializeObject(message));
+                var response = await FirebaseMessaging.DefaultInstance.SendMulticastAsync(message);
+                if(response.FailureCount > 0)
+                {
+                    _logger.LogError("FileBaseClient- SendMessage: " + JsonConvert.SerializeObject(response.Responses));
+                }
             }
         }
 

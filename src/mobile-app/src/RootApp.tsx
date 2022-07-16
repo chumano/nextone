@@ -1,22 +1,34 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
-import { AppState, Linking, Platform } from 'react-native';
-import { ChatData } from './stores/conversation/conversation.payloads';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from './stores/app.store';
-import { conversationActions } from './stores/conversation';
-import { SignalRService } from './services';
-import messaging, { firebase } from '@react-native-firebase/messaging';
+import {AppState, Linking, Platform} from 'react-native';
+import {ChatData} from './stores/conversation/conversation.payloads';
+import {useDispatch} from 'react-redux';
+import {AppDispatch} from './stores/app.store';
+import {conversationActions} from './stores/conversation';
+import signalRService from './services/SignalRService';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNCallKeep from 'react-native-callkeep';
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 import notifee from '@notifee/react-native';
+import CallService from './services/CallService';
 
-import { callActions } from './stores/call/callReducer';
-import { LOCATION, setupLocationWatch } from './utils/location.utils';
-import { startSendHeartBeat, stopSendHeartBeat } from './utils/internet.utils';
-import { conversationApi } from './apis';
+import {callActions} from './stores/call/callReducer';
+import {LOCATION, setupLocationWatch} from './utils/location.utils';
+import {startSendHeartBeat, stopSendHeartBeat} from './utils/internet.utils';
+import {conversationApi} from './apis';
+import { notificationApi } from './apis/notificationApi';
+import { CallMessageData } from './types/CallMessageData';
+
+const registerAppWithFCM = async () => {
+  if (Platform.OS === 'ios') {
+    await messaging().registerDeviceForRemoteMessages();
+    await messaging().setAutoInitEnabled(true);
+  }
+};
+
+// registerAppWithFCM();
 
 const options = {
   ios: {
@@ -35,50 +47,44 @@ const options = {
       channelName: 'Foreground service for my app',
       notificationTitle: 'My app is running on background',
       notificationIcon: 'Path to the resource icon of the notification',
-    }, 
-  }
+    },
+  },
 };
 
 RNCallKeep.setup(options).then(accepted => {
-  console.log('RNCallKeep', accepted)
+  console.log('RNCallKeep setup: ', accepted);
 });
 
 // Register background handler
 messaging().setBackgroundMessageHandler(async remoteMessage => {
-  console.log('Message handled in the background!', remoteMessage);
-  // notifee.displayNotification({
-  //   body: 'This message was sent via FCM!',
-  //   android: {
-  //     channelId: 'default',
-  //     actions: [
-  //       {
-  //         title: 'Mark as Read',
-  //         pressAction: {
-  //           id: 'read',
-  //         },
-  //       },
-  //     ],
-  //   },
-  // });
-  // return;
+  console.log(`[${new Date()}] ` +'Message handled in the background!', remoteMessage);
+
+  const message : CallMessageData = remoteMessage.data as any;
+  if(message.type != 'call')
+  {
+    return;
+  }
 
   let uuid = uuidv4();
   RNCallKeep.displayIncomingCall(
     uuid,
-    'payload.caller_name',
-    'Incoming Call from ...' ,
+    message.senderName,
+    `Có cuộc gọi đới từ ${message.senderName}`,
     'generic',
-    true,
-    {}
+    message.callType === 'video',
+    {},
   );
-});
 
+  CallService.storeCallInfo(uuid, message);
+});
 
 async function requestUserPermission() {
   const authStatus = await messaging().requestPermission();
   const enabled =
     authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+  // await registerAppWithFCM();
 
   if (enabled) {
     console.log('Authorization status:', authStatus);
@@ -89,76 +95,91 @@ async function requestUserPermission() {
 
 async function getFCMToken() {
   let fcmToken = await AsyncStorage.getItem('fcmToken');
+  let hasNewToken = false;
   if (!fcmToken) {
     fcmToken = await firebase.messaging().getToken();
     if (fcmToken) {
+      hasNewToken = true;
       // user has a device token
       await AsyncStorage.setItem('fcmToken', fcmToken);
     }
   }
-  console.log('token = ', fcmToken);
+
+  console.log('getFCMToken = ', {
+    hasNewToken,
+    token: fcmToken, 
+    oldToken: undefined
+  });
+  return {
+    hasNewToken,
+    token: fcmToken, 
+    oldToken: undefined
+  };
 }
 
-const signalRService = new SignalRService();
 
 const RootApp = () => {
   const dispatch: AppDispatch = useDispatch();
   const appState = useRef(AppState.currentState);
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
-
   useEffect(() => {
-    const initNotificaiton = async () => {
+    const initNotification = async () => {
+      console.log('initNotification')
       const enabled = await requestUserPermission();
-      if (enabled) {
-        await getFCMToken();
+      if (!enabled) {
+        return;
       }
-    }
 
-    initNotificaiton();
+      const {token, oldToken, hasNewToken} = await getFCMToken();
+
+      if(!token || !hasNewToken) {
+        return;
+      }
+      const response = await notificationApi.registerToken(token, oldToken);
+      console.log('registerToken: ', response)
+    };
+
+    initNotification();
+
     //foreground
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('A new FCM message arrived!', JSON.stringify(remoteMessage));
-      notifee.displayNotification({
-        body: 'This message was sent via FCM!',
-        android: {
-          channelId: 'default',
-          actions: [
-            {
-              title: 'Mark as Read',
-              pressAction: {
-                id: 'read',
-              },
-            },
-          ],
-        },
-      });
-      return;
+      console.log(`[${new Date()}] ` +'A new FCM message arrived!', JSON.stringify(remoteMessage));
+      const message : CallMessageData = remoteMessage.data as any;
+      if(message.type != 'call')
+      {
+        return;
+      }
+      
       let uuid = uuidv4();
       RNCallKeep.displayIncomingCall(
         uuid,
-        'payload.caller_name',
-        'Incoming Call from ...',
+        message.senderName,
+        `Có cuộc gọi đới từ ${message.senderName}`,
         'generic',
-        true,
-        {}
+        message.callType === 'video',
+        {},
       );
+      CallService.storeCallInfo(uuid, message);
     });
     return unsubscribe;
-
-  }, [])
+  }, []);
 
   const answerCall = async (data: any) => {
     console.log(`[answerCall]: `, data);
     const {callUUID} = data;
     RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
 
-    await Linking.openURL('ucom://')
+    //await Linking.openURL('ucom://');
     //Show App Call Screen
-    dispatch(callActions.call('voice'));
-    // setTimeout(() => {
-    //   RNCallKeep.setCurrentCallActive(callUUID);
-    // }, 1000);
+    const callInfo = CallService.getCallInfo(callUUID);
+    if(callInfo){
+      CallService.clearCallInfo(callUUID);
+      dispatch(callActions.call({
+        callInfo: callInfo
+      }));
+    }
+    
   };
 
   const endCall = (data: any) => {
@@ -171,27 +192,27 @@ const RootApp = () => {
     RNCallKeep.addEventListener('endCall', endCall);
 
     return () => {
-      RNCallKeep.removeEventListener('answerCall', answerCall);
-      RNCallKeep.removeEventListener('endCall', endCall);
+      (RNCallKeep as any).removeEventListener('answerCall', answerCall);
+      (RNCallKeep as any).removeEventListener('endCall', endCall);
     }
   }, []);
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", nextAppState => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
       if (
         appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
+        nextAppState === 'active'
       ) {
-        console.log("App has come to the foreground!");
+        console.log('App has come to the foreground!');
       }
 
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
-      console.log("AppState", appState.current);
+      console.log('AppState', appState.current);
     });
 
     return () => {
-      console.log("RootApp unmounted")
+      console.log('RootApp unmounted');
       subscription.remove();
     };
   }, []);
@@ -203,44 +224,47 @@ const RootApp = () => {
       } else {
         await signalRService.disconnectHub();
       }
-    }
+    };
 
     connect();
-  }, [appStateVisible])
+  }, [appStateVisible]);
 
   useEffect(() => {
-    const subscription = signalRService.subscription("chat", (data: ChatData) => {
-      console.log('[chat]', data)
-      dispatch(conversationActions.receiveChatData(data))
-    });
+    const subscription = signalRService.subscription(
+      'chat',
+      (data: ChatData) => {
+        console.log('[chat]', data);
+        dispatch(conversationActions.receiveChatData(data));
+      },
+    );
     return () => {
       subscription.unsubscribe();
-    }
-  }, [])
+    };
+  }, []);
 
   useEffect(() => {
-    setupLocationWatch((newLatLng) => {
-      console.log('setupLocationWatch', newLatLng)
+    setupLocationWatch(newLatLng => {
+      console.log('setupLocationWatch', newLatLng);
     });
-    startSendHeartBeat(async ()=>{
+    startSendHeartBeat(async () => {
       const locationString = await AsyncStorage.getItem(LOCATION);
-      console.log('startSendHeartBeat', {locationString})
+      console.log('startSendHeartBeat', {locationString});
       if (locationString) {
-        const location: { lat: number; lon: number } = JSON.parse( locationString  );
+        const location: {lat: number; lon: number} = JSON.parse(locationString);
         conversationApi.updateMyStatus({
-            lat: location.lat,
-            lon: location.lon
-        })
-      } else{
-        conversationApi.updateMyStatus({})
+          lat: location.lat,
+          lon: location.lon,
+        });
+      } else {
+        conversationApi.updateMyStatus({});
       }
     });
-    return ()=>{
-      console.log('stopSendHeartBeat')
+    return () => {
+      console.log('stopSendHeartBeat');
       stopSendHeartBeat();
-    }
+    };
   }, []);
-  
+
   return (
     <>
       <BottomTabNavigator />

@@ -47,7 +47,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
         }
     }, [conversation])
 
-    const onCall = useCallback(async (callType: 'video' | 'voice') => {
+    const showDeviceSetting = ()=>{
         //TODO: show Modal select devices
         // if (!deviceSettings) {
         //     dispatch(callActions.prepareCall({
@@ -56,8 +56,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
         //     }));
         //     dispatch(callActions.showModal({ modal: 'device', visible: true }));
         // } else
+    }
 
-        //TODO: check devices first
+    const onCall = useCallback(async (callType: 'video' | 'voice') => {
+        
         const devices = await deviceManager.enumerateDevices();
         const videoInputs = devices.filter(o => o.type == 'videoinput');
         const audioInputs = devices.filter(o => o.type == 'audioinput');

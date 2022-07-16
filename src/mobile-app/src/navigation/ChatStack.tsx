@@ -90,7 +90,7 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
       <Stack.Screen name="ChatScreen" component={ChatScreen}
         options={({ route, navigation }) => {
           console.log('[ChatScreen]route.params', route.params);
-          const { name, conversationType } = route.params;
+          const { conversationId, name, conversationType } = route.params;
           return {
             title: name,
             headerRight: ( ) => {
@@ -98,13 +98,29 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
                 {conversationType === ConversationType.Peer2Peer &&
                   <>
                     <TouchableOpacity onPress={()=>{
-                      dispatch(callActions.call('voice'));
+                      dispatch(callActions.call({
+                        callInfo: {
+                          type: 'call',
+                          senderId: '',
+                          senderName: '',
+                          conversationId: conversationId,
+                          callType: 'voice'
+                        }
+                      }));
                     }}>
                       <AwesomeIcon name='phone' size={32} color={'#000'} />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={{ marginLeft: 20 }} onPress={()=>{
-                      dispatch(callActions.call('video'));
+                      dispatch(callActions.call({
+                        callInfo: {
+                          type: 'call',
+                          senderId: '',
+                          senderName: '',
+                          conversationId: conversationId,
+                          callType: 'video'
+                        }
+                      }));
                     }}>
                       <AwesomeIcon name='video' size={32} color={'#000'} />
                     </TouchableOpacity>

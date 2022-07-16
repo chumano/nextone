@@ -88,3 +88,8 @@ export class SignalRService {
     }
   
   }
+
+  
+const signalRService = new SignalRService();
+
+export default signalRService;

@@ -4,6 +4,7 @@
     {
         public string OldToken { get; set; }
         public string Token { get; set; }
+        public string Os { get; set; } //OS
         public string Topic { get; set; }
     }
     public class RemoveTokenDTO
