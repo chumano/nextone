@@ -172,6 +172,9 @@ const RootApp = () => {
 
     //await Linking.openURL('ucom://');
     //Show App Call Screen
+    RNCallKeep.backToForeground();
+
+    //TODO: if in locked , open key board to unlock phone
     const callInfo = CallService.getCallInfo(callUUID);
     if(callInfo){
       CallService.clearCallInfo(callUUID);
