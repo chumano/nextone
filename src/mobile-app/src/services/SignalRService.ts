@@ -31,22 +31,27 @@ export class SignalRService {
     }
   
     connectHub = async () => {
-      if (this.isConnected()) {
-        console.log(`[Hub] connectHub isConnected`)
-        return;
+      try{
+        if (!this.isDisconnected()) {
+          console.log(`[Hub] connectHub isConnected/Connecting`)
+          return;
+        }
+        await this.connection.start();
+    
+        this.onConnected();
+        const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
+        if (userTokenInfoString) {
+          const userTokenInfoResponse = qs.parse(
+            userTokenInfoString,
+          ) as unknown as UserTokenInfoResponse;
+          const accessToken = userTokenInfoResponse.access_token;
+          const hubRegisterResult = await this.connection.invoke('register',accessToken);
+          console.log('[Hub] registerResult', hubRegisterResult)
+        }
+      }catch(err){
+        console.error('connectHub', err)
       }
-      await this.connection.start();
-  
-      this.onConnected();
-      const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
-      if (userTokenInfoString) {
-        const userTokenInfoResponse = qs.parse(
-          userTokenInfoString,
-        ) as unknown as UserTokenInfoResponse;
-        const accessToken = userTokenInfoResponse.access_token;
-        const hubRegisterResult = await this.connection.invoke('register',accessToken);
-        console.log('[Hub] registerResult', hubRegisterResult)
-      }
+      
     }
   
     disconnectHub = async () => {
@@ -82,14 +87,17 @@ export class SignalRService {
       }
    }
   
+    isDisconnected() :boolean{
+      return  this.connection.state == signalR.HubConnectionState.Disconnected;
+    }
+
     isConnected(): boolean {
       if (!this.connection)
         return false;
   
-      return this.connection.state === signalR.HubConnectionState.Connected
-        || this.connection.state === signalR.HubConnectionState.Connecting
-        || this.connection.state === signalR.HubConnectionState.Reconnecting;
+      return this.connection.state === signalR.HubConnectionState.Connected;
     }
+
     private onConnected(){
       this.onEvent('connected', true);
     }

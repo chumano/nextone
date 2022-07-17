@@ -32,7 +32,7 @@ const registerAppWithFCM = async () => {
 
 const options = {
   ios: {
-    appName: 'My app name',
+    appName: 'UCOM',
   },
   android: {
     alertTitle: 'Permissions required',
@@ -44,8 +44,8 @@ const options = {
     // Required to get audio in background when using Android 11
     foregroundService: {
       channelId: 'com.ucom',
-      channelName: 'Foreground service for my app',
-      notificationTitle: 'My app is running on background',
+      channelName: 'Foreground service for UCOM',
+      notificationTitle: 'UCOM is running on background',
       notificationIcon: 'Path to the resource icon of the notification',
     },
   },
@@ -166,21 +166,25 @@ const RootApp = () => {
   }, []);
 
   const answerCall = async (data: any) => {
-    console.log(`[answerCall]: `, data);
-    const {callUUID} = data;
-    RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
+    try{
+      console.log(`[answerCall]: `, data);
+      const {callUUID} = data;
+      RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
 
-    //await Linking.openURL('ucom://');
-    //Show App Call Screen
-    RNCallKeep.backToForeground();
+      //await Linking.openURL('ucom://');
+      //Show App Call Screen
+      RNCallKeep.backToForeground();
 
-    //TODO: if in locked , open key board to unlock phone
-    const callInfo = CallService.getCallInfo(callUUID);
-    if(callInfo){
-      CallService.clearCallInfo(callUUID);
-      dispatch(callActions.call({
-        callInfo: callInfo
-      }));
+      //TODO: if in locked , open key board to unlock phone
+      const callInfo = CallService.getCallInfo(callUUID);
+      if(callInfo){
+        CallService.clearCallInfo(callUUID);
+        dispatch(callActions.call({
+          callInfo: callInfo
+        }));
+      }
+    }catch(err){
+      console.error(`[answerCall]: `, err);
     }
     
   };

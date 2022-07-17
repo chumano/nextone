@@ -200,7 +200,7 @@ export abstract class CallBase {
                     });
                 }
             } else if (this.peerConnection?.iceConnectionState === 'disconnected') {
-                this.onEvent(CallEvents.CONNECTION_DISCONECTED)
+                //this.onEvent(CallEvents.CONNECTION_DISCONECTED)
             }
         }
 
