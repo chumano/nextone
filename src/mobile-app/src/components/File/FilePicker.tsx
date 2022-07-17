@@ -33,7 +33,7 @@ interface Props {
 
 
 const MAXIMUM_NUMBER_OF_FILES = 3;
-export const MAXIMUM_UPLOAD_SIZE = 50_000_000;
+export const MAXIMUM_UPLOAD_SIZE = 50000000;
 
 
 export const getMediaType = (fileType: string) => {
