@@ -17,16 +17,15 @@ export class SignalRService {
     private init() {
       this.connection.onreconnected((connectionid) => {
         console.log(`[Hub] onreconnected: ${connectionid}`)
+        this.onConnected();
       })
-      this.connection.onreconnected((connectionid) => {
-        console.log(`[Hub] onreconnected: ${connectionid}`)
-      })
+
       this.connection.onclose((error) => {
         console.log(`[Hub] onClose:`, error)
       })
   
       this.connection.on("data", (message: { eventKey: string, eventData: any }) => {
-        console.log("[Hub] receive data", message)
+        //console.log("[Hub] receive data", message)
         this.onEvent(message.eventKey, message.eventData);
       });
     }
@@ -38,6 +37,7 @@ export class SignalRService {
       }
       await this.connection.start();
   
+      this.onConnected();
       const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
       if (userTokenInfoString) {
         const userTokenInfoResponse = qs.parse(
@@ -53,6 +53,10 @@ export class SignalRService {
       if (this.connection) {
         this.connection.stop();
       }
+    }
+
+    invoke(action: string, data: any): Promise<any> {
+      return this.connection!.invoke('sendCallMessage', action, data);
     }
   
     subscription  = (eventName:string , func : (data:any)=>void )=>{
@@ -86,7 +90,9 @@ export class SignalRService {
         || this.connection.state === signalR.HubConnectionState.Connecting
         || this.connection.state === signalR.HubConnectionState.Reconnecting;
     }
-  
+    private onConnected(){
+      this.onEvent('connected', true);
+    }
   }
 
   

@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { callActions } from '../../stores/call/callReducer';
-import CallService, { CallMessage, CallSignalingEvents } from '../../services/CallService';
+import CallService, { CallMessage, CallSignalingActions, CallSignalingEvents } from '../../services/CallService';
 
 //https://medium.com/@skyrockets/react-native-webrtc-video-calling-mobile-application-26223bf87f0d
 
@@ -22,82 +22,139 @@ import { IAppStore } from '../../stores/app.store';
 import { CallMessageData } from '../../types/CallMessageData';
 import Loading from '../../components/Loading';
 import signalRService from '../../services/SignalRService';
-import { ChatData } from '../../stores/conversation/conversation.payloads';
 
 //https://blog.logrocket.com/creating-rn-video-calling-app-react-native-webrtc/
+
+const iceServers = { //change the config as you need{
+   iceServers: [
+      {
+        urls: [
+          'stun:stun.l.google.com:19302',
+          'stun:stun1.l.google.com:19302',
+          'stun:stun2.l.google.com:19302',
+        ],
+      },
+    ],
+    iceCandidatePoolSize: 10,
+};
 export const CallScreen = () => {
   const dispatch = useDispatch();
   const { callInfo } = useSelector((store: IAppStore) => store.call);
+  const [ isConnected, setConnected] = useState(false);
   const [calling, setCalling] = useState(false);
   // Video Scrs
-  const [localStream, setLocalStream] = useState({ toURL: () => null });
-  const [remoteStream, setRemoteStream] = useState({ toURL: () => null });
+  const [localStream, setLocalStream] = useState<MediaStream>();
+  const [remoteStream, setRemoteStream] = useState<MediaStream>();
+  const [webcamStarted, setWebcamStarted] = useState(false);
+  const peerConnectionRef = useRef<RTCPeerConnection>();
 
-  const [peerConnection, setPeerConnection] = useState(
-    //change the config as you need
-    new RTCPeerConnection({
-      iceServers: [
-        {
-          urls: 'stun:stun.l.google.com:19302',
-        }, {
-          urls: 'stun:stun1.l.google.com:19302',
-        }, {
-          urls: 'stun:stun2.l.google.com:19302',
-        }
+  const hangup = () => {
+    console.log('hangup');
+    //clear something
+    if (peerConnectionRef.current) {
+      peerConnectionRef.current.close();
+      peerConnectionRef.current = undefined;
+    }
 
-      ],
-    }),
-  );
+    if (localStream && localStream.active) {
+      localStream.getTracks().forEach((track) => { track.stop(); });
+    }
+    if (remoteStream && remoteStream.active) {
+      remoteStream.getTracks().forEach((track) => { track.stop(); });
+    }
+  }
+  useEffect(() => {
+    const subscription = signalRService.subscription(
+      'connected',
+      (data: any) => {
+        console.log('[signalRService connected]', data);
+        setConnected(true);
+      },
+    );
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     const subscription = signalRService.subscription(
       CallSignalingEvents.CALL_MESSAGE,
-      (message: CallMessage) => {
-        console.log("[CALL_MESSAGE] receive-"+ message.type, message.data)
+      async (message: CallMessage) => {
+        
         switch (message.type) {
-            //sender
-            case 'call-request-response':
-                const { accepted } = message.data;
-                if (!accepted) {
-                    // this.callSender.hangup();
-                    // this.pubSub.publish(CallEvents.CALL_STOPED);
-                    return;
-                }
-                //this.callSender.sendOffer();
+          //sender
+          case 'call-request-response':
+            const { accepted } = message.data;
+            if (!accepted) {
+              // this.callSender.hangup();
+              // this.pubSub.publish(CallEvents.CALL_STOPED);
+              return;
+            }
+            //create offer then send
+            const sdp = await peerConnectionRef.current!.createOffer(undefined)
+            let finalSdp = sdp as RTCSessionDescription;
 
-                break;
-           
+            peerConnectionRef.current!.setLocalDescription(finalSdp);
+            await signalRService.invoke(
+              CallSignalingActions.SEND_SESSION_DESCRIPTION,
+              {
+                room: callInfo?.conversationId,
+                sdp: finalSdp
+              }
+            );
 
-            //sender + receiver
-            case 'other-session-description':
-                {
-                    const sdp = message.data;
-                    // if (sdp.type === 'answer' && this.isSender) {
-                    //     this.callSender.receiveAnswer(sdp);
-                    // }else if (sdp.type === 'offer' && !this.isSender) {
-                    //     this.callReceiver.receiveOffer(sdp);
-                    // }
-                    break;
-                }
+            break;
 
-            case 'other-ice-candidate':
-                {
-                    const candidateResponse = message.data;
-                    const { label, id, candidate } = message.data;
-                    // if (this.isSender) {
-                    //     this.callSender.addIceCandidate(candidateResponse);
-                    // } else {
-                    //     this.callReceiver.addIceCandidate(candidateResponse);
-                    // }
 
-                    break;
-                }
-            case 'other-hangup':
-                {
-                    // console.log('other-hangup');
-                    // this.stopCall();
-                    break;
-                }
+          //sender + receiver
+          case 'other-session-description':
+            {
+              console.log("[CALL_MESSAGE] receive-" + message.type)
+              const isSender = !!callInfo?.senderId;
+              const sdp = message.data;
+              if (sdp.type === 'answer' && isSender) {
+                peerConnectionRef.current!.setRemoteDescription(new RTCSessionDescription(sdp));
+              } else if (sdp.type === 'offer' && !isSender) {
+
+                peerConnectionRef.current!.setRemoteDescription(new RTCSessionDescription(sdp));
+                const awsSdp = await peerConnectionRef.current!.createAnswer();
+                peerConnectionRef.current!.setLocalDescription(awsSdp as any);
+                await signalRService.invoke(
+                  CallSignalingActions.SEND_SESSION_DESCRIPTION,
+                  {
+                    room: callInfo?.conversationId,
+                    sdp
+                  }
+                );
+              }
+              break;
+            }
+
+          case 'other-ice-candidate':
+            {
+              const isSender = !!callInfo?.senderId;
+              const candidateResponse = message.data;
+              const { label, id, candidate } = message.data;
+              //console.log('Adding ice candidate.', message.data);
+              if (!candidate) {
+                console.log('data.candidate is null');
+                return;
+              }
+              const iceCandidate = new RTCIceCandidate({
+                sdpMLineIndex: label,
+                candidate: candidate
+              });
+              peerConnectionRef.current!.addIceCandidate(iceCandidate);
+
+              break;
+            }
+          case 'other-hangup':
+            {
+              console.log('other-hangup');
+              hangup();
+              dispatch(callActions.stopCall());
+              break;
+            }
         }
       },
     );
@@ -107,10 +164,13 @@ export const CallScreen = () => {
   }, []);
 
   useEffect(() => {
-    if (!callInfo) return;
+    const isConnectedS = signalRService.isConnected();
+    console.log({callInfo, isConnectedS})
+    if (!callInfo || !isConnectedS) return;
 
     const setupCall = async () => {
-      try{
+      console.log('setupCall............', callInfo);
+      try {
         let isFront = true;
         const sourceInfos = await mediaDevices.enumerateDevices() as any[];
         let videoSourceId;
@@ -125,7 +185,7 @@ export const CallScreen = () => {
           }
         }
         console.log({ videoSourceId })
-        const stream = await mediaDevices.getUserMedia({
+        const stream: MediaStream = await mediaDevices.getUserMedia({
           audio: true,
           video: callInfo.callType === 'video' ? {
             mandatory: {
@@ -137,22 +197,75 @@ export const CallScreen = () => {
             optional: videoSourceId ? [{ sourceId: videoSourceId }] : [],
           } : false,
         }) as any;
-  
+
         console.log('Got stream!')
         // Got stream!
         setLocalStream(stream);
-  
-        // setup stream listening
-        peerConnection.addStream(stream);
-      }catch(err){
-        console.log('setCall', err);
+
+        if(peerConnectionRef.current){
+          console.log("close old peerConnectionRef")
+          peerConnectionRef.current.close();
+          peerConnectionRef.current = undefined;
+        }
+
+        peerConnectionRef.current = new RTCPeerConnection(iceServers);
+        if (peerConnectionRef.current) {
+          peerConnectionRef.current.addStream(stream);
+        }
+
+        // Push tracks from local stream to peer connection
+        console.log("localStream-tracks", stream.getTracks())
+        stream.getTracks().forEach(track => {
+          console.log('getLocalStreams', peerConnectionRef.current!.getLocalStreams());
+          peerConnectionRef.current!.getLocalStreams()[0].addTrack(track);
+        });
+
+
+        const remote = new MediaStream(undefined);
+        setRemoteStream(remote);
+
+        // ------setup stream listening-------
+        // Pull tracks from remote stream, add to video stream
+        peerConnectionRef.current.ontrack = (event: any) => {
+          console.log('peerConnectionRef-ontrack', event)
+          event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
+            remote.addTrack(track);
+          });
+        };
+
+        peerConnectionRef.current.onaddstream = (event: any) => {
+          console.log('peerConnectionRef-onaddstream', event)
+          setRemoteStream(event.stream);
+        };
+
+        //send answer if this is receiver
+        if(callInfo.senderId){
+          console.log("send accepted")
+          await signalRService.invoke(
+            CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
+            {
+                room: callInfo.conversationId,
+                accepted: true
+            }
+        );
+        }
+        setWebcamStarted(true);
+        console.log('Success setupCall')
+      } catch (err) {
+        console.log('[Error] setupCall', err);
       }
     }
 
     setupCall();
 
-  }, [callInfo])
+  }, [callInfo,isConnected])
 
+  const stopCall = ()=>{
+    console.log("CallScreen-StopCallButton-onPress")
+    hangup();
+    signalRService.invoke(CallSignalingActions.SEND_HANG_UP,callInfo?.conversationId);
+    dispatch(callActions.stopCall());
+  }
   if (!callInfo) {
     return <SafeAreaView>
       <Loading />
@@ -163,10 +276,7 @@ export const CallScreen = () => {
     <SafeAreaView style={styles.root}>
       <Text>CallScreen</Text>
       <Button mode="contained"
-        onPress={() => {
-          console.log("CallScreen-StopCallButton-onPress")
-          dispatch(callActions.stopCall());
-        }}
+        onPress={stopCall}
       >
         Stop Call : {callInfo.callType}
       </Button>
@@ -174,14 +284,17 @@ export const CallScreen = () => {
       <View style={styles.videoContainer}>
         <View style={[styles.videos, styles.localVideos]}>
           <Text>Your Video</Text>
-          <RTCView streamURL={(localStream.toURL())} style={styles.localVideo} />
+          {
+          <RTCView streamURL={(localStream?.toURL())} style={styles.localVideo} />
+          }
         </View>
         <View style={[styles.videos, styles.remoteVideos]}>
           <Text>Friends Video</Text>
-          <RTCView
-            streamURL={remoteStream.toURL()}
-            style={styles.remoteVideo}
-          />
+          {remoteStream && false &&
+            <RTCView streamURL={remoteStream?.toURL()} style={styles.remoteVideo}
+            />
+          }
+          
         </View>
       </View>
     </SafeAreaView>
