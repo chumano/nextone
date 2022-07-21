@@ -36,9 +36,13 @@ class CallService{
     _callData : {
         [key:string] : CallMessageData
     } = {
-
     }
+
+    _isRinging = false;
+
+
     storeCallInfo(callId: string, data : CallMessageData){
+        this._isRinging = true;
         this._callData[callId] = data;
     }
 
@@ -47,12 +51,21 @@ class CallService{
     }
 
     clearCallInfo(callId?: string){
+        this._isRinging = false;
         if(callId){
             delete this._callData[callId];
         }else{
             this._callData = {}
         }
     }
+
+    get isRinging(){
+        return this._isRinging;
+    }
+
+    isCalling = false;
+
+    isReceiceResponse = false;
 }
 
 const CallServiceInstance = new CallService();

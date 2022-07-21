@@ -18,7 +18,7 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
     const isOwner = user?.profile.sub == message.userSender.userId;
-    console.log('MessageItem rendering...', message.id)
+    console.log('MessageItem rendering...', message)
 
     const displayDate = frowNow(message.sentDate);
     const properties = message.properites;
@@ -50,7 +50,7 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
                     </div>
                     {properties && properties['LOCATION'] &&
                     <div>
-                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(properties['LOCATION']!)}>
+                        Vị trí: <a href='void()' onClick={()=>gotoMapLocation(properties['LOCATION']!)}>
                             [{properties['LOCATION']![0].toFixed(2)}, {properties['LOCATION']![1].toFixed(2)}]
                             </a>
                     </div>

@@ -17,6 +17,7 @@ export const callSlice = createSlice({
         receiveCall: (state, action: PayloadAction<ReceiveCallPayload>) => {
             const {payload} = action;
             state.status = CallStatus.calling;
+            state.callType = payload.callType;
             state.isSender = false;
             state.converstationId = payload.conversationId;
         },

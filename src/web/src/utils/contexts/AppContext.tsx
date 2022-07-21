@@ -62,14 +62,15 @@ const AppContextProvider = (props: IContextProviderProp) => {
             //show user confirm
             const {room,userName, callType} = data;
             sound.play();
-            Modal.confirm({
+            const modal = Modal.confirm({
                 title: 'Có cuộc gọi đến',
                 icon: <QuestionOutlined />,
                 content: `Cuộc gọi từ "${userName}"`,
                 onOk : async ()=> {
                     sound.stop();
                     dispatch(callActions.receiveCall({
-                        conversationId: room
+                        conversationId: room,
+                        callType : callType
                     }))
                     await CallService.acceptCallRequest(room,{
                         audio : {
@@ -87,6 +88,13 @@ const AppContextProvider = (props: IContextProviderProp) => {
                     await CallService.ignoreCallRequest(room);
                 },
             });
+            setTimeout(()=>{
+                //end call
+                sound.stop();
+                if(modal){
+                    modal.destroy();
+                }
+            },15000)
         });
         callrequestSubscription.subscribe();
     },[isCallInit,isHubConnected])

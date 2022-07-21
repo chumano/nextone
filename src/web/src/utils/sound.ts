@@ -14,8 +14,7 @@ class Sound {
                 })
                 .catch((error) => {
                     // Autoplay was prevented.
-                    // Show a "Play" button so that user can start playback.
-                    //snd.play();
+                    console.error('sound play', error)
                 });
         }
     }
@@ -24,7 +23,7 @@ class Sound {
         if (this._sound.isFirst) {
             setTimeout( () =>{
                 this._play();
-            }, 1000);
+            }, 3000);
         } else {
             this._play();
         }

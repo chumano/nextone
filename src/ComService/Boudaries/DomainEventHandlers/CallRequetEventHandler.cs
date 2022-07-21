@@ -45,7 +45,7 @@ namespace ComService.Boudaries.DomainEventHandlers
 
                     var message = new CloudMessage()
                     {
-                        IsNotification = true,
+                        IsNotification = false,
                         Title = "Call Request",
                         Body = "Có cuộc gọi",
                         Data = new System.Collections.Generic.Dictionary<string, string>

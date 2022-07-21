@@ -9,6 +9,7 @@ import { Message } from '../types/Message/Message.type';
 export class SignalRService {
     connection = new signalR.HubConnectionBuilder()
       .withUrl(APP_CONFIG.COM_HOST + "/hubChat")
+      .withAutomaticReconnect()
       .build();
     events : { [key: string]:  ((...args: any[]) => void) []} = {};
     constructor() {
@@ -17,42 +18,51 @@ export class SignalRService {
     private init() {
       this.connection.onreconnected((connectionid) => {
         console.log(`[Hub] onreconnected: ${connectionid}`)
+        this.onConnected();
       })
-      this.connection.onreconnected((connectionid) => {
-        console.log(`[Hub] onreconnected: ${connectionid}`)
-      })
+
       this.connection.onclose((error) => {
         console.log(`[Hub] onClose:`, error)
       })
   
       this.connection.on("data", (message: { eventKey: string, eventData: any }) => {
-        console.log("[Hub] receive data", message)
+        //console.log("[Hub] receive data", message)
         this.onEvent(message.eventKey, message.eventData);
       });
     }
   
     connectHub = async () => {
-      if (this.isConnected()) {
-        console.log(`[Hub] connectHub isConnected`)
-        return;
-      }
-      await this.connection.start();
+      console.log("[Hub] connectHub ", this.connection?.state)
+      try{
+        if(this.connection.state === signalR.HubConnectionState.Connecting 
+          || this.connection.state === signalR.HubConnectionState.Reconnecting){
+            console.log(`[Hub] connectHub isConnected/Connecting`)
+            return;
+        }else{
+          try{
+            await this.connection.stop();
+          }catch{}
   
-      const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
-      if (userTokenInfoString) {
-        const userTokenInfoResponse = qs.parse(
-          userTokenInfoString,
-        ) as unknown as UserTokenInfoResponse;
-        const accessToken = userTokenInfoResponse.access_token;
-        const hubRegisterResult = await this.connection.invoke('register',accessToken);
-        console.log('[Hub] registerResult', hubRegisterResult)
+          await this.connection.start();
+        }
+       
+    
+        this.onConnected();
+        
+      }catch(err){
+        console.error('connectHub', err)
       }
+      
     }
   
     disconnectHub = async () => {
       if (this.connection) {
         this.connection.stop();
       }
+    }
+
+    invoke(action: string, data: any): Promise<any> {
+      return this.connection!.invoke('sendCallMessage', action, data);
     }
   
     subscription  = (eventName:string , func : (data:any)=>void )=>{
@@ -78,15 +88,31 @@ export class SignalRService {
       }
    }
   
+    isDisconnected() :boolean{
+      if (!this.connection)
+        return true;
+      return  this.connection.state == signalR.HubConnectionState.Disconnected;
+    }
+
     isConnected(): boolean {
       if (!this.connection)
         return false;
   
-      return this.connection.state === signalR.HubConnectionState.Connected
-        || this.connection.state === signalR.HubConnectionState.Connecting
-        || this.connection.state === signalR.HubConnectionState.Reconnecting;
+      return this.connection.state === signalR.HubConnectionState.Connected;
     }
-  
+
+    private async onConnected(){
+      const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
+      if (userTokenInfoString) {
+        const userTokenInfoResponse = qs.parse(
+          userTokenInfoString,
+        ) as unknown as UserTokenInfoResponse;
+        const accessToken = userTokenInfoResponse.access_token;
+        const hubRegisterResult = await this.connection.invoke('register',accessToken);
+        console.log('[Hub] registerResult', hubRegisterResult)
+      }
+      this.onEvent('connected', true);
+    }
   }
 
   

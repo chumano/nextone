@@ -11,7 +11,7 @@ const AuthCallback : React.FC<IProp> = (props) =>{
         let signinCallback = async ()=>{
             try{
                 const user = await AuthenticationService.signinRedirectCallback();
-                props.history.push(user.state.url);
+                props.history.replace(user.state.url);
             }catch (error){
                 console.error(error);
             }

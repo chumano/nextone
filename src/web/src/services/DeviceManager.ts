@@ -5,12 +5,6 @@ export interface DeviceInfo {
 }
 export class DeviceManager {
     public enumerateDevices = async () => {
-        // let stream: MediaStream
-        // try {
-        //     stream = await this.getUserMedia({ audio: true, video: true })
-        // } catch (err) {
-        //     stream = new MediaStream()
-        // }
 
         let devices: MediaDeviceInfo[] = [];
         try {
@@ -35,7 +29,7 @@ export class DeviceManager {
 
             return mediaStream;
         } catch (err) {
-            console.error("DeviceManager.getMediaStream error", err);
+            console.log("DeviceManager.getMediaStream error", err);
         }
         return undefined;
     }
