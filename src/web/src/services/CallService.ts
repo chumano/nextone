@@ -15,6 +15,8 @@ class CallService {
     private callUnsubcrideFunc? : ()=>void;
     private pubSub: Pubsub = new Pubsub();
 
+    public isReceiveResponse : boolean = false;
+
     constructor() {
         this.signaling = new SignalRSignaling();
         this.deviceManager = new DeviceManager();
@@ -39,6 +41,7 @@ class CallService {
             //sender
             case 'call-request-response':
                 const { accepted } = message.data;
+                this.isReceiveResponse = true;
                 if (!accepted) {
                     this.callSender.hangup();
                     this.pubSub.publish(CallEvents.CALL_STOPED);

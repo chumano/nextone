@@ -154,6 +154,14 @@ const CallSession: React.FC = () => {
                 console.error('CallService.startCall error', err)
                 message.error('Có lỗi bất thường! Vui lòng thử lại')
             });
+            CallService.isReceiveResponse = false;
+            setTimeout(()=>{
+                if(CallService.isReceiveResponse){
+                    return;
+                }
+                CallService.stopCall();
+
+            },15000)
         }
         else {
             //receive call 

@@ -11,27 +11,38 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 {"assets": [{"fileName": "rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "fileSize": 4194527, "height": 3120, "type": "image/jpeg", "uri": "file:///data/user/0/com.ucom/cache/rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "width": 4160}]}
 -------------------------------------------
 Web-TODO:
-- fix down load assets This file should be served over HTTPS. This download has been blocked
-- Video Call
-	- Select Devices on Start Call, Receive call
-	- Toggle : Video, Voice
-	- Chat on call
-	- Minimize Call screen
-	- Time out 10s when dont receive answer
 
 - Chat
+	Channel 
+		subchannel
+
 	Manage Conversation	
 		Seen Conversation: Member.seenDate
 		Delete Conversation: delete on the user only => Member.deleteDate
 -------------------------------------------
 Mobile-TODO
 	
-- register notification token
-
 - Chat Screen
 	//load messages : when app screen from background 
 	
+	
+- Authentication
+	- AuthService
+	- refresh token
+	
 
+=====================================================
+- Video Call
+	- Select Devices on Start Call, Receive call
+	- Toggle : Video, Voice
+	- Chat on call
+	- Minimize Call screen
+	- Time out 10s when dont receive answer
+	
+- Build app:
+	android : https://reactnative.dev/docs/signed-apk-android
+	ios
+	
 - Call Screen
 	 Notification : app in background
 		Firebase
@@ -44,16 +55,6 @@ Mobile-TODO
 	
 	-ios : setup callkeep
 	
-
-	
-- Authentication
-	- AuthService
-	- refresh token
-	
-- Build app:
-	android : https://reactnative.dev/docs/signed-apk-android
-	ios
-=====================================================
 - Download file
 	https://javascript.plainenglish.io/downloading-files-in-react-native-with-rnfetchblob-f78b18b46a36
 	https://www.techup.co.in/how-to-download-file-in-react-native-using-url/

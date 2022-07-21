@@ -70,7 +70,7 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
   RNCallKeep.displayIncomingCall(
     uuid,
     message.senderName,
-    `Có cuộc gọi đới từ ${message.senderName}`,
+    `Có cuộc gọi từ ${message.senderName}`,
     'generic',
     message.callType === 'video',
     {},
@@ -173,7 +173,7 @@ const RootApp = () => {
       RNCallKeep.displayIncomingCall(
         uuid,
         message.senderName,
-        `Có cuộc gọi đới từ ${message.senderName}`,
+        `Có cuộc gọi từ ${message.senderName}`,
         'generic',
         message.callType === 'video',
         {},
@@ -185,6 +185,7 @@ const RootApp = () => {
         },1000)
         return;
       }
+
       CallService.storeCallInfo(uuid, message);
 
       setTimeout(() => {
