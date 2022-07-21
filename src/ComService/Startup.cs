@@ -131,6 +131,7 @@ namespace ComService
 
             services.AddSignalR(options =>
             {
+                options.MaximumReceiveMessageSize = 64000;
                 options.EnableDetailedErrors = true;
             }).AddNewtonsoftJsonProtocol((options) =>
             {

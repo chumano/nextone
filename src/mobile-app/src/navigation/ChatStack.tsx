@@ -102,7 +102,7 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
                         callInfo: {
                           type: 'call',
                           senderId: '',
-                          senderName: '',
+                          senderName: name,
                           conversationId: conversationId,
                           callType: 'voice'
                         }
@@ -116,7 +116,7 @@ const ChatStack = ({ navigation, route }: BottomTabProps) => {
                         callInfo: {
                           type: 'call',
                           senderId: '',
-                          senderName: '',
+                          senderName: name,
                           conversationId: conversationId,
                           callType: 'video'
                         }

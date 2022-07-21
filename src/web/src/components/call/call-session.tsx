@@ -41,8 +41,8 @@ const CallSession: React.FC = () => {
     const [conversationName, setConversationName] = useState<string>();
     const [otherUser, setOtherUser] = useState<UserStatus>();
 
-    const [voiceEnabled, setVoiceEnabled] = useState(!!deviceSettings?.audioInputId);
-    const [videoEnabled, setVideoEnabled] = useState(!!deviceSettings?.videoInputId);
+    const [voiceEnabled, setVoiceEnabled] = useState(true);
+    const [videoEnabled, setVideoEnabled] = useState(true);
 
     const [localStream, setLocalStream] = useState<StreamWithURL>();
     const [remoteStream, setRemoteStream] = useState<StreamWithURL>();
@@ -79,6 +79,11 @@ const CallSession: React.FC = () => {
             return localStream;
         });
     }, [voiceEnabled, videoEnabled])
+
+    useEffect(()=>{
+        setVoiceEnabled(true);
+        setVideoEnabled(callType === 'video');
+    },[callType])
 
     useEffect(() => {
         //TODO: replace stream
@@ -145,10 +150,9 @@ const CallSession: React.FC = () => {
 
             CallService.startCall(converstationId, callType, constraint).then(() => {
                 console.log('CallSession call started');
-                message.info("CallSession call started")
             }).catch(err => {
                 console.error('CallService.startCall error', err)
-                message.error("CallService.startCall error")
+                message.error('Có lỗi bất thường! Vui lòng thử lại')
             });
         }
         else {
@@ -184,18 +188,23 @@ const CallSession: React.FC = () => {
 
     return <>
         <div className="call-session">
-            <div className='call-session__video-container'>
-                {!remoteStream && <img src={bgImageUrl} />}
-                <Video stream={remoteStream} />
-            </div>
-            {!remoteStream &&
+            {callType ==='video' &&
+                <div className='call-session__video-container'>
+                    <Video stream={remoteStream} />
+                </div>
+            }
+
+            { callType !== 'video'  &&
                 <div className='call-session__voice-container'>
                     <div className='user-view'>
+                        {/* cho audio */}
+                        <div className='display-none'>
+                            <Video stream={remoteStream} />
+                        </div>
                         <VoiceView />
                     </div>
                 </div>
             }
-
 
             <div className='call-session__overlay'>
                 <div className='top-bar'>
@@ -216,38 +225,47 @@ const CallSession: React.FC = () => {
 
 
                 <div className='bottom-bar'>
-                    <div className='group-buttons'>
+                    {/* <div className='group-buttons'>
                         <ButtonAction >
                             <MessageTextIcon />
                         </ButtonAction>
-                    </div>
+                    </div> */}
                     <div className='flex-spacer'></div>
                     <div className='group-buttons call-buttons'>
-                        <ButtonAction className={voiceEnabled ? 'on' : 'off'} onClick={onToggle('voice')}>
-                            {!voiceEnabled && <VoiceOnIcon />}
-                            {voiceEnabled && <VoiceOffIcon />}
-                        </ButtonAction>
+                        {callType === 'video' &&
+                            <ButtonAction className={voiceEnabled ? 'on' : 'off'} onClick={onToggle('voice')}>
+                                {voiceEnabled && <VoiceOnIcon />}
+                                {!voiceEnabled && <VoiceOffIcon />}
+                            </ButtonAction>
+                        }
+
                         <ButtonAction className={'stop-call'} onClick={onStopCall}>
                             <CallIcon />
                         </ButtonAction>
-                        <ButtonAction className={videoEnabled ? 'on' : 'off'} onClick={onToggle('video')}>
-                            {!videoEnabled && <VideoOnIcon />}
-                            {videoEnabled && <VideoOffIcon />}
-                        </ButtonAction>
+
+                        {callType === 'video' &&
+                            <ButtonAction className={videoEnabled ? 'on' : 'off'} onClick={onToggle('video')}>
+                                {videoEnabled && <VideoOnIcon />}
+                                {!videoEnabled && <VideoOffIcon />}
+                            </ButtonAction>
+                        }
                     </div>
                     <div className='flex-spacer'></div>
-                    <div className='group-buttons'>
+                    {/* <div className='group-buttons'>
                         <ButtonAction onClick={() => {
                             dispatch(callActions.showModal({ modal: 'device', visible: true }));
                         }}>
                             <CallSettingsIcon />
                         </ButtonAction>
-                    </div>
+                    </div> */}
                 </div>
 
-                <div className='local-video-container'>
-                    <Video stream={localStream} />
-                </div>
+                {localStream && callType === 'video' && videoEnabled &&
+                    <div className='local-video-container'>
+                        <Video stream={localStream} />
+                    </div>
+                }
+                
             </div>
         </div>
 

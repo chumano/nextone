@@ -28,7 +28,6 @@ import {enableScreens} from 'react-native-screens';
 
 const AppContainer = () => {
   const {isUserLogin} = useSelector((store: IAppStore) => store.auth);
-  const {isCalling} = useSelector((store: IAppStore) => store.call);
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch: AppDispatch = useDispatch();
@@ -80,9 +79,8 @@ const AppContainer = () => {
     }
   }, []);
 
-  const isShowLoginScreen = !isUserLogin && !isCalling;
+  const isShowLoginScreen = !isUserLogin;
   const isShowRootAppScreen = isUserLogin ;
-  const isShowCallScreen = isCalling;
 
   if (isLoading) return <Loading />;
 
@@ -91,7 +89,6 @@ const AppContainer = () => {
       <NavigationContainer>
         {isShowLoginScreen && <LoginScreen />}
         {isShowRootAppScreen && <RootApp />}
-        {isShowCallScreen && <CallScreen />}
       </NavigationContainer>
     </>
   );

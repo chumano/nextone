@@ -16,6 +16,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System.Threading;
 using NextOne.Shared.Bus;
 using ComService.Domain.DomainEvents;
+using Newtonsoft.Json;
+using ComService.Domain;
 
 namespace ComService.Boudaries.Hubs
 {
@@ -25,22 +27,26 @@ namespace ComService.Boudaries.Hubs
         const string CallMessage = "call-message";
         private readonly ILogger<ChatHub> _logger;
         private readonly IConversationService _conversationService;
+        private readonly IUserStatusService _userStatusService;
         private readonly IOptionsMonitor<JwtBearerOptions> _jwtBearerOptions;
         protected readonly IBus _bus;
         public ChatHub(ILogger<ChatHub> logger,
             IOptionsMonitor<JwtBearerOptions> options,
             IConversationService conversationService,
+            IUserStatusService userStatusService,
             IBus bus)
         {
             _logger = logger;
             _jwtBearerOptions = options;
             _conversationService = conversationService;
+            _userStatusService = userStatusService;
             _bus = bus;
 
         }
 
         private static ConcurrentDictionary<string, string> ConnectionRooms = new ConcurrentDictionary<string, string>();
         private static ConcurrentDictionary<string, IOnlineClient> OnlineClients = new ConcurrentDictionary<string, IOnlineClient>();
+        private static ConcurrentDictionary<string, CallRoomState> CallRoomState = new ConcurrentDictionary<string, CallRoomState>();
 
         public async Task SendCallMessage(string action, object data)
         {
@@ -48,6 +54,7 @@ namespace ComService.Boudaries.Hubs
             if (client == null) return;
             try
             {
+                _logger.LogInformation($"[ChatHub] SendCallMessage {action} - data: {JsonConvert.SerializeObject(data)}");
                 switch (action)
                 {
                     case CallSignalingActions.SEND_CALL_REQUEST:
@@ -57,6 +64,29 @@ namespace ComService.Boudaries.Hubs
                             var callType = (string)response.callType;
                             var conversation = await _conversationService.Get(conversationId);
                             if (conversation == null) return;
+
+                            var callRoomState = CallRoomState.GetOrDefault(conversationId);
+                            if(callRoomState == null)
+                            {
+                                //start new call state
+                                callRoomState = new CallRoomState()
+                                {
+                                    ConversationId = conversationId,
+                                    SenderId = client.UserId,
+                                    SenderName = client.UserName,
+                                    State = CallStateEnum.Requesting
+                                };
+                                CallRoomState.AddOrUpdate(conversationId, callRoomState, (string key, CallRoomState oldState) =>
+                                {
+                                    return callRoomState;
+                                });
+                            }
+                            else
+                            {
+                                //Đang call rồi thì không có call nữa
+                                _logger.LogInformation("Đang call rồi thì không có call nữa");
+                                if (callRoomState.State != CallStateEnum.End) return;
+                            }
 
                             //TODO: check the client user must be in the conversation
                             var emitData = CreateEventData(CallRequest, new
@@ -70,7 +100,7 @@ namespace ComService.Boudaries.Hubs
                             //create room and join
                             ConnectionRooms[this.Context.ConnectionId] = conversationId;
                             await Groups.AddToGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
-
+                            _logger.LogInformation($"[ChatHub] emit SEND_CALL_REQUEST to room_{conversationId} - members: {conversation.Members.Count}");
                             foreach (var member in conversation.Members)
                             {
                                 if (member.UserId != client.UserId)
@@ -101,7 +131,37 @@ namespace ComService.Boudaries.Hubs
                             //var roomKey = response.roomkey
 
                             //TODO: check the client user must be in the conversation and have room password
-                           
+                            var callRoomState = CallRoomState.GetOrDefault(conversationId);
+                            if (callRoomState == null)
+                            {
+                                //không có trạng thái thì thôi, tức là đã hangup rồi
+                                _logger.LogInformation("không có trạng thái thì thôi, tức là đã hangup rồi");
+                                return;
+                            }
+                            else
+                            {
+                                //Đang call rồi thì không có call nữa
+                                if(callRoomState.State != CallStateEnum.Requesting)
+                                {
+                                    _logger.LogInformation("Đang call rồi thì không có call nữa");
+                                    return;
+                                }
+
+                                if (accepted)
+                                {
+                                    callRoomState.State = CallStateEnum.Calling;
+                                    CallRoomState.AddOrUpdate(conversationId, callRoomState, (string key, CallRoomState oldState) =>
+                                    {
+                                        return callRoomState;
+                                    });
+                                }
+                                else
+                                {
+                                    callRoomState.State = CallStateEnum.End;
+                                    CallRoomState.Remove(conversationId, out _);
+                                }
+                            }
+
                             var emitData = CreateEventData(CallMessage, new
                             {
                                 type = "call-request-response",
@@ -120,6 +180,31 @@ namespace ComService.Boudaries.Hubs
 
                             //send to group room
                             _logger.LogInformation($"[ChatHub] emit SEND_CALL_REQUEST_RESPONSE to room ${conversationId}");
+                            var clientProxy = Clients.OthersInGroup($"room_{conversationId}");
+                            await EmitData(clientProxy, emitData);
+                        }
+                        break;
+
+                    case CallSignalingActions.SEND_HANG_UP:
+                        {
+                            //data is room
+                            var conversationId = (string)data;
+                            var callRoomState = CallRoomState.GetOrDefault(conversationId);
+                            if (callRoomState != null)
+                            {
+                                CallRoomState.Remove(conversationId, out _);
+                            }
+                            var emitData = CreateEventData(CallMessage, new
+                            {
+                                type = "other-hangup",
+                            });
+
+                            //leave room
+                            var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var _);
+                            await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
+
+                            //send to group room
+                            _logger.LogInformation($"[ChatHub] emit SEND_HANG_UP to room ${conversationId}");
                             var clientProxy = Clients.OthersInGroup($"room_{conversationId}");
                             await EmitData(clientProxy, emitData);
                         }
@@ -167,26 +252,7 @@ namespace ComService.Boudaries.Hubs
                             await EmitData(clientProxy, emitData);
                         }
                         break;
-                    case CallSignalingActions.SEND_HANG_UP:
-                        {
-                            //data is room
-                            var conversationId = (string)data;
 
-                            var emitData = CreateEventData(CallMessage, new
-                            {
-                                type = "other-hangup",
-                            });
-
-                            //leave room
-                            var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var _);
-                            await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
-
-                            //send to group room
-                            _logger.LogInformation($"[ChatHub] emit SEND_HANG_UP to room ${conversationId}");
-                            var clientProxy = Clients.OthersInGroup($"room_{conversationId}");
-                            await EmitData(clientProxy, emitData);
-                        }
-                        break;
                 }
             }catch(Exception ex)
             {
@@ -258,15 +324,25 @@ namespace ComService.Boudaries.Hubs
                 //add user to user group
                 await Groups.AddToGroupAsync(this.Context.ConnectionId, $"user_{userId}");
 
+                UserStatus userStatus = null;
+
+                //get user name
+                try
+                {
+                    userStatus = await _userStatusService.GetUser(userId.ToString());
+                }
+                catch { }
+               
                 var onlineClient =  new OnlineClient()
                     {
                         ConnectionId = this.Context.ConnectionId,
                         UserId = userId.ToString(),
-                        UserName = nameClaim?.Value ?? userId.ToString()
+                        UserName = userStatus?.UserName ?? nameClaim?.Value ?? userId.ToString()
                     };
 
                 OnlineClients[this.Context.ConnectionId] = onlineClient;
 
+                
                 //Update user Online
                 await _bus.Publish(new UserOnlineEvent()
                 {
@@ -301,6 +377,7 @@ namespace ComService.Boudaries.Hubs
             if (isRemovedRoom)
             {
                 await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
+                CallRoomState.Remove(conversationId, out _);
             }
 
             //TODO: Update user Offline

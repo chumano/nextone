@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { SafeAreaView, StyleSheet, View } from 'react-native';
+import { BackHandler, Image, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Text } from 'react-native-paper'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { callActions } from '../../stores/call/callReducer';
 import CallService, { CallEvents, CallMessage, CallSignalingActions, CallSignalingEvents } from '../../services/CallService';
+
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //https://medium.com/@skyrockets/react-native-webrtc-video-calling-mobile-application-26223bf87f0d
 
@@ -21,7 +23,8 @@ import {
 import { IAppStore } from '../../stores/app.store';
 import { CallMessageData } from '../../types/CallMessageData';
 import Loading from '../../components/Loading';
-import signalRService from '../../services/SignalRService';
+import signalRService, { SignalRService } from '../../services/SignalRService';
+import { APP_THEME } from '../../constants/app.theme';
 
 //https://blog.logrocket.com/creating-rn-video-calling-app-react-native-webrtc/
 
@@ -41,18 +44,18 @@ export const CallScreen = () => {
   const dispatch = useDispatch();
   const { callInfo } = useSelector((store: IAppStore) => store.call);
   const [isConnected, setConnected] = useState(false);
-  const [calling, setCalling] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+  const [calling, setCalling] = useState(true);
   // Video Scrs
   const [localStream, setLocalStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [webcamStarted, setWebcamStarted] = useState(false);
   const peerConnectionRef = useRef<RTCPeerConnection>();
-  const iceCadidates = useRef<string[]>([]);
 
   const hangup = () => {
     console.log('hangup');
     //clear something
-    iceCadidates.current = [];
     if (peerConnectionRef.current) {
       peerConnectionRef.current.close();
       peerConnectionRef.current = undefined;
@@ -68,6 +71,9 @@ export const CallScreen = () => {
   }
 
   useEffect(() => {
+    console.log('Call screen open....')
+    CallService.isCalling = true;
+    setCalling(true);
     const subscription = signalRService.subscription(
       'connected',
       (data: any) => {
@@ -76,7 +82,7 @@ export const CallScreen = () => {
       },
     );
     return () => {
-      iceCadidates.current = [];
+      CallService.isCalling = false;
       subscription.unsubscribe();
     };
   }, []);
@@ -86,17 +92,27 @@ export const CallScreen = () => {
       CallSignalingEvents.CALL_MESSAGE,
       async (message: CallMessage) => {
         try{
+
           console.log("[CALL_MESSAGE] receive-" + message.type)
+          
+          if(!peerConnectionRef.current) {
+            console.log('peerConnectionRef.current is null')
+            return;
+          }
+
           switch (message.type) {
             //sender
             case 'call-request-response':
+              console.log("[CALL_MESSAGE] receive-" + message.type,  message.data)
               const { accepted } = message.data;
+              CallService.isReceiceResponse = true;
               if (!accepted) {
                 hangup();
+                dispatch(callActions.stopCall());
                 return;
               }
               //create offer then send
-              const sdp = await peerConnectionRef.current!.createOffer(undefined)
+              const sdp = await peerConnectionRef.current.createOffer(undefined)
               let finalSdp = sdp as RTCSessionDescription;
   
               peerConnectionRef.current!.setLocalDescription(finalSdp);
@@ -108,8 +124,8 @@ export const CallScreen = () => {
                 }
               );
   
+              setCalling(false);
               break;
-  
   
             //sender + receiver
             case 'other-session-description':
@@ -118,13 +134,14 @@ export const CallScreen = () => {
                 const sdp = message.data;
                 console.log('sdp.type', sdp.type, callInfo)
                 if (sdp.type === 'answer' && isSender) {
-                  peerConnectionRef.current!.setRemoteDescription(new RTCSessionDescription(sdp));
+                  peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
                 } else if (sdp.type === 'offer' && !isSender) {
-                  peerConnectionRef.current!.setRemoteDescription(new RTCSessionDescription(sdp));
+                  peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
   
                   //create answer
-                  const awsSdp = await peerConnectionRef.current!.createAnswer();
-                  peerConnectionRef.current!.setLocalDescription(awsSdp as any);
+                  console.log('create answer.......')
+                  const awsSdp = await peerConnectionRef.current.createAnswer();
+                  peerConnectionRef.current.setLocalDescription(awsSdp as any);
                   await signalRService.invoke(
                     CallSignalingActions.SEND_SESSION_DESCRIPTION,
                     {
@@ -151,7 +168,7 @@ export const CallScreen = () => {
                   candidate: candidate
                 });
                 
-                peerConnectionRef.current!.addIceCandidate(iceCandidate);
+                peerConnectionRef.current.addIceCandidate(iceCandidate);
   
                 break;
               }
@@ -172,16 +189,16 @@ export const CallScreen = () => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [peerConnectionRef]);
+  }, [callInfo]);
 
   useEffect(() => {
     const setupCall = async () => {
-      
       const isConnectedS = signalRService.isConnected();
       console.log('setupCall............', callInfo, isConnectedS);
-
-      console.log({ callInfo, isConnectedS })
       if (!callInfo || !isConnectedS) return;
+      setVoiceEnabled(true);
+      setVideoEnabled(callInfo.callType === 'video');
+
       try {
         let isFront = true;
         const sourceInfos = await mediaDevices.enumerateDevices() as any[];
@@ -228,23 +245,7 @@ export const CallScreen = () => {
         //   peerConnectionRef.current!.getLocalStreams()[0].addTrack(track);
         // });
 
-        const remote = new MediaStream(undefined);
-        //setRemoteStream(undefined);
-
         // ------setup stream listening-------
-        // Pull tracks from remote stream, add to video stream
-        // peerConnectionRef.current.ontrack = (event: any) => {
-        //   try{
-        //     console.log('[peerConnectionRef-ontrack]', event)
-        //     event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
-        //       remote.addTrack(track);
-        //     });
-        //   }catch(err){
-        //     console.error('[peerConnectionRef-ontrack]',err)
-        //   }
-        
-        // };
-
         peerConnectionRef.current.onaddstream = (event: any) => {
           try{
             console.log('peerConnectionRef-onaddstream', event)
@@ -255,18 +256,122 @@ export const CallScreen = () => {
          
         };
 
-        //send answer if this is receiver
-        if (callInfo.senderId) {
-          console.log("send accepted")
-          await signalRService.invoke(
+        peerConnectionRef.current.addEventListener( 'connectionstatechange', (event: any) => {
+          console.log('peerConnectionRef-connectionstatechange', event)
+          switch( peerConnectionRef.current!.connectionState ) {
+            case 'closed':
+              // You can handle the call being disconnected here.
+        
+              break;
+          };
+        } );
+        
+        peerConnectionRef.current.addEventListener( 'icecandidate', async (event: any) => {
+          console.log('peerConnectionRef-icecandidate', event)
+          // When you find a null candidate then there are no more candidates.
+          // Gathering of candidates has finished.
+          if ( !event.candidate ) { return; };
+        
+          // Send the event.candidate onto the person you're calling.
+          // Keeping to Trickle ICE Standards, you should send the candidates immediately.
+          console.log('CallSignalingActions.SEND_ICE_CANDIDATE')
+          await signalRService.invoke(CallSignalingActions.SEND_ICE_CANDIDATE, {
+            room: callInfo.conversationId,
+            iceCandidate: {
+                type: 'candidate',
+                label: event?.candidate?.sdpMLineIndex,
+                id: event?.candidate?.sdpMid,
+                candidate: event?.candidate?.candidate
+              }
+          });
+        } );
+        
+        peerConnectionRef.current.addEventListener( 'icecandidateerror', (event: any) => {
+          console.log('peerConnectionRef-icecandidateerror', event)
+          // You can ignore some candidate errors.
+          // Connections can still be made even when errors occur.
+        } );
+        
+        peerConnectionRef.current.addEventListener( 'iceconnectionstatechange', (event: any) => {
+          console.log('peerConnectionRef-iceconnectionstatechange', {
+            iceConnectionState: peerConnectionRef.current?.iceConnectionState,
+            event
+          });
+          if(!peerConnectionRef.current) return;
+          switch( peerConnectionRef.current.iceConnectionState ) {
+            case 'connected':
+            case 'completed':
+              // You can handle the call being connected here.
+              // Like setting the video streams to visible.
+        
+              break;
+            case 'disconnected':
+              hangup();
+              dispatch(callActions.stopCall());
+              break;
+          };
+        } );
+        
+        peerConnectionRef.current.addEventListener( 'negotiationneeded', (event: any) => {
+          console.log('peerConnectionRef-negotiationneeded', event)
+          if(!peerConnectionRef.current) return;
+          // You can start the offer stages here.
+          // Be careful as this event can be called multiple times.
+        } );
+        
+        peerConnectionRef.current.addEventListener( 'signalingstatechange', (event: any) => {
+          console.log('peerConnectionRef-signalingstatechange', event)
+          if(!peerConnectionRef.current) return;
+          switch( peerConnectionRef.current.signalingState ) {
+            case 'closed':
+              // You can handle the call being disconnected here.
+        
+              break;
+          };
+        } );
+
+        const isSender = !callInfo.senderId;
+        const {callType, conversationId} = callInfo;
+        if (isSender && conversationId) {
+          console.log("send call request", {
+            room : conversationId,
+            callType
+          })
+          
+          CallService.isReceiceResponse = false;
+          const response = await signalRService.invoke(
+            CallSignalingActions.SEND_CALL_REQUEST, 
+            {
+              room : conversationId,
+              callType
+            });
+          console.log("send call request - response", response);
+          setTimeout(()=>{
+            if(!CallService.isCalling) return;
+
+            //Nếu không nhận đc phản hồi thì kết thúc
+            if(!CallService.isReceiceResponse){
+              //end call
+              hangup();
+              dispatch(callActions.stopCall());
+            }
+          },15000)
+        }
+        else {
+          //send answer if this is receiver
+          console.log("send call accepted")
+          const response = await signalRService.invoke(
             CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
               room: callInfo.conversationId,
               accepted: true
             }
           );
+          console.log("send call accepted - response", response)
         }
+
         setWebcamStarted(true);
+
         console.log('Success setupCall')
       } catch (err) {
         console.log('[Error] setupCall', err);
@@ -276,12 +381,64 @@ export const CallScreen = () => {
     
   }, [callInfo, isConnected, setRemoteStream])
 
-  const stopCall = () => {
+  useEffect(() => {
+    setLocalStream((localStream) => {
+        if (localStream) {
+            if (localStream.getAudioTracks().length > 0) {
+                localStream.getAudioTracks()[0].enabled = voiceEnabled;
+            }
+            if (localStream.getVideoTracks().length > 0) {
+                localStream.getVideoTracks()[0].enabled = videoEnabled;
+            }
+        }
+
+        return localStream;
+    });
+  }, [voiceEnabled, videoEnabled])
+
+  const stopCall = async () => {
     console.log("CallScreen-StopCallButton-onPress")
+
     hangup();
-    signalRService.invoke(CallSignalingActions.SEND_HANG_UP, callInfo?.conversationId);
     dispatch(callActions.stopCall());
+    try{
+      console.log('CallSignalingActions.SEND_HANG_UP', callInfo?.conversationId)
+      await signalRService.invoke(CallSignalingActions.SEND_HANG_UP, callInfo?.conversationId);
+    }catch(err){
+      console.error('CallSignalingActions.SEND_HANG_UP', err)
+    }
   }
+
+  const onToogle =( type: 'voice' | 'video')=>{
+    return ()=>{
+      if (type == 'voice') {
+        setVoiceEnabled(s => !s)
+      } else {
+        setVideoEnabled(s => !s)
+      }
+    }
+  }
+
+  const onSwitchCameras = () => {
+    if(!localStream) return;
+    localStream.getVideoTracks().forEach((track) => {
+        track._switchCamera()
+    })
+  }
+  
+  useEffect(() => {
+    const backAction = () => {
+      console.log('hardwareBackPress')
+      return true;
+    };
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
+
   if (!callInfo) {
     return <SafeAreaView>
       <Loading />
@@ -290,75 +447,135 @@ export const CallScreen = () => {
 
   return (
     <SafeAreaView style={styles.root}>
-      <Text>CallScreen</Text>
-      <Button mode="contained"
-        onPress={stopCall}
-      >
-        Stop Call : {callInfo.callType}
-      </Button>
+        {/* background */}
+        {remoteStream && callInfo.callType === 'video' && 
+          <View style={styles.remoteVideoContainer}>
+              <RTCView  streamURL={remoteStream?.toURL()}  style={styles.videoView}
+              />
+          </View>
+        }
 
-      <View style={styles.videoContainer}>
-        <View style={[styles.videos, styles.localVideos]}>
-          <Text>Your Video</Text>
-          {
-            <RTCView key={(new Date()).toString()} streamURL={(localStream?.toURL())} style={styles.localVideo} />
-          }
-        </View>
-        <View style={[styles.videos, styles.remoteVideos]}>
-          <Text>Friends Video</Text>
-          {remoteStream&&
-            <RTCView key={(new Date()).toString()}  streamURL={remoteStream?.toURL()} style={styles.remoteVideo}
-            />
-          }
+        { (callInfo.callType !== 'video' || !remoteStream) &&
+            <View style={styles.noVideo}>
+                  <Image source={require('../../assets/logo.png')} /> 
+                  {calling && <Text>Đang gọi ...</Text>}
+            </View>
+        }
 
+        {/* my video */}
+        {localStream && callInfo.callType === 'video' && videoEnabled &&
+          <View style={styles.localVideoContainer}>
+              <RTCView streamURL={(localStream?.toURL())} style={styles.videoView} />
+          </View>
+        }
+
+
+        {/* header toobar */}
+        <View style={styles.headerToolbar}>
+          <Text style={{fontSize: 20}}> {callInfo.senderName}</Text>
+          <View style={{flex:1}}></View>
+          <TouchableOpacity  onPress={onSwitchCameras} style={[styles.button,{backgroundColor:'#eaeaea' }]}>
+              <MaterialCommunityIcon name='restore' size={32} color={APP_THEME.colors.primary} />
+          </TouchableOpacity>
         </View>
-      </View>
+
+        {/* bottom toolbar */}
+        <View style={styles.bottomToolbar}>
+            {callInfo.callType === 'video' &&
+              <TouchableOpacity   style={[styles.button,{backgroundColor:'#eaeaea' }]} 
+                onPress={onToogle('voice')}>
+                { voiceEnabled?
+                  <MaterialCommunityIcon name='microphone' size={32} color={APP_THEME.colors.primary} />
+                  :  <MaterialCommunityIcon name='microphone-off' size={32} color={'red'} />
+                }
+              </TouchableOpacity>
+            }
+
+            <TouchableOpacity  onPress={stopCall} style={[styles.button,styles.hangupButton]}>
+              <MaterialCommunityIcon name='phone-hangup' size={32} color={'#fff'} />
+            </TouchableOpacity>
+
+            {callInfo.callType === 'video' &&
+            <TouchableOpacity   style={[styles.button,{backgroundColor:'#eaeaea' }]} 
+              onPress={onToogle('video')}>
+              { videoEnabled?
+                <MaterialCommunityIcon name='video' size={32} color={APP_THEME.colors.primary} />
+                :  <MaterialCommunityIcon name='video-off' size={32} color={'red'} />
+              }
+            </TouchableOpacity>
+            }
+        </View>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
   root: {
-    backgroundColor: '#fff',
+    backgroundColor: '#efefef',
     flex: 1,
-    padding: 20,
+    padding: 0,
     position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0
   },
-  inputField: {
-    marginBottom: 10,
-    flexDirection: 'column',
-  },
-  videoContainer: {
-    flex: 1,
-    minHeight: 450,
-  },
-  videos: {
+  videoView: {
+    height: '100%',
     width: '100%',
+  },
+  noVideo:{
     flex: 1,
-    position: 'relative',
-    overflow: 'hidden',
+    display:'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  remoteVideoContainer: {
+    height: '100%',
+    width: '100%',
+  },
+  localVideoContainer: {
+    height: 200,
+    width: 120,
+    position: 'absolute',
+    right: 10,
+    bottom: 90
+  },
+  headerToolbar:{
+    position: 'absolute',
+    width: '100%',
+    height: 80,
+    top: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    color: 'black',
+    paddingLeft: 10,
+    paddingRight:10,
+  },
+  bottomToolbar :{
+    position: 'absolute',
+    width: '100%',
+    height: 80,
+    bottom: 0,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    color: 'white'
+  },
+  hangupButton:{
+    backgroundColor: 'red',
+    marginRight:10,
+    marginLeft:10
+  },
+  button:{
+    borderRadius: 30,
+    width: 60,
+    height: 60,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
 
-    borderRadius: 6,
-  },
-  localVideos: {
-    height: 100,
-    marginBottom: 10,
-  },
-  remoteVideos: {
-    height: 400,
-  },
-  localVideo: {
-    backgroundColor: '#f2f2f2',
-    height: '100%',
-    width: '100%',
-  },
-  remoteVideo: {
-    backgroundColor: '#f2f2f2',
-    height: '100%',
-    width: '100%',
-  },
 });

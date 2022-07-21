@@ -6,7 +6,8 @@ export interface StartCallPayload{
 }
 
 export interface ReceiveCallPayload{
-    conversationId:string
+    conversationId:string,
+    callType: 'voice' | 'video'
 }
 
 export interface PrepareCallPlayload{
