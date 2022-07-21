@@ -1,5 +1,5 @@
 import classnames from "classnames"
-import React, { ReactEventHandler, useRef } from "react"
+import React, { ReactEventHandler, useEffect, useRef } from "react"
 
 export interface StreamWithURL {
     stream: MediaStream
@@ -19,23 +19,26 @@ export interface VideoProps {
   }
   
  const  Video : React.FC<VideoProps> = (props)=> {
-
     const videoRef = useRef<HTMLVideoElement|any>();
   
     const { stream } = props
-    const video = videoRef.current;
-    if (video) {
-      const mediaStream = stream?.stream;
-      const url = stream?.url
-      if ('srcObject' in video as unknown) {
-        if (mediaStream && video.srcObject !== mediaStream) {
-          video.srcObject = mediaStream
+   
+    useEffect(()=>{
+      const video = videoRef.current;
+      if (video) {
+        const mediaStream = stream?.stream;
+        const url = stream?.url
+        if ('srcObject' in video as unknown) {
+          if (mediaStream && video.srcObject !== mediaStream) {
+            video.srcObject = mediaStream
+          }
+        } else if (video.src !== url) {
+          video.src = url || ''
         }
-      } else if (video.src !== url) {
-        video.src = url || ''
+        //video.muted = props.muted
       }
-      //video.muted = props.muted
-    }
+    },[stream, videoRef.current])
+    
     const handleClick: ReactEventHandler<HTMLVideoElement> = () => {
        playVideo();
     }
@@ -69,7 +72,6 @@ export interface VideoProps {
       return (
         <div className={className}>
           <video
-            
             autoPlay
             onClick={handleClick}
             onLoadedMetadata={() => playVideo()}

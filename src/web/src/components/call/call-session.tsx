@@ -159,7 +159,7 @@ const CallSession: React.FC = () => {
                 if(CallService.isReceiveResponse){
                     return;
                 }
-                CallService.stopCall();
+                onStopCall();
 
             },15000)
         }
