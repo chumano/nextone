@@ -31,7 +31,7 @@ const SideBar :React.FC<IProp> = ({show}):JSX.Element=>{
     return <>
         <div className={"sidebar " + (show?"open":"")}>
             <div className="sidebar__logo">
-                <Link to={DEFAULT_PAGE} >
+                <Link to={'/'} >
                     <img  src={logo} alt='' />
                 </Link>
             </div>

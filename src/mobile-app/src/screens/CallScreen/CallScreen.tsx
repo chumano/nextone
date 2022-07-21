@@ -306,8 +306,8 @@ export const CallScreen = () => {
         
               break;
             case 'disconnected':
-              hangup();
-              dispatch(callActions.stopCall());
+              // hangup();
+              // dispatch(callActions.stopCall());
               break;
           };
         } );

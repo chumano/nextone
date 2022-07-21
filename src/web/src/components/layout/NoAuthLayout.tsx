@@ -3,7 +3,8 @@ import { RouteComponentProps } from "react-router";
 import Loading from "../controls/loading/Loading";
 import '../../styles/components/layout/noauth-layout.scss';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSignInAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSignInAlt, faDownload } from "@fortawesome/free-solid-svg-icons";
+import {AndroidOutlined} from '@ant-design/icons';
 import { AuthenticationService } from "../../services";
 import { useHistory, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -31,6 +32,14 @@ const NoAuthLayout: React.FC<IProp> = (props): JSX.Element => {
         AuthenticationService.signinRedirect(redirectUrl);
     }, [user])
 
+    const download = ()=>{
+        var link = document.createElement("a") as any;
+        link.download = 'ucom.apk';
+        link.href = 'https://ucom.dientoan.vn/ucom.apk';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
     return <>
         <div className="noauth-layout">
             <div className="noauth-layout__header">
@@ -43,6 +52,10 @@ const NoAuthLayout: React.FC<IProp> = (props): JSX.Element => {
                 <div className="flex-spacer"></div>
 
                 <div className="header__actions">
+                    <button className="button button-default button--icon-label" onClick={download}>
+                        <AndroidOutlined style={{fontSize:25}}/>
+                        <span className="button-label">Tải App</span>
+                    </button>
                     <button className="button button-primary button--icon-label" onClick={login}>
                         <FontAwesomeIcon icon={faSignInAlt} />
                         <span className="button-label">Đăng nhập </span>
