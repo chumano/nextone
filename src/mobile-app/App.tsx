@@ -14,7 +14,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {AppDispatch, appStore, IAppStore} from './src/stores/app.store';
 import {authActions} from './src/stores/auth';
 
-import LoginScreen from './src/screens/LoginScreen/LoginScreen';
 import {CallScreen} from './src/screens/CallScreen/CallScreen';
 
 import {UserTokenInfoResponse} from './src/types/Auth/Auth.type';
@@ -23,21 +22,27 @@ import {JWTDecodeInfo} from './src/types/Auth/JWTDecodeInfo.type';
 import RootApp from './src/RootApp';
 
 import Loading from './src/components/Loading';
-import {DeviceEventEmitter, Linking, PermissionsAndroid, Platform} from 'react-native';
+import {
+  DeviceEventEmitter,
+  Linking,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 import {enableScreens} from 'react-native-screens';
+import PublicScreen from './src/screens/PublicScreen/PublicScreen';
 
 const AppContainer = () => {
   const {isUserLogin} = useSelector((store: IAppStore) => store.auth);
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch: AppDispatch = useDispatch();
-  useEffect(()=>{
-    const getLink = async()=>{
+  useEffect(() => {
+    const getLink = async () => {
       const initialUrl = await Linking.getInitialURL();
-      console.log('initialUrl', initialUrl)
-    }
+      console.log('initialUrl', initialUrl);
+    };
     getLink();
-  },[])
+  }, []);
 
   useEffect(() => {
     const getUserInfoFromStorage = async () => {
@@ -80,14 +85,14 @@ const AppContainer = () => {
   }, []);
 
   const isShowLoginScreen = !isUserLogin;
-  const isShowRootAppScreen = isUserLogin ;
+  const isShowRootAppScreen = isUserLogin;
 
   if (isLoading) return <Loading />;
 
   return (
     <>
       <NavigationContainer>
-        {isShowLoginScreen && <LoginScreen />}
+        {isShowLoginScreen && <PublicScreen />}
         {isShowRootAppScreen && <RootApp />}
       </NavigationContainer>
     </>

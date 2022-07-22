@@ -1,4 +1,5 @@
 export interface AppConfig {
+  WEBAPP: string;
   IDENTITY_HOST: string;
   MASTER_HOST: string;
   COM_HOST: string;
