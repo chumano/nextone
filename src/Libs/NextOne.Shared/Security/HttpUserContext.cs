@@ -60,6 +60,16 @@ namespace NextOne.Shared.Security
                 return roles;
             }
         }
+
+        public bool IsAdmin
+        {
+            get
+            {
+                var roles = this.UserRoles;
+                return roles.Contains("admin");
+            }
+        }
+
         public string IpAddress
         {
             get

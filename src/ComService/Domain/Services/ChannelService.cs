@@ -12,7 +12,7 @@ namespace ComService.Domain.Services
 {
     public interface IChannelService : IConversationService
     {
-        Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions);
+        Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions, bool isAdmin = false);
         new Task<Channel> Get(string id);
         Task<string> Create(UserStatus createdUser, string name,  IList<string> memberIds, IList<string> eventTypeCodes);
         Task UpdateEventTypes(Channel channel, string name,
@@ -39,10 +39,15 @@ namespace ComService.Domain.Services
             _eventRepository = eventRepository;
         }
 
-        public async Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions)
+        public async Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions, bool isAdmin = false)
         {
-            var items = await _channelRepository.Channels
-                .Where(o => o.Members.Any(m => m.UserId == user.UserId))
+            var query = _channelRepository.Channels.AsNoTracking();
+            if (!isAdmin)
+            {
+                query = query.Where(o => o.Members.Any(m => m.UserId == user.UserId));
+            }
+
+            var items = await query
                 .OrderByDescending(o => o.UpdatedDate)
                 .Skip(pageOptions.Offset)
                 .Take(pageOptions.PageSize)

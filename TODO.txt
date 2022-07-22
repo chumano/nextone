@@ -11,13 +11,28 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 {"assets": [{"fileName": "rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "fileSize": 4194527, "height": 3120, "type": "image/jpeg", "uri": "file:///data/user/0/com.ucom/cache/rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "width": 4160}]}
 -------------------------------------------
 Web-TODO:
+- Events panel : scroll
 
-- Chat
-	Handle user status
+- Channel 
+	admin : show all channel
+	loadmore on scroll
+	subchannel :  lvl 0 ,1,2
+		
+- view other user info:
+	name
+	email
+	phone number
+	
+- Search feature : 
+	channel
+	user
+	
+- Handle user status
 		online/offline
 		
-	Channel 
-		subchannel
+- Chat
+	
+		
 
 	Manage Conversation	
 		Seen Conversation: Member.seenDate
@@ -25,8 +40,15 @@ Web-TODO:
 -------------------------------------------
 Mobile-TODO
 - cacth event navigate on map:
+
+- view other user info:
+	name
+	email
+	phone number : => call by phone number
+	
 - Chat Screen
 	//load messages : when app screen from background 
+
 	
 	
 - Authentication

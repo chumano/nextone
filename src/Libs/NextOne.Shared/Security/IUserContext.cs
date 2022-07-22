@@ -11,6 +11,8 @@ namespace NextOne.Shared.Security
 
         IList<string> UserRoles { get; }
 
+        bool IsAdmin { get; }
+
         string IpAddress { get; }
     }
 }

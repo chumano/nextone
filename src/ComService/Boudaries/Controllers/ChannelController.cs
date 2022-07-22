@@ -49,9 +49,11 @@ namespace ComService.Boudaries.Controllers
         {
             var pageOptions = new PageOptions(getListDTO.Offset, getListDTO.PageSize);
             var userId = _userContext.User.UserId;
+            var isAdmin = _userContext.IsAdmin;
+            
             var user = await _userStatusService.GetUser(userId);
-            var channels = await _channelService.GetChannelsByUser(user,
-                pageOptions);
+            //TODO: check roles
+            var channels = await _channelService.GetChannelsByUser(user, pageOptions, isAdmin);
 
             //var eventTypes = await _comDbContext.EventTypes.ToListAsync();
 
