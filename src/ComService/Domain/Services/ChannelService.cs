@@ -41,7 +41,7 @@ namespace ComService.Domain.Services
 
         public async Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions, bool isAdmin = false)
         {
-            var query = _channelRepository.Channels.AsNoTracking();
+            var query = _channelRepository.Channels;
             if (!isAdmin)
             {
                 query = query.Where(o => o.Members.Any(m => m.UserId == user.UserId));
