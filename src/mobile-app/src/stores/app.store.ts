@@ -1,3 +1,4 @@
+import {NewsState} from './news/news.state';
 import {configureStore} from '@reduxjs/toolkit';
 import thunk, {ThunkMiddleware} from 'redux-thunk';
 
@@ -12,6 +13,7 @@ import callReducer from './call/callReducer';
 import conversationReducer from './conversation/conversation.reducer';
 import userReducer from './user/user.reducer';
 import eventReducer from './event/event.reducer';
+import newsReducer from './news/news.reducer';
 
 export interface IAppStore {
   auth: AuthState;
@@ -19,6 +21,7 @@ export interface IAppStore {
   conversation: ConversationState;
   user: UserState;
   event: EventState;
+  news: NewsState;
 }
 export const appStore = configureStore<IAppStore>({
   reducer: {
@@ -27,6 +30,7 @@ export const appStore = configureStore<IAppStore>({
     conversation: conversationReducer,
     user: userReducer,
     event: eventReducer,
+    news: newsReducer,
   },
   middleware: [thunk as ThunkMiddleware],
 });
