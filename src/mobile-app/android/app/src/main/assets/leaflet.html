@@ -52,7 +52,7 @@
             //MAP_READY
             //ON_VIEW
             logMessage("[sendMessage] " + data.type, data);
-            window.ReactNativeWebView?.postMessage(JSON.stringify(data));
+            window.ReactNativeWebView && window.ReactNativeWebView.postMessage(JSON.stringify(data));
         }
 
         var debugEnabled = false;

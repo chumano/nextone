@@ -50,7 +50,7 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
         </View>
         <View style={styles.inputContainer}>
           <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Phone</Text>
+            <Text style={styles.labelText}>Số điện thoại</Text>
           </View>
           <View style={styles.valueContainer}>
             <TextInput disabled defaultValue={userState.data.phone}></TextInput>
@@ -60,12 +60,12 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonContainer}>
           <Button mode="contained" onPress={changeProfileHandler}>
-            Update your Profile
+            Cập nhật thông tin
           </Button>
         </View>
         <View style={styles.buttonContainer}>
           <Button mode="outlined" onPress={changePasswordHandler}>
-            Change password
+            Đổi mật khẩu
           </Button>
         </View>
       </View>
