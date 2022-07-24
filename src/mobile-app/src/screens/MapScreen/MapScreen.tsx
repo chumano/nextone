@@ -58,12 +58,6 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     requestPermission();
   }, []);
 
-  useFocusEffect(useCallback(() => {
-    console.log("Map screen is focused") 
-    return () => {
-      console.log("Map screen is outfocused") 
-    };
-  }, []));
 
   // load events, users
   const fetchEvents = useCallback(async () => {
@@ -96,16 +90,19 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     fetchData();
   }, [fetchEvents, fetchUsers]);
 
-  useEffect(() => {
+  
+  useFocusEffect(useCallback(() => {
+    console.log("Map screen is focused") 
     const intervalCall = setInterval(async () => {
       console.log('[interval] fectch data');
       await fetchEvents();
       await fetchUsers();
-    }, 60 * 1000);
+    }, 30 * 1000);
     return () => {
+      console.log("Map screen is outfocused") 
       clearInterval(intervalCall);
     };
-  }, [fetchEvents, fetchUsers]);
+  }, [fetchEvents, fetchUsers]));
 
   useEffect(() => {
     if (!myLocation) return;
