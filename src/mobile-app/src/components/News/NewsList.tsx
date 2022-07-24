@@ -1,22 +1,52 @@
-import React from 'react';
-import {FlatList} from 'react-native';
-import {useSelector} from 'react-redux';
-import {IAppStore} from '../../stores/app.store';
+import React, {useCallback, useEffect} from 'react';
+import {FlatList, StyleSheet} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppDispatch, IAppStore} from '../../stores/app.store';
+import {getList} from '../../stores/news';
 import Loading from '../Loading';
 import NewsItem from './NewsItem';
 
 const NewsList = () => {
-  const newsState = useSelector((state: IAppStore) => state.news);
+  const {data, allLoaded, newsLoading, newsOffset, status} = useSelector(
+    (state: IAppStore) => state.news,
+  );
+  const dispatch: AppDispatch = useDispatch();
+  useEffect(() => {
+    dispatch(getList({params: {offset: 0, publishState: 0}}));
+  }, [dispatch]);
 
-  if (newsState.status === 'loading') return <Loading />;
+  const onRefresh = useCallback(() => {
+    dispatch(getList({params: {offset: 0, publishState: 0}}));
+    return () => {};
+  }, []);
+
+  const loadMoreResults = useCallback(() => {
+    if (newsLoading || allLoaded) return;
+
+    dispatch(
+      getList({params: {offset: newsOffset, publishState: 0}, loadMore: true}),
+    );
+  }, [newsLoading, allLoaded, newsOffset]);
+
+  if (status === 'loading') return <Loading />;
 
   return (
     <FlatList
-      data={newsState.data}
+      refreshing={false}
+      style={styles.newsListContainer}
+      data={data}
       keyExtractor={item => item.id}
       renderItem={({item}) => <NewsItem item={item} />}
+      onRefresh={() => onRefresh()}
+      onEndReached={() => loadMoreResults()}
     />
   );
 };
 
 export default NewsList;
+
+const styles = StyleSheet.create({
+  newsListContainer: {
+    padding: 8,
+  },
+});

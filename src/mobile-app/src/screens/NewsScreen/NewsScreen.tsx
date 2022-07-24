@@ -1,25 +1,17 @@
-import React, {useEffect} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
-import {useDispatch} from 'react-redux';
+import React from 'react';
+import {Image, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import NewsList from '../../components/News/NewsList';
-import {AppDispatch} from '../../stores/app.store';
-import {getList} from '../../stores/news';
 
 const NewsScreen = () => {
-  const dispatch: AppDispatch = useDispatch();
-  useEffect(() => {
-    dispatch(
-      getList({
-        pageSize: 5,
-        offset: 0,
-        publishState: 0,
-      }),
-    );
-  }, []);
-
   return (
     <SafeAreaView style={styles.newsScreenContainer}>
-      <NewsList></NewsList>
+      <View style={styles.logoContainer}>
+        <Text style={styles.text}>Hệ thống chỉ huy, điều hành thống nhất</Text>
+        <Image source={require('../../assets/intro_img.png')} />
+      </View>
+      <View style={styles.newsListContainer}>
+        <NewsList></NewsList>
+      </View>
     </SafeAreaView>
   );
 };
@@ -30,4 +22,13 @@ const styles = StyleSheet.create({
   newsScreenContainer: {
     flex: 1,
   },
+  logoContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 16,
+  },
+  newsListContainer: {
+    flex: 1,
+  },
+  text: {},
 });
