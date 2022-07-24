@@ -24,6 +24,7 @@ import MapView from './MapView';
 import Geolocation from 'react-native-geolocation-service';
 import {IAppStore} from '../../stores/app.store';
 import {useSelector} from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native';
 
 const MapScreen = ({navigation, route}: MapStackProps) => {
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
@@ -56,6 +57,13 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     };
     requestPermission();
   }, []);
+
+  useFocusEffect(useCallback(() => {
+    console.log("Map screen is focused") 
+    return () => {
+      console.log("Map screen is outfocused") 
+    };
+  }, []));
 
   // load events, users
   const fetchEvents = useCallback(async () => {
