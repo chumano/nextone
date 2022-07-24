@@ -95,11 +95,6 @@ const LoginScreen = () => {
             Login
           </Button>
         </View>
-        <View style={styles.button}>
-          <Button mode="contained" onPress={() => {}}>
-            Register
-          </Button>
-        </View>
       </View>
     </View>
   );

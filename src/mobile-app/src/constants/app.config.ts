@@ -1,6 +1,7 @@
 import {AppConfig, OAuthConfig} from './../types/AppConfig.type';
 
 export const APP_CONFIG: AppConfig = {
+  WEBAPP: 'https://ucom.dientoan.vn',
   IDENTITY_HOST: 'https://ucom-id.dientoan.vn',
   MASTER_HOST: 'https://ucom-apis.dientoan.vn/master',
   COM_HOST: 'https://ucom-apis.dientoan.vn/com',
