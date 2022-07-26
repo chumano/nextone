@@ -8,6 +8,11 @@ Open cmd then run
 ```
 adb logcat
 ```
+# Build android
+```
+cd android
+./gradlew assembleRelease
+```
 # Deep-link
 https://viblo.asia/p/deep-linking-voi-react-native-GrLZDXGVZk0
 
