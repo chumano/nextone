@@ -89,7 +89,7 @@ const MapView: React.FC<MapViewProps> =
         `;
         const run = `
         if(MapManager) {
-            MapManager?.onMessage(${JSON.stringify(payload)})
+            MapManager.onMessage(${JSON.stringify(payload)})
         }
         `;
         webViewRef.current.injectJavaScript(

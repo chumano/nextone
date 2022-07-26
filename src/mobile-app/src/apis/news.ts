@@ -14,14 +14,7 @@ const list = (
   textSearch: string,
   getListNewsDTO: GetListNewsDTO,
 ): Promise<ApiResponse<News[]>> => {
-  if (!getListNewsDTO.pageSize) {
-    const pageOptions = new PageOptions();
-    getListNewsDTO = {
-      ...getListNewsDTO,
-      pageSize: pageOptions.pageSize,
-      offset: pageOptions.offset,
-    };
-  }
+  console.log(getListNewsDTO);
   const responsePromise = axiosInstance.get(`/news/getlist`, {
     params: {
       textSearch,

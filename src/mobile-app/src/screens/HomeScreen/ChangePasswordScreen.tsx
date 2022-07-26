@@ -52,26 +52,26 @@ export const ChangePasswordScreen = () => {
     <View style={styles.changePasswordScreenContainer}>
       <View style={styles.toggleButtonContainer}>
         <Button onPress={toggleIconShowPassword}>
-          {isShowText ? 'Show Password' : 'Hide Password'}
+          {isShowText ? 'Hiện mật khẩu' : 'Ẩn mật khẩu'}
         </Button>
       </View>
       <View style={styles.inputContainer}>
         <TextInput
-          label="OldPassword"
+          label="Mật khẩu hiện tại"
           secureTextEntry={isShowText}
           onChangeText={onChangeTextInput.bind(this, 'oldPassword')}
         />
       </View>
       <View style={styles.inputContainer}>
         <TextInput
-          label="NewPassword"
+          label="Mật khẩu mới"
           secureTextEntry={isShowText}
           onChangeText={onChangeTextInput.bind(this, 'newPassword')}
         />
       </View>
       <View style={styles.inputContainer}>
         <TextInput
-          label="NewPasswordConfirmed"
+          label="Nhập lại mật khẩu mới"
           secureTextEntry={isShowText}
           onChangeText={onChangeTextInput.bind(this, 'newPasswordConfirmed')}
         />
@@ -83,7 +83,7 @@ export const ChangePasswordScreen = () => {
             onPress={changePasswordHandler}
             disabled={isDisabled}
             loading={userState.status === 'loading'}>
-            Update
+            Cập nhật
           </Button>
         </View>
       </View>
