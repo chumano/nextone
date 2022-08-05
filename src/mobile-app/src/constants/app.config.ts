@@ -1,4 +1,8 @@
-import {AppConfig, OAuthConfig} from './../types/AppConfig.type';
+import {
+  AppConfig,
+  OAuthConfig,
+  OAuthRefreshTokenConfig,
+} from './../types/AppConfig.type';
 
 export const APP_CONFIG: AppConfig = {
   WEBAPP: 'https://ucom.dientoan.vn',
@@ -14,4 +18,10 @@ export const OAUTH_CONFIG: OAuthConfig = {
   client_secret: '',
   grant_type: 'password',
   scope: 'openid profile gateway master-scope offline_access',
+};
+
+export const OAUTH_REFRESH_TOKEN_CONFIG: OAuthRefreshTokenConfig = {
+  client_id: 'native-app',
+  client_secret: '',
+  grant_type: 'refresh_token',
 };

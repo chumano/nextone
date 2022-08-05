@@ -13,6 +13,7 @@ export interface UserTokenInfo {
 }
 
 export interface UserTokenInfoResponse {
+  id_token?: string;
   access_token: string;
   expire_in: number;
   refresh_token: string;

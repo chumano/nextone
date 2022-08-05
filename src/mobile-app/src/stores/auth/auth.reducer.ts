@@ -13,6 +13,28 @@ export const authSlice = createSlice({
       state.isUserLogin = true;
       state.status = 'success';
     },
+    loginWithRefreshToken(state, action: PayloadAction<UserTokenInfoResponse>) {
+      const {
+        access_token,
+        expire_in,
+        refresh_token,
+        id_token,
+        token_type,
+        scope,
+      } = action.payload;
+      if (!state.data) return;
+      if (!id_token) return;
+      state.data = {
+        accessToken: access_token,
+        expiresIn: expire_in,
+        refreshToken: refresh_token,
+        userId: id_token,
+        tokenType: token_type,
+        scope: scope,
+      };
+      state.isUserLogin = true;
+      state.status = 'success';
+    },
   },
   extraReducers: builder => {
     builder.addCase(authLogin.pending, state => {
