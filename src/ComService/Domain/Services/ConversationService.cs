@@ -1,5 +1,6 @@
 ﻿using ComService.Domain.DomainEvents;
 using ComService.Domain.Repositories;
+using ComService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
@@ -36,11 +37,13 @@ namespace ComService.Domain.Services
         protected readonly IMessageRepository _messageRepository;
         protected readonly IUserStatusService _userService;
         protected readonly IdGenerator _idGenerator;
+        protected readonly ComDbContext _dbContext;
         protected readonly IBus _bus;
         public ConversationService(
             IConversationRepository conversationRepository,
             IMessageRepository messageRepository,
             IUserStatusService userService,
+            ComDbContext comDbContext,
             IBus bus, IdGenerator idGenerator)
         {
             _conversationRepository = conversationRepository;
@@ -48,6 +51,7 @@ namespace ComService.Domain.Services
             _userService = userService;
             _bus = bus;
             _idGenerator = idGenerator;
+            _dbContext = comDbContext;
         }
 
         public async Task<string> Create(UserStatus createdUser, string name, ConversationTypeEnum type, IList<string> memberIds)
@@ -185,6 +189,32 @@ namespace ComService.Domain.Services
                 newMembers.Add(member);
             }
 
+            //Nếu đây là channel  
+            if(conversation.Type == ConversationTypeEnum.Channel)
+            {
+                //thêm thành viên mới vào các kênh con
+                var subchannels = await _dbContext.Channels
+                    .Include(o => o.Members)
+                    .Where(o => o.AncestorIds != null
+                                && o.AncestorIds.Contains(conversation.Id))
+                    .ToListAsync();
+
+                foreach (var subchannel in subchannels)
+                {
+                    foreach(var newMember in newMembers)
+                    {
+                        if(!subchannel.Members.Any(o=> o.UserId == newMember.UserId))
+                        {
+                            subchannel.Members.Add(new ConversationMember()
+                            {
+                                UserId = newMember.UserId,
+                                Role = MemberRoleEnum.PARENT
+                            });
+                        }
+                    }
+                }
+            }
+
             await _conversationRepository.SaveChangesAsync();
 
             // TODO: send ConversationMemberAdded
@@ -205,6 +235,21 @@ namespace ComService.Domain.Services
         public async Task RemoveMember(Conversation conversation, UserStatus user)
         {
             conversation.RemoveMember(user);
+
+            //Nếu đây là channel, xóa member ở các kênh con
+            if (conversation.Type == ConversationTypeEnum.Channel)
+            {
+                var subchannels = await _dbContext.Channels
+                   .Include(o => o.Members)
+                   .Where(o => o.AncestorIds != null
+                               && o.AncestorIds.Contains(conversation.Id))
+                   .ToListAsync();
+                foreach (var subchannel in subchannels)
+                {
+                    //Remove if exist
+                    subchannel.RemoveMember(user);
+                }
+            }
 
             await _conversationRepository.SaveChangesAsync();
 

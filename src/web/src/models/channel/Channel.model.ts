@@ -10,6 +10,14 @@ export interface Channel extends Conversation {
   events: EventInfo[];
 }
 
+export interface SubChannel {
+  id: string;
+  name: string;
+  channelLevel: number,
+  parentId: string,
+  ancestorIds: string,
+}
+
 export interface CreateChannelRequest {
   name: string;
   memberIds: string[];

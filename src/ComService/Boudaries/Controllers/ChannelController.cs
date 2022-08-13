@@ -61,10 +61,33 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(dtos));
         }
 
+        [HttpGet("GetSubChannels/{id}")]
+        public async Task<IActionResult> GetSubChannels(string id)
+        {
+
+            var subchannels = await _comDbContext.Channels
+                  .Where(o => o.AncestorIds != null
+                              && o.AncestorIds.Contains(id))
+                  .ToListAsync();
+            var dtos = subchannels.Select(o => new
+            {
+                Id = o.Id,
+                Name = o.Name,
+                ChannelLevel = o.ChannelLevel,
+                ParentId = o.ParentId,
+                AncestorIds = o.AncestorIds
+            });
+            return Ok(ApiResult.Success(dtos));
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
             var channel = await _channelService.Get(id);
+            if(channel == null)
+            {
+                return Ok(ApiResult.Error("Channel does not exist"));
+            }
 
             return Ok(ApiResult.Success(ChannelDTO.From(channel)));
         }
@@ -77,7 +100,8 @@ namespace ComService.Boudaries.Controllers
             var channelId = await _channelService.Create(user,
                 createChannelDTO.Name,
                 createChannelDTO.MemberIds,
-                createChannelDTO.EventTypeCodes);
+                createChannelDTO.EventTypeCodes,
+                createChannelDTO.ParentId);
 
             return Ok(ApiResult.Success(channelId));
         }

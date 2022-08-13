@@ -18,6 +18,10 @@ namespace ComService.DTOs.Channel
         public IList<EventType> AllowedEventTypes { get; set; }
         public string CreatedBy { get; set; }
 
+        public int ChannelLevel { get; set; }
+        public string ParentId { get;  set; }
+        public string AncestorIds { get; set; }
+
         public static ChannelDTO From(Domain.Channel channel)
         {
             var eventTypes = new List<EventType>();
@@ -49,6 +53,9 @@ namespace ComService.DTOs.Channel
                 AllowedEventTypes = eventTypes,
                 Events = events,
                 CreatedBy = channel.CreatedBy,
+                ChannelLevel = channel.ChannelLevel,
+                ParentId = channel.ParentId,
+                AncestorIds = channel.AncestorIds,
             };
         }
     }

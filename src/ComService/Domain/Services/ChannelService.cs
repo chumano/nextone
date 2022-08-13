@@ -1,5 +1,6 @@
 ﻿using ComService.Domain.DomainEvents;
 using ComService.Domain.Repositories;
+using ComService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
@@ -14,7 +15,7 @@ namespace ComService.Domain.Services
     {
         Task<IEnumerable<Channel>> GetChannelsByUser(UserStatus user, PageOptions pageOptions, bool isAdmin = false);
         new Task<Channel> Get(string id);
-        Task<string> Create(UserStatus createdUser, string name,  IList<string> memberIds, IList<string> eventTypeCodes);
+        Task<string> Create(UserStatus createdUser, string name,  IList<string> memberIds, IList<string> eventTypeCodes, string parentChannelId = null);
         Task UpdateEventTypes(Channel channel, string name,
             IList<string> eventTypeCodes);
         Task AddEvent(Channel channel, Event evt);
@@ -31,9 +32,9 @@ namespace ComService.Domain.Services
            IConversationRepository conversationRepository,
            IMessageRepository messageRepository,
            IEventRepository eventRepository,
-           IUserStatusService userService,
+           IUserStatusService userService, ComDbContext comDbContext,
            IBus bus, IdGenerator idGenerator)
-            :base(conversationRepository, messageRepository, userService, bus, idGenerator)
+            :base(conversationRepository, messageRepository, userService, comDbContext, bus, idGenerator)
         {
             _channelRepository = channelRepository;
             _eventRepository = eventRepository;
@@ -58,7 +59,7 @@ namespace ComService.Domain.Services
 
         public async Task<string> Create(UserStatus createdUser, string name, 
             IList<string> memberIds, 
-            IList<string> eventTypeCodes)
+            IList<string> eventTypeCodes, string parentChannelId = null)
         {
             var id = _idGenerator.GenerateNew();
             var type = ConversationTypeEnum.Channel;
@@ -72,7 +73,7 @@ namespace ComService.Domain.Services
 
             //get users
             var users = await _userService.GetOrAddUsersByIds(memberIds);
-            
+
             foreach (var user in users)
             {
                 var role = MemberRoleEnum.MEMBER;
@@ -88,6 +89,42 @@ namespace ComService.Domain.Services
                     Role = role
                 });
             }
+
+            //check parent channel
+            if (!string.IsNullOrEmpty(parentChannelId))
+            {
+                var parentChannel = await _channelRepository.Get(parentChannelId);
+                if(parentChannel == null)
+                {
+                    throw new Exception($"Không tồn tại kênh {parentChannelId}");
+                }
+                var parentLevel = parentChannel.ChannelLevel;
+                var channelLevel = parentLevel + 1;
+                var ancestorIds = parentChannel.AncestorIds?? "";
+                if (channelLevel > 2)
+                {
+                    throw new Exception($"Không thể tạo kênh con quá 3 cấp");
+                }
+                ancestorIds +=(","+ parentChannelId + ",");
+                channel.ChannelLevel = channelLevel;
+                channel.ParentId = parentChannelId;
+                channel.AncestorIds = ancestorIds;
+
+                //add members của parent vào con
+                foreach (var member in parentChannel.Members)
+                {
+                    if (!memberIds.Contains(member.UserId))
+                    {
+                        channel.AddMember(new ConversationMember()
+                        {
+                            UserId = member.UserId,
+                            Role = MemberRoleEnum.PARENT
+                        });
+                    }
+                }
+            }
+            
+            
 
             _channelRepository.Add(channel);
 
