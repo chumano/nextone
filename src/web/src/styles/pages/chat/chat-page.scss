@@ -117,6 +117,7 @@
         height: 100%;
         .ant-tabs-content-holder {
           height: 100%;
+          overflow-y: auto;
         }
         .ant-tabs-content{
           flex-grow: 1;
@@ -147,6 +148,7 @@
         &__subchannels{
           border-top: 1px solid $color-grey-5;
           padding: 5px;
+          padding-top: 20px;
         }
       }
       /*--conversation-members--*/

@@ -4,6 +4,7 @@ export interface CreateChannelDTO{
     name: string;
     memberIds: string[];
     eventTypeCodes: string[];
+    parentId?: string;
 }
 export interface GetListChannelDTO extends IPageOptions {
 

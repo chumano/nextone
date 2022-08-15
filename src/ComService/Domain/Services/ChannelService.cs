@@ -61,7 +61,20 @@ namespace ComService.Domain.Services
             IList<string> memberIds, 
             IList<string> eventTypeCodes, string parentChannelId = null)
         {
-            var id = _idGenerator.GenerateNew();
+            Channel parentChannel = null;
+
+            if (!string.IsNullOrEmpty(parentChannelId))
+            {
+                parentChannel = await _channelRepository.Get(parentChannelId);
+                if (parentChannel == null)
+                {
+                    throw new Exception($"Không tồn tại kênh {parentChannelId}");
+                }
+
+                eventTypeCodes = parentChannel.AllowedEventTypes
+                    .Select(o=>o.EventTypeCode).ToList();
+            }
+                var id = _idGenerator.GenerateNew();
             var type = ConversationTypeEnum.Channel;
             var channel = new Channel(id, name, eventTypeCodes);
             channel.CreatedBy = createdUser.UserId;
@@ -91,13 +104,8 @@ namespace ComService.Domain.Services
             }
 
             //check parent channel
-            if (!string.IsNullOrEmpty(parentChannelId))
+            if (parentChannel != null)
             {
-                var parentChannel = await _channelRepository.Get(parentChannelId);
-                if(parentChannel == null)
-                {
-                    throw new Exception($"Không tồn tại kênh {parentChannelId}");
-                }
                 var parentLevel = parentChannel.ChannelLevel;
                 var channelLevel = parentLevel + 1;
                 var ancestorIds = parentChannel.AncestorIds?? "";

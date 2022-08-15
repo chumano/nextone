@@ -12,6 +12,7 @@ import { deleteConversation } from '../../store/chat/chatThunks';
 import { IAppStore } from '../../store';
 import { MemberRole } from '../../models/conversation/ConversationMember.model';
 import ConversationSubChannels from './ConversationSubChannels';
+import ModalSubchannelCreation from './ModalSubchannelCreattion';
 const { TabPane } = Tabs;
 
 interface ConversationInfoProps {
@@ -27,6 +28,7 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => 
     const userRole = members.find(o => o.userMember.userId === userId)?.role;
     const systemUserRole = user?.profile.role;
     const [subchannels, setSubchannels] = useState<SubChannel[]>();
+    const [modalSubchannelCreattionVisible, setModalSubchannelCreattionVisible] = useState(false)
 
     const onTabChange = (key: string) => {
 
@@ -90,12 +92,21 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => 
                                         </div>
                                     )}
                                 </div>
-                               
+
                             </div>
-                            {subchannels &&
-                                <div className='conversation-info__subchannels'>
-                                    <ConversationSubChannels subchannels={subchannels}/>
-                                </div>
+
+                            {channel.channelLevel !== 2 && subchannels &&
+                                <>
+                                    <div className='conversation-info__subchannels'>
+                                        <div className='' style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+                                            <Button onClick={() => { 
+                                                 setModalSubchannelCreattionVisible(true)
+                                            }} >Tạo kênh con</Button>
+                                        </div>
+
+                                        <ConversationSubChannels channelId={conversation.id} channelName={conversation.name} subchannels={subchannels} />
+                                    </div>
+                                </>
                             }
 
                         </div>
@@ -111,6 +122,13 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => 
                     <ConversationMembers conversation={conversation} />
                 </TabPane>
             </Tabs>
+
+            {modalSubchannelCreattionVisible &&
+                <ModalSubchannelCreation parentId={conversation.id} parentName={conversation.name}
+                    onVisible={(visible) => {
+                        setModalSubchannelCreattionVisible(visible)
+                    }} />
+            }
         </div>
     )
 }
