@@ -1,4 +1,5 @@
 export interface AppConfig {
+  WEBAPP: string;
   IDENTITY_HOST: string;
   MASTER_HOST: string;
   COM_HOST: string;
@@ -13,4 +14,11 @@ export interface OAuthConfig {
   grant_type: string;
   username?: string;
   password?: string;
+}
+
+export interface OAuthRefreshTokenConfig {
+  client_id: string;
+  client_secret: string;
+  grant_type: string;
+  refresh_token?: string;
 }

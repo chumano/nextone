@@ -45,10 +45,6 @@ const ConversationList = () => {
     }
   }, []);
 
-  useEffect(() => {
-    dispatch(getListConversation({pageOptions: {offset: 0}}));
-  }, [dispatch]);
-
   const loadMoreResults = React.useCallback(async () => {
     if (conversationsLoading || allLoaded) return;
 

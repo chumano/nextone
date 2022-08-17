@@ -15,10 +15,10 @@ import {ConversationScreenProp} from '../../navigation/ChatStack';
 
 import {useSelector} from 'react-redux';
 import {IAppStore} from '../../stores/app.store';
-import { useDispatch } from 'react-redux';
-import { conversationActions } from '../../stores/conversation';
-import { MessageType } from '../../types/Message/MessageType.type';
-import { frowNow } from '../../utils/date.utils';
+import {useDispatch} from 'react-redux';
+import {conversationActions} from '../../stores/conversation';
+import {MessageType} from '../../types/Message/MessageType.type';
+import {frowNow} from '../../utils/date.utils';
 
 interface IProps {
   conversation: Conversation;
@@ -58,7 +58,7 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
 
   const loadConversationHandler = () => {
     if (!data) return;
-    dispatch(conversationActions.selectConversation(conversation.id))
+    dispatch(conversationActions.selectConversation(conversation.id));
     navigation.navigate('ChatScreen', {
       conversationId: conversation.id,
       name: conversationName,
@@ -69,29 +69,29 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
   const isConversationHaveMessage =
     conversation && conversation.messages && conversation.messages.length > 0;
 
-  const renderLastMessageText = ()=>{
+  const renderLastMessageText = () => {
     let lastMessageText = '';
-    if(isConversationHaveMessage){
+    if (isConversationHaveMessage) {
       const lastMessage = conversation.messages[0];
-      if(conversation.type !== ConversationType.Peer2Peer){
-        lastMessageText +=  lastMessage.userSender.userName +': ';
+      if (conversation.type !== ConversationType.Peer2Peer) {
+        lastMessageText += lastMessage.userSender.userName + ': ';
       }
-      if(lastMessage.type === MessageType.Text){
-        let content = lastMessage.content.replace(/[\r\n]+/g," ");
-        if(content.length > 20){
-          content = content.slice(0, 20).trim() + "...";
+      if (lastMessage.type === MessageType.Text) {
+        let content = lastMessage.content.replace(/[\r\n]+/g, ' ');
+        if (content.length > 20) {
+          content = content.slice(0, 20).trim() + '...';
         }
         lastMessageText += content;
-      }else if(lastMessage.type === MessageType.ImageFile){
+      } else if (lastMessage.type === MessageType.ImageFile) {
         lastMessageText += 'Hình ảnh';
-      }else if(lastMessage.type === MessageType.OtherFile){
+      } else if (lastMessage.type === MessageType.OtherFile) {
         lastMessageText += 'Tệp tin';
-      }else if(lastMessage.type === MessageType.Event){
+      } else if (lastMessage.type === MessageType.Event) {
         lastMessageText += 'Sự kiện';
       }
     }
     return lastMessageText;
-  }
+  };
   const displayDate = frowNow(conversation.updatedDate!);
   return (
     <Pressable
@@ -107,7 +107,7 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
           {isConversationHaveMessage && (
             <View style={styles.lastMessageContainer}>
               <Text style={styles.lastMessageText}>
-                {renderLastMessageText() }
+                {renderLastMessageText()}
               </Text>
             </View>
           )}
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
   },
   lastMessageText: {
     fontSize: 12,
-    opacity: 0.5
+    opacity: 0.5,
   },
   updatedDateText: {
     fontSize: 12,

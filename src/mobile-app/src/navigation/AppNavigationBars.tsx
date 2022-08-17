@@ -9,7 +9,7 @@ import {AppDispatch} from '../stores/app.store';
 
 import {logout} from '../stores/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { notificationApi } from '../apis/notificationApi';
+import {notificationApi} from '../apis/notificationApi';
 
 export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
   navigation,
@@ -58,9 +58,9 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
 
   const logoutHandler = async () => {
     let fcmToken = await AsyncStorage.getItem('fcmToken');
-    if(fcmToken){
+    if (fcmToken) {
       const response = await notificationApi.removeToken(fcmToken);
-      console.log('removeToken: ', response)
+      console.log('removeToken: ', response);
       await AsyncStorage.removeItem('fcmToken');
     }
     dispatch(logout());
@@ -69,7 +69,7 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   return (
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-      <Appbar.Content title="UCOM" color='white'/>
+      <Appbar.Content title="UCOM" color="white" />
 
       {!back ? (
         <Menu

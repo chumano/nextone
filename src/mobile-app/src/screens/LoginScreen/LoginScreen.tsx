@@ -5,18 +5,18 @@ import {View, StyleSheet} from 'react-native';
 import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 
 import {AppDispatch, IAppStore} from '../../stores/app.store';
-import { authLogin } from '../../stores/auth';
+import {authLogin} from '../../stores/auth';
 
 const LoginScreen = () => {
   const dispatch: AppDispatch = useDispatch();
   const authState = useSelector((store: IAppStore) => store.auth);
   const [loginForm, setLoginForm] = useState({
     username: {
-      value: 'manager@nextone.local',
+      value: '',
       isValid: true,
     },
     password: {
-      value: 'Nextone@123',
+      value: '',
       isValid: true,
     },
   });
@@ -59,10 +59,10 @@ const LoginScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.headerText}> Login Page </Text>
+      <Text style={styles.headerText}> Đăng nhập </Text>
       <View style={styles.loginForm}>
         <TextInput
-          label="Username or Email"
+          label="Tài khoản"
           style={styles.input}
           value={loginForm.username.value}
           error={!loginForm.username.isValid}
@@ -72,7 +72,7 @@ const LoginScreen = () => {
           <HelperText type="error">Username Field is required!</HelperText>
         )}
         <TextInput
-          label="Password"
+          label="Mật khẩu"
           secureTextEntry
           style={styles.input}
           value={loginForm.password.value}
@@ -92,12 +92,7 @@ const LoginScreen = () => {
             mode="contained"
             onPress={onLoginHandler}
             loading={authState.status === 'loading'}>
-            Login
-          </Button>
-        </View>
-        <View style={styles.button}>
-          <Button mode="contained" onPress={() => {}}>
-            Register
+            Đăng nhập
           </Button>
         </View>
       </View>

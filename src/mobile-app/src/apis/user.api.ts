@@ -51,8 +51,15 @@ const changeMyPassword = (
   });
 };
 
+const getUser = (
+  userId: string,
+): Promise<ApiResponse<User>> => {
+  return handleAxiosApi(axiosInstance.get(`/user/${userId}`));
+};
+
 export const userApi = {
   list,
+  getUser,
   getMyProfile,
   updateMyProfile,
   changeMyPassword,

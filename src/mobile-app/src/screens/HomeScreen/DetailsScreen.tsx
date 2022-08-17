@@ -41,7 +41,7 @@ export const DetailsScreen = () => {
     <View style={styles.detailsScreenContainer}>
       <View style={styles.inputContainer}>
         <TextInput
-          label="Username"
+          label="Tên"
           value={name}
           right={<TextInput.Icon name="pencil" />}
           onChangeText={onChangeTextInput.bind(this, 'name')}
@@ -53,7 +53,7 @@ export const DetailsScreen = () => {
       <View style={styles.inputContainer}>
         <TextInput
           keyboardType="number-pad"
-          label="Phone"
+          label="Số điện thoại"
           value={phone}
           right={<TextInput.Icon name="pencil" />}
           onChangeText={onChangeTextInput.bind(this, 'phone')}
@@ -66,7 +66,7 @@ export const DetailsScreen = () => {
             mode="contained"
             onPress={updateProfileHandler}
             loading={userState.status === 'loading'}>
-            Update
+            Cập nhật
           </Button>
         </View>
       </View>

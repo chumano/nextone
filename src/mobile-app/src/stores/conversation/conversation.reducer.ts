@@ -28,7 +28,11 @@ export const conversationSlice = createSlice({
     //conversation
     addConversation : (state, action : PayloadAction<Conversation>)=>{
         const conversation = action.payload;
-        const conversations = state.data || []
+        const conversations = state.data || [];
+        if(conversation.id === state.notLoadedConversationId){
+          state.notLoadedConversationId = undefined;
+        }
+        
         if (!conversations.find(o => o.id === conversation.id)) {
           conversations.unshift(conversation)
           state.data = conversations;
