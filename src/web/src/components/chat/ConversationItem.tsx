@@ -1,3 +1,4 @@
+import { Tag } from 'antd'
 import classNames from 'classnames'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -51,10 +52,20 @@ const ConversationItem: React.FC<ConversationItemProps> =
 
                 <div className='conversation-name'>
                     {name}
+
                     {conversation.type === ConversationType.Channel && 
-                    <div style={{fontSize:10}}>
-                        {(conversation as Channel).allowedEventTypes[0].name}
-                    </div>
+                        <>
+                        <div style={{fontSize:10}}>
+                            {(conversation as Channel).allowedEventTypes[0].name}
+                        </div>
+                        {(conversation as Channel).ancestors &&
+                            <div>
+                                {(conversation as Channel).ancestors!.map(o=>(
+                                    <Tag key={o.id}>{o.name}</Tag>
+                                ))}
+                            </div>
+                        }
+                        </>
                     }
                 </div>
                 <div className='flex-spacer'></div>

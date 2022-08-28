@@ -43,6 +43,37 @@ namespace ComService.Boudaries.Controllers
             _comDbContext = comDbContext;
         }
 
+        private async Task LoadAncestors(IList<ChannelDTO> channels)
+        {
+            var ancestorIds = new List<string>();
+            foreach (var channel in channels)
+            {
+                if (!string.IsNullOrEmpty(channel.AncestorIds))
+                {
+                    ancestorIds.AddRange(channel.AncestorIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                }
+            }
+            ancestorIds = ancestorIds.Distinct().ToList();
+            var ancestors = await _comDbContext.Channels
+                .Where(o=> ancestorIds.Contains(o.Id))
+                .Select(o=> new AncestorChannelDTO(){ 
+                    Id = o.Id, 
+                    Name= o.Name, 
+                    ChannelLevel = o.ChannelLevel 
+                })
+                .ToListAsync();
+
+            foreach (var channel in channels)
+            {
+                if (!string.IsNullOrEmpty(channel.AncestorIds))
+                {
+                    var ids = channel.AncestorIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var cAncestors = ancestors.Where(o => ids.Contains(o.Id)).ToList();
+                    cAncestors.Reverse();
+                    channel.Ancestors = cAncestors;
+                }
+            }
+        }
 
         [HttpGet("GetList")]
         public async Task<IActionResult> GetList([FromQuery] GetListChannelDTO getListDTO)
@@ -56,8 +87,11 @@ namespace ComService.Boudaries.Controllers
             var channels = await _channelService.GetChannelsByUser(user, pageOptions);
 
             //var eventTypes = await _comDbContext.EventTypes.ToListAsync();
+            
+            var dtos = channels.Select(o => ChannelDTO.From(o)).ToList();
 
-            var dtos = channels.Select(o => ChannelDTO.From(o));
+            await LoadAncestors(dtos);
+
             return Ok(ApiResult.Success(dtos));
         }
 

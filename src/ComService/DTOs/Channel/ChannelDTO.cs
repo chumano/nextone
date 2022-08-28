@@ -21,6 +21,7 @@ namespace ComService.DTOs.Channel
         public int ChannelLevel { get; set; }
         public string ParentId { get;  set; }
         public string AncestorIds { get; set; }
+        public IList<AncestorChannelDTO> Ancestors { get; set; }
 
         public static ChannelDTO From(Domain.Channel channel)
         {
@@ -58,5 +59,13 @@ namespace ComService.DTOs.Channel
                 AncestorIds = channel.AncestorIds,
             };
         }
+    }
+
+    public class AncestorChannelDTO
+    {
+        public AncestorChannelDTO() { }
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public int? ChannelLevel { get; set; }
     }
 }
