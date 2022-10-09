@@ -65,8 +65,8 @@ namespace ComService
             //Grpc Clients
             services.AddGrpcClient<NextOne.Protobuf.Master.GrpcMasterService.GrpcMasterServiceClient>(o =>
             {
-                //TODO: setting grpc url in for masterservice
-                var grpcUrl = "http://localhost:15103";
+                //setting grpc url in for masterservice
+                var grpcUrl = Configuration.GetValue<string>("MasterService:GrpcUrl", "http://localhost:15103");
                 o.Address = new Uri(grpcUrl);
             });
 

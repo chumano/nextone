@@ -178,7 +178,7 @@ namespace MapService.Wms
             XmlNode LayerRootNode = capabilities.CreateNode(XmlNodeType.Element, "Layer", wmsNamespaceURI);
             LayerRootNode.AppendChild(CreateElement("Title", "SharpMap", capabilities, false, wmsNamespaceURI));
             LayerRootNode.AppendChild(CreateElement("CRS", "EPSG:" + map.Layers[0].SRID, capabilities, false,
-                                                    wmsNamespaceURI)); //TODO
+                                                    wmsNamespaceURI)); 
             LayerRootNode.AppendChild(GenerateBoundingBoxElement(map.GetExtents(), map.Layers[0].SRID, capabilities));
 
             XmlElement geoBox = capabilities.CreateElement("EX_GeographicBoundingBox", wmsNamespaceURI);

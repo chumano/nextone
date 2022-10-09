@@ -22,7 +22,7 @@ namespace ComService.Boudaries.DomainEventHandlers
         }
         public async Task Handle(UserOnlineEvent notification, CancellationToken cancellationToken)
         {
-            //TODO: check user really off 
+            //TODO: UserOnlineHandler check user really off 
             if (!notification.IsOnline)
             {
                 //find any connection of user
@@ -40,7 +40,7 @@ namespace ComService.Boudaries.DomainEventHandlers
             }
             else
             {
-                //TODO: set is offline
+                //TODO: UserOnlineHandler set is offline
             }
 
             //send notify

@@ -80,8 +80,8 @@ namespace MasterService
             //Grpc Clients
             services.AddGrpcClient<NextOne.Protobuf.Identity.GrpcIdentityService.GrpcIdentityServiceClient>(o =>
             {
-                //TODO: setting grpc url in for identityservice
-                var grpcUrl = "http://localhost:15102";
+                //setting grpc url in for identityservice
+                var grpcUrl = Configuration.GetValue<string>("IdentityService:GrpcUrl", "http://localhost:15102");
                 o.Address = new Uri(grpcUrl);
             });
 

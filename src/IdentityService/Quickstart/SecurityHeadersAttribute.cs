@@ -4,6 +4,9 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -12,8 +15,11 @@ namespace IdentityServerHost.Quickstart.UI
         public override void OnResultExecuting(ResultExecutingContext context)
         {
             var result = context.Result;
+           
             if (result is ViewResult)
             {
+                var configuration = context.HttpContext.RequestServices.GetService<IConfiguration>();
+
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
                 if (!context.HttpContext.Response.Headers.ContainsKey("X-Content-Type-Options"))
                 {
@@ -27,9 +33,10 @@ namespace IdentityServerHost.Quickstart.UI
                 }
 
                 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
+                var hosts = configuration.GetValue<string>("FrameAncestors", "http://nextone.local;http://localhost:5100");
+                hosts = hosts.Replace(";", " ");
                 //var csp = "default-src 'self'; object-src 'none'; frame-ancestors 'none'; sandbox allow-forms allow-same-origin allow-scripts; base-uri 'self';";
-                var csp = "default-src 'self'; object-src 'none'; frame-ancestors 'self' http://nextone.local http://localhost:5100; sandbox allow-forms allow-same-origin allow-scripts; base-uri 'self';";
-
+                var csp = $"default-src 'self'; object-src 'none'; frame-ancestors 'self' {hosts} ; sandbox allow-forms allow-same-origin allow-scripts; base-uri 'self';";
 
                 // also consider adding upgrade-insecure-requests once you have HTTPS in place for production
                 //csp += "upgrade-insecure-requests;";

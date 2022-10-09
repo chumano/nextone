@@ -83,7 +83,7 @@ namespace ComService.Boudaries.Controllers
             _logger.LogInformation($"Get Channels by {userId},roles ${_userContext.UserRoles}");
             
             var user = await _userStatusService.GetUser(userId);
-            //TODO: check roles
+            //TODO: Channel.GetList check roles
             var channels = await _channelService.GetChannelsByUser(user, pageOptions);
 
             //var eventTypes = await _comDbContext.EventTypes.ToListAsync();

@@ -183,12 +183,7 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(messages));
         }
 
-        [HttpPost("CreateFirstMessage")]
-        public Task<IActionResult> CreateFirstMessage(CreateFirstMessageDTO createMessageDTO)
-        {
-            //TODO: CreateFirstMessage
-            throw new NotImplementedException();
-        }
+       
 
         [HttpPost("SendMessage")]
         public  async Task<IActionResult> SendMessage([FromBody] SendMessageDTO sendMessageDTO)
