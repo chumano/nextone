@@ -36,13 +36,12 @@ pipeline {
     stage('NextOne'){
       parallel{
 
-
           stage('MapWeb') {
             when{ 
               anyOf {
                 changeset "cicd/jenkins/Jenkinsfile"
                 changeset "src/web-map/**"
-                expression { service == 'map-web'}
+                expression { service == 'map-web' || service == 'all'}
               }
             }
             steps {
@@ -64,7 +63,7 @@ pipeline {
               anyOf {
                 changeset "cicd/jenkins/Jenkinsfile"
                 changeset "src/web/**"
-                expression { service == 'ucom-web'}
+                expression { service == 'ucom-web'|| service == 'all'}
               }
             }
             steps {
@@ -86,7 +85,7 @@ pipeline {
               anyOf{
                 changeset "cicd/jenkins/Jenkinsfile"
                 changeset 'src/MapService/**'
-                expression { service == 'map'}
+                expression { service == 'map' || service == 'all'}
               }
               
             }
@@ -113,7 +112,7 @@ pipeline {
                 changeset "src/SharedDomain/**"
                 changeset "src/Libs/NextOne.Shared/**"
                 changeset "src/Libs/NextOne.Infrastructure.Core/**"
-                expression { service == 'identity'}
+                expression { service == 'identity' || service == 'all'}
               }
             }
 			
@@ -137,7 +136,7 @@ pipeline {
               anyOf{
                 changeset "cicd/jenkins/Jenkinsfile"
                 changeset 'src/ComService/**'
-                expression { service == 'com'}
+                expression { service == 'com' || service == 'all'}
               }
               
             }
@@ -160,7 +159,7 @@ pipeline {
               anyOf{
                 changeset "cicd/jenkins/Jenkinsfile"
                 changeset 'src/MasterService/**'
-                expression { service == 'master'}
+                expression { service == 'master' || service == 'all'}
               }
               
             }
@@ -183,7 +182,7 @@ pipeline {
               anyOf{
                 changeset "cicd/jenkins/Jenkinsfile"
                 changeset 'src/FileService/**'
-                expression { service == 'file'}
+                expression { service == 'file' || service == 'all'}
               }
               
             }
