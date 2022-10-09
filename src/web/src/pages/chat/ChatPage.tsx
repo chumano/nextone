@@ -69,9 +69,9 @@ const ChatPage: React.FC = () => {
     return <>
         <div className="chat-page">
             <div className="chat-page__sidebar">
-                <div className="search-container">
+                {/* <div className="search-container">
                     <input type="search" className="form-control" ></input>
-                </div>
+                </div> */}
 
                 <div className="chat-channel-list">
                     <div className="chat-channel-list__header">

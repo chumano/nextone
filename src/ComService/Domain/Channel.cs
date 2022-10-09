@@ -13,9 +13,13 @@ namespace ComService.Domain
             IList<string> allowedEventTypeCodes) 
             :base(id, name,ConversationTypeEnum.Channel)
         {
+            ChannelLevel = 0;
             RecentEvents = new List<ChannelEvent>();
             this.UpdateAllowedEventTypeCodes(allowedEventTypeCodes);
         }
+        public int ChannelLevel { get; set; }
+        public string? ParentId { get; set; }
+        public string AncestorIds { get;  set; }
 
         public IList<ChannelEventType> AllowedEventTypes { get; private set; }
 

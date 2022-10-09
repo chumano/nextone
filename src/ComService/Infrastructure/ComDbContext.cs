@@ -31,6 +31,8 @@ namespace ComService.Infrastructure
         public DbSet<News> News { get; set; }
         public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
+        public DbSet<ConversationMember> ConversationMembers { get; set; }
+
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
             System.Diagnostics.Debug.WriteLine("ComDbContext::ctor ->" + this.GetHashCode());
@@ -204,6 +206,12 @@ namespace ComService.Infrastructure
                 eb.HasMany(o => o.RecentEvents)
                     .WithOne()
                     .HasForeignKey(o => o.ChannelId);
+
+                eb.Property(o=>o.ParentId)
+                    .HasColumnType("varchar(36)");
+
+                eb.Property(o => o.AncestorIds)
+                   .HasColumnType("nvarchar(255)");
             });
 
             modelBuilder.Entity<ChannelEventType>(eb =>

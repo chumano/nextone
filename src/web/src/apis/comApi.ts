@@ -2,7 +2,7 @@ import axios from "axios";
 import API from "../config/apis";
 import { ApiResult } from "../models/apis/ApiResult.model";
 import { AppSettings } from "../models/AppSettings";
-import { Channel } from "../models/channel/Channel.model";
+import { Channel, SubChannel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { ConversationMember } from "../models/conversation/ConversationMember.model";
 import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SearchDTO, SearchResult, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
@@ -77,6 +77,11 @@ export const comApi = {
     getChannels : async (data?: GetListChannelDTO)=>{
         const responsePromise = comAxiosInstance.get('/channel/GetList', {params: data})
         return await handleAxiosApi<ApiResult<Channel[]>>(responsePromise);
+    },
+
+    getSubChannels : async (id: string)=>{
+        const responsePromise = comAxiosInstance.get(`/channel/GetSubChannels/${id}`)
+        return await handleAxiosApi<ApiResult<SubChannel[]>>(responsePromise);
     },
 
     getChannel : async (id: string)=>{

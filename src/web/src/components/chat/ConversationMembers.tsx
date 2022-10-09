@@ -3,7 +3,7 @@ import { Button, List, Modal, Skeleton } from 'antd';
 import { DeleteOutlined, PlusOutlined, UserSwitchOutlined, MessageOutlined } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { comApi } from '../../apis/comApi';
-import { ConversationMember, MemberRole } from '../../models/conversation/ConversationMember.model';
+import { ConversationMember, MemberRole, MemberRoleName } from '../../models/conversation/ConversationMember.model';
 import { IAppStore } from '../../store';
 import { chatActions } from '../../store/chat/chatReducer';
 import { ConversationState } from '../../store/chat/ChatState';
@@ -111,14 +111,14 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                                     }
                                 </>,
                                 <>
-                                    {item.userMember.userId !== userId && userRole === MemberRole.MANAGER &&
+                                    {item.userMember.userId !== userId && userRole === MemberRole.MANAGER && item.role !== MemberRole.PARENT &&
                                         <Button className='button-icon' onClick={onMemberRole(item)} title="Cấp quyền">
                                             <UserSwitchOutlined />
                                         </Button>
                                     }
                                 </>,
                                 <>
-                                    {item.userMember.userId !== userId && userRole === MemberRole.MANAGER &&
+                                    {item.userMember.userId !== userId && userRole === MemberRole.MANAGER && item.role !== MemberRole.PARENT &&
                                         <Button danger className='button-icon' onClick={onDeleteMember(item)} title="Xóa thành viên">
                                             <DeleteOutlined />
                                         </Button>
@@ -132,7 +132,7 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }
                                         <UserAvatar user={item.userMember} />
                                     }
                                     title={item.userMember.userName}
-                                    description={MemberRole[item.role]}
+                                    description={MemberRoleName[item.role]}
                                 />
                             </Skeleton>
                         </List.Item>

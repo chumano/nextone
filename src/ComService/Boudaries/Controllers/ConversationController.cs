@@ -2,7 +2,9 @@
 using ComService.Domain.Services;
 using ComService.DTOs.Channel;
 using ComService.DTOs.Conversation;
+using ComService.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
@@ -26,15 +28,18 @@ namespace ComService.Boudaries.Controllers
         private readonly IdGenerator _idGenerator;
         private readonly IChannelService _channelService;
         private readonly IConversationService _conversationService;
+        protected readonly ComDbContext _dbContext;
         public ConversationController(
             ILogger<ConversationController> logger,
             IUserContext userContext,
+            ComDbContext comDbContext,
             IdGenerator idGenerator,
             IUserStatusService userService,
             IConversationService conversationService,
             IChannelService channelService)
         {
             _logger = logger;
+            _dbContext = comDbContext;
             _userContext = userContext;
             _idGenerator = idGenerator;
             _userStatusService = userService;
@@ -84,15 +89,35 @@ namespace ComService.Boudaries.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var conversation = await _conversationService.Get(id);
-            if (conversation == null)
+            try
             {
-                throw new DomainException("", "");
+                var conversation = await _conversationService.Get(id);
+                if (conversation == null)
+                {
+                    throw new DomainException("ConversationNotExists", "Không tồn tại");
+                }
+
+                //kiem tra chỉ delete được khi không có subchannel
+                if (conversation.Type == ConversationTypeEnum.Channel)
+                {
+                    var subchannels = await _dbContext.Channels
+                        .Where(o => o.AncestorIds != null
+                                && o.AncestorIds.Contains(conversation.Id))
+                        .ToListAsync();
+                    if (subchannels.Any())
+                    {
+                        throw new Exception("Không thể xóa kênh này trước khi xóa các kênh con");
+                    }
+                }
+
+                await _conversationService.Delete(conversation);
+
+                return Ok(ApiResult.Success(null));
             }
-
-            await _conversationService.Delete(conversation);
-
-            return Ok(ApiResult.Success(null));
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
         }
 
         //member 

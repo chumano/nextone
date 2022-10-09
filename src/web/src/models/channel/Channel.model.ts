@@ -8,6 +8,20 @@ export interface Channel extends Conversation {
   name: string;
   allowedEventTypes: EventType[];
   events: EventInfo[];
+  channelLevel?: number,
+  ancestors?: {
+    id: string,
+    name: string,
+    channelLevel?: number
+  }[]
+}
+
+export interface SubChannel {
+  id: string;
+  name: string;
+  channelLevel: number,
+  parentId: string,
+  ancestorIds: string,
 }
 
 export interface CreateChannelRequest {

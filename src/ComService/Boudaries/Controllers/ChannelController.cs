@@ -43,19 +43,74 @@ namespace ComService.Boudaries.Controllers
             _comDbContext = comDbContext;
         }
 
+        private async Task LoadAncestors(IList<ChannelDTO> channels)
+        {
+            var ancestorIds = new List<string>();
+            foreach (var channel in channels)
+            {
+                if (!string.IsNullOrEmpty(channel.AncestorIds))
+                {
+                    ancestorIds.AddRange(channel.AncestorIds.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                }
+            }
+            ancestorIds = ancestorIds.Distinct().ToList();
+            var ancestors = await _comDbContext.Channels
+                .Where(o=> ancestorIds.Contains(o.Id))
+                .Select(o=> new AncestorChannelDTO(){ 
+                    Id = o.Id, 
+                    Name= o.Name, 
+                    ChannelLevel = o.ChannelLevel 
+                })
+                .ToListAsync();
+
+            foreach (var channel in channels)
+            {
+                if (!string.IsNullOrEmpty(channel.AncestorIds))
+                {
+                    var ids = channel.AncestorIds.Split(',', StringSplitOptions.RemoveEmptyEntries);
+                    var cAncestors = ancestors.Where(o => ids.Contains(o.Id)).ToList();
+                    cAncestors.Reverse();
+                    channel.Ancestors = cAncestors;
+                }
+            }
+        }
 
         [HttpGet("GetList")]
         public async Task<IActionResult> GetList([FromQuery] GetListChannelDTO getListDTO)
         {
             var pageOptions = new PageOptions(getListDTO.Offset, getListDTO.PageSize);
             var userId = _userContext.User.UserId;
+            _logger.LogInformation($"Get Channels by {userId},roles ${_userContext.UserRoles}");
+            
             var user = await _userStatusService.GetUser(userId);
-            var channels = await _channelService.GetChannelsByUser(user,
-                pageOptions);
+            //TODO: check roles
+            var channels = await _channelService.GetChannelsByUser(user, pageOptions);
 
             //var eventTypes = await _comDbContext.EventTypes.ToListAsync();
+            
+            var dtos = channels.Select(o => ChannelDTO.From(o)).ToList();
 
-            var dtos = channels.Select(o => ChannelDTO.From(o));
+            await LoadAncestors(dtos);
+
+            return Ok(ApiResult.Success(dtos));
+        }
+
+        [HttpGet("GetSubChannels/{id}")]
+        public async Task<IActionResult> GetSubChannels(string id)
+        {
+
+            var subchannels = await _comDbContext.Channels
+                  .Where(o => o.AncestorIds != null
+                              && o.AncestorIds.Contains(id))
+                  .ToListAsync();
+            var dtos = subchannels.Select(o => new
+            {
+                Id = o.Id,
+                Name = o.Name,
+                ChannelLevel = o.ChannelLevel,
+                ParentId = o.ParentId,
+                AncestorIds = o.AncestorIds
+            });
             return Ok(ApiResult.Success(dtos));
         }
 
@@ -63,6 +118,10 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var channel = await _channelService.Get(id);
+            if(channel == null)
+            {
+                return Ok(ApiResult.Error("Channel does not exist"));
+            }
 
             return Ok(ApiResult.Success(ChannelDTO.From(channel)));
         }
@@ -75,7 +134,8 @@ namespace ComService.Boudaries.Controllers
             var channelId = await _channelService.Create(user,
                 createChannelDTO.Name,
                 createChannelDTO.MemberIds,
-                createChannelDTO.EventTypeCodes);
+                createChannelDTO.EventTypeCodes,
+                createChannelDTO.ParentId);
 
             return Ok(ApiResult.Success(channelId));
         }

@@ -63,7 +63,7 @@ namespace ComService.Domain
         public void AddMember(ConversationMember member)
         {
             Members.Add(member);
-            UpdatedDate = DateTime.Now;
+            //UpdatedDate = DateTime.Now;
         }
 
         public void UpdateMemberRole(UserStatus user, MemberRoleEnum role)
@@ -76,8 +76,11 @@ namespace ComService.Domain
         public void RemoveMember(UserStatus user)
         {
             var existMember = Members.Find(o => o.UserId == user.UserId);
-            Members.Remove(existMember);
-            UpdatedDate = DateTime.Now;
+            if(existMember != null)
+            {
+                Members.Remove(existMember);
+                //UpdatedDate = DateTime.Now;
+            }
         }
 
     }
@@ -102,6 +105,7 @@ namespace ComService.Domain
     public enum MemberRoleEnum
     {
         MANAGER = 0,
-        MEMBER = 1
+        MEMBER = 1,
+        PARENT = 2
     }
 }

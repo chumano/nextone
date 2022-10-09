@@ -15,3 +15,10 @@ export interface OAuthConfig {
   username?: string;
   password?: string;
 }
+
+export interface OAuthRefreshTokenConfig {
+  client_id: string;
+  client_secret: string;
+  grant_type: string;
+  refresh_token?: string;
+}

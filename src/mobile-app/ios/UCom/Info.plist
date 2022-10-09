@@ -37,12 +37,12 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission description</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>This app required access to your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-    <string>This app required access to your location</string>
-    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>This app required access to your location</string>
+	<string>This app required access to your location</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This app required access to your location</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Microphone permission description</string>
 	<key>NSPhotoLibraryUsageDescription</key>
