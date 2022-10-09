@@ -170,7 +170,7 @@ cd configs/certificates/
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout id.nextone.local.key -out id.nextone.local.crt -config id.nextone.local.conf
 
-#verify : 2 results must be same
+#verify certificates: 2 results must be same
 openssl x509 -noout -modulus -in id.nextone.local.crt| openssl md5
 openssl rsa -noout -modulus -in id.nextone.local.key| openssl md5
 ```
