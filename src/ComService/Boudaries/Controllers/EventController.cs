@@ -52,7 +52,7 @@ namespace ComService.Boudaries.Controllers
         {
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);
-            //TODO : SendEvent
+
             var eventType = await _comDbContext.EventTypes.FindAsync(sendEventDTO.EventTypeCode);
             if (eventType == null)
             {
