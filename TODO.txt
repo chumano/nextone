@@ -12,10 +12,8 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 -------------------------------------------
 Web-TODO:
 
-- Channel 
-	admin : show all channel
+- Channel list
 	loadmore on scroll
-	subchannel :  lvl 0 ,1,2
 		
 - view other user info:
 	name
@@ -32,7 +30,6 @@ Web-TODO:
 - Chat
 	
 		
-
 	Manage Conversation	
 		Seen Conversation: Member.seenDate
 		Delete Conversation: delete on the user only => Member.deleteDate
@@ -48,7 +45,6 @@ Mobile-TODO
 - Chat Screen
 	//load messages : when app screen from background 
 
-	
 	
 - Authentication
 	- AuthService
