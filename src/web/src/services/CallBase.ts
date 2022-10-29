@@ -1,7 +1,9 @@
 import Pubsub from "../utils/pubSub";
 import { DeviceManager } from "./DeviceManager";
 import { WebrtcUtils } from "./WebRTCUtils";
-export const useWebrtcUtils = true;
+import { AppWindow } from "../config/AppWindow";
+declare let window: AppWindow;
+export const useWebrtcUtils = window.ENV.useWebrtcUtils || false;
 
 export const CallSignalingActions = {
     SEND_CALL_REQUEST: 'call-send-request',
@@ -55,10 +57,7 @@ export interface CallMessage {
 export abstract class CallBase {
     protected room: string = '';
     public getRoom = () => this.room;
-    protected iceServers: RTCIceServer[] = [
-        { urls: 'stun:stun.1.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-    ];
+    protected iceServers: RTCIceServer[] = window.ENV.IceServers || [];
 
     protected mediaConstraints?: MediaConstraints;
     protected localStream?: MediaStream = undefined;

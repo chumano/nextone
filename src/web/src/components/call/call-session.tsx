@@ -270,7 +270,7 @@ const CallSession: React.FC = () => {
 
                 {localStream && callType === 'video' && videoEnabled &&
                     <div className='local-video-container'>
-                        <Video stream={localStream} />
+                        <Video stream={localStream} muted={true} />
                     </div>
                 }
                 

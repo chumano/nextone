@@ -9,14 +9,6 @@
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "weatherforecast",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "FileService": {
       "commandName": "Project",
       "launchBrowser": true,
@@ -24,7 +16,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5106"
+      "applicationUrl": "http://0.0.0.0:5106"
     },
     "Docker": {
       "commandName": "Docker",
@@ -32,6 +24,14 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/Home",
       "publishAllPorts": true,
       "httpPort": 5106
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "weatherforecast",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
     }
   }
 }

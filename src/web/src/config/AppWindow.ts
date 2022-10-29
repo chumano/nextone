@@ -17,6 +17,8 @@ export interface AppWindow extends Window {
             comUrl : string,
             mapUrl : string,
             fileUrl : string,
-        }
+        },
+        IceServers:{ urls: string }[],
+        useWebrtcUtils: boolean
     }
 }

@@ -8,11 +8,11 @@ export interface StreamWithURL {
 }
 
 export interface VideoProps {
+    stream?: StreamWithURL
+    muted?: boolean
+
     nickname?: string
     peerId?: string
-    stream?: StreamWithURL
-
-    muted?: boolean
     mirrored?: boolean
     play?: () => void
     localUser?: boolean
@@ -35,7 +35,7 @@ export interface VideoProps {
         } else if (video.src !== url) {
           video.src = url || ''
         }
-        //video.muted = props.muted
+        video.muted = props.muted || false;
       }
     },[stream, videoRef.current])
     
