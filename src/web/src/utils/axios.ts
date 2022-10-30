@@ -27,8 +27,6 @@ export const axiosSetup = () => {
     );
     //axios.interceptors.request.eject(myInterceptor);
 
-
-
     // Add a response interceptor
     axios.interceptors.response.use(function (response) {
         // Any status code that lie within the range of 2xx cause this function to trigger
@@ -36,6 +34,12 @@ export const axiosSetup = () => {
         return response;
     }, async (error) => {
         const originalRequest = error.config;
+        if (error.response.status == 401){
+            //logout
+            AuthenticationService.signout();
+            return;
+        }
+        
         if (error.response.status === 403 && !originalRequest._retry) {
             originalRequest._retry = true;
             // const access_token = await refreshAccessToken();            
@@ -62,5 +66,22 @@ export const createAxios = (baseURL: string) => {
             return Promise.reject(error);
         }
     );
+
+    // Add a response interceptor
+    newInstance.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+    }, async (error) => {
+        const originalRequest = error.config;
+        if (error.response.status == 401){
+            //logout
+            AuthenticationService.signout();
+            return;
+        }
+        
+        
+        return Promise.reject(error);
+    });
     return newInstance;
 }

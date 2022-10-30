@@ -3,6 +3,7 @@ using ComService.Domain.Services;
 using ComService.DTOs.Channel;
 using ComService.DTOs.Conversation;
 using ComService.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ConversationController : ControllerBase

@@ -12,6 +12,7 @@ const login = (
   password: string,
 ): Promise<AxiosResponse<UserTokenInfoResponse>> => {
   const data = {...OAUTH_CONFIG, username, password};
+  console.log('APP_CONFIG.IDENTITY_HOST: '+ APP_CONFIG.IDENTITY_HOST)
 
   return axiosInstance.post(`/connect/token`, data, {
     headers: {

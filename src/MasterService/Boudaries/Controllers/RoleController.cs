@@ -2,6 +2,7 @@
 using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using MasterService.DTOs.Role;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,6 +15,7 @@ using System.Threading.Tasks;
 
 namespace MasterService.Boudaries.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class RoleController : ControllerBase

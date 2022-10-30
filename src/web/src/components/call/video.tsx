@@ -21,7 +21,7 @@ export interface VideoProps {
  const  Video : React.FC<VideoProps> = (props)=> {
     const videoRef = useRef<HTMLVideoElement|any>();
   
-    const { stream } = props
+    const { stream , muted} = props
    
     useEffect(()=>{
       const video = videoRef.current;
@@ -35,9 +35,9 @@ export interface VideoProps {
         } else if (video.src !== url) {
           video.src = url || ''
         }
-        video.muted = props.muted || false;
+        video.muted = !!props.muted;
       }
-    },[stream, videoRef.current])
+    },[stream, muted, videoRef.current])
     
     const handleClick: ReactEventHandler<HTMLVideoElement> = () => {
        playVideo();

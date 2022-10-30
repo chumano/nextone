@@ -1,3 +1,4 @@
+var API_URL =  'https://192.168.0.122:7443';
 window.ENV = {
     Map: {
         center : [16.21, 106.79],
@@ -9,13 +10,35 @@ window.ENV = {
         googleApiKey: '',
         mapPage: 'http://localhost:5107',
     },
+
+    IceServers:[
+        { urls: 'stun:192.168.0.122:5349' },
+        { urls: 'turn:192.168.0.122:5349', username: 'test', credential: 'test123' },
+        // { urls: 'stun:stun.1.google.com:19302' },
+        // { urls: 'stun:stun1.l.google.com:19302' }
+    ],
+    useWebrtcUtils: true,
+
+    //LOCAL //////////////////////////
+    // Identity: {
+    //     identityUrl : 'https://localhost:5102',
+    // },
+    // Apis:{
+    //     masterUrl : 'http://localhost:5103',
+    //     comUrl : 'http://localhost:5104',
+    //     mapUrl : 'http://localhost:5105',
+    //     fileUrl : 'http://localhost:5106',
+    // },
+
+    //DEMO //////////////////////////
     Identity: {
-        identityUrl : 'https://localhost:5102',
+        identityUrl : 'https://192.168.0.122:8443',
     },
     Apis:{
-        masterUrl : 'http://localhost:5103',
-        comUrl : 'http://localhost:5104',
-        mapUrl : 'http://localhost:5105',
-        fileUrl : 'http://localhost:5106',
-    }
+        masterUrl :  API_URL + '/master',
+        comUrl :  API_URL + '/com',
+        mapUrl :  API_URL + '/map',
+        fileUrl :  API_URL + '/file',
+    },
+
 }

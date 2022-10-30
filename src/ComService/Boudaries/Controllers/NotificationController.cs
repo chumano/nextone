@@ -135,7 +135,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> Call([FromBody] CallRequestDTO callRequest)
         {
             var userId = _userContext.User.UserId;
-            await _bus.Publish(new CallRequetEvent()
+            await _bus.Publish(new CloudCallRequetEvent()
             {
                 UserSenderId = userId,
                 UserReceiverId = callRequest.ReceiverId,

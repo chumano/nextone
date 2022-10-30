@@ -6,6 +6,7 @@ import {AxiosResponse} from 'axios';
 import {UserTokenInfoResponse} from '../types/Auth/Auth.type';
 import {APP_CONFIG, OAUTH_REFRESH_TOKEN_CONFIG} from '../constants/app.config';
 import {appStore} from '../stores/app.store';
+import { logout } from '../stores/auth';
 
 export const createAxios = (baseUrl: string) => {
   const newInstance = axios.create({
@@ -46,31 +47,34 @@ export const createAxios = (baseUrl: string) => {
   newInstance.interceptors.response.use(
     response => response,
     async error => {
-      console.log('error');
+      console.log('axios interceptors error', JSON.stringify(error));
       // error 401
       let originalConfig = error.config;
       if (error.response.status === 401) {
         const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
-        if (userTokenInfoString) {
-          const userTokenInfoResponse = qs.parse(
-            userTokenInfoString,
-          ) as unknown as UserTokenInfoResponse;
-          try {
-            const respRefresh = await handleRefresh(
-              userTokenInfoResponse.refresh_token,
-            );
+        if (!userTokenInfoString) {
+          //logout
+          appStore.dispatch(logout())
+          return;
+        }
 
-            if (respRefresh && respRefresh.status === 200) {
-              const data = respRefresh.data;
-              console.log('refresh_token', data);
-              AsyncStorage.setItem('@UserToken', qs.stringify(data));
-              appStore.dispatch(authActions.loginWithRefreshToken(data));
-            }
-
-            return newInstance(originalConfig);
-          } catch (error) {
-            console.log(error);
+        console.log('401-> refresh token')
+        try {
+          const userTokenInfoResponse = qs.parse(userTokenInfoString) as unknown as UserTokenInfoResponse;
+          const respRefresh = await handleRefresh(userTokenInfoResponse.refresh_token, );
+          console.log('refresh token response', respRefresh);
+          if (respRefresh && respRefresh.status === 200) {
+            const data = respRefresh.data;
+          
+            AsyncStorage.setItem('@UserToken', qs.stringify(data));
+            appStore.dispatch(authActions.loginWithRefreshToken(data));
           }
+
+          return newInstance(originalConfig);
+        } catch (error) {
+          console.error('refresh token error',error);
+          //logout
+          appStore.dispatch(logout())
         }
       }
     },
@@ -115,12 +119,5 @@ const handleRefresh = async (
     refresh_token: refreshToken,
   });
 
-  return new Promise((resolve, reject) => {
-    axiosServiceRefresh
-      .post(`${APP_CONFIG.IDENTITY_HOST}/connect/token`, data)
-      .then(response => {
-        resolve(response);
-      })
-      .catch(error => {});
-  });
+  return axiosServiceRefresh.post(`${APP_CONFIG.IDENTITY_HOST}/connect/token`, data)
 };

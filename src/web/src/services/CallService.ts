@@ -36,14 +36,14 @@ class CallService {
     }
 
     private callMessageHandler =  (message: CallMessage) => {
-        console.log("receive-"+ message.type, message.data)
+        console.log("[callMessageHandler] receive-"+ message.type, message.data)
         switch (message.type) {
             //sender
             case 'call-request-response':
                 const { accepted } = message.data;
                 this.isReceiveResponse = true;
                 if (!accepted) {
-                    this.callSender.hangup();
+                    this.callSender.hangup(this.isSender);
                     this.pubSub.publish(CallEvents.CALL_STOPED);
                     return;
                 }
@@ -78,7 +78,7 @@ class CallService {
                 }
             case 'other-hangup':
                 {
-                    console.log('other-hangup');
+                    console.log('other-hangup => CallService.stopCall');
                     this.stopCall();
                     break;
                 }
@@ -113,10 +113,10 @@ class CallService {
         let room = '';
         if (this.isSender) {
             room = this.callSender.getRoom();
-            this.callSender.hangup();
+            this.callSender.hangup(this.isSender);
         } else {
             room = this.callReceiver.getRoom();
-            this.callReceiver.hangup();
+            this.callReceiver.hangup(this.isSender);
         }
         //remove signaling listen
         this.callUnsubcrideFunc?.();

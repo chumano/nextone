@@ -2,7 +2,7 @@
 
 namespace ComService.Domain.DomainEvents
 {
-    public class CallRequetEvent : IDomainEvent
+    public class CloudCallRequetEvent : IDomainEvent
     {
         public string ConversationId { get; set; }
         public string UserSenderId { get; set; }

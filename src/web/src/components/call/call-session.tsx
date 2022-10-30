@@ -16,7 +16,7 @@ import bgImageUrl from '../../assets/images/call/bg_sample.png'
 
 import ButtonAction from './button-action';
 import CallService from '../../services/CallService';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CallEvents, MediaConstraints } from '../../services/CallBase';
 import Video, { StreamWithURL } from './video';
 import { useDispatch, useSelector } from 'react-redux';
@@ -47,6 +47,7 @@ const CallSession: React.FC = () => {
     const [localStream, setLocalStream] = useState<StreamWithURL>();
     const [remoteStream, setRemoteStream] = useState<StreamWithURL>();
     const [conversation, setConversation] = useState<ConversationState>();
+    const waitTimeOutRef = useRef<any>(null);
 
     useEffect(() => {
         const conversation = allConversations.find(o => o.id == converstationId);
@@ -89,8 +90,8 @@ const CallSession: React.FC = () => {
         //TODO: replace stream
     }, [deviceSettings])
 
-    //lisen on call
-    useEffect(() => {
+    //listen on call
+    useEffect(()=>{
         const subscriptions: any[] = [];
         const subscription1 = CallService.listen(CallEvents.GOT_LOCAL_STREAM, (mediaStream: MediaStream) => {
             console.log('CallSession GOT_LOCAL_STREAM', mediaStream);
@@ -111,6 +112,7 @@ const CallSession: React.FC = () => {
         subscriptions.push(subscription2);
 
         const subscription3 = CallService.listen(CallEvents.CONNECTION_DISCONECTED, (mediaStream: MediaStream) => {
+            console.log('CallEvents.CONNECTION_DISCONECTED=> CallService.stopCall')
             CallService.stopCall();
         });
         subscriptions.push(subscription3);
@@ -125,6 +127,15 @@ const CallSession: React.FC = () => {
             subscription.subscribe();
         });
 
+        return () => {
+            subscriptions.forEach(subscription => {
+                subscription.unsubscribe();
+            });
+        }
+    })
+
+    useEffect(() => {
+        
         if (isSender && converstationId) {
             let constraint: MediaConstraints = {
                 audio: {
@@ -155,11 +166,14 @@ const CallSession: React.FC = () => {
                 message.error('Có lỗi bất thường! Vui lòng thử lại')
             });
             CallService.isReceiveResponse = false;
-            setTimeout(()=>{
+            if(waitTimeOutRef.current){
+                clearTimeout(waitTimeOutRef.current);
+            }
+            waitTimeOutRef.current = setTimeout(()=>{
                 if(CallService.isReceiveResponse){
                     return;
                 }
-                onStopCall();
+                onStopCall('Timeout to wait receiver responding');
 
             },15000)
         }
@@ -167,13 +181,15 @@ const CallSession: React.FC = () => {
             //receive call 
         }
 
-        return () => {
-            subscriptions.forEach(subscription => {
-                subscription.unsubscribe();
-            });
-            onStopCall();
-        }
+       
     }, [isSender, callStatus, converstationId, deviceSettings, callType])
+
+    useEffect(()=>{
+        console.log('CallService.isReceiveResponse change ', CallService.isReceiveResponse)
+        if( CallService.isReceiveResponse && waitTimeOutRef.current){
+            clearTimeout(waitTimeOutRef.current);
+        }
+    },[CallService.isReceiveResponse])
 
     const onToggle = (type: 'voice' | 'video') => {
         return () => {
@@ -186,7 +202,8 @@ const CallSession: React.FC = () => {
         }
     }
 
-    const onStopCall = () => {
+    const onStopCall = (reason: string) => {
+        console.log(`${reason} => CallService.stopCall`)
         CallService.stopCall().then(() => {
             console.log('CallSession call stopped',);
         }).catch(err => {
@@ -207,7 +224,7 @@ const CallSession: React.FC = () => {
                     <div className='user-view'>
                         {/* cho audio */}
                         <div className='display-none'>
-                            <Video stream={remoteStream} />
+                            <Video stream={remoteStream} nickname='remote' />
                         </div>
                         <VoiceView />
                     </div>
@@ -270,7 +287,7 @@ const CallSession: React.FC = () => {
 
                 {localStream && callType === 'video' && videoEnabled &&
                     <div className='local-video-container'>
-                        <Video stream={localStream} muted={true} />
+                        <Video stream={localStream} muted={true} nickname='local'/>
                     </div>
                 }
                 

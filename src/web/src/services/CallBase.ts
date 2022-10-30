@@ -87,10 +87,15 @@ export abstract class CallBase {
             if (audio?.enabled && audioInputs.length >0) {
                 if (audio.deviceId) {
                     constraints.audio = {
-                        deviceId: audio.deviceId
-                    }
+                        deviceId: audio.deviceId,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }as any
                 } else {
-                    constraints.audio = true;
+                    constraints.audio = {
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    } as any;
                 }
             }
 
@@ -253,8 +258,8 @@ export abstract class CallBase {
         this.pubSub.publish(evt, ...args);
     }
 
-    public hangup() {
-        console.log('hangup');
+    public hangup(isSender: boolean) {
+        console.log(`hangup from ${isSender?'sender':'receiver'}`);
 
         //clear something
         if (this.peerConnection) {

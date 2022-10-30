@@ -3,6 +3,7 @@ using ComService.Domain.Repositories;
 using ComService.Domain.Services;
 using ComService.DTOs.Event;
 using ComService.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class EventController : ControllerBase

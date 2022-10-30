@@ -10,7 +10,7 @@ import {UserLoginInfo} from '../../types/Auth/Auth.type';
 import {JWTDecodeInfo} from '../../types/Auth/JWTDecodeInfo.type';
 
 const loginErrorHandler = (error: AxiosError, rejectWithValue: Function) => {
-  console.log("Error: ", error)
+  
   if (error.response?.status) {
     if (error.response.status < 200 || error.response.status > 400) {
       return rejectWithValue('Something went wrong, Please try again');
@@ -40,9 +40,8 @@ export const authLogin = createAsyncThunk(
   async ({email, password}: UserLoginInfo, {rejectWithValue}) => {
     try {
       const response = await authApi.login(email, password);
-      const jwtDecodeInfo = jwtDecode(
-        response.data.access_token,
-      ) as JWTDecodeInfo;
+      console.log("authLogin response: " + JSON.stringify(response))
+      const jwtDecodeInfo = jwtDecode(response.data.access_token) as JWTDecodeInfo;
 
       const result = {
         ...response.data,
@@ -53,6 +52,7 @@ export const authLogin = createAsyncThunk(
 
       return result;
     } catch (error) {
+      console.log("Error: " + JSON.stringify(error))
       const loginErrors = error as AxiosError;
       return loginErrorHandler(loginErrors, rejectWithValue);
     }

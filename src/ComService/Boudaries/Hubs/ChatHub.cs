@@ -18,6 +18,7 @@ using NextOne.Shared.Bus;
 using ComService.Domain.DomainEvents;
 using Newtonsoft.Json;
 using ComService.Domain;
+using ComService.Infrastructure.AppSettings;
 
 namespace ComService.Boudaries.Hubs
 {
@@ -29,15 +30,18 @@ namespace ComService.Boudaries.Hubs
         private readonly IConversationService _conversationService;
         private readonly IUserStatusService _userStatusService;
         private readonly IOptionsMonitor<JwtBearerOptions> _jwtBearerOptions;
+        private readonly IOptions<FireBaseOptions> _fireBaseOptions;
         protected readonly IBus _bus;
         public ChatHub(ILogger<ChatHub> logger,
             IOptionsMonitor<JwtBearerOptions> options,
+            IOptions<FireBaseOptions> fireBaseOptions,
             IConversationService conversationService,
             IUserStatusService userStatusService,
             IBus bus)
         {
             _logger = logger;
             _jwtBearerOptions = options;
+            _fireBaseOptions= fireBaseOptions;
             _conversationService = conversationService;
             _userStatusService = userStatusService;
             _bus = bus;
@@ -109,14 +113,18 @@ namespace ComService.Boudaries.Hubs
                                     var clientProxy = Clients.Group($"user_{member.UserId}");
                                     await EmitData(clientProxy, emitData);
 
-                                    //send cloud message request
-                                    await _bus.Publish(new CallRequetEvent()
+
+                                    if (_fireBaseOptions.Value.Enabled)
                                     {
-                                        ConversationId = conversationId,
-                                       UserSenderId = client.UserId,
-                                       UserReceiverId = member.UserId,
-                                       CallType = callType
-                                    });
+                                        //send cloud message request
+                                        await _bus.Publish(new CloudCallRequetEvent()
+                                        {
+                                            ConversationId = conversationId,
+                                            UserSenderId = client.UserId,
+                                            UserReceiverId = member.UserId,
+                                            CallType = callType
+                                        });
+                                    }
                                 }
                             }
 

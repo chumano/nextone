@@ -3,6 +3,7 @@ using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using MasterService.DTOs.User;
 using MasterService.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,7 @@ using System.Threading.Tasks;
 
 namespace MasterService.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class UserController : ControllerBase

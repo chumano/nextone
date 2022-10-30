@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class NewsController : ControllerBase

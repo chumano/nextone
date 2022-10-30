@@ -35,13 +35,14 @@ export class SignalRService {
       console.log("[Hub] connectHub ", this.connection?.state)
       try{
         if(this.connection.state === signalR.HubConnectionState.Connecting 
+         || this.connection.state === signalR.HubConnectionState.Connected
           || this.connection.state === signalR.HubConnectionState.Reconnecting){
             console.log(`[Hub] connectHub isConnected/Connecting`)
             return;
         }else{
-          try{
-            await this.connection.stop();
-          }catch{}
+          // try{
+          //   await this.connection.stop();
+          // }catch{}
   
           await this.connection.start();
         }

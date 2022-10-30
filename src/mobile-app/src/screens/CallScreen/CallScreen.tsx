@@ -5,7 +5,7 @@ import { Button, Text } from 'react-native-paper'
 import { useDispatch, useSelector } from 'react-redux';
 import { callActions } from '../../stores/call/callReducer';
 import CallService, { CallEvents, CallMessage, CallSignalingActions, CallSignalingEvents } from '../../services/CallService';
-
+import InCallManager from 'react-native-incall-manager';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //https://medium.com/@skyrockets/react-native-webrtc-video-calling-mobile-application-26223bf87f0d
@@ -25,27 +25,111 @@ import { CallMessageData } from '../../types/CallMessageData';
 import Loading from '../../components/Loading';
 import signalRService, { SignalRService } from '../../services/SignalRService';
 import { APP_THEME } from '../../constants/app.theme';
+import { ICE_SERVERS } from '../../constants/app.config';
 
 //https://blog.logrocket.com/creating-rn-video-calling-app-react-native-webrtc/
 
 const iceServers = { //change the config as you need{
-  iceServers: [
-    {
-      urls: [
-        'stun:stun.l.google.com:19302',
-        'stun:stun1.l.google.com:19302',
-        'stun:stun2.l.google.com:19302',
-      ],
-    },
-  ],
+  iceServers: ICE_SERVERS,
   iceCandidatePoolSize: 10,
 };
 export const CallScreen = () => {
-  const dispatch = useDispatch();
   const { callInfo } = useSelector((store: IAppStore) => store.call);
+  
+  const {
+    calling,
+    remoteStream,
+    localStream,
+    videoEnabled,
+    voiceEnabled,
+    speakerOn,
+    stopCall,
+    onToogleMediaInput,
+    onToogleSpeaker,
+    onSwitchCameras
+   } = useCall(callInfo); 
+
+  if (!callInfo) {
+    return <SafeAreaView>
+      <Loading />
+    </SafeAreaView>
+  }
+
+  return (
+    <SafeAreaView style={styles.root}>
+        {/* background */}
+        {remoteStream && callInfo.callType === 'video' && 
+          <View style={styles.remoteVideoContainer}>
+              <RTCView  streamURL={remoteStream?.toURL()}  style={styles.videoView} mirror />
+          </View>
+        }
+
+        { (callInfo.callType !== 'video' || !remoteStream) &&
+            <View style={styles.noVideo}>
+                  <Image source={require('../../assets/logo.png')} /> 
+                  {calling && <Text>Đang gọi ...</Text>}
+            </View>
+        }
+
+        {/* my video */}
+        {localStream && callInfo.callType === 'video' && videoEnabled &&
+          <View style={styles.localVideoContainer}>
+              <RTCView streamURL={(localStream?.toURL())} style={styles.videoView} mirror/>
+          </View>
+        }
+
+
+        {/* header toobar */}
+        <View style={styles.headerToolbar}>
+          <Text style={{fontSize: 20}}> {callInfo.senderName}</Text>
+          <View style={{flex:1}}></View>
+          <TouchableOpacity  onPress={onToogleSpeaker} style={[styles.button,{backgroundColor:'#eaeaea' }]}>
+              {speakerOn && <MaterialCommunityIcon name='speaker-wireless' size={32} color={APP_THEME.colors.primary} /> }
+              {!speakerOn &&<MaterialCommunityIcon name='speaker' size={32} color={APP_THEME.colors.primary} /> }
+          </TouchableOpacity>
+
+          <TouchableOpacity  onPress={onSwitchCameras} style={[styles.button,{backgroundColor:'#eaeaea' }]}>
+              <MaterialCommunityIcon name='restore' size={32} color={APP_THEME.colors.primary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* bottom toolbar */}
+        <View style={styles.bottomToolbar}>
+            {callInfo.callType === 'video' &&
+              <TouchableOpacity   style={[styles.button,{backgroundColor:'#eaeaea' }]} 
+                onPress={onToogleMediaInput('voice')}>
+                { voiceEnabled?
+                  <MaterialCommunityIcon name='microphone' size={32} color={APP_THEME.colors.primary} />
+                  :  <MaterialCommunityIcon name='microphone-off' size={32} color={'red'} />
+                }
+              </TouchableOpacity>
+            }
+
+            <TouchableOpacity  onPress={stopCall} style={[styles.button,styles.hangupButton]}>
+              <MaterialCommunityIcon name='phone-hangup' size={32} color={'#fff'} />
+            </TouchableOpacity>
+
+            {callInfo.callType === 'video' &&
+            <TouchableOpacity   style={[styles.button,{backgroundColor:'#eaeaea' }]} 
+              onPress={onToogleMediaInput('video')}>
+              { videoEnabled?
+                <MaterialCommunityIcon name='video' size={32} color={APP_THEME.colors.primary} />
+                :  <MaterialCommunityIcon name='video-off' size={32} color={'red'} />
+              }
+            </TouchableOpacity>
+            }
+        </View>
+    </SafeAreaView>
+  )
+}
+
+const useCall = (callInfo?: CallMessageData)=>{
+  
+  const dispatch = useDispatch();
   const [isConnected, setConnected] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
+  const [speakerOn, setSpeakerOn] = useState(callInfo?.callType ==='video');
   const [calling, setCalling] = useState(true);
   // Video Scrs
   const [localStream, setLocalStream] = useState<MediaStream>();
@@ -74,9 +158,7 @@ export const CallScreen = () => {
     console.log('Call screen open....')
     CallService.isCalling = true;
     setCalling(true);
-    const subscription = signalRService.subscription(
-      'connected',
-      (data: any) => {
+    const subscription = signalRService.subscription('connected',(data: any) => {
         console.log('[signalRService connected]', data);
         setConnected(true);
       },
@@ -88,11 +170,9 @@ export const CallScreen = () => {
   }, []);
 
   useEffect(() => {
-    const subscription = signalRService.subscription(
-      CallSignalingEvents.CALL_MESSAGE,
+    const subscription = signalRService.subscription( CallSignalingEvents.CALL_MESSAGE,
       async (message: CallMessage) => {
         try{
-
           console.log("[CALL_MESSAGE] receive-" + message.type)
           
           if(!peerConnectionRef.current) {
@@ -194,7 +274,7 @@ export const CallScreen = () => {
   useEffect(() => {
     const setupCall = async () => {
       const isConnectedS = signalRService.isConnected();
-      console.log('setupCall............', callInfo, isConnectedS);
+      console.log('setupCall............', {callInfo, isConnectedS});
       if (!callInfo || !isConnectedS) return;
       setVoiceEnabled(true);
       setVideoEnabled(callInfo.callType === 'video');
@@ -237,13 +317,6 @@ export const CallScreen = () => {
 
         peerConnectionRef.current = new RTCPeerConnection(iceServers);
         peerConnectionRef.current.addStream(stream);
-
-        // Push tracks from local stream to peer connection
-        //const localStreams = peerConnectionRef.current.getLocalStreams();
-        // stream.getTracks().forEach(track => {
-        //   console.log('getLocalStreams', peerConnectionRef.current!.getLocalStreams());
-        //   peerConnectionRef.current!.getLocalStreams()[0].addTrack(track);
-        // });
 
         // ------setup stream listening-------
         peerConnectionRef.current.onaddstream = (event: any) => {
@@ -360,14 +433,13 @@ export const CallScreen = () => {
         else {
           //send answer if this is receiver
           console.log("send call accepted")
-          const response = await signalRService.invoke(
+           await signalRService.invoke(
             CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
               room: callInfo.conversationId,
               accepted: true
             }
           );
-          console.log("send call accepted - response", response)
         }
 
         setWebcamStarted(true);
@@ -409,7 +481,7 @@ export const CallScreen = () => {
     }
   }
 
-  const onToogle =( type: 'voice' | 'video')=>{
+  const onToogleMediaInput =( type: 'voice' | 'video')=>{
     return ()=>{
       if (type == 'voice') {
         setVoiceEnabled(s => !s)
@@ -418,6 +490,17 @@ export const CallScreen = () => {
       }
     }
   }
+
+  const onToogleSpeaker =()=>{
+    console.log('onToogleSpeaker current' , speakerOn)
+    setSpeakerOn(s => !s)
+  }
+
+  useEffect(()=>{
+    console.log('setForceSpeakerphoneOn1' , speakerOn)
+    InCallManager.setSpeakerphoneOn(speakerOn)
+    //InCallManager.setForceSpeakerphoneOn(speakerOn)
+  },[speakerOn])
 
   const onSwitchCameras = () => {
     if(!localStream) return;
@@ -439,74 +522,18 @@ export const CallScreen = () => {
     return () => backHandler.remove();
   }, []);
 
-  if (!callInfo) {
-    return <SafeAreaView>
-      <Loading />
-    </SafeAreaView>
+  return {
+    calling,
+    remoteStream,
+    localStream,
+    videoEnabled,
+    voiceEnabled,
+    speakerOn,
+    stopCall,
+    onToogleMediaInput,
+    onToogleSpeaker,
+    onSwitchCameras
   }
-
-  return (
-    <SafeAreaView style={styles.root}>
-        {/* background */}
-        {remoteStream && callInfo.callType === 'video' && 
-          <View style={styles.remoteVideoContainer}>
-              <RTCView  streamURL={remoteStream?.toURL()}  style={styles.videoView}
-              />
-          </View>
-        }
-
-        { (callInfo.callType !== 'video' || !remoteStream) &&
-            <View style={styles.noVideo}>
-                  <Image source={require('../../assets/logo.png')} /> 
-                  {calling && <Text>Đang gọi ...</Text>}
-            </View>
-        }
-
-        {/* my video */}
-        {localStream && callInfo.callType === 'video' && videoEnabled &&
-          <View style={styles.localVideoContainer}>
-              <RTCView streamURL={(localStream?.toURL())} style={styles.videoView} />
-          </View>
-        }
-
-
-        {/* header toobar */}
-        <View style={styles.headerToolbar}>
-          <Text style={{fontSize: 20}}> {callInfo.senderName}</Text>
-          <View style={{flex:1}}></View>
-          <TouchableOpacity  onPress={onSwitchCameras} style={[styles.button,{backgroundColor:'#eaeaea' }]}>
-              <MaterialCommunityIcon name='restore' size={32} color={APP_THEME.colors.primary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* bottom toolbar */}
-        <View style={styles.bottomToolbar}>
-            {callInfo.callType === 'video' &&
-              <TouchableOpacity   style={[styles.button,{backgroundColor:'#eaeaea' }]} 
-                onPress={onToogle('voice')}>
-                { voiceEnabled?
-                  <MaterialCommunityIcon name='microphone' size={32} color={APP_THEME.colors.primary} />
-                  :  <MaterialCommunityIcon name='microphone-off' size={32} color={'red'} />
-                }
-              </TouchableOpacity>
-            }
-
-            <TouchableOpacity  onPress={stopCall} style={[styles.button,styles.hangupButton]}>
-              <MaterialCommunityIcon name='phone-hangup' size={32} color={'#fff'} />
-            </TouchableOpacity>
-
-            {callInfo.callType === 'video' &&
-            <TouchableOpacity   style={[styles.button,{backgroundColor:'#eaeaea' }]} 
-              onPress={onToogle('video')}>
-              { videoEnabled?
-                <MaterialCommunityIcon name='video' size={32} color={APP_THEME.colors.primary} />
-                :  <MaterialCommunityIcon name='video-off' size={32} color={'red'} />
-              }
-            </TouchableOpacity>
-            }
-        </View>
-    </SafeAreaView>
-  )
 }
 
 const styles = StyleSheet.create({

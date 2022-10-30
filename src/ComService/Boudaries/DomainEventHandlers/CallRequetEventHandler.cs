@@ -13,19 +13,19 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.DomainEventHandlers
 {
-    public class CallRequetEventHandler : INotificationHandler<CallRequetEvent>
+    public class CloudCallRequetEventHandler : INotificationHandler<CloudCallRequetEvent>
     {
-        private readonly ILogger<CallRequetEventHandler> _logger;
+        private readonly ILogger<CloudCallRequetEventHandler> _logger;
         private readonly ICloudService _cloudService;
         private readonly IServiceProvider _serviceProvider;
-        public CallRequetEventHandler(ILogger<CallRequetEventHandler>  logger, ICloudService cloudService, IServiceProvider serviceProvider)
+        public CloudCallRequetEventHandler(ILogger<CloudCallRequetEventHandler>  logger, ICloudService cloudService, IServiceProvider serviceProvider)
         {
             _logger = logger;
             _cloudService = cloudService;
             _serviceProvider = serviceProvider;
         }
 
-        public async Task Handle(CallRequetEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(CloudCallRequetEvent notification, CancellationToken cancellationToken)
         {
             try
             {
