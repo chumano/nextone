@@ -187,8 +187,8 @@ const ConfigMap = () => {
                         <MapController />
                         <ZoomControl position="topright" />
 
-                        <TileLayer key="base" attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        <TileLayer key="base" attribution=''
+                            url={ window.ENV.Map.baseMapUrl}
                         />
                         {mapTileUrl &&
                             <TileLayer tms={true} ref={layerRef} url={mapTileUrl} />

@@ -81,19 +81,19 @@ const MapViewContainer: React.FC<MapViewProps> = (props) => {
 
             <LayersControl position="topright" collapsed={false} >
                 {/*osm la tms */}
-                <LayersControl.BaseLayer name="OSM" >
+                <LayersControl.BaseLayer name="Lớp nền" checked>
                     <TileLayer maxZoom={19}
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution=''
+                        url={window.ENV.Map.baseMapUrl}
                     />
                 </LayersControl.BaseLayer>
 
-                <LayersControl.BaseLayer name="Google" checked>
+               {GoogleApiKey && <LayersControl.BaseLayer name="Google" >
                     <LayerGoogleLeaflet apiKey={GoogleApiKey}
                         type={'roadmap'}
                     // googleMapsAddLayers={[{name:'BicyclingLayer'},{name:'TrafficLayer'},{name:'TransitLayer'}]}
                     />
-                </LayersControl.BaseLayer>
+                </LayersControl.BaseLayer>}
 
                 <LayersControl.Overlay name="Current Map" checked={true}>
                     <TileLayer tms={true} ref={ref}

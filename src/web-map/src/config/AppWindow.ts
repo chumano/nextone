@@ -5,7 +5,8 @@ export interface AppWindow extends Window {
             zoom: number;
             boundingBox?: [ [number, number], [number, number]] ;
             googleApiKey: string;
-            apiUrl?: string
+            apiUrl?: string,
+            baseMapUrl: string
         },
         Identity: {
             identityUrl : string

@@ -18,6 +18,9 @@ import { message } from 'antd';
 import MarkerUser from './MarkerUser';
 import MarkerEvent from './MarkerEvent';
 import ModalSendLocation from './ModalSendLocation';
+import { AppWindow } from '../../config/AppWindow';
+
+declare let window: AppWindow;
 //default icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -165,8 +168,8 @@ const MapView = () => {
                 <ZoomControl position="topright" />
                 <MapDisplayPosition controlPosition='bottomright' />
 
-                <TileLayer attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                <TileLayer attribution=''
+                    url={window.ENV.Map.baseMapUrl}
                 />
 
                 {mapTileUrl &&

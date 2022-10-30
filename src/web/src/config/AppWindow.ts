@@ -7,6 +7,7 @@ export interface AppWindow extends Window {
             maxZoom: number;
             boundingBox?: [ [number, number], [number, number]] ;
             googleApiKey: string;
+            baseMapUrl: string;
             mapPage: string
         },
         Identity: {

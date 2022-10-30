@@ -8,6 +8,8 @@ window.ENV = {
         //southWest: LatLngExpression, northEast: LatLngExpression
         boundingBox : [ [7.01,95.01],  [23.89,119.92]],//vietnam
         googleApiKey: '',
+        //baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        baseMapUrl: 'http://localhost/{z}/{x}/{y}.png',
         mapPage: 'http://localhost:5107',
     },
 
