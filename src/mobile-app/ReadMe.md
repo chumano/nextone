@@ -9,10 +9,17 @@ Open cmd then run
 adb logcat
 ```
 # Build android
+##sửa storePassword và  keyPassword
 ```
 cd android
 ./gradlew assembleRelease
 ```
+
+##file build nằm ở 
+```
+android/app/build/outputs/apk/release/app-release.apk
+```
+
 # Deep-link
 https://viblo.asia/p/deep-linking-voi-react-native-GrLZDXGVZk0
 
