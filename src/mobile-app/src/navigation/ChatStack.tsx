@@ -115,6 +115,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
             return {
               title: name,
               headerRight: () => {
+                const iconSize = 18;
                 return (
                   <>
                     {conversationType === ConversationType.Peer2Peer && (
@@ -133,7 +134,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
                               }),
                             );
                           }}>
-                          <AwesomeIcon name="phone" size={16} color={'#000'} />
+                          <AwesomeIcon name="phone" size={iconSize} color={'#000'} />
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -151,7 +152,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
                               }),
                             );
                           }}>
-                          <AwesomeIcon name="video" size={16} color={'#000'} />
+                          <AwesomeIcon name="video" size={iconSize} color={'#000'} />
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
@@ -159,7 +160,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
                               conversationId,
                             });
                           }}>
-                          <AwesomeIcon name="info" size={16} color={'#000'} />
+                          <AwesomeIcon name="info" size={iconSize} color={'#000'} />
                         </TouchableOpacity>
                       </>
                     )}
@@ -169,7 +170,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
                           onPress={() => {
                             navigation.navigate('MembersScreen');
                           }}>
-                          <AwesomeIcon name="info" size={16} color={'#000'} />
+                          <AwesomeIcon name="info" size={iconSize} color={'#000'} />
                         </TouchableOpacity>
                       </>
                     )}
@@ -213,7 +214,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
         />
       </Stack.Navigator>
 
-      <Portal></Portal>
+      {/* <Portal></Portal> */}
     </>
   );
 };

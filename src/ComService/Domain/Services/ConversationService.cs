@@ -267,7 +267,7 @@ namespace ComService.Domain.Services
 
             await _messageRepository.SaveChangesAsync();
 
-            // TODO: send ConversationMessageAdded
+            //send ConversationMessageAdded
             await _bus.Publish(new ConversationMessageAdded()
             {
                 Conversation = conversation,

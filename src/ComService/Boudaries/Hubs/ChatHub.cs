@@ -19,6 +19,7 @@ using ComService.Domain.DomainEvents;
 using Newtonsoft.Json;
 using ComService.Domain;
 using ComService.Infrastructure.AppSettings;
+using NextOne.Shared.Common;
 
 namespace ComService.Boudaries.Hubs
 {
@@ -31,12 +32,14 @@ namespace ComService.Boudaries.Hubs
         private readonly IUserStatusService _userStatusService;
         private readonly IOptionsMonitor<JwtBearerOptions> _jwtBearerOptions;
         private readonly IOptions<FireBaseOptions> _fireBaseOptions;
+        private readonly IdGenerator _idGenerator;
         protected readonly IBus _bus;
         public ChatHub(ILogger<ChatHub> logger,
             IOptionsMonitor<JwtBearerOptions> options,
             IOptions<FireBaseOptions> fireBaseOptions,
             IConversationService conversationService,
             IUserStatusService userStatusService,
+            IdGenerator idGenerator,
             IBus bus)
         {
             _logger = logger;
@@ -44,8 +47,8 @@ namespace ComService.Boudaries.Hubs
             _fireBaseOptions= fireBaseOptions;
             _conversationService = conversationService;
             _userStatusService = userStatusService;
+            _idGenerator = idGenerator;
             _bus = bus;
-
         }
 
         private static ConcurrentDictionary<string, string> ConnectionRooms = new ConcurrentDictionary<string, string>();
@@ -88,8 +91,12 @@ namespace ComService.Boudaries.Hubs
                             else
                             {
                                 //Đang call rồi thì không có call nữa
-                                _logger.LogInformation("Đang call rồi thì không có call nữa");
-                                if (callRoomState.State != CallStateEnum.End) return;
+                                if (callRoomState.State != CallStateEnum.End)
+                                {
+                                    _logger.LogInformation("Đang call rồi thì không có call nữa");
+                                    //TODO: ChatHub tạo message cuộc gọi nhỡ
+                                    return;
+                                }
                             }
 
                             //TODO: check the client user must be in the conversation
@@ -100,6 +107,10 @@ namespace ComService.Boudaries.Hubs
                                 userName = client.UserName,
                                 callType = callType
                             });
+
+                            //TODO: ChatHub tạo message yêu cầu cuộc gọi
+                            var messageId = _idGenerator.GenerateNew();
+                            await _conversationService.AddMessage(conversation, new Message(messageId, MessageTypeEnum.CallMessage, client.UserId, "Cuộc gọi bắt đầu"));
 
                             //create room and join
                             ConnectionRooms[this.Context.ConnectionId] = conversationId;
@@ -157,6 +168,7 @@ namespace ComService.Boudaries.Hubs
 
                                 if (accepted)
                                 {
+                                    //TODO: ChatHub tạo message cuộc gọi đang tiến hành
                                     callRoomState.State = CallStateEnum.Calling;
                                     CallRoomState.AddOrUpdate(conversationId, callRoomState, (string key, CallRoomState oldState) =>
                                     {
@@ -197,16 +209,24 @@ namespace ComService.Boudaries.Hubs
                         {
                             //data is room
                             var conversationId = (string)data;
+                            var conversation = await _conversationService.Get(conversationId);
+                            if (conversation == null) return;
+
                             var callRoomState = CallRoomState.GetOrDefault(conversationId);
                             if (callRoomState != null)
                             {
                                 CallRoomState.Remove(conversationId, out _);
+                                //TODO: ChatHub tạo message cuộc gọi kết thúc
+                                var messageId = _idGenerator.GenerateNew();
+                                await _conversationService.AddMessage(conversation, new Message(messageId, MessageTypeEnum.CallEndMessage, client.UserId, "Cuộc gọi kết thúc"));
                             }
+
                             var emitData = CreateEventData(CallMessage, new
                             {
                                 type = "other-hangup",
                             });
 
+                          
                             //leave room
                             var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var _);
                             await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
@@ -373,30 +393,41 @@ namespace ComService.Boudaries.Hubs
         //
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await base.OnDisconnectedAsync(exception);
-            var isRemovedUser = OnlineClients.TryRemove(Context.ConnectionId, out var client);
-            if (isRemovedUser)
+            try
             {
-                await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"user_{client.UserId}");
-            }
-
-            //get room that the user joined, then Emit user disconnected
-            var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var conversationId);
-            if (isRemovedRoom)
-            {
-                await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
-                CallRoomState.Remove(conversationId, out _);
-            }
-
-            //TODO: Update user Offline
-            if (client != null)
-            {
-                await _bus.Publish(new UserOnlineEvent()
+                await base.OnDisconnectedAsync(exception);
+                var isRemovedUser = OnlineClients.TryRemove(Context.ConnectionId, out var client);
+                if (isRemovedUser)
                 {
-                    UserId = client.UserId,
-                    UserName = client.UserName,
-                    IsOnline = false
-                });
+                    await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"user_{client.UserId}");
+                }
+
+                //get room that the user joined, then Emit user disconnected
+                var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var conversationId);
+                if (isRemovedRoom)
+                {
+                    var conversation = await _conversationService.Get(conversationId);
+                    if (conversation == null) return;
+                    var messageId = _idGenerator.GenerateNew();
+                    await _conversationService.AddMessage(conversation, new Message(messageId, MessageTypeEnum.CallEndMessage, client.UserId, "Cuộc gọi kết thúc"));
+
+                    await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
+                    CallRoomState.Remove(conversationId, out _);
+                }
+
+                //TODO: Update user Offline
+                if (client != null)
+                {
+                    await _bus.Publish(new UserOnlineEvent()
+                    {
+                        UserId = client.UserId,
+                        UserName = client.UserName,
+                        IsOnline = false
+                    });
+                }
+            }catch(Exception ex)
+            {
+                _logger.LogError(ex, "ChatHub OnDisconnectedAsync error: " + ex.Message);
             }
          
         }

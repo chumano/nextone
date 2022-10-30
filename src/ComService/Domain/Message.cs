@@ -16,14 +16,14 @@ namespace ComService.Domain
             string id,
             MessageTypeEnum messageType,
             string userSenderId,
-            string content, List<MessageFile> files)
+            string content, List<MessageFile> files = null)
         {
             Id = id;
             Type = messageType;
             UserSenderId = userSenderId;
             SentDate = DateTime.Now;
             Content = content;
-            Files = files;
+            Files = files??new List<MessageFile>();
         }
 
         public Message(
@@ -67,7 +67,8 @@ namespace ComService.Domain
 
         SystemMessage, // single text
         CallMessage,
-        Event
+        Event,
+        CallEndMessage,
     }
 
     public class MessageFile

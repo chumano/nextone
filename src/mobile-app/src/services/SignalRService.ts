@@ -24,6 +24,9 @@ export class SignalRService {
       this.connection.onclose((error) => {
         console.log(`[Hub] onClose:`, error)
       })
+      this.connection.onreconnecting((error) => {
+        console.log(`[Hub] onreconnecting:`, error)
+      })
   
       this.connection.on("data", (message: { eventKey: string, eventData: any }) => {
         //console.log("[Hub] receive data", message)

@@ -8,6 +8,7 @@ import { frowNow } from '../../../utils/functions';
 import FileView from '../file/FileView';
 import MessageEvent from './MessageEvent';
 import MessageItemUpload, { MessageUpload } from './MessageItemUpload';
+import {PhoneOutlined } from '@ant-design/icons'
 
 
 
@@ -45,7 +46,9 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
                     </div>
                 }
                 <div className='message-content'>
-                    <div>
+                    <div style={{display:'flex', flexDirection:'row', alignItems:'center'}}>
+                        {(message.type===MessageType.CallMessage) && <PhoneOutlined  style={{marginRight:10}} className={'call-icon start'}/> }
+                        {(message.type===MessageType.CallEndMessage) && <PhoneOutlined  style={{marginRight:10}} className={'call-icon end'}/> }
                         {message.content}
                     </div>
                     {properties && properties['LOCATION'] &&

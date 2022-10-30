@@ -76,7 +76,7 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
       if (conversation.type !== ConversationType.Peer2Peer) {
         lastMessageText += lastMessage.userSender.userName + ': ';
       }
-      if (lastMessage.type === MessageType.Text) {
+      if (lastMessage.type === MessageType.Text || lastMessage.type === MessageType.CallMessage || lastMessage.type === MessageType.CallEndMessage) {
         let content = lastMessage.content.replace(/[\r\n]+/g, ' ');
         if (content.length > 20) {
           content = content.slice(0, 20).trim() + '...';

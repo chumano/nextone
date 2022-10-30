@@ -4,6 +4,7 @@ import { Avatar, Text } from 'react-native-paper';
 import { APP_THEME } from '../../constants/app.theme';
 
 import UserAvatar from '../User/UserAvatar';
+import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
 import { Message } from '../../types/Message/Message.type';
 import { useSelector } from 'react-redux';
@@ -98,10 +99,15 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
             }
            
             <View  style={styles.messageContentBubble}>
-              {/* text */}
-              {!!message?.content &&
-                <Text>{message?.content?.trim()}</Text>
-              }
+              <View style={{display:'flex', flexDirection:'row'}}>
+                {message.type === MessageType.CallMessage &&  <AwesomeIcon name="phone" size={18} color={'#1890ff'} style={{marginRight:10}}/> }
+                {message.type === MessageType.CallEndMessage && <AwesomeIcon name="phone" size={18} color={'red'} style={{marginRight:10}}/> }
+                {/* text */}
+                {!!message?.content &&
+                  <Text>{message?.content?.trim()}</Text>
+                }
+              </View>
+
               {properties && properties['LOCATION'] &&
                   <View>
                       <Text>Vị trí:</Text>

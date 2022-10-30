@@ -74,6 +74,16 @@
             border-radius: 10px;
             box-shadow: 1px 1px 1px 1px $color-grey-2;
             word-break: break-all;
+
+            .call-icon{
+                &.start{
+                    color: #1890ff
+                }
+
+                &.end{
+                    color: red
+                }
+            }
         }
 
         .message-time {

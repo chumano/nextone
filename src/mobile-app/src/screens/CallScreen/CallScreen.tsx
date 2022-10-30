@@ -379,8 +379,8 @@ const useCall = (callInfo?: CallMessageData)=>{
         
               break;
             case 'disconnected':
-              // hangup();
-              // dispatch(callActions.stopCall());
+              hangup();
+              dispatch(callActions.stopCall());
               break;
           };
         } );

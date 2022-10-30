@@ -6,4 +6,5 @@ export enum MessageType {
   SystemMessage,
   CallMessage,
   Event,
+  CallEndMessage,
 }
