@@ -122,7 +122,7 @@ const ChatPage: React.FC = () => {
                     }
                     {conversation &&
                         <>
-                            <ChatBox conversation={conversation} />
+                            <ChatBox key={conversation.id} conversation={conversation} />
                             {isShowConversationInfo &&
 
                                 <ConversationInfo conversation={conversation} />

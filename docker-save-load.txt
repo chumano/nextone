@@ -1,0 +1,17 @@
+docker save -o file.tar hub.nextone.local/nextone/file:latest
+docker save -o identity.tar hub.nextone.local/nextone/identity:latest
+docker save -o master.tar hub.nextone.local/nextone/master:latest
+docker save -o com.tar hub.nextone.local/nextone/com:latest
+docker save -o map.tar hub.nextone.local/nextone/map:latest
+
+docker save -o com-web.tar hub.nextone.local/nextone/com-web:latest
+docker save -o map-web.tar hub.nextone.local/nextone/map-web:latest
+ 
+docker load -i file.tar
+docker load -i identity.tar
+docker load -i master.tar
+docker load -i com.tar
+docker load -i map.tar
+
+docker load -i com-web.tar
+docker load -i map-web.tar

@@ -13,6 +13,21 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 
 Call: when app closed
 	- use background-timer and foreservice to get call reqeust
+	
+Hướng dẫn cài đặt server
+	- Windows 10
+	- Cài đặt docker desktop
+	- Tạo self-signed-cerfiticates
+	- Cấu hình file 
+		.env
+		webconfig
+		mapwebconfig
+		nginx
+Hướng dẫn cái đặt app
+	Dowload file apk
+	Allow install from apk
+	Install CA 
+	
 -------------------------------------------
 Web-TODO:
 
