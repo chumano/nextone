@@ -56,6 +56,7 @@ namespace ComService.Boudaries.Controllers
 
                 if (!string.IsNullOrWhiteSpace(registerTokenDTO.OldToken))
                 {
+                    await _cloudService.UnsubscribeToken(registerTokenDTO.OldToken);
                     await RemoveToken(user.UserId, registerTokenDTO.OldToken);
                 }
 
@@ -76,6 +77,7 @@ namespace ComService.Boudaries.Controllers
                     userToken.Date = DateTime.Now;
                     _comDbContext.UserDeviceTokens.Update(userToken);
                 }
+                await _cloudService.SubscribeToken(registerTokenDTO.Token);
 
                 await _comDbContext.SaveChangesAsync();
                 return Ok(ApiResult.Success(null));
@@ -99,6 +101,7 @@ namespace ComService.Boudaries.Controllers
                     throw new Exception("User is not found");
                 }
 
+                await _cloudService.UnsubscribeToken(removeTokenDTO.Token);
                 bool isRemove = await RemoveToken(user.UserId, removeTokenDTO.Token);
                 if (isRemove)
                 {

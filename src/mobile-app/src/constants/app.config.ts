@@ -33,7 +33,8 @@ export const APP_CONFIG_LOCAL: AppConfig = {
   FILE_HOST: 'http://192.168.0.105:5106',
 };
 
-export const APP_CONFIG = APP_CONFIG_DEMO;
+//CHANGE_ME
+export const APP_CONFIG = APP_CONFIG_DEPLOY;
 
 export const OAUTH_CONFIG: OAuthConfig = {
   client_id: 'native-app',

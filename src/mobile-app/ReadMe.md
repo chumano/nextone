@@ -9,11 +9,14 @@ Open cmd then run
 adb logcat
 ```
 # Build android
+find text "CHANGE_ME" to config
+
 ##sửa storePassword và  keyPassword
 ```
 cd android
 ./gradlew assembleRelease
 ```
+
 
 ##file build nằm ở 
 ```

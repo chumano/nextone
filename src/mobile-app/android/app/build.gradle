@@ -231,9 +231,9 @@ android {
         }
         release {
             storeFile file('your_key_name.keystore')
-            storePassword 'your_key_store_password' //TODO: change pass when release
+            storePassword 'Nextone@123' //TODO: CHANGE_ME change pass when release
             keyAlias 'your_key_alias'
-            keyPassword 'your_key_file_alias_password' //TODO: change pass when release
+            keyPassword 'Nextone@123' //TODO: CHANGE_ME change pass when release
         }
     }
     buildTypes {

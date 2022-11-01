@@ -50,6 +50,7 @@ namespace ComService.Infrastructure
                     Priority = Priority.High,
                     Notification = new AndroidNotification()
                     {
+                        NotificationCount = 0,
                         ClickAction = "FLUTTER_NOTIFICATION_CLICK",
                     }
                 };

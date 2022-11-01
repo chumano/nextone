@@ -42,13 +42,6 @@ export async function getFCMToken() {
     };
 }
 
-export function registerFBBackgroundHanlder(callback: any) {
-    // Register background handler
-    messaging().setBackgroundMessageHandler((msg:any)=>{
-        console.log(`[${new Date()}] ` + 'Message handled in the background!', msg);
-        callback(msg)
-    });
-}
 
 
 export function registerFBForegroundHandler(callback: any){

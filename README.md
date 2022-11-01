@@ -26,10 +26,15 @@ Debug in DockerDesktop :
 apt-get install openssh-server unzip curl
 https://docs.microsoft.com/en-us/visualstudio/debugger/attach-to-process-running-in-docker-container?view=vs-2022
 ```
-
+# Deploy
+Chú ý: 
+ComService có biến môi trường FireBaseOptions__KeyPath C:\Workspace\ucom\firebasekey.json
 
 Nén: docker save -o somfile.tar image:tag
 Load: docker load -i somefile.tar
+
+## Build mobile app
+find text "CHANGE_ME" to config
 
 ### Frontend
 - node >=  v16
@@ -174,8 +179,6 @@ cd configs/certificates/
 
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout id.nextone.local.key -out id.nextone.local.crt -config id.nextone.local.conf
 
-##android
-openssl pkcs12 -export -in 192.168.0.122-cert.pem -inkey 192.168.0.122-key.pem -out 192.168.0.122.p12
 #verify certificates: 2 results must be same
 openssl x509 -noout -modulus -in id.nextone.local.crt| openssl md5
 openssl rsa -noout -modulus -in id.nextone.local.key| openssl md5
