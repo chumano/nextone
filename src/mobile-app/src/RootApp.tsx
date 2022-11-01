@@ -23,7 +23,7 @@ import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } fro
 import messaging, { firebase } from '@react-native-firebase/messaging';
 
 //CHANGE_ME
-const useSocketToListenCall = false;
+const useSocketToListenCall = true;
 
 const options = {
   ios: {
