@@ -33,10 +33,10 @@ const ConversationScreen = () => {
   }, [dispatch]);
   
   useFocusEffect(useCallback(() => {
-    console.log("ConversationScreen is focused") 
+    //console.log("ConversationScreen is focused") 
     //dispatch(getListConversation({pageOptions: {offset: 0}}));
     return () => {
-      console.log("ConversationScreen is outfocused") 
+      //console.log("ConversationScreen is outfocused") 
     };
   }, []));
 

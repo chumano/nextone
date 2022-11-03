@@ -16,21 +16,21 @@ const EventList: React.FC<EventListProps> = () => {
   const [refreshing, setRefreshing] = React.useState(false);
 
   const onRefresh = React.useCallback(() => {
-    console.log('refreshing............');
+    //console.log('refreshing............');
     dispatch(getEventsByMe({offset: 0, pageSize: 20}));
     return () => {};
   }, []);
 
   useEffect(() => {
-    console.log('useEffect getEventsByMe............');
+    //console.log('useEffect getEventsByMe............');
     dispatch(getEventsByMe({offset: 0, pageSize: 20}));
   }, []);
 
   const loadMoreResults = React.useCallback(async () => {
-    console.log({eventState, length: eventState.data?.length});
+    //console.log({eventState, length: eventState.data?.length});
     if (eventState.eventsLoading || eventState.allLoaded) return;
 
-    console.log('loadmoreResult...................', eventState.eventsOffset);
+    //console.log('loadmoreResult...................', eventState.eventsOffset);
     dispatch(
       getEventsByMe({
         offset: eventState.eventsOffset,

@@ -69,7 +69,7 @@
         visibleDebug();
         
         function logMessage(...message) {
-            console.log(message)
+            //console.log(message)
             let textMessage = JSON.stringify(message[0]);
             debugMessages.unshift(textMessage);
             if (debugMessages.length > 10) {

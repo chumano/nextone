@@ -234,13 +234,14 @@ export abstract class CallBase {
         });
     }
 
-    public addIceCandidate(data: { candidate: string, label: number }): void {
+    public addIceCandidate(data: { candidate: string, label: number,id:string }): void {
         console.log('Adding ice candidate.', data);
         if (!data.candidate) {
             console.log('data.candidate is null');
             return;
         }
         const candidate = new RTCIceCandidate({
+            sdpMid: data.id,
             sdpMLineIndex: data.label,
             candidate: data.candidate
         });

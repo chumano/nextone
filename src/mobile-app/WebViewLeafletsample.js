@@ -633,7 +633,7 @@
                             }
                         },
                         n.sendMessage = function (e) {
-                            window.ReactNativeWebView && (window.ReactNativeWebView.postMessage(JSON.stringify(e)), console.log("sendMessage  ", JSON.stringify(e)))
+                            window.ReactNativeWebView && (window.ReactNativeWebView.postMessage(JSON.stringify(e)), //console.log("sendMessage  ", JSON.stringify(e)))
                         },
                         n.loadMockData = function () {
                             n.addDebugMessage("loading mock data"),

@@ -35,7 +35,7 @@ const MessageItemUpload: React.FC<MessageUploadProps> = ({ message }) => {
     const uploadFile = async () => {
       const file = message.uploadFile;
       const uploadResponse = await fileApi.uploadFiles([file], (progressEvent) => {
-        console.log('upload_file', progressEvent.loaded, progressEvent)
+        //console.log('upload_file', progressEvent.loaded, progressEvent)
         const progress = Math.round((100 * progressEvent.loaded) / progressEvent.total);
         setUploadProgress(progress);
 

@@ -30,7 +30,7 @@ const SendEventScreen = () => {
   const route = useRoute<EventSendRouteProp>();
 
   useLayoutEffect(() => {
-    console.log('SendEventScreen-params', route.params)
+    //console.log('SendEventScreen-params', route.params)
     const { eventType } = route.params;
     navigation.setOptions({
       title: `Sự kiện : ${eventType.name}`,
@@ -86,7 +86,7 @@ const SendEventScreen = () => {
             }
           ));
           const uploadResponse = await fileApi.uploadFiles(files, (progressEvent) => {
-            console.log('upload_file', progressEvent.loaded, progressEvent)
+            //console.log('upload_file', progressEvent.loaded, progressEvent)
             const progress = Math.round((100 * progressEvent.loaded) / progressEvent.total);
             //setUploadProgress(progress);
     

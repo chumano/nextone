@@ -80,7 +80,7 @@ const MapView: React.FC<MapViewProps> =
 
     const sendMessage = useCallback( (payload: any) => {
         if(!webViewRef.current) return;
-        console.log(`[sending]: ${JSON.stringify(payload)}`);
+        //console.log(`[sending]: ${JSON.stringify(payload)}`);
         const run1 = `
         if(window.postMessage) {
             alert("postMessage")
@@ -101,8 +101,8 @@ const MapView: React.FC<MapViewProps> =
     useEffect(()=>{
         if (!initialized || !mapConfig) return;
         if(!users && !eventInfos) return;
-        console.log(" users, eventInfos change................")
-        console.log({users, eventInfos})
+        //console.log(" users, eventInfos change................")
+        //console.log({users, eventInfos})
         const userList = users?.filter(o=> o.lastLat!=null && o.lastLon!=null).map(o=>{
             return {
                 position : [o.lastLat, o.lastLon],
@@ -182,7 +182,7 @@ const MapView: React.FC<MapViewProps> =
     const showEventInfo = useCallback(async (eventId:string)=>{
         //get eventInfo
         const eventInfo = eventInfos?.find(o=>o.id === eventId);
-        console.log('showEventInfo',{eventInfo})
+        //console.log('showEventInfo',{eventInfo})
         if(!eventInfo){
             return;
         }
@@ -223,7 +223,7 @@ const MapView: React.FC<MapViewProps> =
                 data: any
             } = JSON.parse(msg);
 
-            console.log(`handleMessage: ${JSON.stringify(message)}`);
+            //console.log(`handleMessage: ${JSON.stringify(message)}`);
 
             if (message.type === 'MAP_READY') {
                 setInitialized(true);
@@ -240,7 +240,7 @@ const MapView: React.FC<MapViewProps> =
         }, [sendInitialMessage, showEventInfo, showUserInfo]);
 
     const webView = useMemo(()=>{
-        console.log("WEBVIEW change................")
+        //console.log("WEBVIEW change................")
         return <WebView
             originWhitelist={['*']}
             source={LEAFLET_HTML_SOURCE}

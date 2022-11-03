@@ -14,7 +14,7 @@ const list = (
   textSearch: string,
   getListNewsDTO: GetListNewsDTO,
 ): Promise<ApiResponse<News[]>> => {
-  console.log(getListNewsDTO);
+  //console.log(getListNewsDTO);
   const responsePromise = axiosInstance.get(`/news/getlist`, {
     params: {
       textSearch,

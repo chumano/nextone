@@ -40,7 +40,7 @@ export const authLogin = createAsyncThunk(
   async ({email, password}: UserLoginInfo, {rejectWithValue}) => {
     try {
       const response = await authApi.login(email, password);
-      console.log("authLogin response: " + JSON.stringify(response))
+      //console.log("authLogin response: " + JSON.stringify(response))
       const jwtDecodeInfo = jwtDecode(response.data.access_token) as JWTDecodeInfo;
 
       const result = {
@@ -52,7 +52,7 @@ export const authLogin = createAsyncThunk(
 
       return result;
     } catch (error) {
-      console.log("Error: " + JSON.stringify(error))
+      //console.log("Error: " + JSON.stringify(error))
       const loginErrors = error as AxiosError;
       return loginErrorHandler(loginErrors, rejectWithValue);
     }

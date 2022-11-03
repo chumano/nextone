@@ -38,7 +38,7 @@ const ConversationList = () => {
 
   const onRefresh = React.useCallback(() => {
     //setRefreshing(true);
-    console.log('refreshing............');
+    //console.log('refreshing............');
     dispatch(getListConversation({pageOptions: {offset: 0}}));
     setInitLoading(false);
     return ()=>{
@@ -48,7 +48,7 @@ const ConversationList = () => {
   const loadMoreResults = React.useCallback(async () => {
     if (conversationsLoading || allLoaded) return;
 
-    console.log('loadmoreResult...................', conversationsOffset);
+    //console.log('loadmoreResult...................', conversationsOffset);
     dispatch(getListConversation({pageOptions:{offset: conversationsOffset}, loadMore: true}));
   }, [conversationsLoading, allLoaded, conversationsOffset]);
 

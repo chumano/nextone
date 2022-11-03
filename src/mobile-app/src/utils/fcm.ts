@@ -12,7 +12,7 @@ export async function requestFBUserPermission() {
     // await registerAppWithFCM();
   
     if (enabled) {
-      console.log('Authorization status:', authStatus);
+      //console.log('Authorization status:', authStatus);
     }
   
     return enabled;
@@ -30,11 +30,7 @@ export async function getFCMToken() {
         }
     }
 
-    console.log('getFCMToken = ', {
-        hasNewToken,
-        token: fcmToken,
-        oldToken: undefined
-    });
+    //console.log('getFCMToken = ', { hasNewToken,  token: fcmToken,  oldToken: undefined });
     return {
         hasNewToken,
         token: fcmToken,
@@ -46,7 +42,7 @@ export async function getFCMToken() {
 
 export function registerFBForegroundHandler(callback: any){
     return messaging().onMessage((msg:any)=>{
-        console.log(`[${new Date()}] ` + 'Message handled in the foreground!', msg);
+        //console.log(`[${new Date()}] ` + 'Message handled in the foreground!', msg);
         callback(msg)
     });
 }

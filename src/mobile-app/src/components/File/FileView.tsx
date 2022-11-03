@@ -20,14 +20,14 @@ const checkPermission = async (callback: () => void) => {
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
                 // Start downloading
                 callback();
-                console.log('Storage Permission Granted.');
+                //console.log('Storage Permission Granted.');
             } else {
                 // If permission denied then show alert
                 Alert.alert('Error', 'Storage Permission Not Granted');
             }
         } catch (err) {
             // To handle permission related exception
-            console.log("++++" + err);
+            //console.log("++++" + err);
         }
     }
 };
@@ -72,7 +72,7 @@ const FileView: React.FC<FileViewProps> = ({ file, hiddenName, onView }) => {
             // Math.floor(date.getTime() + date.getSeconds() / 2) +
             fileName;
 
-        console.log('download file path', filePath);
+        //console.log('download file path', filePath);
 
         let options = {
             fileCache: true,
@@ -90,7 +90,7 @@ const FileView: React.FC<FileViewProps> = ({ file, hiddenName, onView }) => {
             .fetch('GET', fileUrl)
             .then((res: any) => {
                 // Alert after successful downloading
-                console.log('res -> ', JSON.stringify(res));
+                //console.log('res -> ', JSON.stringify(res));
             });
     }, []);
 

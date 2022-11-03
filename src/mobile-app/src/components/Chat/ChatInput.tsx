@@ -82,7 +82,7 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
 
   const pickFile = useCallback(async()=>{
     const result = await DocumentPicker.pickMultiple();
-    console.log('pickFile' , result)
+    //console.log('pickFile' , result)
     for(let i =0 ;i < result.length; i++){
       setTimeout(()=>{
           const file = result[i];
@@ -101,7 +101,7 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
       selectionLimit : 5
     }
     const result = await launchImageLibrary(options);
-    console.log('pickImage' , result)
+    //console.log('pickImage' , result)
     //add UploadMessage
     const { assets } = result;
     if(!assets) {

@@ -35,7 +35,7 @@ export const HomeScreen = () => {
 
     //call myself
     const response = await notificationApi.testCall(userInfo!.userId);
-    console.log('testCall', response);
+    //console.log('testCall', response);
   };
   return (
     <View style={styles.homeScreenContainer}>

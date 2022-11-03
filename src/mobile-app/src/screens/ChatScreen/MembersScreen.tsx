@@ -57,7 +57,7 @@ const MembersScreen = ({ navigation, route }: ChatStackProps) => {
     if (!conversation) return <Loading />;
 
     const { members } = conversation;
-    console.log({ members })
+    //console.log({ members })
     return (
         <SafeAreaView>
             <FlatList

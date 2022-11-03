@@ -162,7 +162,7 @@ const FilePiker = (
             mediaType: 'mixed',
             selectionLimit: 5
         });
-        console.log('pickImage', result)
+        //console.log('pickImage', result)
 
         const { assets } = result;
         if (!assets) {
@@ -193,7 +193,7 @@ const FilePiker = (
             mediaType: 'mixed',
             includeExtra: true
         });
-        console.log('pickCamera', result)
+        //console.log('pickCamera', result)
 
         const { assets } = result;
         if (!assets) {

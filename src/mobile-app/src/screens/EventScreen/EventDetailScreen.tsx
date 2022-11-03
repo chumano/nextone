@@ -28,7 +28,7 @@ const EventDetailScreen = () => {
       title: `Sự kiện : ${eventInfo.eventType.name}`,
     });
 
-    console.log('EventDetailScreen',{eventInfo})
+    //console.log('EventDetailScreen',{eventInfo})
     setEventInfo(eventInfo);
   }, [navigation, route]);
 

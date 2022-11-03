@@ -92,7 +92,8 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
     }
     return lastMessageText;
   };
-  const displayDate = frowNow(conversation.updatedDate!);
+  const date = conversation.messages.length> 0 ?conversation.messages[0].sentDate : undefined;
+  const displayDate = frowNow(date || conversation.updatedDate!);
   return (
     <Pressable
       onPress={loadConversationHandler}

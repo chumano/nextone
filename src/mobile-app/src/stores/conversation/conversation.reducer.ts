@@ -40,16 +40,16 @@ export const conversationSlice = createSlice({
     },
     receiveChatData: (state, action: PayloadAction<ChatData>) => {
       const { chatKey, data } = action.payload;
-      console.log('[receiveChatData] ', action.payload)
+      //console.log('[receiveChatData] ', action.payload)
       const conversations = state.data || []
       switch (chatKey) {
           case 'message':
               {
                   const message = data as Message;
-                  console.log('[receiveChatData]-message', message.id)
+                  //console.log('[receiveChatData]-message', message.id)
                   const conversation =conversations.find(o => o.id === message.conversationId);
                   if (!conversation) {
-                      console.log('not exist conversation', message.conversationId)
+                      //console.log('not exist conversation', message.conversationId)
                       state.notLoadedConversationId = message.conversationId;
                       return;
                   }

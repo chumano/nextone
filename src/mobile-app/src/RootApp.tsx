@@ -46,13 +46,9 @@ const options = {
   },
 };
 
-RNCallKeep.setup(options).then(accepted => {
-  console.log('RNCallKeep setup: ', accepted);
-});
-
 //===================================================
 const displayCallRequest = async (message: CallMessageData)=>{
-  console.log('displayCallRequest', message)
+  //console.log('displayCallRequest', message)
   if (message.type != 'call') {
     return;
   }
@@ -94,7 +90,7 @@ const handleFBCall = async (remoteMessage: any) => {
 if(!useSocketToListenCall){
  //firebase background
  messaging().setBackgroundMessageHandler(async (remoteMessage)=>{
-  console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
+  //console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
   const message: CallMessageData = remoteMessage.data as any;
   
   displayCallRequest(message);
@@ -107,6 +103,12 @@ const RootApp = () => {
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const { isCalling } = useSelector((store: IAppStore) => store.call);
 
+  useEffect(()=>{
+    RNCallKeep.setup(options).then(accepted => {
+      //console.log('RNCallKeep setup: ', accepted);
+    });
+    
+  },[])
   //app state
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
@@ -114,16 +116,16 @@ const RootApp = () => {
         appState.current.match(/inactive|background/) &&
         nextAppState === 'active'
       ) {
-        console.log('App has come to the foreground!');
+        //console.log('App has come to the foreground!');
       }
 
       appState.current = nextAppState;
       setAppStateVisible(appState.current);
-      console.log('AppState', appState.current);
+      //console.log('AppState', appState.current);
     });
 
     return () => {
-      console.log('RootApp unmounted');
+      //console.log('RootApp unmounted');
       subscription.remove();
     };
   }, []);
@@ -134,7 +136,7 @@ const RootApp = () => {
     if(useSocketToListenCall) return;
 
     const initNotification = async () => {
-      console.log('requestFBUserPermission')
+      //console.log('requestFBUserPermission')
       const enabled = await requestFBUserPermission();
       if (!enabled) {
         return;
@@ -146,7 +148,7 @@ const RootApp = () => {
         return;
       }
       const response = await notificationApi.registerToken(token, oldToken);
-      console.log('registerToken: ', response)
+      //console.log('registerToken: ', response)
     };
 
     initNotification();
@@ -160,7 +162,7 @@ const RootApp = () => {
     if(!useSocketToListenCall) return;
     const subscription = signalRService.subscription( CallSignalingEvents.CALL_REQUEST, (msg: any) => {
         //TODO: receive call-request , wait user accept
-        console.log("receiving a call...", msg)
+        //console.log("receiving a call...", msg)
         //{"callType": "video", "room": "7934dba7-1a97-4cfd-a161-7baa23e90e09", "userId": "05d5ce08-6a51-4c90-9f73-163e2bb136ee", "userName": "manager"}
         const callMessage: CallMessageData = {
           type : 'call',
@@ -180,7 +182,7 @@ const RootApp = () => {
 
   const answerCall = async (data: any) => {
     try {
-      console.log(`[answerCall]: `, data);
+      //console.log(`[answerCall]: `, data);
       const { callUUID } = data;
       RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
 
@@ -203,7 +205,7 @@ const RootApp = () => {
   };
 
   const endCall = async (data: any) => {
-    console.log(`[endCall],: `, data);
+    //console.log(`[endCall],: `, data);
     const { callUUID } = data;
     const callInfo = CallService.getCallInfo(callUUID);
     if (callInfo) {
@@ -243,7 +245,7 @@ const RootApp = () => {
 
   useEffect(() => {
     const subscription = signalRService.subscription( 'chat', (data: ChatData) => {
-        console.log('[chat]', data);
+        //console.log('[chat]', data);
         dispatch(conversationActions.receiveChatData(data));
       },
     );
@@ -256,11 +258,11 @@ const RootApp = () => {
   //update location heart beat
   useEffect(() => {
     setupLocationWatch(newLatLng => {
-      console.log('setupLocationWatch', newLatLng);
+      //console.log('setupLocationWatch', newLatLng);
     });
     startSendHeartBeat(async () => {
       const locationString = await AsyncStorage.getItem(LOCATION);
-      console.log('startSendHeartBeat', { locationString });
+      //console.log('startSendHeartBeat', { locationString });
       if (locationString) {
         const location: { lat: number; lon: number } = JSON.parse(locationString);
         conversationApi.updateMyStatus({
@@ -272,7 +274,7 @@ const RootApp = () => {
       }
     });
     return () => {
-      console.log('stopSendHeartBeat');
+      //console.log('stopSendHeartBeat');
       stopSendHeartBeat();
     };
   }, []);

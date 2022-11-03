@@ -32,7 +32,7 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
   };
 
   const handleOnTopReached = useCallback(() => {
-    console.log('[MessageList] loadMore.....', messagesLoading, messagesAllLoaded)
+    //console.log('[MessageList] loadMore.....', messagesLoading, messagesAllLoaded)
     if (messagesLoading || messagesAllLoaded) {
       return;
     }

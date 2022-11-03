@@ -54,7 +54,7 @@ const _setupLocationWatch = async (
             calback(newLatLng);
         },
         (error) => {
-            console.log(error)
+            //console.log(error)
         },
         {
             enableHighAccuracy: true,

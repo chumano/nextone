@@ -15,7 +15,7 @@ const EventScreen = () => {
   const dispatch: AppDispatch = useDispatch();
 
   useLayoutEffect(() => {
-    console.log('EventScreen',{params: route?.params})
+    //console.log('EventScreen',{params: route?.params})
     if(route.params){
       const {reload} = route.params;
       if(reload){

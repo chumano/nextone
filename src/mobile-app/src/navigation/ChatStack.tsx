@@ -96,7 +96,7 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
                       }}>
                       <MaterialCommunityIcon
                         name="chat-plus-outline"
-                        size={16}
+                        size={20}
                         color={'#000'}
                       />
                     </TouchableOpacity>
@@ -110,12 +110,12 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
           name="ChatScreen"
           component={ChatScreen}
           options={({route, navigation}) => {
-            console.log('[ChatScreen]route.params', route.params);
+            //console.log('[ChatScreen]route.params', route.params);
             const {conversationId, name, conversationType} = route.params;
             return {
               title: name,
               headerRight: () => {
-                const iconSize = 18;
+                const iconSize = 20;
                 return (
                   <>
                     {conversationType === ConversationType.Peer2Peer && (

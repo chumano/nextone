@@ -17,30 +17,30 @@ export class SignalRService {
     }
     private init() {
       this.connection.onreconnected((connectionid) => {
-        console.log(`[Hub] onreconnected: ${connectionid}`)
+        //console.log(`[Hub] onreconnected: ${connectionid}`)
         this.onConnected();
       })
 
       this.connection.onclose((error) => {
-        console.log(`[Hub] onClose:`, error)
+        //console.log(`[Hub] onClose:`, error)
       })
       this.connection.onreconnecting((error) => {
-        console.log(`[Hub] onreconnecting:`, error)
+        //console.log(`[Hub] onreconnecting:`, error)
       })
   
       this.connection.on("data", (message: { eventKey: string, eventData: any }) => {
-        //console.log("[Hub] receive data", message)
+        ////console.log("[Hub] receive data", message)
         this.onEvent(message.eventKey, message.eventData);
       });
     }
   
     connectHub = async () => {
-      console.log("[Hub] connectHub ", this.connection?.state)
+      //console.log("[Hub] connectHub ", this.connection?.state)
       try{
         if(this.connection.state === signalR.HubConnectionState.Connecting 
          || this.connection.state === signalR.HubConnectionState.Connected
           || this.connection.state === signalR.HubConnectionState.Reconnecting){
-            console.log(`[Hub] connectHub isConnected/Connecting`)
+            //console.log(`[Hub] connectHub isConnected/Connecting`)
             return;
         }else{
           // try{
@@ -113,7 +113,7 @@ export class SignalRService {
         ) as unknown as UserTokenInfoResponse;
         const accessToken = userTokenInfoResponse.access_token;
         const hubRegisterResult = await this.connection.invoke('register',accessToken);
-        console.log('[Hub] registerResult', hubRegisterResult)
+        //console.log('[Hub] registerResult', hubRegisterResult)
       }
       this.onEvent('connected', true);
     }

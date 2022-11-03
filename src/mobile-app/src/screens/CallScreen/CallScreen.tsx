@@ -138,7 +138,7 @@ const useCall = (callInfo?: CallMessageData)=>{
   const peerConnectionRef = useRef<RTCPeerConnection>();
 
   const hangup = () => {
-    console.log('hangup');
+    //console.log('hangup');
     //clear something
     if (peerConnectionRef.current) {
       peerConnectionRef.current.close();
@@ -155,11 +155,11 @@ const useCall = (callInfo?: CallMessageData)=>{
   }
 
   useEffect(() => {
-    console.log('Call screen open....')
+    //console.log('Call screen open....')
     CallService.isCalling = true;
     setCalling(true);
     const subscription = signalRService.subscription('connected',(data: any) => {
-        console.log('[signalRService connected]', data);
+        //console.log('[signalRService connected]', data);
         setConnected(true);
       },
     );
@@ -173,17 +173,17 @@ const useCall = (callInfo?: CallMessageData)=>{
     const subscription = signalRService.subscription( CallSignalingEvents.CALL_MESSAGE,
       async (message: CallMessage) => {
         try{
-          console.log("[CALL_MESSAGE] receive-" + message.type)
+          //console.log("[CALL_MESSAGE] receive-" + message.type)
           
           if(!peerConnectionRef.current) {
-            console.log('peerConnectionRef.current is null')
+            //console.log('peerConnectionRef.current is null')
             return;
           }
 
           switch (message.type) {
             //sender
             case 'call-request-response':
-              console.log("[CALL_MESSAGE] receive-" + message.type,  message.data)
+              //console.log("[CALL_MESSAGE] receive-" + message.type,  message.data)
               const { accepted } = message.data;
               CallService.isReceiceResponse = true;
               if (!accepted) {
@@ -212,14 +212,14 @@ const useCall = (callInfo?: CallMessageData)=>{
               {
                 const isSender = !callInfo?.senderId;
                 const sdp = message.data;
-                console.log('sdp.type', sdp.type, callInfo)
+                //console.log('other-session-description sdp.type', sdp.type, callInfo)
                 if (sdp.type === 'answer' && isSender) {
                   peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
                 } else if (sdp.type === 'offer' && !isSender) {
                   peerConnectionRef.current.setRemoteDescription(new RTCSessionDescription(sdp));
   
                   //create answer
-                  console.log('create answer.......')
+                  //console.log('create answer.......')
                   const awsSdp = await peerConnectionRef.current.createAnswer();
                   peerConnectionRef.current.setLocalDescription(awsSdp as any);
                   await signalRService.invoke(
@@ -237,24 +237,32 @@ const useCall = (callInfo?: CallMessageData)=>{
               {
                 const isSender = !!callInfo?.senderId;
                 const candidateResponse = message.data;
-                const { label, id, candidate } = message.data;
-                //console.log('Adding ice candidate.', message.data);
-                if (!candidate) {
-                  console.log('data.candidate is null');
-                  return;
+                const { label, id, candidate } = candidateResponse;
+                let iceCandidate;
+                try{
+                  //console.log('Adding remote ice candidate.', message.data);
+                  if (!candidate) {
+                    //console.log('data.candidate is null');
+                    return;
+                  }
+                  iceCandidate = new RTCIceCandidate({
+                    sdpMid: id,
+                    sdpMLineIndex: label,
+                    candidate: candidate
+                  });
+                  
+                 await peerConnectionRef.current.addIceCandidate(iceCandidate);
+    
+                }catch(err){
+                  console.error('error addIceCandidate', {candidateResponse, iceCandidate} )
+                  throw err;
                 }
-                const iceCandidate = new RTCIceCandidate({
-                  sdpMLineIndex: label,
-                  candidate: candidate
-                });
-                
-                peerConnectionRef.current.addIceCandidate(iceCandidate);
-  
+              
                 break;
               }
             case 'other-hangup':
               {
-                console.log('other-hangup');
+                //console.log('other-hangup');
                 hangup();
                 dispatch(callActions.stopCall());
                 break;
@@ -274,7 +282,7 @@ const useCall = (callInfo?: CallMessageData)=>{
   useEffect(() => {
     const setupCall = async () => {
       const isConnectedS = signalRService.isConnected();
-      console.log('setupCall............', {callInfo, isConnectedS});
+      //console.log('setupCall............', {callInfo, isConnectedS});
       if (!callInfo || !isConnectedS) return;
       setVoiceEnabled(true);
       setVideoEnabled(callInfo.callType === 'video');
@@ -283,7 +291,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         let isFront = true;
         const sourceInfos = await mediaDevices.enumerateDevices() as any[];
         let videoSourceId;
-        console.log({ sourceInfos })
+        //console.log({ sourceInfos })
         for (let i = 0; i < sourceInfos.length; i++) {
           const sourceInfo = sourceInfos[i];
           if (
@@ -293,7 +301,7 @@ const useCall = (callInfo?: CallMessageData)=>{
             videoSourceId = sourceInfo.deviceId;
           }
         }
-        console.log({ videoSourceId })
+        //console.log({ videoSourceId })
         const stream: MediaStream = await mediaDevices.getUserMedia({
           audio: true,
           video: callInfo.callType === 'video' ? {
@@ -310,7 +318,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         // Got stream!
         setLocalStream(stream);
         if (peerConnectionRef.current) {
-          console.log("close old peerConnectionRef")
+          //console.log("close old peerConnectionRef")
           peerConnectionRef.current.close();
           peerConnectionRef.current = undefined;
         }
@@ -321,7 +329,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         // ------setup stream listening-------
         peerConnectionRef.current.onaddstream = (event: any) => {
           try{
-            console.log('peerConnectionRef-onaddstream', event)
+            //console.log('peerConnectionRef-onaddstream', event)
             setRemoteStream(event.stream);
           }catch(err){
             console.error('peerConnectionRef-onaddstream',err)
@@ -330,7 +338,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         };
 
         peerConnectionRef.current.addEventListener( 'connectionstatechange', (event: any) => {
-          console.log('peerConnectionRef-connectionstatechange', event)
+          //console.log('peerConnectionRef-connectionstatechange', event)
           switch( peerConnectionRef.current!.connectionState ) {
             case 'closed':
               // You can handle the call being disconnected here.
@@ -340,36 +348,38 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'icecandidate', async (event: any) => {
-          console.log('peerConnectionRef-icecandidate', event)
-          // When you find a null candidate then there are no more candidates.
-          // Gathering of candidates has finished.
-          if ( !event.candidate ) { return; };
-        
-          // Send the event.candidate onto the person you're calling.
-          // Keeping to Trickle ICE Standards, you should send the candidates immediately.
-          console.log('CallSignalingActions.SEND_ICE_CANDIDATE')
-          await signalRService.invoke(CallSignalingActions.SEND_ICE_CANDIDATE, {
-            room: callInfo.conversationId,
-            iceCandidate: {
-                type: 'candidate',
-                label: event?.candidate?.sdpMLineIndex,
-                id: event?.candidate?.sdpMid,
-                candidate: event?.candidate?.candidate
-              }
-          });
+          try{
+            //console.log('peerConnectionRef-icecandidate', event)
+            // When you find a null candidate then there are no more candidates.
+            // Gathering of candidates has finished.
+            if ( !event.candidate ) { return; };
+          
+            // Send the event.candidate onto the person you're calling.
+            // Keeping to Trickle ICE Standards, you should send the candidates immediately.
+            //console.log('CallSignalingActions.SEND_ICE_CANDIDATE')
+            await signalRService.invoke(CallSignalingActions.SEND_ICE_CANDIDATE, {
+              room: callInfo.conversationId,
+              iceCandidate: {
+                  type: 'candidate',
+                  label: event?.candidate?.sdpMLineIndex,
+                  id: event?.candidate?.sdpMid,
+                  candidate: event?.candidate?.candidate
+                }
+            });
+          }catch(err){
+            //console.log('icecandidate local error: ',err)
+          }
+         
         } );
         
         peerConnectionRef.current.addEventListener( 'icecandidateerror', (event: any) => {
-          console.log('peerConnectionRef-icecandidateerror', event)
+          //console.log('peerConnectionRef-icecandidateerror', event)
           // You can ignore some candidate errors.
           // Connections can still be made even when errors occur.
         } );
         
         peerConnectionRef.current.addEventListener( 'iceconnectionstatechange', (event: any) => {
-          console.log('peerConnectionRef-iceconnectionstatechange', {
-            iceConnectionState: peerConnectionRef.current?.iceConnectionState,
-            event
-          });
+          //console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.iceConnectionState ) {
             case 'connected':
@@ -386,14 +396,14 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'negotiationneeded', (event: any) => {
-          console.log('peerConnectionRef-negotiationneeded', event)
+          //console.log('peerConnectionRef-negotiationneeded', event)
           if(!peerConnectionRef.current) return;
           // You can start the offer stages here.
           // Be careful as this event can be called multiple times.
         } );
         
         peerConnectionRef.current.addEventListener( 'signalingstatechange', (event: any) => {
-          console.log('peerConnectionRef-signalingstatechange', event)
+          //console.log('peerConnectionRef-signalingstatechange', event)
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.signalingState ) {
             case 'closed':
@@ -406,10 +416,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         const isSender = !callInfo.senderId;
         const {callType, conversationId} = callInfo;
         if (isSender && conversationId) {
-          console.log("send call request", {
-            room : conversationId,
-            callType
-          })
+          //console.log("send call request", { room : conversationId,  callType })
           
           CallService.isReceiceResponse = false;
           const response = await signalRService.invoke(
@@ -418,7 +425,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               room : conversationId,
               callType
             });
-          console.log("send call request - response", response);
+          //console.log("send call request - response", response);
           setTimeout(()=>{
             if(!CallService.isCalling) return;
 
@@ -432,7 +439,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         }
         else {
           //send answer if this is receiver
-          console.log("send call accepted")
+          //console.log("send call accepted")
            await signalRService.invoke(
             CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
@@ -444,9 +451,9 @@ const useCall = (callInfo?: CallMessageData)=>{
 
         setWebcamStarted(true);
 
-        console.log('Success setupCall')
+        //console.log('Success setupCall')
       } catch (err) {
-        console.log('[Error] setupCall', err);
+        //console.log('[Error] setupCall', err);
       }
     }
     setupCall();
@@ -469,12 +476,12 @@ const useCall = (callInfo?: CallMessageData)=>{
   }, [voiceEnabled, videoEnabled])
 
   const stopCall = async () => {
-    console.log("CallScreen-StopCallButton-onPress")
+    //console.log("CallScreen-StopCallButton-onPress")
 
     hangup();
     dispatch(callActions.stopCall());
     try{
-      console.log('CallSignalingActions.SEND_HANG_UP', callInfo?.conversationId)
+      //console.log('CallSignalingActions.SEND_HANG_UP', callInfo?.conversationId)
       await signalRService.invoke(CallSignalingActions.SEND_HANG_UP, callInfo?.conversationId);
     }catch(err){
       console.error('CallSignalingActions.SEND_HANG_UP', err)
@@ -492,12 +499,12 @@ const useCall = (callInfo?: CallMessageData)=>{
   }
 
   const onToogleSpeaker =()=>{
-    console.log('onToogleSpeaker current' , speakerOn)
+    //console.log('onToogleSpeaker current' , speakerOn)
     setSpeakerOn(s => !s)
   }
 
   useEffect(()=>{
-    console.log('setForceSpeakerphoneOn1' , speakerOn)
+    //console.log('setForceSpeakerphoneOn1' , speakerOn)
     InCallManager.setSpeakerphoneOn(speakerOn)
     //InCallManager.setForceSpeakerphoneOn(speakerOn)
   },[speakerOn])
@@ -511,7 +518,7 @@ const useCall = (callInfo?: CallMessageData)=>{
   
   useEffect(() => {
     const backAction = () => {
-      console.log('hardwareBackPress')
+      //console.log('hardwareBackPress')
       return true;
     };
     const backHandler = BackHandler.addEventListener(
@@ -560,11 +567,13 @@ const styles = StyleSheet.create({
   remoteVideoContainer: {
     height: '100%',
     width: '100%',
+    zIndex:-1
   },
   localVideoContainer: {
     height: 200,
     width: 120,
     position: 'absolute',
+    zIndex: 999,
     right: 10,
     bottom: 90
   },

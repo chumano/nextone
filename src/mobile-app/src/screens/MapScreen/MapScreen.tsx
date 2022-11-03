@@ -37,7 +37,7 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
   useLayoutEffect(() => {
     const params: any = route.params;
     if (!params) return;
-    console.log('MAPSCREEN params', params);
+    //console.log('MAPSCREEN params', params);
     const {position} = params;
     if (position) {
       setZoomPosition([position[0], position[1]]);
@@ -52,7 +52,7 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
         const permissionStatus = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
         );
-        console.log('permissionStatus', permissionStatus);
+        //console.log('permissionStatus', permissionStatus);
       }
     };
     requestPermission();
@@ -82,7 +82,7 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
   }, [conversationApi, dispatch, userInfo]);
 
   useEffect(() => {
-    console.log('[init] fectch data');
+    //console.log('[init] fectch data');
     const fetchData = async () => {
       await fetchEvents();
       await fetchUsers();
@@ -92,14 +92,14 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
 
   
   useFocusEffect(useCallback(() => {
-    console.log("Map screen is focused") 
+    //console.log("Map screen is focused") 
     const intervalCall = setInterval(async () => {
-      console.log('[interval] fectch data');
+      //console.log('[interval] fectch data');
       await fetchEvents();
       await fetchUsers();
     }, 30 * 1000);
     return () => {
-      console.log("Map screen is outfocused") 
+      //console.log("Map screen is outfocused") 
       clearInterval(intervalCall);
     };
   }, [fetchEvents, fetchUsers]));
@@ -122,12 +122,12 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
-        console.log('showMyLocation', position);
+        //console.log('showMyLocation', position);
         setMyLocation([latitude, longitude]);
         setZoomPosition([latitude, longitude]);
       },
       error => {
-        console.log(error.code, error.message);
+        //console.log(error.code, error.message);
       },
       {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
     );

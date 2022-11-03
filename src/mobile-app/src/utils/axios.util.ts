@@ -47,7 +47,7 @@ export const createAxios = (baseUrl: string) => {
   newInstance.interceptors.response.use(
     response => response,
     async error => {
-      console.log('axios interceptors error', JSON.stringify(error));
+      //console.log('axios interceptors error', JSON.stringify(error));
       // error 401
       let originalConfig = error.config;
       if (error.response.status === 401) {
@@ -58,11 +58,11 @@ export const createAxios = (baseUrl: string) => {
           return;
         }
 
-        console.log('401-> refresh token')
+        //console.log('401-> refresh token')
         try {
           const userTokenInfoResponse = qs.parse(userTokenInfoString) as unknown as UserTokenInfoResponse;
           const respRefresh = await handleRefresh(userTokenInfoResponse.refresh_token, );
-          console.log('refresh token response', respRefresh);
+          //console.log('refresh token response', respRefresh);
           if (respRefresh && respRefresh.status === 200) {
             const data = respRefresh.data;
           

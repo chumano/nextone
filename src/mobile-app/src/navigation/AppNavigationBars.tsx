@@ -60,7 +60,7 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
     let fcmToken = await AsyncStorage.getItem('fcmToken');
     if (fcmToken) {
       const response = await notificationApi.removeToken(fcmToken);
-      console.log('removeToken: ', response);
+      //console.log('removeToken: ', response);
       await AsyncStorage.removeItem('fcmToken');
     }
     dispatch(logout());
