@@ -14,7 +14,8 @@ find text "CHANGE_ME" to config
 ##sửa storePassword và  keyPassword
 ```
 cd android
-./gradlew assembleRelease
+./gradlew assembleRelease  #build apk
+./gradlew bundleRelease     #build aab to upload google play
 ```
 
 

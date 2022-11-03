@@ -33,6 +33,9 @@ ComService có biến môi trường FireBaseOptions__KeyPath C:\Workspace\ucom\
 Nén: docker save -o somfile.tar image:tag
 Load: docker load -i somefile.tar
 
+# Coturn
+https://gabrieltanner.org/blog/turn-server/
+
 ## Build mobile app
 find text "CHANGE_ME" to config
 
