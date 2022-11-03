@@ -1,4 +1,7 @@
-var API_URL =  'https://192.168.0.122:7443';
+//var API_URL =  'https://192.168.0.122:7443';
+//var IDENTITY_URL = 'https://192.168.0.122:8443';
+var API_URL =  'https://ucom-apis.dientoan.vn';
+var IDENTITY_URL = 'https://ucom-id.dientoan.vn';
 window.ENV = {
     Map: {
         center : [16.21, 106.79],
@@ -8,8 +11,8 @@ window.ENV = {
         //southWest: LatLngExpression, northEast: LatLngExpression
         boundingBox : [ [7.01,95.01],  [23.89,119.92]],//vietnam
         googleApiKey: '',
-        //baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        baseMapUrl: 'http://localhost/{z}/{x}/{y}.png',
+        baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        //baseMapUrl: 'http://localhost/{z}/{x}/{y}.png',
         mapPage: 'http://localhost:5107',
     },
 
@@ -34,7 +37,7 @@ window.ENV = {
 
     //DEMO //////////////////////////
     Identity: {
-        identityUrl : 'https://192.168.0.122:8443',
+        identityUrl : IDENTITY_URL,
     },
     Apis:{
         masterUrl :  API_URL + '/master',

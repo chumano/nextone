@@ -35,7 +35,7 @@ const NoAuthLayout: React.FC<IProp> = (props): JSX.Element => {
     const download = ()=>{
         var link = document.createElement("a") as any;
         link.download = 'ucom.apk';
-        link.href = 'https://ucom.dientoan.vn/ucom.apk';
+        link.href = './ucom.apk';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
