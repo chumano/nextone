@@ -54,7 +54,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     
             await audioRecorderPlayer.startPlayer(url);
             audioRecorderPlayer.addPlayBackListener((e: PlayBackType) => {
-                console.log(`addPlayBackListener ${id}`,e)
+                //console.log(`addPlayBackListener ${id}`,e)
                 const duration = e.duration;
                 const remainTimeMiliSeconds = duration - e.currentPosition;
                 const remainTimeStr =audioRecorderPlayer.mmss( Math.floor(remainTimeMiliSeconds/1000))

@@ -33,7 +33,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
 
 
     const onRecordFinished = useCallback(async (uri:string, recordMiliSecs: number)=>{
-        console.log('onRecordFinished...', recordMiliSecs)
+        //console.log('onRecordFinished...', recordMiliSecs)
         try{
             if(recordMiliSecs > 100){
                 onRecorded && onRecorded(uri)
@@ -45,7 +45,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
     },[onRecorded])
 
     const stopRecord = useCallback(async () => {
-        console.log('stopRecord...')
+        //console.log('stopRecord...')
         setRecording(false);
         try {
             const audioRecorderPlayer = audioRecorderPlayerRef.current;
@@ -54,7 +54,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
             const uri = await audioRecorderPlayer.stopRecorder();
             audioRecorderPlayer.removeRecordBackListener();
 
-            console.log('recorded uri: ', uri)
+            //console.log('recorded uri: ', uri)
 
             onRecordFinished(uri, recordMiliSecs);
            
@@ -67,7 +67,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
     },[recordMiliSecs,onRecordFinished]);
 
     const onStartRecord = useCallback(async () => {
-        console.log('onStartRecord...')
+        //console.log('onStartRecord...')
         const granted = await requestPermissions();
         if (!granted) return;
 
@@ -83,7 +83,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
             OutputFormatAndroid: OutputFormatAndroidType.AAC_ADTS,
         };
 
-        console.log('audioSet', audioSet);
+        //console.log('audioSet', audioSet);
 
 
         const dirs = RNFetchBlob.fs.dirs;
@@ -103,7 +103,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
             path,
             audioSet,
         );
-        console.log('startRecorder uri', uri)
+        //console.log('startRecorder uri', uri)
 
         setRecording(true);
         setRecordMiliSecs(0);
@@ -111,7 +111,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
         audioRecorderPlayer.removeRecordBackListener();
         audioRecorderPlayer.addRecordBackListener((e: RecordBackType) => {
             const timeStr = audioRecorderPlayer.mmss(Math.floor(e.currentPosition/1000));
-            console.log({timeStr, currentPosition: e.currentPosition})
+            //console.log({timeStr, currentPosition: e.currentPosition})
             setRecordMiliSecs(e.currentPosition)
             setRecordTime(timeStr);
 
@@ -125,7 +125,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({ recordingEnabled, onRecor
    
 
     const onStopRecord = useCallback(async () => {
-        console.log('onStopRecord...')
+        //console.log('onStopRecord...')
         stopRecord();
     }, [ stopRecord])
     
@@ -191,7 +191,7 @@ const requestPermissions = async () => {
                 PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
             ]);
 
-            console.log('write external stroage', grants);
+            //console.log('write external stroage', grants);
 
             if (
                 grants['android.permission.WRITE_EXTERNAL_STORAGE'] ===
@@ -204,7 +204,7 @@ const requestPermissions = async () => {
                 //console.log('permissions granted');
                 return true;
             } else {
-                console.log('All required permissions not granted');
+                //console.log('All required permissions not granted');
 
                 return false;
             }

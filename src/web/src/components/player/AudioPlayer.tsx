@@ -26,7 +26,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
         remainTime = remainTime>0?remainTime:0;
 
         const timeStr = mmss(Math.floor(remainTime));
-        console.log('currentTime:', currentPositionSec, durationRef.current, timeStr );
+        //console.log('currentTime:', currentPositionSec, durationRef.current, timeStr );
         setTime(timeStr);
 
     },[currentPositionSec, durationRef.current])
@@ -61,7 +61,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
     }, [audioRef.current, clearIntervalWatch])
 
     const onEnded = useCallback((e: Event) => {
-        console.log('onEnded', e)
+        //console.log('onEnded', e)
         setCurrentPositionSec(audioRef.current!.currentTime)
         onStop();
     }, [onStop]);

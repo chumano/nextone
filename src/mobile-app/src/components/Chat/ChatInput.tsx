@@ -81,7 +81,7 @@ const ChatInput: React.FC<IProps> = ({ conversation, onSendMessage }) => {
       } as UserStatus,
       files: []
     }
-    console.log('message upload', message)
+    //console.log('message upload', message)
     //add temp message
     dispatch(conversationActions.addTempMessage(message));
   }, [dispatch, conversation]);
@@ -151,10 +151,10 @@ const ChatInput: React.FC<IProps> = ({ conversation, onSendMessage }) => {
   }, [])
 
   const onAudioRecorded = useCallback((uri: string)=>{
-    console.log('onAudioRecorded', uri)
+    //console.log('onAudioRecorded', uri)
     RNFetchBlob.fs.stat(uri).then((file)=>{
       const fileName = uri.substring(uri.lastIndexOf('/')+1);
-      console.log('onAudioRecorded', file)
+      //console.log('onAudioRecorded', file)
       send({
         uri: uri,
         fileName: file.filename,

@@ -17,7 +17,6 @@ TODO:
 -------------------------------------------
 Web-TODO:
 - Chat
-	
 	Manage Conversation	
 		Seen Conversation: Member.seenDate
 		[Future]: Delete Conversation: delete on the user only => Member.deleteDate
