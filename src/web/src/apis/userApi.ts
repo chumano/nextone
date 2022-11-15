@@ -47,8 +47,8 @@ const count = (textSearch?: string): Promise<AxiosResponse<ApiResult<number>>> =
 	})
 }
 
-const getUser = (userId: string): Promise<AxiosResponse<ApiResult<User>>> => {
-	return axiosInstance.get(`/user/${userId}`);
+const getUser = (userId: string): Promise<ApiResult<User>> => {
+	return handleAxiosApi(axiosInstance.get(`/user/${userId}`));
 };
 
 const createUser = (

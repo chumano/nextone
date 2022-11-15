@@ -18,6 +18,7 @@ import ModalMemberRole from '../../components/chat/ModalMemberRole';
 import ModalAddMember from '../../components/chat/ModalAddMember';
 import { getChannels, getConversations } from '../../store/chat/chatThunks';
 import { comApi } from '../../apis/comApi';
+import ModalUserInfo from '../../components/chat/ModalUserInfo';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
@@ -162,7 +163,11 @@ const ChatPage: React.FC = () => {
             }} />
         }
 
-
+        {modals['user_info'] &&
+            <ModalUserInfo userStatus={modalDatas['user_info']}  onVisible={(visible) => {
+                dispatch(chatActions.showModal({ modal: 'user_info', visible: visible }))
+            }} />
+        }
     </>
 }
 

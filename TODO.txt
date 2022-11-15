@@ -10,34 +10,21 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 
 {"assets": [{"fileName": "rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "fileSize": 4194527, "height": 3120, "type": "image/jpeg", "uri": "file:///data/user/0/com.ucom/cache/rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "width": 4160}]}
 -------------------------------------------
+TODO: 
+	Call: when app closed
+		- use background-timer and foreservice to get call request
 
-Call: when app closed
-	- use background-timer and foreservice to get call reqeust
-	
-Hướng dẫn cài đặt server
-	- Windows 10
-	- Cài đặt docker desktop
-	- Tạo self-signed-cerfiticates
-	- Cấu hình file 
-		.env
-		webconfig
-		mapwebconfig
-		nginx
-Hướng dẫn cái đặt app
-	Dowload file apk
-	Allow install from apk
-	Install CA 
-	
 -------------------------------------------
 Web-TODO:
-
+- Chat
+	
+	Manage Conversation	
+		Seen Conversation: Member.seenDate
+		[Future]: Delete Conversation: delete on the user only => Member.deleteDate
+	
 - Channel list
 	loadmore on scroll
 		
-- view other user info:
-	name
-	email
-	phone number
 	
 - Search feature : 
 	channel
@@ -46,37 +33,24 @@ Web-TODO:
 - Handle user status
 		online/offline
 		
-- Chat
-	
-	Manage Conversation	
-		Seen Conversation: Member.seenDate
-		Delete Conversation: delete on the user only => Member.deleteDate
+
 -------------------------------------------
 Mobile-TODO
 - cacth event navigate on map:
 
-- view other user info:
-	name
-	email
-	phone number : => call by phone number
 	
 - Chat Screen
 	//load messages : when app screen from background 
 
-	
 - Authentication
 	- AuthService
 	- refresh token
 	
 
+=====================================================	
 =====================================================
-- Video Call
-	- Select Devices on Start Call, Receive call
-	- Toggle : Video, Voice
-	- Chat on call
-	- Minimize Call screen
-	- Time out 10s when dont receive answer
-	
+=====================================================
+
 - Build app:
 	android : https://reactnative.dev/docs/signed-apk-android
 	ios

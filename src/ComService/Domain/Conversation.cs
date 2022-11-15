@@ -93,6 +93,7 @@ namespace ComService.Domain
         public UserStatus UserMember { get; set; }
         public MemberRoleEnum Role { get; set; }
 
+        public DateTime? SeenDate { get; set; }
     }
 
     public enum ConversationTypeEnum
