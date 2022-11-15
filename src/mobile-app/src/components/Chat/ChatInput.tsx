@@ -81,17 +81,21 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
   },[dispatch, conversation]);
 
   const pickFile = useCallback(async()=>{
-    const result = await DocumentPicker.pickMultiple();
-    //console.log('pickFile' , result)
-    for(let i =0 ;i < result.length; i++){
-      setTimeout(()=>{
-          const file = result[i];
-          send({
-            uri: file.uri,
-            fileName : file.name,
-            type: file.type!
-          })
-      }, i*500);
+    try{
+      const result = await DocumentPicker.pickMultiple();
+      //console.log('pickFile' , result)
+      for(let i =0 ;i < result.length; i++){
+        setTimeout(()=>{
+            const file = result[i];
+            send({
+              uri: file.uri,
+              fileName : file.name,
+              type: file.type!
+            })
+        }, i*500);
+      }
+    }catch(e){
+      console.error('pickFile',e)
     }
   },[])
 
@@ -162,6 +166,10 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
             </View>
           </View>
         )}
+      </View>
+
+      <View>
+        <IconButton style={styles.button} icon="paperclip" size={24} onPress={pickFile} />
       </View>
     </View>
   );
