@@ -9,6 +9,7 @@ namespace SharedDomain.Common
         Image,
         Video,
         TextFile,
-        Other
+        Other,
+        Audio
     }
 }

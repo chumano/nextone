@@ -8,7 +8,7 @@ import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
 import { Message } from '../../types/Message/Message.type';
 import { useSelector } from 'react-redux';
-import { IAppStore } from '../../stores/app.store';
+import { AppDispatch, IAppStore } from '../../stores/app.store';
 import FileView from '../File/FileView';
 import { MessageType } from '../../types/Message/MessageType.type';
 import MessageEvent from './MessageEvent';
@@ -23,13 +23,16 @@ import { ConversationType } from '../../types/Conversation/ConversationType.type
 import { useNavigation } from '@react-navigation/native';
 import { MapScreenProp } from '../../navigation/MapStack';
 import MessageItemUpload, { MessageUpload } from './MessageItemUpload';
+import AudioPlayer from '../Player/AudioPlayer';
 
 interface IProps {
   message: Message;
-  conversationType: ConversationType
+  conversationType: ConversationType,
+  onPlaying?: (id: string)=>void,
+  playingId?: string
 }
 
-const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
+const MessageItem: React.FC<IProps> = ({ message, conversationType, onPlaying, playingId }) => {
   const authState = useSelector((store: IAppStore) => store.auth);
   const navigation = useNavigation<any>();
   const isOwnerMessage =
@@ -126,9 +129,13 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType }) => {
                 {message.files && message.files.length > 0 &&
                   <FileList
                     isHorizontal={true}
-                    renderItem={o => (
-                      <FileView file={o.item} onView={onViewImage(o.index)} />
-                    )}
+                    renderItem={o => {
+                      if(o.item.fileType === FileType.Audio) 
+                        return <AudioPlayer key={o.item.fileId} id={o.item.fileId}  playingId={playingId}
+                          durationMiliSeconds={undefined} 
+                          url={o.item.fileUrl} onPlaying={onPlaying}/>
+                      return <FileView  key={o.item.fileId} file={o.item} onView={onViewImage(o.index)} />
+                    }}
                     keyExtractorHandler={(item, _) => item.fileId}
                     listFile={message.files}
                   />

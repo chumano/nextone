@@ -3,4 +3,5 @@ export enum FileType {
   Video,
   TextFile,
   Other,
+  Audio
 }

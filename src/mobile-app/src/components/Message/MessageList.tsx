@@ -12,6 +12,7 @@ import Loading from '../Loading';
 import { Conversation } from '../../types/Conversation/Conversation.type';
 import { PageOptions } from '../../types/PageOptions.type';
 import { ActivityIndicator, FAB } from 'react-native-paper';
+import { MessageType } from '../../types/Message/MessageType.type';
 
 interface IProps {
   conversation: Conversation;
@@ -67,13 +68,22 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
     );
   };
 
+  const [playingId, setPlayingId] = useState<string>();
+  const onItemPlay = useCallback((id: string)=>{
+    setPlayingId(id);
+  },[])
+
   return (
     <React.Fragment>
       <TouchableWithoutFeedback onPress={dismissKeyboardHandler}>
         <FlatList
           ref={flatListRef}
           inverted={true}
-          renderItem={itemData => <MessageItem message={itemData.item} conversationType={conversation.type}/>}
+          renderItem={itemData => 
+            <MessageItem message={itemData.item} conversationType={conversation.type}
+              onPlaying={onItemPlay} playingId={itemData.item.type=== MessageType.AudioFile? playingId:undefined}
+            />
+          }
           data={conversation.messages}
           keyExtractor={item => item.id}
 

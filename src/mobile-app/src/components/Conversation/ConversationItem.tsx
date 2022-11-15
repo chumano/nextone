@@ -86,7 +86,9 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
         lastMessageText += 'Hình ảnh';
       } else if (lastMessage.type === MessageType.OtherFile) {
         lastMessageText += 'Tệp tin';
-      } else if (lastMessage.type === MessageType.Event) {
+      } else if (lastMessage.type === MessageType.AudioFile) {
+        lastMessageText += 'Ghi âm';
+      }else if (lastMessage.type === MessageType.Event) {
         lastMessageText += 'Sự kiện';
       }
     }

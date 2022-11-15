@@ -69,6 +69,7 @@ namespace ComService.Domain
         CallMessage,
         Event,
         CallEndMessage,
+        AudioFile //audio
     }
 
     public class MessageFile

@@ -1,6 +1,6 @@
 import { debounce } from 'lodash'
 import { Image } from 'antd';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../../../models/message/Message.model'
 import { IAppStore } from '../../../store'
@@ -65,12 +65,18 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
         setLoading(messagesLoading||false);
     },[messagesLoading])
 
+    const [playingId, setPlayingId] = useState<string>();
+    const onItemPlay = useCallback((id: string)=>{
+      setPlayingId(id);
+    },[])
+
+    
     return <>
         <div className='message-list' ref={listRef}>
             <Image.PreviewGroup>
-                {messages.map(o =>
-                    <MessageItem key={o.id} message={o} />
-                )}
+                {messages.map(o =>{
+                   return  <MessageItem key={o.id} message={o}  onPlaying={onItemPlay} playingId={playingId} />
+                })}
              </Image.PreviewGroup>
             {loading &&
                 <Loading/>

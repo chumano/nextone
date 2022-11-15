@@ -237,10 +237,14 @@ namespace ComService.Boudaries.Controllers
                         case FileTypeEnum.Video:
                             messageType = MessageTypeEnum.VideoFile;
                             break;
+                        case FileTypeEnum.Audio:
+                            messageType = MessageTypeEnum.AudioFile;
+                            break;
                         case FileTypeEnum.TextFile:
                             messageType = MessageTypeEnum.Text;
                             break;
                         case FileTypeEnum.Other:
+                        default:
                             messageType = MessageTypeEnum.OtherFile;
                             break;
                     }

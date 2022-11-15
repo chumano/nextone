@@ -82,6 +82,10 @@ namespace FileService.Boudaries.Controllers
             {
                 return FileTypeEnum.Video;
             }
+            if (contentType.StartsWith("audio/"))
+            {
+                return FileTypeEnum.Audio;
+            }
             if (contentType.StartsWith("text/"))
             {
                 return FileTypeEnum.TextFile;
