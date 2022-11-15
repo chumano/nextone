@@ -21,6 +21,7 @@ import { CallMessageData } from './types/CallMessageData';
 import { CallScreen } from './screens/CallScreen/CallScreen';
 import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } from './utils/fcm';
 import messaging, { firebase } from '@react-native-firebase/messaging';
+import VIForegroundService from "@voximplant/react-native-foreground-service";
 
 //CHANGE_ME
 const useSocketToListenCall = true;
@@ -47,7 +48,7 @@ const options = {
 };
 
 //===================================================
-const displayCallRequest = async (message: CallMessageData)=>{
+const displayCallRequest = async (message: CallMessageData) => {
   //console.log('displayCallRequest', message)
   if (message.type != 'call') {
     return;
@@ -87,14 +88,14 @@ const handleFBCall = async (remoteMessage: any) => {
   displayCallRequest(message);
 }
 
-if(!useSocketToListenCall){
- //firebase background
- messaging().setBackgroundMessageHandler(async (remoteMessage)=>{
-  //console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
-  const message: CallMessageData = remoteMessage.data as any;
-  
-  displayCallRequest(message);
- });
+if (!useSocketToListenCall) {
+  //firebase background
+  messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+    //console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
+    const message: CallMessageData = remoteMessage.data as any;
+
+    displayCallRequest(message);
+  });
 }
 
 const RootApp = () => {
@@ -103,12 +104,13 @@ const RootApp = () => {
   const [appStateVisible, setAppStateVisible] = useState(appState.current);
   const { isCalling } = useSelector((store: IAppStore) => store.call);
 
-  useEffect(()=>{
+  useForegroundService();
+  useEffect(() => {
     RNCallKeep.setup(options).then(accepted => {
       //console.log('RNCallKeep setup: ', accepted);
     });
-    
-  },[])
+
+  }, [])
   //app state
   useEffect(() => {
     const subscription = AppState.addEventListener('change', nextAppState => {
@@ -133,7 +135,7 @@ const RootApp = () => {
   //=======================================================
   //use firebase to receive call request
   useEffect(() => {
-    if(useSocketToListenCall) return;
+    if (useSocketToListenCall) return;
 
     const initNotification = async () => {
       //console.log('requestFBUserPermission')
@@ -144,7 +146,7 @@ const RootApp = () => {
 
       const { token, oldToken, hasNewToken } = await getFCMToken();
 
-      if (!token ) {
+      if (!token) {
         return;
       }
       const response = await notificationApi.registerToken(token, oldToken);
@@ -159,20 +161,20 @@ const RootApp = () => {
 
   //use websocket to receive call request
   useEffect(() => {
-    if(!useSocketToListenCall) return;
-    const subscription = signalRService.subscription( CallSignalingEvents.CALL_REQUEST, (msg: any) => {
-        //TODO: receive call-request , wait user accept
-        //console.log("receiving a call...", msg)
-        //{"callType": "video", "room": "7934dba7-1a97-4cfd-a161-7baa23e90e09", "userId": "05d5ce08-6a51-4c90-9f73-163e2bb136ee", "userName": "manager"}
-        const callMessage: CallMessageData = {
-          type : 'call',
-          callType: msg.callType,
-          conversationId: msg.room,
-          senderId: msg.userId,
-          senderName: msg.userName,
-        }
-        displayCallRequest(callMessage);
-      },
+    if (!useSocketToListenCall) return;
+    const subscription = signalRService.subscription(CallSignalingEvents.CALL_REQUEST, (msg: any) => {
+      //TODO: receive call-request , wait user accept
+      //console.log("receiving a call...", msg)
+      //{"callType": "video", "room": "7934dba7-1a97-4cfd-a161-7baa23e90e09", "userId": "05d5ce08-6a51-4c90-9f73-163e2bb136ee", "userName": "manager"}
+      const callMessage: CallMessageData = {
+        type: 'call',
+        callType: msg.callType,
+        conversationId: msg.room,
+        senderId: msg.userId,
+        senderName: msg.userName,
+      }
+      displayCallRequest(callMessage);
+    },
     );
     return () => {
       subscription.unsubscribe();
@@ -234,7 +236,7 @@ const RootApp = () => {
     const connect = async () => {
       if (appStateVisible === 'active') {
         await signalRService.connectHub();
-      } 
+      }
       // else {
       //   await signalRService.disconnectHub();
       // }
@@ -244,10 +246,10 @@ const RootApp = () => {
   }, [appStateVisible]);
 
   useEffect(() => {
-    const subscription = signalRService.subscription( 'chat', (data: ChatData) => {
-        //console.log('[chat]', data);
-        dispatch(conversationActions.receiveChatData(data));
-      },
+    const subscription = signalRService.subscription('chat', (data: ChatData) => {
+      //console.log('[chat]', data);
+      dispatch(conversationActions.receiveChatData(data));
+    },
     );
     return () => {
       subscription.unsubscribe();
@@ -290,3 +292,60 @@ const RootApp = () => {
 };
 
 export default RootApp;
+
+
+const foregroundService = VIForegroundService.getInstance();
+const useForegroundService = () => {
+  const [isRunningService, setIsRunningService] = useState(false)
+
+  const stopService = async ()=>{
+    if (!isRunningService) return;
+    setIsRunningService(false);
+    await foregroundService.stopService();
+    foregroundService.off();
+  }
+
+  const subscribeForegroundButtonPressedEvent = ()=> {
+    foregroundService.on('VIForegroundServiceButtonPressed', async () => {
+      await stopService();
+    });
+  }
+
+  const startService = async () =>{
+    if (Platform.OS !== 'android') {
+      console.log('Only Android platform is supported');
+      return;
+    }
+    if (isRunningService) return;
+    if (Platform.Version >= 26) {
+      const channelConfig = {
+        id: 'ForegroundServiceChannel',
+        name: 'Notification Channel',
+        description: 'Notification Channel for Foreground Service',
+        enableVibration: false,
+        importance: 2
+      };
+      await foregroundService.createNotificationChannel(channelConfig);
+    }
+    const notificationConfig = {
+      channelId: 'ForegroundServiceChannel',
+      id: 3456,
+      title: 'Foreground Service',
+      text: 'Foreground service is running',
+      icon: 'ic_notification',
+      priority: 0,
+      button: 'Stop service'
+    };
+    try {
+      subscribeForegroundButtonPressedEvent();
+      await foregroundService.startService(notificationConfig);
+      setIsRunningService(true);
+    } catch (_) {
+      foregroundService.off();
+    }
+  }
+
+  useEffect(()=>{
+    startService();
+  },[])
+}

@@ -58,6 +58,7 @@
         </intent-filter>
       </activity>
 
+      <service android:name="com.voximplant.foregroundservice.VIForegroundService"> </service>
       <service android:name="io.wazo.callkeep.RNCallKeepBackgroundMessagingService"  android:exported="true"/>
 
       <service android:name="io.wazo.callkeep.VoiceConnectionService" android:exported="true"
