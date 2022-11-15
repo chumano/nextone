@@ -177,8 +177,13 @@ namespace ComService.Boudaries.Hubs
                                 }
                                 else
                                 {
+                                    var conversation = await _conversationService.Get(conversationId);
+                                    if (conversation == null) return;
+
                                     callRoomState.State = CallStateEnum.End;
                                     CallRoomState.Remove(conversationId, out _);
+                                    var messageId = _idGenerator.GenerateNew();
+                                    await _conversationService.AddMessage(conversation, new Message(messageId, MessageTypeEnum.CallEndMessage, client.UserId, "Cuộc gọi bị từ chối"));
                                 }
                             }
 
