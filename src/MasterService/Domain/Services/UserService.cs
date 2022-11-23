@@ -86,6 +86,9 @@ namespace MasterService.Domain.Services
 
             await _userRepository.SaveChangesAsync();
 
+            //add default roleCode = "member" 
+            await this.UpdateUserRoles(user, new List<string> { "member" });
+
             //TODO : Send domainevent UserCreated
             await _bus.Publish(new UserCreated());
             return user;
