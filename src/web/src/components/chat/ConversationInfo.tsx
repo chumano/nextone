@@ -74,7 +74,7 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => 
                                 <h6 style={{ textAlign: 'center' }}>{conversation.name}</h6>
 
                                 <div style={{ display: "flex", justifyContent: "center" }}>
-                                    {(systemUserRole === 'admin' && userRole === MemberRole.MANAGER) &&
+                                    {(systemUserRole === 'admin' || userRole === MemberRole.MANAGER) &&
                                         <Button danger className="button-icon" ghost
                                             onClick={onDeleteConversation}>
                                             <DeleteOutlined /> Xóa
