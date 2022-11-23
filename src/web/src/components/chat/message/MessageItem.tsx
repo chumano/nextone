@@ -9,13 +9,17 @@ import FileView from '../file/FileView';
 import MessageEvent from './MessageEvent';
 import MessageItemUpload, { MessageUpload } from './MessageItemUpload';
 import {PhoneOutlined } from '@ant-design/icons'
+import { FileType } from '../../../models/file/FileType.model';
+import AudioPlayer from '../../player/AudioPlayer';
 
 
 
 interface MessageItemProps {
-    message: Message
+    message: Message,
+    onPlaying?: (id: string)=>void,
+    playingId?: string
 }
-const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
+const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, playingId}) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
     const isOwner = user?.profile.sub == message.userSender.userId;
@@ -68,9 +72,14 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message }) => {
 
                     {message.files && message.files.length > 0 &&
                         <div className='message-files'>
-                            {message.files.map(o =>
-                                <FileView key={o.fileId} file={o} />
-                            )}
+                            {message.files.map(o => {
+                                 if(o.fileType === FileType.Audio) 
+                                 return <AudioPlayer  key={o.fileId}  id={o.fileId}  playingId={playingId}
+                                   durationMiliSeconds={undefined} 
+                                   url={o.fileUrl} onPlaying={onPlaying}/>
+
+                                return  <FileView key={o.fileId} file={o} />
+                            })}
                         </div>
                     }
                     <span className='message-time'>

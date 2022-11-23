@@ -23,20 +23,15 @@ namespace ComService.Boudaries.DomainEventHandlers
         public async Task Handle(UserOnlineEvent notification, CancellationToken cancellationToken)
         {
             //TODO: UserOnlineHandler check user really off 
-            if (!notification.IsOnline)
-            {
-                //find any connection of user
-                //if true => dont send offline
-            }
 
             //save user status
             if (notification.IsOnline)
             {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var userService = scope.ServiceProvider.GetRequiredService<IUserStatusService>();
-                    await userService.AddOrUpdateUserStatus(notification.UserId, null, null);
-                }
+                //using (var scope = _serviceProvider.CreateScope())
+                //{
+                //    var userService = scope.ServiceProvider.GetRequiredService<IUserStatusService>();
+                //    await userService.AddOrUpdateUserStatus(notification.UserId, null, null);
+                //}
             }
             else
             {

@@ -2,7 +2,7 @@ import { EventFile } from "../types/Event/EventFile.type";
 import { FileType } from "../types/File/FileType.type";
 import { MessageType } from "../types/Message/MessageType.type";
 
-export const getMessageType = (contentType: string) => {
+export const getMessageType = (contentType: string) : MessageType=> {
     if (contentType.startsWith("image/")) {
         return MessageType.ImageFile;
     }
@@ -11,6 +11,9 @@ export const getMessageType = (contentType: string) => {
     }
     if (contentType.startsWith("text/")) {
         return MessageType.OtherFile;
+    }
+    if (contentType.startsWith("audio/")) {
+        return MessageType.AudioFile;
     }
 
     return MessageType.OtherFile

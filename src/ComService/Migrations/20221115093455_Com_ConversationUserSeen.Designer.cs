@@ -4,6 +4,7 @@ using ComService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComService.Migrations
 {
     [DbContext(typeof(ComDbContext))]
-    partial class ComDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221115093455_Com_ConversationUserSeen")]
+    partial class Com_ConversationUserSeen
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -399,7 +401,7 @@ namespace ComService.Migrations
                     b.HasBaseType("ComService.Domain.Conversation");
 
                     b.Property<string>("AncestorIds")
-                        .HasColumnType("varchar(255)");
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<int>("ChannelLevel")
                         .HasColumnType("int");

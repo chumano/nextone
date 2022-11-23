@@ -50,7 +50,7 @@ export const createAxios = (baseUrl: string) => {
       //console.log('axios interceptors error', JSON.stringify(error));
       // error 401
       let originalConfig = error.config;
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
         if (!userTokenInfoString) {
           //logout

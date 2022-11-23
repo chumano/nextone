@@ -29,6 +29,8 @@ namespace ComService.Domain.Services
         Task<List<ConversationMember>> AddMembers(Conversation conversation, List<string> memberIds);
         Task UpdateMemberRole(Conversation conversation, UserStatus user, MemberRoleEnum role);
         Task RemoveMember(Conversation conversation, UserStatus user);
+
+        Task UpdateUserSeen(Conversation conversation, string userId);
     }
 
     public class ConversationService : IConversationService
@@ -255,6 +257,19 @@ namespace ComService.Domain.Services
 
             // TODO: send ConversationMemberDeleted
             await _bus.Publish(new ConversationMemberDeleted());
+        }
+
+
+        public async Task UpdateUserSeen(Conversation conversation, string userId)
+        {
+            var member = conversation.Members.Find(o => o.UserId == userId);
+            if (member == null) return;
+
+            member.SeenDate = DateTime.Now;
+            await _conversationRepository.SaveChangesAsync();
+
+            // TODO: send ConversationMemberSeen
+            await _bus.Publish(new ConversationMemberSeen(conversation, userId));
         }
 
         //message

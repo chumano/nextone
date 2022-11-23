@@ -65,7 +65,7 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var conversation = await _conversationService.Get(id);
-            if(conversation.Type == ConversationTypeEnum.Channel)
+            if (conversation.Type == ConversationTypeEnum.Channel)
             {
                 var channel = await _channelService.Get(id);
                 return Ok(ApiResult.Success(ChannelDTO.From(channel)));
@@ -152,7 +152,7 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpPost("UpdateMemberRole")]
-        public async  Task<IActionResult> UpdateMemberRole(UpdateMemberRoleDTO updateMemberRoleDTO)
+        public async Task<IActionResult> UpdateMemberRole(UpdateMemberRoleDTO updateMemberRoleDTO)
         {
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);
@@ -165,9 +165,44 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(null));
         }
 
+        [HttpPost("{id}/Seen")]
+        public async Task<IActionResult> Seen(string id)
+        {
+            try
+            {
+                var userId = _userContext.User.UserId;
+                var user = await _userStatusService.GetUser(userId);
+                var conversation = await _conversationService.Get(id);
+
+                if (conversation == null)
+                {
+                    throw new DomainException("ConversationNotExists", "Không tồn tại");
+                }
+                var member = conversation.Members.Find(o => o.UserId == userId);
+                if (member == null)
+                {
+                    throw new DomainException("MemberNotExist", "Không tồn tại");
+                }
+
+                var lastMessage = conversation.RecentMessages.FirstOrDefault();
+
+                if( member.SeenDate == null ||
+                    (lastMessage != null && lastMessage.SentDate >= member.SeenDate))
+                {
+                    await _conversationService.UpdateUserSeen(conversation, userId);
+                }
+                
+                return Ok(ApiResult.Success(null));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
+        }
+
         //message
         [HttpGet("GetMessagesHistory")]
-        public async Task<IActionResult> GetMessagesHistory([FromQuery]GetMessagesHistoryDTO getMessageHistoryDTO)
+        public async Task<IActionResult> GetMessagesHistory([FromQuery] GetMessagesHistoryDTO getMessageHistoryDTO)
         {
             var userId = _userContext.User.UserId;
             var user = await _userStatusService.GetUser(userId);
@@ -185,10 +220,10 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(messages));
         }
 
-       
+
 
         [HttpPost("SendMessage")]
-        public  async Task<IActionResult> SendMessage([FromBody] SendMessageDTO sendMessageDTO)
+        public async Task<IActionResult> SendMessage([FromBody] SendMessageDTO sendMessageDTO)
         {
             try
             {
@@ -237,10 +272,14 @@ namespace ComService.Boudaries.Controllers
                         case FileTypeEnum.Video:
                             messageType = MessageTypeEnum.VideoFile;
                             break;
+                        case FileTypeEnum.Audio:
+                            messageType = MessageTypeEnum.AudioFile;
+                            break;
                         case FileTypeEnum.TextFile:
                             messageType = MessageTypeEnum.Text;
                             break;
                         case FileTypeEnum.Other:
+                        default:
                             messageType = MessageTypeEnum.OtherFile;
                             break;
                     }
@@ -267,7 +306,8 @@ namespace ComService.Boudaries.Controllers
                 message = await _conversationService.GetMessageById(messageId);
 
                 return Ok(ApiResult.Success(message));
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 return Ok(ApiResult.Error(ex.Message));
             }

@@ -11,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { conversationActions } from '../../stores/conversation';
 import { APP_THEME } from '../../constants/app.theme';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
+import { MessageType } from '../../types/Message/MessageType.type';
 
 export interface MessageUpload extends Message {
   uploadFile: {
@@ -30,46 +31,54 @@ const MessageItemUpload: React.FC<MessageUploadProps> = ({ message }) => {
   const [imgPreviewSrc, setImgPreviewSrc] = useState<string>();
   const { uploadFile } = message;
   const isImage = uploadFile.type.startsWith("image/");
+  const isAudio = message.type === MessageType.AudioFile;
 
   useEffect(() => {
     const uploadFile = async () => {
-      const file = message.uploadFile;
-      const uploadResponse = await fileApi.uploadFiles([file], (progressEvent) => {
-        //console.log('upload_file', progressEvent.loaded, progressEvent)
-        const progress = Math.round((100 * progressEvent.loaded) / progressEvent.total);
-        setUploadProgress(progress);
-
-      }, 'message');
-
-      setUploadProgress(100);
-
-      if (!uploadResponse.isSuccess) {
-        return;
+      try{
+        const file = message.uploadFile;
+        //console.log('uploadFile ', file)
+        const uploadResponse = await fileApi.uploadFiles([file], (progressEvent) => {
+          //console.log('upload_file', progressEvent.loaded, progressEvent)
+          const progress = Math.round((100 * progressEvent.loaded) / progressEvent.total);
+          setUploadProgress(progress);
+  
+        }, 'message');
+  
+        setUploadProgress(100);
+  
+        if (!uploadResponse.isSuccess) {
+          return;
+        }
+  
+        const uploadedFiles = uploadResponse.data;
+  
+        //send message
+        const messageDto = {
+          conversationId: message.conversationId!,
+          content: '',
+          files: uploadedFiles
+        }
+        const response = await handleAxiosApi<ApiResponse<Message>>(
+            conversationApi.sendMessage(messageDto));
+        if (response.isSuccess) {
+          dispatch(conversationActions.updateMessage({
+            messageId: message.id,
+            message: response.data
+          }));
+        } else {
+          dispatch(conversationActions.updateMessage({
+            messageId: message.id,
+            message: {
+              ...message,
+              state: 'error'
+            }
+          }));
+        }
+      }catch(err){
+        console.error('uploadFile error', err)
       }
-
-      const uploadedFiles = uploadResponse.data;
-
-      //send message
-      const messageDto = {
-        conversationId: message.conversationId!,
-        content: '',
-        files: uploadedFiles
-      }
-      const response = await handleAxiosApi<ApiResponse<Message>>(conversationApi.sendMessage(messageDto));
-      if (response.isSuccess) {
-        dispatch(conversationActions.updateMessage({
-          messageId: message.id,
-          message: response.data
-        }));
-      } else {
-        dispatch(conversationActions.updateMessage({
-          messageId: message.id,
-          message: {
-            ...message,
-            state: 'error'
-          }
-        }));
-      }
+      
     }
     uploadFile();
   }, [message])
@@ -77,17 +86,21 @@ const MessageItemUpload: React.FC<MessageUploadProps> = ({ message }) => {
   return (
     <View>
       {isImage &&
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: uploadFile.uri }} style={styles.image} />
-      </View>
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: uploadFile.uri }} style={styles.image} />
+        </View>
       }
-      {!isImage &&
+
+      {isAudio &&
+        <Text>{'Ghi âm'}</Text>
+      }
+      {!isImage && !isAudio &&
         <View style={styles.fileContainer}>
           <AwesomeIcon name='file-alt' size={32} color={'#000'} />
         </View>
       }
 
-      <Text>{uploadFile.name}</Text>
+      {!isAudio && <Text>{uploadFile.name}</Text>}
       <ProgressBar progress={uploadProgress} />
     </View>
   )

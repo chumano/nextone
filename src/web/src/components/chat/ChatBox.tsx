@@ -47,7 +47,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
         }
     }, [conversation])
 
-    const showDeviceSetting = ()=>{
+    const showDeviceSetting = () => {
         //TODO: show Modal select devices
         // if (!deviceSettings) {
         //     dispatch(callActions.prepareCall({
@@ -59,7 +59,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
     }
 
     const onCall = useCallback(async (callType: 'video' | 'voice') => {
-        
+
         const devices = await deviceManager.enumerateDevices();
         const videoInputs = devices.filter(o => o.type == 'videoinput');
         const audioInputs = devices.filter(o => o.type == 'audioinput');
@@ -71,15 +71,15 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
             //audioOutputs
         })
         //if has has device then start
-        if(callType === 'voice'){
-            if(audioInputs.length ==0){
+        if (callType === 'voice') {
+            if (audioInputs.length == 0) {
                 message.error('Không tìm thấy audio input')
                 return;
             }
         }
 
-        if(callType === 'video'){
-            if(videoInputs.length ==0){
+        if (callType === 'video') {
+            if (videoInputs.length == 0) {
                 message.error('Không tìm thấy video input')
                 return;
             }
@@ -103,15 +103,28 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
             <div className='chatbox'>
                 <div className="chat-header">
                     {conversation.type === ConversationType.Peer2Peer &&
-                        <UserAvatar user={otherUser} />
+                        <>
+                            <span className='clickable' onClick={() => {
+                                dispatch(chatActions.showModal({ modal: 'user_info', visible: true, data: otherUser }))
+                            }}>
+                                <UserAvatar user={otherUser} />
+                            </span>
+                            <div className="chat-header--name clickable" title={conversation.id} onClick={() => {
+                                dispatch(chatActions.showModal({ modal: 'user_info', visible: true, data: otherUser }))
+                            }}>
+                                {conversationName}
+                            </div>
+                        </>
                     }
                     {conversation.type !== ConversationType.Peer2Peer &&
-                        <ConversationAvatar />
+                        <>
+                            <ConversationAvatar />
+                            <div className="chat-header--name" title={conversation.id}>
+                                {conversationName}
+                            </div>
+                        </>
                     }
 
-                    <div className="chat-header--name" title={conversation.id}>
-                        {conversationName}
-                    </div>
                     <div className="flex-spacer"></div>
 
                     <div className="chat-header__tools">

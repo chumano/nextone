@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { BackHandler, Image, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BackHandler, Image, Keyboard, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Text } from 'react-native-paper'
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -48,6 +48,10 @@ export const CallScreen = () => {
     onToogleSpeaker,
     onSwitchCameras
    } = useCall(callInfo); 
+
+   useEffect(()=>{
+    Keyboard.dismiss();
+   },[])
 
   if (!callInfo) {
     return <SafeAreaView>
