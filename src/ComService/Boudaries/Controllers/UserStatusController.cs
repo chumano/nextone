@@ -50,7 +50,7 @@ namespace ComService.Boudaries.Controllers
             var pageOptions = new PageOptions(filterDTO.Offset, filterDTO.PageSize);
             var actionsUser = _userContext.User;
 
-            var nearDateTime = DateTime.Now.AddMinutes(-15);
+            var nearDateTime = DateTime.Now.AddMinutes(-Constants.NOT_ACTIVE_MINUTES);
             var query = _userStatusRepository.Users.AsNoTracking()
                     .Where(o=>o.LastUpdateDate> nearDateTime)
                     ;

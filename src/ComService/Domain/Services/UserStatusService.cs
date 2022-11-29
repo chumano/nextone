@@ -1,4 +1,5 @@
 ﻿using ComService.Domain.Repositories;
+using ComService.Helpers;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -110,7 +111,7 @@ namespace ComService.Domain.Services
                 bool isChangeLocation = true;
                 if(lat == null || lon == null)
                 {
-                    var offlineDate = DateTime.Now.AddMinutes(-15);
+                    var offlineDate = DateTime.Now.AddMinutes(-Constants.NOT_ACTIVE_MINUTES);
                     if(userStatus.LastUpdateDate!=null && userStatus.LastUpdateDate > offlineDate)
                     {
                         //Keep last position

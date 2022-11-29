@@ -1,4 +1,5 @@
 ﻿using ComService.Domain;
+using ComService.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace ComService.DTOs.Conversation
 
         public static ConversationDTO From(ComService.Domain.Conversation conversation)
         {
-            var offlineDate = DateTime.Now.AddMinutes(-15);
+            var offlineDate = DateTime.Now.AddMinutes(-Constants.NOT_ACTIVE_MINUTES);
             return new ConversationDTO()
             {
                 Id = conversation.Id,

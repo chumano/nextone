@@ -1,4 +1,5 @@
 ﻿using ComService.Domain;
+using ComService.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,7 +35,7 @@ namespace ComService.DTOs.Channel
             }
 
             var events = channel.RecentEvents.Select(o => o.Event).ToList();
-            var offlineDate = DateTime.Now.AddMinutes(-15);
+            var offlineDate = DateTime.Now.AddMinutes(-Constants.NOT_ACTIVE_MINUTES);
 
             return new ChannelDTO()
             {
