@@ -43,6 +43,14 @@ export interface SendMessageDTO {
     properties?: {[key:string] : any}
 }
 
+export interface SendMessage2UsersDTO {
+    userIds: string[]; 
+    content: string;
+
+    files?: BaseFile[];
+    properties?: {[key:string] : any}
+}
+
 
 export interface CreateConversationRequest {
     name: string;

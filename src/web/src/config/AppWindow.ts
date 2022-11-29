@@ -1,5 +1,6 @@
 export interface AppWindow extends Window {
     ENV: {
+        FindUserDistanceInMeters?: number,
         Map: {
             center: [number, number];
             zoom: number;

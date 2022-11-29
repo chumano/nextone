@@ -46,7 +46,7 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
                         <div className='message-event__files-image'>
                             {group['image'].map(o =>
                                 <div key={'image'+o.fileId} className='message-event__files-item'>
-                                    <FileView  file={o} />
+                                    <FileView  file={o} hiddenName={true}/>
                                 </div>
                             )}
                         </div>

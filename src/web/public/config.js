@@ -3,6 +3,7 @@
 var API_URL =  'https://ucom-apis.dientoan.vn';
 var IDENTITY_URL = 'https://ucom-id.dientoan.vn';
 window.ENV = {
+    FindUserDistanceInMeters: 5000,
     Map: {
         center : [16.21, 106.79],
         zoom : 10,

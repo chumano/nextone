@@ -57,7 +57,7 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
                     </div>
                     {properties && properties['LOCATION'] &&
                     <div>
-                        Vị trí: <a href='void()' onClick={()=>gotoMapLocation(properties['LOCATION']!)}>
+                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(properties['LOCATION']!)}>
                             [{properties['LOCATION']![0].toFixed(2)}, {properties['LOCATION']![1].toFixed(2)}]
                             </a>
                     </div>
@@ -78,7 +78,7 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
                                    durationMiliSeconds={undefined} 
                                    url={o.fileUrl} onPlaying={onPlaying}/>
 
-                                return  <FileView key={o.fileId} file={o} />
+                                return  <FileView key={o.fileId} file={o} hiddenName={true}/>
                             })}
                         </div>
                     }
