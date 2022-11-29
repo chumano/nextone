@@ -5,12 +5,13 @@ import { AppSettings } from "../models/AppSettings";
 import { Channel, SubChannel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { ConversationMember } from "../models/conversation/ConversationMember.model";
-import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SearchDTO, SearchResult, SendEventDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
+import { AddMembersDTO, CreateChannelDTO, CreateConverationDTO , GetEventsHistoryDTO, GetListChannelDTO, GetListConversationDTO, GetMessagesHistoryDTO, RemoveMemberDTO, SearchDTO, SearchResult, SendEventDTO, SendMessage2UsersDTO, SendMessageDTO, UpdateEventTypesChannelDTO, UpdateMemberRoleDTO} from "../models/dtos";
 import { CreateEventTypeDTO, UpdateEventTypeDTO } from "../models/dtos/EventTypeDTO";
 import { GetListUserStatusDTO } from "../models/dtos/UserStatusDTOs";
 import { EventInfo } from "../models/event/Event.model";
 import { EventType } from "../models/event/EventType.model";
 import { Message } from "../models/message/Message.model";
+import { FoundInDistanceUser } from "../models/user/User.model";
 import { UserStatus } from "../models/user/UserStatus.model";
 import { createAxios } from "../utils";
 import { handleAxiosApi } from "../utils/functions";
@@ -66,6 +67,11 @@ export const comApi = {
     sendMessage : async (data: SendMessageDTO)=>{
         const responsePromise = comAxiosInstance.post(`/conversation/SendMessage`, data)
         return await handleAxiosApi<ApiResult<Message>>(responsePromise);
+    },
+
+    sendMessage2User : async (data: SendMessage2UsersDTO)=>{
+        const responsePromise = comAxiosInstance.post(`/conversation/SendMessage2Users`, data)
+        return await handleAxiosApi<ApiResult<Message[]>>(responsePromise);
     },
 
     //channel
@@ -140,6 +146,20 @@ export const comApi = {
     getOnlineUsersForMap : async (data?: any)=>{
         const responsePromise = comAxiosInstance.get('/userstatus/GetOnlineUsersForMap', {params: data});
         return await handleAxiosApi<ApiResult<UserStatus[]>>(responsePromise);
+    },
+
+    findNearUsers: async (
+        lat: number, lon: number,
+        distance: number
+    )=> {
+        const responsePromise =  comAxiosInstance.get(`/userstatus/GetNearUsers`, {
+            params: {
+                lat,
+                lon,
+                distanceInMeter : distance
+            },
+        });
+        return await handleAxiosApi<ApiResult<FoundInDistanceUser[]>>(responsePromise);
     },
 
     //settings

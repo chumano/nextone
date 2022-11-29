@@ -96,7 +96,7 @@ namespace ComService
                 jwtOptions.BackchannelHttpHandler = GetHttpHandler();
                 jwtOptions.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuerSigningKey = false,
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = false,
                     ValidateAudience = false,
                 };

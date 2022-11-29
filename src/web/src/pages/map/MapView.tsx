@@ -52,7 +52,8 @@ const MapView = () => {
     const [mapTileUrl, setMapTileUrl] = useState<string>();
 
     const [modalSendLocationVisible, setModalSendLocationVisible] = useState(false);
-    const [selectedLatLon, setSelectedLatLon] = useState<L.LatLng>()
+    const [selectedLatLon, setSelectedLatLon] = useState<L.LatLng>();
+    const [searchType, setSearchType] = useState<'users'|'near'>('users');
 
     const fetchSettings = useCallback(async () => {
         const resposne = await comApi.getSettings();
@@ -142,7 +143,8 @@ const MapView = () => {
         </>
     }, [events, selectedEvent])
 
-    const onSendLocation = useCallback((latlon: L.LatLng) => {
+    const onSendLocation = useCallback((latlon: L.LatLng, searchType: 'users' | 'near') => {
+       setSearchType(searchType);
        setSelectedLatLon(latlon);
        setModalSendLocationVisible(true)
     }, []);
@@ -160,9 +162,15 @@ const MapView = () => {
                     {
                       text: 'Gửi tin nhắn vị trí',
                       callback: (e:any)=>{
-                        onSendLocation(e.latlng)
+                        onSendLocation(e.latlng, 'users')
                       }
-                    }
+                    },
+                    {
+                        text: 'Tìm quanh đây',
+                        callback: (e:any)=>{
+                          onSendLocation(e.latlng, 'near')
+                        }
+                      }
                   ]}>
                 <MapController />
                 <ZoomControl position="topright" />
@@ -182,7 +190,9 @@ const MapView = () => {
             </MapContainer>
         }
         {modalSendLocationVisible &&
-            <ModalSendLocation position={[selectedLatLon!.lat, selectedLatLon!.lng]} onVisible={(visible)=>{
+            <ModalSendLocation 
+                searchType={searchType}
+                position={[selectedLatLon!.lat, selectedLatLon!.lng]} onVisible={(visible)=>{
                 setModalSendLocationVisible(visible)
             }} />
         }

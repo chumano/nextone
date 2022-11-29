@@ -1,11 +1,14 @@
 ﻿using ComService.Domain.Repositories;
 using ComService.Domain.Services;
 using ComService.DTOs.UserStatus;
+using ComService.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Security;
@@ -25,16 +28,19 @@ namespace ComService.Boudaries.Controllers
         private readonly IUserStatusService _userService;
         private readonly IUserStatusRepository _userStatusRepository;
         private readonly IUserContext _userContext;
+        private readonly IConfiguration _configuration;
         public UserStatusController(
             ILogger<UserStatusController> logger,
             IUserStatusService userService,
             IUserStatusRepository userStatusRepository,
+            IConfiguration configuration,
             IUserContext userContext)
         {
             _logger = logger;
             _userService = userService;
             _userStatusRepository = userStatusRepository;
             _userContext = userContext;
+            _configuration = configuration;
         }
 
         //Get online user with location
@@ -44,7 +50,7 @@ namespace ComService.Boudaries.Controllers
             var pageOptions = new PageOptions(filterDTO.Offset, filterDTO.PageSize);
             var actionsUser = _userContext.User;
 
-            var nearDateTime = DateTime.Now.AddMinutes(-15);
+            var nearDateTime = DateTime.Now.AddMinutes(-Constants.NOT_ACTIVE_MINUTES);
             var query = _userStatusRepository.Users.AsNoTracking()
                     .Where(o=>o.LastUpdateDate> nearDateTime)
                     ;
@@ -113,5 +119,52 @@ namespace ComService.Boudaries.Controllers
                 updateUserLocationDTO.Lon);
             return Ok(ApiResult.Success(null));
         }
+
+        [HttpGet("GetNearUsers")]
+        public async Task<IActionResult> GetNearUser([FromQuery] GetNearUsersDTO dto)
+        {
+            var maxDistance = _configuration.GetValue<double>("Application:MaxFindUserDistanceInMeters", 1000);
+            var limitDistance = Math.Max(maxDistance, dto.DistanceInMeter);
+            var pageOptions = new PageOptions(dto.Offset, dto.PageSize);
+            var actionsUser = _userContext.User;
+            var fromDate = DateTime.Now.Date;
+            var query = _userStatusRepository.Users.AsNoTracking()
+                            .Where(o => o.LastUpdateDate != null &&  o.LastUpdateDate > fromDate)
+                            .Where(o => o.LastLat != null && o.LastLon != null)
+                            .Where(o => o.UserId != actionsUser.UserId);
+            ;
+            
+            var users = await query//.Skip(pageOptions.Offset).Take(pageOptions.PageSize)
+                    .ToListAsync();
+
+            _logger.LogInformation($"GetNearUsers: {dto.Lat}- {dto.Lon} ({dto.DistanceInMeter}): " + JsonConvert.SerializeObject(users.Select(o => o.UserName)));
+            var fromCoord = new Coordinates(dto.Lat, dto.Lon);
+            
+            var nearUsers = new List<UserNearDTO>();
+            
+            foreach (var user in users)
+            {
+                if(user.LastLat!=null && user.LastLon != null)
+                {
+                    var distance = fromCoord.DistanceTo(
+                           new Coordinates(user.LastLat??0, user.LastLon??0),
+                           UnitOfLength.Meters
+                       );
+                    _logger.LogInformation($"Distance from user {user.UserName} ({user.LastLat},{user.LastLon}):{distance}");
+                    if (distance < limitDistance)
+                    {
+                        nearUsers.Add(new UserNearDTO()
+                        {
+                            User = user,
+                            DistanceInMeter = distance
+                        });
+                    }
+                }
+               
+            }
+
+            return Ok(ApiResult.Success(nearUsers.OrderBy(o=>o.DistanceInMeter)));
+        }
+
     }
 }

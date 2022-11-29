@@ -30,6 +30,7 @@ const list = (
 	});
 };
 
+
 const getMyProfile = (): Promise<ApiResult<User>> => {
 	return handleAxiosApi(axiosInstance.get(`/user/myprofile`));
 };
@@ -104,5 +105,5 @@ export const userApi = {
 	updateUserRole,
 	deleteUser,
 	activateUser,
-	resetPassword,
+	resetPassword
 };

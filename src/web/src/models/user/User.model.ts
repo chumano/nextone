@@ -38,3 +38,16 @@ export interface UpdateUserRoleRequest {
 	UserId: string;
 	RoleCodes: string[];
 }
+
+export interface FoundInDistanceUser {
+	user: {
+		userId :string,
+        userName :string,
+        status : 0|1|2
+
+        lastUpdateDate: string,
+       	lastLat :number,
+        lastLon : number
+	},
+	distanceInMeter : number
+}

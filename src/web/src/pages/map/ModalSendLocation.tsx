@@ -1,4 +1,4 @@
-import { Checkbox, Input, List, message, Modal, Skeleton } from 'antd';
+import { Checkbox, Input, List, message, Modal, Radio, Skeleton } from 'antd';
 import { debounce } from 'lodash';
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { comApi } from '../../apis/comApi';
@@ -6,21 +6,31 @@ import { userApi } from '../../apis/userApi';
 import ConversationAvatar from '../../components/chat/ConversationAvatar';
 import UserAvatar from '../../components/chat/UserAvatar';
 import Loading from '../../components/controls/loading/Loading';
+import { AppWindow } from '../../config/AppWindow';
 import { ApiResult } from '../../models/apis/ApiResult.model';
 import { Conversation } from '../../models/conversation/Conversation.model';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
-import { SearchResult, SendMessageDTO } from '../../models/dtos';
+import { SearchResult, SendMessage2UsersDTO, SendMessageDTO } from '../../models/dtos';
 import { User } from '../../models/user/User.model';
 import { handleAxiosApi } from '../../utils/functions';
+declare let window: AppWindow;
 
+interface DistanceUser {
+    id: string,
+    name: string,
+    distance? : number
+}
 interface ModalSendLocationProps {
     position: [number, number],
+    searchType: 'users'|'near',
     onVisible: (visible: boolean) => void;
 }
-const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisible }) => {
+const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, position, onVisible }) => {
     const [loading, setLoading] = useState(true);
-    const [useList, setUserList] = useState<User[]>([]);
-    const [selectedUserId, setSelectedUserId] = useState<string>();
+    const [userList, setUserList] = useState<DistanceUser[]>([]);
+    //const [selectedUserId, setSelectedUserId] = useState<string>();
+    const [selectedUserIds, setSelectedUserIds] = useState<string[]>();
+    //const [searchType, setSearchType] = useState<'users'|'near'>('users');
 
     const [channelList, setChannelList] = useState<Conversation[]>([]);
     const [selectedChannelId, setSelectedChannelId] = useState<string>();
@@ -34,7 +44,11 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
             const userResponse = await handleAxiosApi<ApiResult<User[]>>(userApi.list(textSearch, { offset: 0, pageSize: 5 }, true));
        
             if (userResponse.isSuccess) {
-                setUserList(userResponse.data);
+                setUserList(userResponse.data.map(o=>({
+                    id: o.id,
+                    name: o.name,
+                    distance: undefined 
+                })));
             } else {
                 setUserList([])
             }
@@ -55,6 +69,48 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
        
     }, [userApi,comApi, setChannelList, setUserList]);
 
+    const findNearUsers = useCallback(async (distance: number)=>{
+        setLoading(true);
+        try{
+            const userResponse =await comApi.findNearUsers(
+                position[0],
+                position[1],
+                distance
+            )
+           
+            if (userResponse.isSuccess) {
+                var {data} = userResponse;
+                setUserList(data.map(o=> ({
+                    id: o.user.userId,
+                    name: o.user.userName,
+                    distance: o.distanceInMeter
+                 })));
+                 
+            } else {
+                setUserList([])
+            }
+        }
+        finally{
+            setLoading(false);
+        }
+    },[comApi, position])
+
+    useEffect(()=>{
+        if(searchType=='near'){
+            setSelectedChannelId(undefined)
+            setSelectedUserIds(undefined);
+            setChannelList([])
+            findNearUsers(window.ENV.FindUserDistanceInMeters || 5000)
+        }
+    },[searchType, findNearUsers])
+
+    useEffect(()=>{
+        if(searchType=='users'){
+            search('')
+        }
+    },[searchType, search])
+
+
     const searchDebounce = useMemo(() => {
         return debounce(search, 500);
     }, [search])
@@ -64,28 +120,39 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
     }, [searchDebounce]);
 
     
-    useEffect(()=>{
-        search('')
-    },[search])
 
     const handleOk = async () => {
         //send message
         setSending(true)
         try{
-            const data: SendMessageDTO = {
-                content: content?.trim() || '',
-                conversationId: selectedChannelId || '',
-                userId: selectedUserId,
-                properties: {
-                    "LOCATION": position
+            if(selectedChannelId){
+                const data: SendMessageDTO = {
+                    content: content?.trim() || '',
+                    conversationId: selectedChannelId || '',
+                   
+                    properties: {
+                        "LOCATION": position
+                    }
+                }
+                const response = await comApi.sendMessage(data);
+                if(!response.isSuccess){
+                    message.error(response.errorMessage)
+                    return;
+                }
+            }else if(selectedUserIds && selectedUserIds.length>0){
+                const data: SendMessage2UsersDTO = {
+                    content: content?.trim() || '',
+                    userIds: selectedUserIds,
+                    properties: {
+                        "LOCATION": position
+                    }
+                }
+                const response = await comApi.sendMessage2User(data);
+                if(!response.isSuccess){
+                    message.error(response.errorMessage)
+                    return;
                 }
             }
-            const response = await comApi.sendMessage(data);
-            if(!response.isSuccess){
-                message.error(response.errorMessage)
-                return;
-            }
-
             onVisible(false);
         }finally{
             setSending(false)
@@ -97,13 +164,27 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
         onVisible(false);
     };
 
+
+    const onUserSelect = useCallback((userId: string)=>{
+        setSelectedChannelId(undefined);
+
+        let userIds = selectedUserIds || []
+        if(userIds?.indexOf(userId)==-1){
+            userIds.push(userId)
+        }else{
+            userIds = userIds.filter(id =>id !== userId);
+        }
+        setSelectedUserIds([...userIds])
+    },[selectedUserIds])
+
     return (
         <Modal
             title={'Gửi thông tin vị trí'}
             confirmLoading={sending}
             visible={true}
             okButtonProps={{
-                disabled: !content?.trim()|| (!selectedUserId && !selectedChannelId)
+                disabled: !content?.trim() || 
+                !( (selectedUserIds && selectedUserIds.length>0 ) || selectedChannelId)
             }}
             onOk={handleOk}
             onCancel={handleCancel}
@@ -116,35 +197,53 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
                     value={content} onChange={(e)=> setContent(e.target.value)}
                     maxLength={200} />
             </div>
-            <Input.Search
-                placeholder="Tìm kiếm"
-                onChange={(event) => onTextSearchChange(event.target.value)}
-                onSearch={value => onTextSearchChange(value)}
-            />
+
+
+            {/* <Radio.Group
+                options={[{ label: 'Tìm bởi tên', value: 'users' },
+                { label: 'Tìm gần đây', value: 'near' },]}
+                onChange={(e)=>{ setSearchType(e.target.value)}}
+                value={searchType}
+                optionType="button"
+                buttonStyle="solid"
+            /> */}
+
+            {searchType  == 'users' && 
+                <Input.Search
+                    placeholder="Tìm kiếm"
+                    onChange={(event) => onTextSearchChange(event.target.value)}
+                    onSearch={value => onTextSearchChange(value)}
+                />
+            }
+
             {loading &&
                 <Loading/>
             }
             <div style={{maxHeight: 300, overflowY:'auto'}}>
-                
-            {useList.length > 0 && <>
+            
+            {!loading && searchType==='near' && userList.length === 0 &&<>
+                Không tìm thấy người dùng
+            </>}
+            {userList.length > 0 && <>
                 <h6>Người dùng</h6>
                 <List
                 className="user-list"
                 loading={loading}
                 itemLayout="horizontal"
-                dataSource={useList}
+                dataSource={userList}
                 renderItem={(item, index) => (
                     <List.Item className='clickable'
                         onClick={() => {
-                            setSelectedChannelId(undefined);
-                            setSelectedUserId(item.id)
+                            onUserSelect(item.id)
                         }}
                         actions={[
-                            <Checkbox checked={selectedUserId === item.id} onChange={(e) => {
+                            <Checkbox checked={selectedUserIds && selectedUserIds.indexOf(item.id)!==-1}
+                                onClick={(e) => {
+                                    //onUserSelect(item.id)
+                                }} 
+                                onChange={(e) => {
                                 const checked = e.target.value;
-                                setSelectedChannelId(undefined);
-                                setSelectedUserId(item.id)
-                            }} />
+                                }} />
                         ]}
                     >
                         <Skeleton avatar title={false} loading={false} active >
@@ -153,6 +252,12 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
                                     <UserAvatar />
                                 }
                                 title={item.name}
+                                description={
+                                    item.distance !== undefined &&
+                                    <>
+                                        Khoảng cách : {item.distance.toFixed(0)}m
+                                    </>
+                                }
                             />
                         </Skeleton>
                     </List.Item>
@@ -160,7 +265,7 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
             />
             </>}
 
-            {channelList.length > 0 && <>
+            {searchType == 'users' && channelList.length > 0 && <>
                 <h6>Kênh</h6>
                 <List
                 className="conversation-list"
@@ -170,13 +275,13 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({position, onVisibl
                 renderItem={(item, index) => (
                     <List.Item className='clickable'
                         onClick={() => {
-                            setSelectedUserId(undefined);
+                            setSelectedUserIds(undefined);
                             setSelectedChannelId(item.id)
                         }}
                         actions={[
                             <Checkbox checked={selectedChannelId === item.id} onChange={(e) => {
                                 const checked = e.target.value;
-                                setSelectedUserId(undefined);
+                                setSelectedUserIds(undefined);
                                 setSelectedChannelId(item.id)
                             }} />
                         ]}
