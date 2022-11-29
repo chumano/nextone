@@ -34,7 +34,7 @@ export const APP_CONFIG_LOCAL: AppConfig = {
 };
 
 //CHANGE_ME
-export const APP_CONFIG = APP_CONFIG_DEPLOY;
+export const APP_CONFIG = APP_CONFIG_DEMO;
 
 export const OAUTH_CONFIG: OAuthConfig = {
   client_id: 'native-app',
