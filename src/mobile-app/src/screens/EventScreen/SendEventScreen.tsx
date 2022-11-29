@@ -12,6 +12,7 @@ import { EventSendRouteProp, EventStackProps } from '../../navigation/EventStack
 import FilePiker, { MediaItemType } from '../../components/File/FilePicker';
 import { fileApi } from '../../apis/fileApi';
 import { BaseFile } from '../../types/File/BaseFile.type';
+import { nowDate } from '../../utils/date.utils';
 
 
 const SendEventScreen = () => {
@@ -106,7 +107,7 @@ const SendEventScreen = () => {
           Address: userInput.address,
           Lat: lat,
           Lon: lon,
-          OccurDate: '15:20:00 02/07/2022',
+          OccurDate: nowDate(),//'15:20:00 02/07/2022',
           Files: sendFileDTOs,
         });
 
