@@ -1,4 +1,4 @@
-package com.ucom.newarchitecture.modules;
+package com.ucom.local.newarchitecture.modules;
 
 import com.facebook.jni.HybridData;
 import com.facebook.react.ReactPackage;

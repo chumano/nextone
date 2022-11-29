@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:414490500746:android:e9b711770d43840dbf9773",
         "android_client_info": {
-          "package_name": "com.ucom"
+          "package_name": "com.ucom.local"
         }
       },
       "oauth_client": [
