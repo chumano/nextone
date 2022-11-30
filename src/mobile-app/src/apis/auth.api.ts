@@ -11,7 +11,7 @@ const axiosInstance = createAxios(APP_CONFIG.IDENTITY_HOST);
 const login = (
   username: string,
   password: string,
-): Promise<AxiosResponse<UserTokenInfoResponse>> => {
+): Promise<UserTokenInfoResponse> => {
   const data = {...OAUTH_CONFIG, username, password};
   //console.log('APP_CONFIG.IDENTITY_HOST: '+ APP_CONFIG.IDENTITY_HOST)
 
