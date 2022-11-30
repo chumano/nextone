@@ -6,9 +6,12 @@ import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {authLogin} from '../../stores/auth';
+import { useNavigation } from '@react-navigation/native';
+import { PublicScreenProp } from '../../navigation/PublicStack';
 
 const LoginScreen = () => {
   const dispatch: AppDispatch = useDispatch();
+  const nagivation = useNavigation<PublicScreenProp>();
   const authState = useSelector((store: IAppStore) => store.auth);
   const [loginForm, setLoginForm] = useState({
     username: {
@@ -45,7 +48,9 @@ const LoginScreen = () => {
     dispatch(authLogin({email: username.value, password: password.value}));
   };
 
-  const onRegisterHandler = () => {};
+  const onRegisterHandler = () => {
+    nagivation.push("Register");
+  };
 
   const onInputChangeHandler = (inputType: string, enteredText: string) => {
     setLoginForm(prevState => ({
@@ -95,6 +100,14 @@ const LoginScreen = () => {
             Đăng nhập
           </Button>
         </View>
+
+        <View style={styles.buttonRegister}>
+          <Button
+            mode="outlined"
+            onPress={onRegisterHandler}>
+            Đăng ký
+          </Button>
+        </View>
       </View>
     </View>
   );
@@ -128,4 +141,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 4,
   },
+  buttonRegister:{
+    marginTop: 20
+  }
 });

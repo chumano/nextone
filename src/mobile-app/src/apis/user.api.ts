@@ -57,9 +57,14 @@ const getUser = (
   return handleAxiosApi(axiosInstance.get(`/user/${userId}`));
 };
 
+const checkMe = (): Promise<ApiResponse<boolean>> => {
+	return handleAxiosApi(axiosInstance.post(`/user/checkUser`));
+};
+
 export const userApi = {
   list,
   getUser,
+  checkMe,
   getMyProfile,
   updateMyProfile,
   changeMyPassword,

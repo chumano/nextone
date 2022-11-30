@@ -8,6 +8,8 @@ import "google/protobuf/wrappers.proto";
 
 service GrpcIdentityService {
   rpc SayHello (nextone.common.HelloRequest) returns (nextone.common.HelloReply);
+
+  rpc GetIdentityUser(GetIdentityUserRequest) returns(GetIdentityUserResponse);
  
   rpc CreateIdentityUser(CreateIdentityUserRequest) returns(CreateIdentityUserResponse);
   rpc ActiveIdentityUser(ActiveIdentityUserRequest) returns(ActiveIdentityUserResponse);
@@ -20,6 +22,15 @@ service GrpcIdentityService {
   rpc CreateIdentityRole(CreateIdentityRoleRequest) returns(CreateIdentityRoleResponse);
   rpc UpdateIdentityRole(UpdateIdentityRoleRequest) returns(UpdateIdentityRoleResponse);
   rpc DeleteIdentityRole(DeleteIdentityRoleRequest) returns(DeleteIdentityRoleResponse);
+}
+message GetIdentityUserRequest{
+	string userId = 1;
+}
+message GetIdentityUserResponse{
+  string userId = 1;
+  google.protobuf.StringValue email = 2;
+  string userName = 3;
+  repeated string roleNames = 4; 
 }
 
 message CreateIdentityUserRequest{

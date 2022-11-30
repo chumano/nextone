@@ -11,9 +11,9 @@ namespace NextOne.Infrastructure.Core
             return new ApiResult(data);
         }
 
-        public static ApiResult Error(string errorMessage)
+        public static ApiResult Error(string errorMessage, object data = null)
         {
-            return new ApiResult(errorMessage);
+            return new ApiResult(errorMessage, data);
         }
 
         public ApiResult(object data){
@@ -21,10 +21,11 @@ namespace NextOne.Infrastructure.Core
             Data = data;
         }
 
-        public ApiResult(string errorMessage)
+        public ApiResult(string errorMessage, object data =null)
         {
             IsSuccess = false;
             ErrorMessage = errorMessage;
+            Data = data;
         }
 
         public bool IsSuccess { get; private set; }

@@ -10,6 +10,9 @@ import { useSelector } from "react-redux";
 import CallSession from "../call/call-session";
 import { CallStatus } from "../../store/call/callState";
 import ModalDeviceSettings from "../call/ModalDeviceSettings";
+import { userApi } from "../../apis/userApi";
+import { result } from "lodash";
+import { useLocation } from "react-router-dom";
 
 const Header = React.lazy(()=> import('../header/Header'));
 const SideBar = React.lazy(()=> import('./SideBar'));
@@ -30,7 +33,15 @@ const AuthLayout :React.FC<IProp> = ({children, location}):JSX.Element=>{
             let redirectUrl = location.pathname + (location.search || "");
             AuthenticationService.signinRedirect(redirectUrl);
         }else{
-            setAuthenticated(true);
+            userApi.checkMe().then(result=>{
+                if(result.data){
+                    setAuthenticated(true);
+                }else{
+                    //window.location.href ="/auth/401"
+                    history.replace("/auth/401")
+                    //window.location.reload()
+                }
+            });
         }
         
     }, [isLoggedIn,location])

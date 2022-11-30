@@ -37,11 +37,31 @@ namespace IdentityService.Boundaries.Grpc
             });
         }
 
+        public override async Task<GetIdentityUserResponse> GetIdentityUser(GetIdentityUserRequest request, ServerCallContext context)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId);
+
+            if (user == null)
+            {
+                return new GetIdentityUserResponse();
+            }
+
+            var roles = await _userManager.GetRolesAsync(user);
+
+            var response = new GetIdentityUserResponse()
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Email = user.Email
+            };
+            response.RoleNames.AddRange(roles);
+
+            return response;
+        }
         public override async Task<CreateIdentityUserResponse> CreateIdentityUser(CreateIdentityUserRequest request, ServerCallContext context)
         {
             try
             {
-                var actionUser = _userContext.User;
                 var user = new ApplicationUser()
                 {
                     Id = request.UserId,

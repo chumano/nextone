@@ -84,10 +84,12 @@ const AppContainer = () => {
     }
   }, []);
 
-  const isShowLoginScreen = !isUserLogin;
-  const isShowRootAppScreen = isUserLogin;
 
   if (isLoading) return <Loading />;
+
+
+  const isShowLoginScreen = !isUserLogin;
+  const isShowRootAppScreen = isUserLogin;
 
   return (
     <>
