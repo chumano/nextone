@@ -16,6 +16,8 @@ find text "CHANGE_ME" to config
 cd android
 ./gradlew assembleRelease  #build apk
 ./gradlew bundleRelease     #build aab to upload google play
+
+# change versionCode in android/app/buid.gradle
 ```
 
 
