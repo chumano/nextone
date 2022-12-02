@@ -1,13 +1,13 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {authLogin} from '../../stores/auth';
-import { useNavigation } from '@react-navigation/native';
-import { PublicScreenProp } from '../../navigation/PublicStack';
+import {useNavigation} from '@react-navigation/native';
+import {PublicScreenProp} from '../../navigation/PublicStack';
 
 const LoginScreen = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -49,7 +49,7 @@ const LoginScreen = () => {
   };
 
   const onRegisterHandler = () => {
-    nagivation.push("Register");
+    nagivation.push('Register');
   };
 
   const onInputChangeHandler = (inputType: string, enteredText: string) => {
@@ -63,7 +63,10 @@ const LoginScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 96 : 96}
+      style={styles.container}>
       <Text style={styles.headerText}> Đăng nhập </Text>
       <View style={styles.loginForm}>
         <TextInput
@@ -102,14 +105,12 @@ const LoginScreen = () => {
         </View>
 
         <View style={styles.buttonRegister}>
-          <Button
-            mode="outlined"
-            onPress={onRegisterHandler}>
+          <Button mode="outlined" onPress={onRegisterHandler}>
             Đăng ký
           </Button>
         </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -141,7 +142,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 4,
   },
-  buttonRegister:{
-    marginTop: 20
-  }
+  buttonRegister: {
+    marginTop: 20,
+  },
 });
