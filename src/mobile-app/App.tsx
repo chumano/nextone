@@ -23,6 +23,7 @@ import RootApp from './src/RootApp';
 
 import Loading from './src/components/Loading';
 import {
+  AppState,
   DeviceEventEmitter,
   Linking,
   PermissionsAndroid,
@@ -39,7 +40,8 @@ const AppContainer = () => {
   useEffect(() => {
     const getLink = async () => {
       const initialUrl = await Linking.getInitialURL();
-      //console.log('initialUrl', initialUrl);
+      console.log('Linking initialUrl', initialUrl);
+      console.log('AppState.currentState', AppState.currentState)
     };
     getLink();
   }, []);

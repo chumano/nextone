@@ -1,7 +1,9 @@
 ﻿using ComService.Domain.Services;
 using FirebaseAdmin.Messaging;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NextOne.Shared.Extenstions;
 
 namespace ComService.Infrastructure
 {
@@ -43,25 +45,34 @@ namespace ComService.Infrastructure
                 
             };
 
-            if (message.IsNotification)
+            var now = DateTime.UtcNow;
+            var timeToLive = System.TimeSpan.FromSeconds(10);
+
+            var expiration = now.ToUnixTimeStamp() + (long)timeToLive.TotalMilliseconds;
+            //if (message.IsNotification)
             {
                 fbmessage.Android = new AndroidConfig()
                 {
                     Priority = Priority.High,
-                    Notification = new AndroidNotification()
+                    TimeToLive = System.TimeSpan.FromSeconds(5),
+                    Notification = message.IsNotification? new AndroidNotification()
                     {
                         NotificationCount = 0,
                         ClickAction = "FLUTTER_NOTIFICATION_CLICK",
-                    }
+                    }: null
                 };
                 fbmessage.Apns = new ApnsConfig()
                 {
-                    Aps = new Aps()
+                    Headers = new Dictionary<string, string>()
+                    {
+                        { "apns-expiration", (expiration/1000).ToString() } 
+                    },
+                    Aps = message.IsNotification ? new Aps()
                     {
                         Badge = 1,
                         Sound = "default",
                         Category = "NEW_MESSAGE_CATEGORY"
-                    }
+                    } : null
                 };
             }
 

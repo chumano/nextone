@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
-import { AppState, Linking, Platform } from 'react-native';
+import { AppState, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import { ChatData } from './stores/conversation/conversation.payloads';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, IAppStore } from './stores/app.store';
@@ -9,7 +9,6 @@ import { conversationActions } from './stores/conversation';
 import signalRService from './services/SignalRService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNCallKeep from 'react-native-callkeep';
-import { v4 as uuidv4 } from 'uuid';
 import CallService, { CallSignalingActions, CallSignalingEvents } from './services/CallService';
 
 import { callActions } from './stores/call/callReducer';
@@ -20,10 +19,9 @@ import { notificationApi } from './apis/notificationApi';
 import { CallMessageData } from './types/CallMessageData';
 import { CallScreen } from './screens/CallScreen/CallScreen';
 import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } from './utils/fcm';
-import messaging, { firebase } from '@react-native-firebase/messaging';
+import { displayCallRequest } from './utils/callUtils';
 
-//CHANGE_ME
-const useSocketToListenCall = true;
+
 
 const options = {
   ios: {
@@ -34,8 +32,12 @@ const options = {
     alertDescription: 'This application needs to access your phone accounts',
     cancelButton: 'Cancel',
     okButton: 'ok',
+    selfManaged: true,
     imageName: 'phone_account_icon',
-    additionalPermissions: [],
+    additionalPermissions:  [PermissionsAndroid.PERMISSIONS.CAMERA, 
+      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, 
+      PermissionsAndroid.PERMISSIONS.SYSTEM_ALERT_WINDOW,
+      PermissionsAndroid.PERMISSIONS.READ_CONTACTS],
     // Required to get audio in background when using Android 11
     foregroundService: {
       channelId: 'com.ucom',
@@ -46,56 +48,42 @@ const options = {
   },
 };
 
+const options1 = {
+  ios: {
+      appName: 'Sylk',
+      maximumCallGroups: 1,
+      maximumCallsPerCallGroup: 2,
+      supportsVideo: true,
+      includesCallsInRecents: true,
+      imageName: "Image-1"
+  },
+  android: {
+      alertTitle: 'Calling account permission',
+      alertDescription: 'Please allow Sylk inside All calling accounts',
+      cancelButton: 'Deny',
+      okButton: 'Allow',
+      selfManaged: true,
+      imageName: 'phone_account_icon',
+      additionalPermissions: [PermissionsAndroid.PERMISSIONS.CAMERA, PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, PermissionsAndroid.PERMISSIONS.READ_CONTACTS],
+      foregroundService: {
+        channelId: 'com.agprojects.sylk',
+        channelName: 'Foreground service for Sylk',
+        notificationTitle: 'Sylk is running in the background'
+      }
+  }
+};
+
 //===================================================
-const displayCallRequest = async (message: CallMessageData)=>{
-  //console.log('displayCallRequest', message)
-  if (message.type != 'call') {
-    return;
-  }
 
-  let uuid = uuidv4();
-  RNCallKeep.displayIncomingCall(
-    uuid,
-    message.senderName,
-    `Có cuộc gọi từ ${message.senderName}`,
-    'generic',
-    message.callType === 'video',
-    {},
-  );
-
-  if (CallService.isCalling) {
-    setTimeout(() => {
-      RNCallKeep.reportEndCallWithUUID(uuid, 6);
-    }, 1000)
-    return;
-  }
-
-  CallService.storeCallInfo(uuid, message);
-
-  setTimeout(() => {
-    if (CallService.isRinging) {
-      CallService.clearCallInfo(uuid)
-      // 6 = MissedCall
-      // https://github.com/react-native-webrtc/react-native-callkeep#constants
-      RNCallKeep.reportEndCallWithUUID(uuid, 6);
-    }
-  }, 15000);
-}
 
 const handleFBCall = async (remoteMessage: any) => {
+  console.log(`[${new Date()}] ` + 'handleFBCall', remoteMessage);
   const message: CallMessageData = remoteMessage.data as any;
   displayCallRequest(message);
 }
 
-if(!useSocketToListenCall){
- //firebase background
- messaging().setBackgroundMessageHandler(async (remoteMessage)=>{
-  //console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
-  const message: CallMessageData = remoteMessage.data as any;
-  
-  displayCallRequest(message);
- });
-}
+//CHANGE_ME
+const useSocketToListenCall = true;
 
 const RootApp = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -133,8 +121,6 @@ const RootApp = () => {
   //=======================================================
   //use firebase to receive call request
   useEffect(() => {
-    if(useSocketToListenCall) return;
-
     const initNotification = async () => {
       //console.log('requestFBUserPermission')
       const enabled = await requestFBUserPermission();
@@ -143,7 +129,7 @@ const RootApp = () => {
       }
 
       const { token, oldToken, hasNewToken } = await getFCMToken();
-
+      console.log('FCMToken: ', token)
       if (!token ) {
         return;
       }

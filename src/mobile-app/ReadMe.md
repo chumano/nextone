@@ -20,6 +20,12 @@ cd android
 change versionCode in android/app/buid.gradle
 ```
 
+# DeepLink
+```
+npx uri-scheme open "ucom://call" --android
+npx uri-scheme open "ucom://call" --ios
+```
+
 #
 3clean
 ```
