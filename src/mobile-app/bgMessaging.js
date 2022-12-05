@@ -5,11 +5,11 @@ import {backgroundSetup, displayCallRequest} from './src/utils/callUtils'
 import RNCallKeep from 'react-native-callkeep';
 
 export default async (remoteMessage) => {
-    console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
-    console.log(`AppState.currentState`, AppState.currentState);
+    //console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
+    //console.log(`AppState.currentState`, AppState.currentState);
     //TODO: request open app if from background
     if (AppState.currentState === "background") {
-        console.log("backgroundSetup from background222")
+        //console.log("backgroundSetup from background222")
         
         await backgroundSetup();
 

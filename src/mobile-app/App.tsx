@@ -40,8 +40,8 @@ const AppContainer = () => {
   useEffect(() => {
     const getLink = async () => {
       const initialUrl = await Linking.getInitialURL();
-      console.log('Linking initialUrl', initialUrl);
-      console.log('AppState.currentState', AppState.currentState)
+      //console.log('Linking initialUrl', initialUrl);
+      //console.log('AppState.currentState', AppState.currentState)
     };
     getLink();
   }, []);

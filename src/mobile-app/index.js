@@ -11,7 +11,7 @@ import bgMessaging from './bgMessaging';
 
 AppRegistry.registerComponent(appName, () => App);
 AppRegistry.registerHeadlessTask('RNCallKeepBackgroundMessage', () => async ({ name, callUUID, handle }) => {
-    console.log('RNCallKeepBackgroundMessage', { name, callUUID, handle })
+    //console.log('RNCallKeepBackgroundMessage', { name, callUUID, handle })
     Linking.openURL(`ucom://call/outgoing/${callUUID}/${handle}/${name}`)
     return Promise.resolve();
 });

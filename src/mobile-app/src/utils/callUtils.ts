@@ -43,8 +43,8 @@ export const backgroundSetup = async()=>{
 }
 
 export const displayCallRequest = async (message: CallMessageData)=>{
-    console.log(`AppState.currentState`, AppState.currentState);
-    console.log('displayCallRequest', message)
+    //console.log(`AppState.currentState`, AppState.currentState);
+    //console.log('displayCallRequest', message)
     if (message.type != 'call') {
       console.error('message.type', message.type)
       return;
@@ -85,13 +85,13 @@ export const displayCallRequest = async (message: CallMessageData)=>{
 
 export const answerCall = async (data: any) => {
   try {
-    console.log(`[answerCall]: `, data);
+    //console.log(`[answerCall]: `, data);
     const { callUUID } = data;
     RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
 
     //Show App Call Screen
     if(AppState.currentState ==='background'){
-      console.log('RNCallKeep.backToForeground')
+      //console.log('RNCallKeep.backToForeground')
       RNCallKeep.backToForeground();
     }
 

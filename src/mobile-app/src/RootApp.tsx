@@ -23,7 +23,7 @@ import { callKeepOptions, displayCallRequest, answerCall, endCall } from './util
 
 
 const handleFBCall = async (remoteMessage: any) => {
-  console.log(`[${new Date()}] ` + 'handleFBCall', remoteMessage);
+  //console.log(`[${new Date()}] ` + 'handleFBCall', remoteMessage);
   const message: CallMessageData = remoteMessage.data as any;
   displayCallRequest(message);
 }
@@ -39,7 +39,7 @@ const RootApp = () => {
 
   useEffect(()=>{
     RNCallKeep.setup(callKeepOptions).then(accepted => {
-      console.log('RNCallKeep setup: ', accepted);
+      //console.log('RNCallKeep setup: ', accepted);
     });
     
   },[])
