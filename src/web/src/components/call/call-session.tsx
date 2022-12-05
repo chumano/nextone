@@ -25,6 +25,7 @@ import { ConversationState } from '../../store/chat/ChatState';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
 import { UserStatus } from '../../models/user/UserStatus.model';
 import { message } from 'antd';
+import { CALL_WAIT_TIME } from '../../utils';
 
 
 const CallSession: React.FC = () => {
@@ -175,7 +176,7 @@ const CallSession: React.FC = () => {
                 }
                 onStopCall('Timeout to wait receiver responding');
 
-            },15000)
+            },CALL_WAIT_TIME)
         }
         else {
             //receive call 

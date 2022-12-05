@@ -4,7 +4,7 @@ import BottomTabNavigator from './navigation/BottomTabNavigator';
 import { AppState, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import { ChatData } from './stores/conversation/conversation.payloads';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, IAppStore } from './stores/app.store';
+import { AppDispatch, IAppStore, appStore } from './stores/app.store';
 import { conversationActions } from './stores/conversation';
 import signalRService from './services/SignalRService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -19,61 +19,7 @@ import { notificationApi } from './apis/notificationApi';
 import { CallMessageData } from './types/CallMessageData';
 import { CallScreen } from './screens/CallScreen/CallScreen';
 import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } from './utils/fcm';
-import { displayCallRequest } from './utils/callUtils';
-
-
-
-const options = {
-  ios: {
-    appName: 'UCOM',
-  },
-  android: {
-    alertTitle: 'Permissions required',
-    alertDescription: 'This application needs to access your phone accounts',
-    cancelButton: 'Cancel',
-    okButton: 'ok',
-    selfManaged: true,
-    imageName: 'phone_account_icon',
-    additionalPermissions:  [PermissionsAndroid.PERMISSIONS.CAMERA, 
-      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, 
-      PermissionsAndroid.PERMISSIONS.SYSTEM_ALERT_WINDOW,
-      PermissionsAndroid.PERMISSIONS.READ_CONTACTS],
-    // Required to get audio in background when using Android 11
-    foregroundService: {
-      channelId: 'com.ucom',
-      channelName: 'Foreground service for UCOM',
-      notificationTitle: 'UCOM is running on background',
-      notificationIcon: 'Path to the resource icon of the notification',
-    },
-  },
-};
-
-const options1 = {
-  ios: {
-      appName: 'Sylk',
-      maximumCallGroups: 1,
-      maximumCallsPerCallGroup: 2,
-      supportsVideo: true,
-      includesCallsInRecents: true,
-      imageName: "Image-1"
-  },
-  android: {
-      alertTitle: 'Calling account permission',
-      alertDescription: 'Please allow Sylk inside All calling accounts',
-      cancelButton: 'Deny',
-      okButton: 'Allow',
-      selfManaged: true,
-      imageName: 'phone_account_icon',
-      additionalPermissions: [PermissionsAndroid.PERMISSIONS.CAMERA, PermissionsAndroid.PERMISSIONS.RECORD_AUDIO, PermissionsAndroid.PERMISSIONS.READ_CONTACTS],
-      foregroundService: {
-        channelId: 'com.agprojects.sylk',
-        channelName: 'Foreground service for Sylk',
-        notificationTitle: 'Sylk is running in the background'
-      }
-  }
-};
-
-//===================================================
+import { callKeepOptions, displayCallRequest, answerCall, endCall } from './utils/callUtils';
 
 
 const handleFBCall = async (remoteMessage: any) => {
@@ -83,7 +29,7 @@ const handleFBCall = async (remoteMessage: any) => {
 }
 
 //CHANGE_ME
-const useSocketToListenCall = true;
+const useSocketToListenCall = false; //local=true
 
 const RootApp = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -92,8 +38,8 @@ const RootApp = () => {
   const { isCalling } = useSelector((store: IAppStore) => store.call);
 
   useEffect(()=>{
-    RNCallKeep.setup(options).then(accepted => {
-      //console.log('RNCallKeep setup: ', accepted);
+    RNCallKeep.setup(callKeepOptions).then(accepted => {
+      console.log('RNCallKeep setup: ', accepted);
     });
     
   },[])
@@ -166,44 +112,6 @@ const RootApp = () => {
   }, []);
   //=======================================================
 
-  const answerCall = async (data: any) => {
-    try {
-      //console.log(`[answerCall]: `, data);
-      const { callUUID } = data;
-      RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
-
-      //await Linking.openURL('ucom://');
-      //Show App Call Screen
-      RNCallKeep.backToForeground();
-
-      //TODO: if in locked , open key board to unlock phone
-      const callInfo = CallService.getCallInfo(callUUID);
-      if (callInfo) {
-        CallService.clearCallInfo(callUUID);
-        dispatch(callActions.call({
-          callInfo: callInfo
-        }));
-      }
-    } catch (err) {
-      console.error(`[answerCall]: `, err);
-    }
-
-  };
-
-  const endCall = async (data: any) => {
-    //console.log(`[endCall],: `, data);
-    const { callUUID } = data;
-    const callInfo = CallService.getCallInfo(callUUID);
-    if (callInfo) {
-      await signalRService.invoke(
-        CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
-        {
-          room: callInfo.conversationId,
-          accepted: false
-        }
-      );
-    }
-  };
 
   useEffect(() => {
     RNCallKeep.addEventListener('answerCall', answerCall);
