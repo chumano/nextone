@@ -46,7 +46,9 @@ namespace FileService.Services
             {
                 throw new FileNotFoundException($"{filePathOrUrl} is not found");
             }
-            return File.OpenRead(path);
+            //return File.OpenRead(path);
+            var fileStream=  new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            return fileStream;
         }
 
         public async Task<string> SaveAsync(IFormFile formFile)

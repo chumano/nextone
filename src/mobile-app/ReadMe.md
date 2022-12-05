@@ -16,8 +16,15 @@ find text "CHANGE_ME" to config
 cd android
 ./gradlew assembleRelease  #build apk
 ./gradlew bundleRelease     #build aab to upload google play
+
+change versionCode in android/app/buid.gradle
 ```
 
+#
+3clean
+```
+.\gradlew.bat clean
+```
 
 ##file build nằm ở 
 ```
@@ -66,3 +73,16 @@ arch -x86_64 pod install (run at src/ios)
     - cd android
     - chmod +x gradlew
     
+# Regiser Error
+InvalidEmail	Email '{0}' is invalid.
+InvalidUserName	User name '{0}' is invalid, can only contain letters or digits.
+ConfirmPassword
+
+DuplicateUserName	User name '{0}' is already taken.
+
+PasswordTooShort	Passwords must be at least {0} characters.
+PasswordRequiresDigit	Passwords must have at least one digit ('0'-'9').
+PasswordRequiresLower	Passwords must have at least one lowercase ('a'-'z').
+PasswordRequiresNonAlphanumeric	Passwords must have at least one non alphanumeric character.
+PasswordRequiresUniqueChars	Passwords must use at least {0} different characters.
+PasswordRequiresUpper	Passwords must have at least one uppercase ('A'-'Z').

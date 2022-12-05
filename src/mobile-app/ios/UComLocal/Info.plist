@@ -44,7 +44,7 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>This app required access to your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Microphone permission description</string>
+	<string>Give $(PRODUCT_NAME) permission to use your microphone. Your record wont be shared without your permission.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app required access to your photo</string>
 	<key>UIAppFonts</key>

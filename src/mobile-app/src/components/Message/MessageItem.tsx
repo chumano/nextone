@@ -70,6 +70,8 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType, onPlaying, p
 
   const displayDate = frowNow(message.sentDate);
   const properties = message.properites;
+  const location = properties? (properties['LOCATION'] || properties['location']): undefined;
+
   const gotoMapLocation = (location:[number, number])=>{
       //window.location.href = `/map?lat=${location[0]}&lon=${location[1]}` ;
       navigation.navigate('MapTab', {
@@ -111,11 +113,11 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType, onPlaying, p
                 }
               </View>
 
-              {properties && properties['LOCATION'] &&
+              {location &&
                   <View>
                       <Text>Vị trí:</Text>
-                      <TouchableOpacity onPress={()=>gotoMapLocation(properties['LOCATION']!)}>
-                          <Text> [{properties['LOCATION']![0].toFixed(2)}, {properties['LOCATION']![1].toFixed(2)}]</Text>
+                      <TouchableOpacity onPress={()=>gotoMapLocation(location)}>
+                          <Text> [{location[0].toFixed(2)}, {location[1].toFixed(2)}]</Text>
                       </TouchableOpacity>
                   </View>
               }

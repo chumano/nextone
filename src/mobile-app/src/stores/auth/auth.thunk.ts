@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {AxiosError} from 'axios';
+import axios, {AxiosError} from 'axios';
 import jwtDecode from 'jwt-decode';
 import qs from 'qs';
 
@@ -8,9 +8,10 @@ import {authApi} from '../../apis/auth.api';
 
 import {UserLoginInfo} from '../../types/Auth/Auth.type';
 import {JWTDecodeInfo} from '../../types/Auth/JWTDecodeInfo.type';
+import { userApi } from '../../apis/user.api';
 
 const loginErrorHandler = (error: AxiosError, rejectWithValue: Function) => {
-  
+  //console.log("isAxiosError: " +axios.isAxiosError(error), error)
   if (error.response?.status) {
     if (error.response.status < 200 || error.response.status > 400) {
       return rejectWithValue('Something went wrong, Please try again');
@@ -41,18 +42,30 @@ export const authLogin = createAsyncThunk(
     try {
       const response = await authApi.login(email, password);
       //console.log("authLogin response: " + JSON.stringify(response))
-      const jwtDecodeInfo = jwtDecode(response.data.access_token) as JWTDecodeInfo;
+      const jwtDecodeInfo = jwtDecode(response.access_token) as JWTDecodeInfo;
 
       const result = {
-        ...response.data,
+        ...response,
         userId: jwtDecodeInfo.sub,
       };
 
       await AsyncStorage.setItem('@UserToken', qs.stringify(result));
+      
+      //checkMe
+      try{
+        const checkMeResponse = await userApi.checkMe();
+        if(!checkMeResponse.data){
+          await AsyncStorage.removeItem('@UserToken');
+          return rejectWithValue('Tài khoản chưa kích hoạt');
+        }
+      }catch(error){
+        await AsyncStorage.removeItem('@UserToken');
+        return rejectWithValue('Tài khoản chưa kích hoạt');
+      }
 
       return result;
+
     } catch (error) {
-      //console.log("Error: " + JSON.stringify(error))
       const loginErrors = error as AxiosError;
       return loginErrorHandler(loginErrors, rejectWithValue);
     }

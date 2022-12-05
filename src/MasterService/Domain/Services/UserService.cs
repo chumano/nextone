@@ -18,6 +18,9 @@ namespace MasterService.Domain.Services
         Task<User> GetUserByEmail(string email);
 
         Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch);
+
+        Task CreateUserFromIdentityUser(string userId);
+
         Task<User> CreateUser(string name, string email, string phone);
 
         Task<User> UpdateUser(User user, string name, string email, string phone);
@@ -71,6 +74,25 @@ namespace MasterService.Domain.Services
                     .Take(pageOptions.PageSize);
 
             return await query.ToListAsync();
+        }
+
+        public async Task CreateUserFromIdentityUser(string userId)
+        {
+            var identityUser = await _identityService.GetIdentityUser(userId);
+            if (identityUser == null)
+            {
+                throw new Exception("Identity User is not exists");
+            }
+
+            var rolesNames = identityUser.RoleNames.Select(o => o.ToLower()).ToList();
+            var roles = await _roleRepository.Roles.Where(o => identityUser.RoleNames.Contains(o.Code)).ToListAsync();
+            var userRoles = roles.Select(o => new UserRole() { RoleCode = o.Code, Role = o }).ToList();
+
+            var newUser = new User(userId, identityUser.UserName, identityUser.Email, "");
+            newUser.SetRoles(userRoles);
+
+            _userRepository.Add(newUser);
+            await _userRepository.SaveChangesAsync();
         }
 
         public async Task<User> CreateUser(string name, string email, string phone)

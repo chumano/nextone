@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MasterService.Domain;
 using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using MasterService.DTOs.User;
@@ -28,6 +29,7 @@ namespace MasterService.Controllers
         private readonly IIdentityService _identityService;
         private readonly IUserActivityRepository _activityRepository;
         private readonly IUserContext _userContext;
+        private readonly IRoleRepository _roleRepository;
 
         private readonly IValidator<CreateUserDTO> _createUserValidator;
         private readonly IValidator<UpdateUserDTO> _updateUserValidator;
@@ -38,7 +40,8 @@ namespace MasterService.Controllers
             IUserActivityRepository activityRepository,
             IUserContext userContext,
             IValidator<CreateUserDTO> createUserValidator,
-            IValidator<UpdateUserDTO> updateUserValidator)
+            IValidator<UpdateUserDTO> updateUserValidator,
+            IRoleRepository roleRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
@@ -48,6 +51,7 @@ namespace MasterService.Controllers
             _userContext = userContext;
             _createUserValidator = createUserValidator;
             _updateUserValidator = updateUserValidator;
+            _roleRepository = roleRepository;
         }
 
         [HttpGet]
@@ -137,6 +141,26 @@ namespace MasterService.Controllers
           
         }
 
+        [HttpPost("CheckUser")]
+        public async Task<IActionResult> CheckUser()
+        {
+            try
+            {
+                var actionUser = _userContext.User;
+                var user = await _userService.Get(actionUser.UserId);
+                if (user == null)
+                {
+                    await _userService.CreateUserFromIdentityUser(actionUser.UserId);
+                    _logger.LogInformation($"Master User {actionUser.UserId}-{actionUser.Name} Created from IdentityUser");
+                }
+
+                return Ok(ApiResult.Success(true));
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, "CheckUser: "+ ex.Message);
+                return Ok(ApiResult.Error("Internal Error"));
+            }
+        }
 
         [HttpGet("Count")]
         public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)

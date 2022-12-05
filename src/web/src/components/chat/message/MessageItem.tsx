@@ -27,6 +27,7 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
 
     const displayDate = frowNow(message.sentDate);
     const properties = message.properites;
+    const location = properties? (properties['LOCATION'] || properties['location']): undefined;
     const gotoMapLocation = (location:[number, number])=>{
         window.location.href = `/map?lat=${location[0]}&lon=${location[1]}` ;
     }
@@ -55,10 +56,10 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
                         {(message.type===MessageType.CallEndMessage) && <PhoneOutlined  style={{marginRight:10}} className={'call-icon end'}/> }
                         {message.content}
                     </div>
-                    {properties && properties['LOCATION'] &&
+                    {location &&
                     <div>
-                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(properties['LOCATION']!)}>
-                            [{properties['LOCATION']![0].toFixed(2)}, {properties['LOCATION']![1].toFixed(2)}]
+                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(location)}>
+                            [{location[0].toFixed(2)}, {location[1].toFixed(2)}]
                             </a>
                     </div>
                     }

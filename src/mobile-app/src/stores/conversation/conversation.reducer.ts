@@ -38,6 +38,19 @@ export const conversationSlice = createSlice({
           state.data = conversations;
         }
     },
+    addOrUpdateConversation : (state, action : PayloadAction<Conversation>)=>{
+      const conversation = action.payload;
+      const conversations = state.data || [];
+
+      if (!conversations.find(o => o.id === conversation.id)) {
+        conversations.unshift(conversation)
+        state.data = conversations;
+      }else{
+        state.data = conversations.map(o=> {
+          return o.id === conversation.id? conversation: o;
+        })
+      }
+   },
     receiveChatData: (state, action: PayloadAction<ChatData>) => {
       const { chatKey, data } = action.payload;
       //console.log('[receiveChatData] ', action.payload)

@@ -76,7 +76,10 @@ export const createAxios = (baseUrl: string) => {
           //logout
           appStore.dispatch(logout())
         }
+        return;
       }
+
+      return Promise.reject(error);
     },
   );
 
