@@ -16,6 +16,7 @@ using FileInfo = FileService.Domain.FileInfo;
 using NextOne.Infrastructure.Core;
 using SharedDomain.Common;
 using Microsoft.Extensions.Configuration;
+using FileService.Helpers;
 
 namespace FileService.Boudaries.Controllers
 {
@@ -119,13 +120,27 @@ namespace FileService.Boudaries.Controllers
             var relativePath = key.UrlDecodeBase64String();
             var ext = Path.GetExtension(relativePath);
             var objectStream = await _fileStorage.GetStreamAsync(relativePath);
+            
+            var mineType = string.IsNullOrWhiteSpace(ext)? "application/octet-stream" : MimeTypeMap.GetMimeType(ext);
             if (string.IsNullOrEmpty(download))
             {
-                return base.File(objectStream, "application/octet-stream", $"{key}{ext}");
+                return base.File(objectStream, mineType, true);
+                //var bytes = ReadAllBytes(objectStream);
+                //return File(bytes, mineType);
             }
-            return base.File(objectStream, "image/jpeg", download);
+            return base.File(objectStream, mineType, download);
         }
+        public static byte[] ReadAllBytes(Stream instream)
+        {
+            if (instream is MemoryStream)
+                return ((MemoryStream)instream).ToArray();
 
+            using (var memoryStream = new MemoryStream())
+            {
+                instream.CopyTo(memoryStream);
+                return memoryStream.ToArray();
+            }
+        }
 
         [HttpGet]
         [Route("/image/{key}")]
