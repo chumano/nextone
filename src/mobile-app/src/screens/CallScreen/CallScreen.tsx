@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { BackHandler, Image, Keyboard, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { BackHandler, Image, Keyboard, Platform, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Text } from 'react-native-paper'
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +26,7 @@ import Loading from '../../components/Loading';
 import signalRService, { SignalRService } from '../../services/SignalRService';
 import { APP_THEME } from '../../constants/app.theme';
 import { ICE_SERVERS } from '../../constants/app.config';
+import { CALL_WAIT_TIME } from '../../utils/callUtils';
 
 //https://blog.logrocket.com/creating-rn-video-calling-app-react-native-webrtc/
 
@@ -439,7 +440,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               hangup();
               dispatch(callActions.stopCall());
             }
-          },15000)
+          },CALL_WAIT_TIME)
         }
         else {
           //send answer if this is receiver
@@ -553,7 +554,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 0,
     position: 'absolute',
-    top: 0,
+    top: Platform.OS === 'ios'? 5: 0,
     bottom: 0,
     left: 0,
     right: 0

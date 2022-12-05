@@ -10,6 +10,7 @@ import { SignalR } from "../../services/SignalRService";
 import { IAppStore, authActions, callActions } from "../../store";
 import { chatActions } from "../../store/chat/chatReducer";
 import sound from '../sound';
+import { CALL_WAIT_TIME } from "../constants/constants";
 
 export const GlobalContext = createContext<any>({});
 
@@ -94,7 +95,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
                 if(modal){
                     modal.destroy();
                 }
-            },15000)
+            },CALL_WAIT_TIME)
         });
         callrequestSubscription.subscribe();
     },[isCallInit,isHubConnected])

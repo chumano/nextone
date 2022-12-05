@@ -1,15 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
-import { AppState, Linking, Platform } from 'react-native';
+import { AppState, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
 import { ChatData } from './stores/conversation/conversation.payloads';
 import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, IAppStore } from './stores/app.store';
+import { AppDispatch, IAppStore, appStore } from './stores/app.store';
 import { conversationActions } from './stores/conversation';
 import signalRService from './services/SignalRService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNCallKeep from 'react-native-callkeep';
-import { v4 as uuidv4 } from 'uuid';
 import CallService, { CallSignalingActions, CallSignalingEvents } from './services/CallService';
 
 import { callActions } from './stores/call/callReducer';
@@ -20,82 +19,17 @@ import { notificationApi } from './apis/notificationApi';
 import { CallMessageData } from './types/CallMessageData';
 import { CallScreen } from './screens/CallScreen/CallScreen';
 import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } from './utils/fcm';
-import messaging, { firebase } from '@react-native-firebase/messaging';
+import { callKeepOptions, displayCallRequest, answerCall, endCall } from './utils/callUtils';
 
-//CHANGE_ME
-const useSocketToListenCall = true;
-
-const options = {
-  ios: {
-    appName: 'UCOM',
-  },
-  android: {
-    alertTitle: 'Permissions required',
-    alertDescription: 'This application needs to access your phone accounts',
-    cancelButton: 'Cancel',
-    okButton: 'ok',
-    imageName: 'phone_account_icon',
-    additionalPermissions: [],
-    // Required to get audio in background when using Android 11
-    foregroundService: {
-      channelId: 'com.ucom',
-      channelName: 'Foreground service for UCOM',
-      notificationTitle: 'UCOM is running on background',
-      notificationIcon: 'Path to the resource icon of the notification',
-    },
-  },
-};
-
-//===================================================
-const displayCallRequest = async (message: CallMessageData)=>{
-  //console.log('displayCallRequest', message)
-  if (message.type != 'call') {
-    return;
-  }
-
-  let uuid = uuidv4();
-  RNCallKeep.displayIncomingCall(
-    uuid,
-    message.senderName,
-    `Có cuộc gọi từ ${message.senderName}`,
-    'generic',
-    message.callType === 'video',
-    {},
-  );
-
-  if (CallService.isCalling) {
-    setTimeout(() => {
-      RNCallKeep.reportEndCallWithUUID(uuid, 6);
-    }, 1000)
-    return;
-  }
-
-  CallService.storeCallInfo(uuid, message);
-
-  setTimeout(() => {
-    if (CallService.isRinging) {
-      CallService.clearCallInfo(uuid)
-      // 6 = MissedCall
-      // https://github.com/react-native-webrtc/react-native-callkeep#constants
-      RNCallKeep.reportEndCallWithUUID(uuid, 6);
-    }
-  }, 15000);
-}
 
 const handleFBCall = async (remoteMessage: any) => {
+  //console.log(`[${new Date()}] ` + 'handleFBCall', remoteMessage);
   const message: CallMessageData = remoteMessage.data as any;
   displayCallRequest(message);
 }
 
-if(!useSocketToListenCall){
- //firebase background
- messaging().setBackgroundMessageHandler(async (remoteMessage)=>{
-  //console.log(`[${new Date()}] ` + 'Message handled in the background!', remoteMessage);
-  const message: CallMessageData = remoteMessage.data as any;
-  
-  displayCallRequest(message);
- });
-}
+//CHANGE_ME
+const useSocketToListenCall = false; //local=true
 
 const RootApp = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -104,7 +38,7 @@ const RootApp = () => {
   const { isCalling } = useSelector((store: IAppStore) => store.call);
 
   useEffect(()=>{
-    RNCallKeep.setup(options).then(accepted => {
+    RNCallKeep.setup(callKeepOptions).then(accepted => {
       //console.log('RNCallKeep setup: ', accepted);
     });
     
@@ -133,8 +67,6 @@ const RootApp = () => {
   //=======================================================
   //use firebase to receive call request
   useEffect(() => {
-    if(useSocketToListenCall) return;
-
     const initNotification = async () => {
       //console.log('requestFBUserPermission')
       const enabled = await requestFBUserPermission();
@@ -143,7 +75,7 @@ const RootApp = () => {
       }
 
       const { token, oldToken, hasNewToken } = await getFCMToken();
-
+      console.log('FCMToken: ', token)
       if (!token ) {
         return;
       }
@@ -180,44 +112,6 @@ const RootApp = () => {
   }, []);
   //=======================================================
 
-  const answerCall = async (data: any) => {
-    try {
-      //console.log(`[answerCall]: `, data);
-      const { callUUID } = data;
-      RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
-
-      //await Linking.openURL('ucom://');
-      //Show App Call Screen
-      RNCallKeep.backToForeground();
-
-      //TODO: if in locked , open key board to unlock phone
-      const callInfo = CallService.getCallInfo(callUUID);
-      if (callInfo) {
-        CallService.clearCallInfo(callUUID);
-        dispatch(callActions.call({
-          callInfo: callInfo
-        }));
-      }
-    } catch (err) {
-      console.error(`[answerCall]: `, err);
-    }
-
-  };
-
-  const endCall = async (data: any) => {
-    //console.log(`[endCall],: `, data);
-    const { callUUID } = data;
-    const callInfo = CallService.getCallInfo(callUUID);
-    if (callInfo) {
-      await signalRService.invoke(
-        CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
-        {
-          room: callInfo.conversationId,
-          accepted: false
-        }
-      );
-    }
-  };
 
   useEffect(() => {
     RNCallKeep.addEventListener('answerCall', answerCall);
