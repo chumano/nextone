@@ -65,3 +65,4 @@ src/MapService/Properties/PublishProfiles
 src/MasterService/Properties/PublishProfiles
 firebasekey.json
 deploy
+capture-images

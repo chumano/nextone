@@ -26,6 +26,7 @@ interface AudioRecorderProps {
   onRecorded?: (uri: string) => void;
 }
 
+
 const MAX_SECONDS = 120;
 const AudioRecorder: React.FC<AudioRecorderProps> = ({
   recordingEnabled,
@@ -40,10 +41,17 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   useEffect(() => {
     audioRecorderPlayerRef.current = new AudioRecorderPlayer();
     audioRecorderPlayerRef.current.setSubscriptionDuration(1);
+
     return () => {
       setRecording(undefined);
     };
   }, []);
+
+  useEffect(()=>{
+    if(recordingEnabled){
+      requestPermissions();
+    }
+  },[recordingEnabled])
 
   useEffect(() => {
     if (recordingEnabled) Keyboard.dismiss();
@@ -85,11 +93,7 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   }, [recordMiliSecs, onRecordFinished]);
 
   const onStartRecord = useCallback(async () => {
-    //console.log('onStartRecord...')
-    if (Platform.OS === 'android') {
-      const granted = await requestPermissions();
-      if (!granted) return;
-    }
+     //console.log('onStartRecord...')
 
     const audioRecorderPlayer = audioRecorderPlayerRef.current;
     if (!audioRecorderPlayer) return;
@@ -196,7 +200,15 @@ const styles = StyleSheet.create({
   },
 });
 
-const requestPermissions = async () => {
+const requestPermissions = async ()=>{
+  if (Platform.OS === 'android') {
+    const granted = await requestRecordPermissions();
+    if (!granted) return;
+  }
+}
+
+
+const requestRecordPermissions = async () => {
   try {
     const grants = await PermissionsAndroid.requestMultiple([
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
