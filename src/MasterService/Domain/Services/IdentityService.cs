@@ -11,6 +11,7 @@ namespace MasterService.Domain.Services
 {
     public interface IIdentityService
     {
+        Task<GetIdentityUserResponse> GetIdentityUser(string userId);
         Task CreateIdentityUser(string userId, string userName, string email);
         Task UpdateIdentityUser(string userId, string userName, string email);
         Task ActiveIdentityUser(string userId, bool isActive);
@@ -45,6 +46,20 @@ namespace MasterService.Domain.Services
             },headers);
         }
 
+        public async Task<GetIdentityUserResponse> GetIdentityUser(string userId)
+        {
+            var response = await _grpcServiceClient.GetIdentityUserAsync(new GetIdentityUserRequest()
+            {
+                UserId = userId
+            });
+
+            if(response ==null || response.UserId != userId)
+            {
+                return null;
+            }
+
+            return response;
+        }
         public async Task CreateIdentityUser(string userId, string userName, string email)
         {
             var response = await _grpcServiceClient.CreateIdentityUserAsync(new CreateIdentityUserRequest()

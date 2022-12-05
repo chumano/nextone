@@ -47,7 +47,9 @@ const count = (textSearch?: string): Promise<AxiosResponse<ApiResult<number>>> =
 		params: textSearch
 	})
 }
-
+const checkMe = (): Promise<ApiResult<boolean>> => {
+	return handleAxiosApi(axiosInstance.post(`/user/checkUser`));
+};
 const getUser = (userId: string): Promise<ApiResult<User>> => {
 	return handleAxiosApi(axiosInstance.get(`/user/${userId}`));
 };
@@ -93,6 +95,7 @@ const resetPassword = (
 
 
 export const userApi = {
+	checkMe,
 	getMyProfile,
 	updateMyProfile,
 	changeMyPassword,

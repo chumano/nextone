@@ -2,17 +2,25 @@ import React from 'react';
 import {
   createNativeStackNavigator,
   NativeStackHeaderProps,
+  NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import NewsScreen from '../screens/NewsScreen/NewsScreen';
 import {Appbar} from 'react-native-paper';
+import RegisterScreen from '../screens/RegisterScreen/RegisterScreen';
 
 type PublicStackParamsList = {
   Login: undefined;
   News: undefined;
+  Register: undefined;
 };
 
 const Stack = createNativeStackNavigator<PublicStackParamsList>();
+
+export type PublicScreenProp = NativeStackNavigationProp<
+  PublicStackParamsList
+>;
+
 const PublicStack = () => {
   return (
     <Stack.Navigator
@@ -44,6 +52,7 @@ const PublicStack = () => {
       }}>
       <Stack.Screen name="News" component={NewsScreen} />
       <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
     </Stack.Navigator>
   );
 };

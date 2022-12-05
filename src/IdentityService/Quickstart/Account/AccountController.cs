@@ -1,4 +1,4 @@
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 
@@ -17,10 +17,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NextOne.Infrastructure.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -40,14 +45,17 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
-
+        private readonly ILogger<AccountController> _logger;
+        private readonly IConfiguration _configuration;
         public AccountController(
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            IConfiguration configuration,
+            ILogger<AccountController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -56,6 +64,8 @@ namespace IdentityServerHost.Quickstart.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _configuration = configuration;
+            _logger = logger;
         }
 
         /// <summary>
@@ -264,6 +274,60 @@ namespace IdentityServerHost.Quickstart.UI
             return View();
         }
 
+        /*****************************************/
+        /* Register                              */
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        {
+            var allowed = _configuration.GetValue<bool>("AllowUserRegister", false);
+            if (!allowed) return  Ok(ApiResult.Error("Chức năng bị khóa"));
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Select(o => new
+                    {
+                        Key = o.Key,
+                        Error = o.Value.Errors.First().ErrorMessage
+                    });
+                    return Ok(ApiResult.Error("Thông tin không hợp lệ", errors));
+                }
+                
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,//string.IsNullOrEmpty(model.UserName) ? model.Email :model.UserName ,
+                    Email = model.Email,
+                    ApplicationSystem = "NextOne"
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, "Member");
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                    //var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code }, HttpContext.Request.Scheme);
+
+                    //await _emailSender.SendEmailAsync(model.Email, _localizer["ConfirmEmailTitle"], _localizer["ConfirmEmailBody", HtmlEncoder.Default.Encode(callbackUrl)]);
+
+                    return Ok(ApiResult.Success(user.Id));
+                }
+
+                //error
+                var errors1 = result.Errors.Select(o => new
+                {
+                    Key = o.Code,
+                    Error = o.Description
+                });
+                return Ok(ApiResult.Error("Thông tin không hợp lệ", errors1));
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, "Account Register: " + ex.Message);
+                return Ok(ApiResult.Error("Internal Error"));
+            }
+        }
+
 
         /*****************************************/
         /* helper APIs for the AccountController */
@@ -395,5 +459,7 @@ namespace IdentityServerHost.Quickstart.UI
 
             return vm;
         }
+    
+    
     }
 }

@@ -52,7 +52,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({
             await audioRecorderPlayer.stopPlayer();
             audioRecorderPlayer.removePlayBackListener();
     
-            await audioRecorderPlayer.startPlayer(url);
+            const msg = await audioRecorderPlayer.startPlayer(url);
             audioRecorderPlayer.addPlayBackListener((e: PlayBackType) => {
                 //console.log(`addPlayBackListener ${id}`,e)
                 const duration = e.duration;

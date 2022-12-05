@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* UComTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* UComTests.m */; };
-		123260466470504C582E967F /* Pods_UCom.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8FB8784B57E580C716F3276C /* Pods_UCom.framework */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		25004B36E6B3EBA7011D77BF /* Pods_UCom.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 401F0A980B495AD18E922AE6 /* Pods_UCom.framework */; };
 		693CF54B287A059900DB723F /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 693CF54A287A059900DB723F /* Intents.framework */; };
 		693CF54D287A05A400DB723F /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 693CF54C287A05A400DB723F /* CallKit.framework */; };
 		6974440B2882ACF00083E73F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6974440A2882ACEF0083E73F /* GoogleService-Info.plist */; };
@@ -48,7 +48,7 @@
 		69A901A1287BC0C500D8ED99 /* Icon-App-40x40@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69A90191287BC0C500D8ED99 /* Icon-App-40x40@3x.png */; };
 		69A901A2287BC0C500D8ED99 /* Icon-App-29x29@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 69A90192287BC0C500D8ED99 /* Icon-App-29x29@2x.png */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		958351C48DB91217C2EA077A /* Pods_UCom_UComTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F972F9E57C6313280E6F56AC /* Pods_UCom_UComTests.framework */; };
+		C3C64B140B70E65EC58EB1D3 /* Pods_UCom_UComTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C67A0D2AE5A5ABC23852D6 /* Pods_UCom_UComTests.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,7 +65,6 @@
 		00E356EE1AD99517003FC87E /* UComTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UComTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* UComTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UComTests.m; sourceTree = "<group>"; };
-		0A2C712B2853D3CFE82EF377 /* Pods-UCom-UComTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom-UComTests.release.xcconfig"; path = "Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests.release.xcconfig"; sourceTree = "<group>"; };
 		11E6A001C3A149D7805D33BA /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* UCom.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UCom.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = UCom/AppDelegate.h; sourceTree = "<group>"; };
@@ -76,8 +75,11 @@
 		13C1FE830095440BAFADC647 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		1547351BD7C44BA6A4A231EC /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		2942A40AE6C840EFA951FC2C /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
+		33424811BA1E067161645458 /* Pods-UCom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom.release.xcconfig"; path = "Target Support Files/Pods-UCom/Pods-UCom.release.xcconfig"; sourceTree = "<group>"; };
+		401F0A980B495AD18E922AE6 /* Pods_UCom.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UCom.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		49E7AD8A33A8433C8C29F420 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
-		5CFBC418A12526A0A8394BAE /* Pods-UCom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom.debug.xcconfig"; path = "Target Support Files/Pods-UCom/Pods-UCom.debug.xcconfig"; sourceTree = "<group>"; };
+		5326226B45AFF879EE2EEE55 /* Pods-UCom.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom.debug.xcconfig"; path = "Target Support Files/Pods-UCom/Pods-UCom.debug.xcconfig"; sourceTree = "<group>"; };
+		57099219CC69FDAEF7BCE2F5 /* Pods-UCom-UComTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom-UComTests.release.xcconfig"; path = "Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests.release.xcconfig"; sourceTree = "<group>"; };
 		62824220EFB84AE2B9102CE1 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		693CF54A287A059900DB723F /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		693CF54C287A05A400DB723F /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
@@ -116,13 +118,12 @@
 		69A90190287BC0C500D8ED99 /* Icon-App-76x76@1x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-App-76x76@1x.png"; sourceTree = "<group>"; };
 		69A90191287BC0C500D8ED99 /* Icon-App-40x40@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-App-40x40@3x.png"; sourceTree = "<group>"; };
 		69A90192287BC0C500D8ED99 /* Icon-App-29x29@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon-App-29x29@2x.png"; sourceTree = "<group>"; };
-		6F725BB632842D0A1B821B92 /* Pods-UCom.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom.release.xcconfig"; path = "Target Support Files/Pods-UCom/Pods-UCom.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = UCom/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		8D6E6FCEDA175A4D08D74EDC /* Pods-UCom-UComTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom-UComTests.debug.xcconfig"; path = "Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests.debug.xcconfig"; sourceTree = "<group>"; };
-		8FB8784B57E580C716F3276C /* Pods_UCom.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UCom.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		90C67A0D2AE5A5ABC23852D6 /* Pods_UCom_UComTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UCom_UComTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A832DDFAF1874462A4BC3590 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		AE8DC08C70CD48D89951EB2E /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		AF7FC50B18E64BD3B4F93C15 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
+		BBF7DCDCBD26AD05875309CA /* Pods-UCom-UComTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-UCom-UComTests.debug.xcconfig"; path = "Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests.debug.xcconfig"; sourceTree = "<group>"; };
 		C508DD3F13CE4E31BFF63BC5 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		CACF9D0A5B0749C099B4D924 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		D312A87A836145E1AD6B4ADD /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
@@ -130,7 +131,6 @@
 		E76FED6FF522493F88063B26 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F57482B0564C4023AB8B2942 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		F972F9E57C6313280E6F56AC /* Pods_UCom_UComTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_UCom_UComTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCFF8C585FB417BA9BA7912 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -139,7 +139,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				958351C48DB91217C2EA077A /* Pods_UCom_UComTests.framework in Frameworks */,
+				C3C64B140B70E65EC58EB1D3 /* Pods_UCom_UComTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -149,7 +149,7 @@
 			files = (
 				693CF54D287A05A400DB723F /* CallKit.framework in Frameworks */,
 				693CF54B287A059900DB723F /* Intents.framework in Frameworks */,
-				123260466470504C582E967F /* Pods_UCom.framework in Frameworks */,
+				25004B36E6B3EBA7011D77BF /* Pods_UCom.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -194,8 +194,8 @@
 				693CF54C287A05A400DB723F /* CallKit.framework */,
 				693CF54A287A059900DB723F /* Intents.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				8FB8784B57E580C716F3276C /* Pods_UCom.framework */,
-				F972F9E57C6313280E6F56AC /* Pods_UCom_UComTests.framework */,
+				401F0A980B495AD18E922AE6 /* Pods_UCom.framework */,
+				90C67A0D2AE5A5ABC23852D6 /* Pods_UCom_UComTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -286,10 +286,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				5CFBC418A12526A0A8394BAE /* Pods-UCom.debug.xcconfig */,
-				6F725BB632842D0A1B821B92 /* Pods-UCom.release.xcconfig */,
-				8D6E6FCEDA175A4D08D74EDC /* Pods-UCom-UComTests.debug.xcconfig */,
-				0A2C712B2853D3CFE82EF377 /* Pods-UCom-UComTests.release.xcconfig */,
+				5326226B45AFF879EE2EEE55 /* Pods-UCom.debug.xcconfig */,
+				33424811BA1E067161645458 /* Pods-UCom.release.xcconfig */,
+				BBF7DCDCBD26AD05875309CA /* Pods-UCom-UComTests.debug.xcconfig */,
+				57099219CC69FDAEF7BCE2F5 /* Pods-UCom-UComTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -324,11 +324,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "UComTests" */;
 			buildPhases = (
-				A76B3EA4D96D63EFE5B3700B /* [CP] Check Pods Manifest.lock */,
+				28D6BAB84105AEF0634AC140 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				6D4BAEB372EB2ACE00DC74CB /* [CP] Embed Pods Frameworks */,
+				C49BEFBCBED586C2F85C7FED /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -344,14 +344,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UCom" */;
 			buildPhases = (
-				5334A0A76938303B36BB3BF4 /* [CP] Check Pods Manifest.lock */,
+				FE3AC32C9EED0AE793E5FA30 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				963BEC41849EAFD186C67375 /* [CP] Embed Pods Frameworks */,
-				F567C92E134269E0A71264C1 /* [CP-User] [RNFB] Core Configuration */,
+				3CA0B0BCD833FFCF2A2455B5 /* [CP] Embed Pods Frameworks */,
+				EDE2A25C5EE910D56E8200E0 /* [CP-User] [RNFB] Core Configuration */,
 			);
 			buildRules = (
 			);
@@ -465,63 +465,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		5334A0A76938303B36BB3BF4 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-UCom-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		6D4BAEB372EB2ACE00DC74CB /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		963BEC41849EAFD186C67375 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UCom/Pods-UCom-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-UCom/Pods-UCom-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UCom/Pods-UCom-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A76B3EA4D96D63EFE5B3700B /* [CP] Check Pods Manifest.lock */ = {
+		28D6BAB84105AEF0634AC140 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -543,7 +487,41 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		F567C92E134269E0A71264C1 /* [CP-User] [RNFB] Core Configuration */ = {
+		3CA0B0BCD833FFCF2A2455B5 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UCom/Pods-UCom-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UCom/Pods-UCom-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UCom/Pods-UCom-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C49BEFBCBED586C2F85C7FED /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-UCom-UComTests/Pods-UCom-UComTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EDE2A25C5EE910D56E8200E0 /* [CP-User] [RNFB] Core Configuration */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -573,6 +551,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FE3AC32C9EED0AE793E5FA30 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-UCom-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -608,7 +608,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8D6E6FCEDA175A4D08D74EDC /* Pods-UCom-UComTests.debug.xcconfig */;
+			baseConfigurationReference = BBF7DCDCBD26AD05875309CA /* Pods-UCom-UComTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -635,7 +635,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0A2C712B2853D3CFE82EF377 /* Pods-UCom-UComTests.release.xcconfig */;
+			baseConfigurationReference = 57099219CC69FDAEF7BCE2F5 /* Pods-UCom-UComTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
@@ -659,7 +659,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5CFBC418A12526A0A8394BAE /* Pods-UCom.debug.xcconfig */;
+			baseConfigurationReference = 5326226B45AFF879EE2EEE55 /* Pods-UCom.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -667,7 +667,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = TF5T34476F;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = UCom/Info.plist;
@@ -692,7 +692,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6F725BB632842D0A1B821B92 /* Pods-UCom.release.xcconfig */;
+			baseConfigurationReference = 33424811BA1E067161645458 /* Pods-UCom.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -700,7 +700,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = TF5T34476F;
 				INFOPLIST_FILE = UCom/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -868,7 +868,7 @@
 				00E356F71AD99517003FC87E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "UCom" */ = {
 			isa = XCConfigurationList;
@@ -877,7 +877,7 @@
 				13B07F951A680F5B00A75B9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "UCom" */ = {
 			isa = XCConfigurationList;
@@ -886,7 +886,7 @@
 				83CBBA211A601CBA00E9B192 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

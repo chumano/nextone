@@ -61,8 +61,11 @@ const FindUsersScreen = ({ navigation, route }: ChatStackProps) => {
         }
         const conversation = conversationRepsonse.data;
         
-        const conversationName = getConversationName(conversation, userInfo!.userId);
+        //addOrUpdate Conversation list
+        dispatch(conversationActions.addOrUpdateConversation(conversation));
         dispatch(conversationActions.selectConversation(conversation.id));
+
+        const conversationName = getConversationName(conversation, userInfo!.userId);
         navigation.replace('ChatScreen', {
             conversationId: conversation.id,
             name: conversationName,

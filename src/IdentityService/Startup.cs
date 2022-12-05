@@ -143,6 +143,8 @@ namespace IdentityService
             var authBuilder = services.AddAuthentication();
 
 
+            services.Configure<IdentityOptions>(Configuration.GetSection(nameof(IdentityOptions)));
+
             //Grpc Service
             AppContext.SetSwitch("System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
             services.AddGrpc(options =>
