@@ -65,14 +65,17 @@ namespace ComService.Infrastructure
                 {
                     Headers = new Dictionary<string, string>()
                     {
-                        { "apns-expiration", (expiration/1000).ToString() } 
+                        { "apns-expiration", (expiration/1000).ToString() },
+                        {"apns-priority","5" },
+                        {"apns-push-type","background"} 
                     },
-                    Aps = message.IsNotification ? new Aps()
+                    Aps = new Aps()
                     {
-                        Badge = 1,
+                        Badge = message.IsNotification ? 1 : null,
                         Sound = "default",
-                        Category = "NEW_MESSAGE_CATEGORY"
-                    } : null
+                        Category = "NEW_MESSAGE_CATEGORY",
+                        ContentAvailable = true,
+                    }
                 };
             }
 
