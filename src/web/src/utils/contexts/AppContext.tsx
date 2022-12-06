@@ -1,7 +1,7 @@
 import { Modal } from "antd";
 import { QuestionOutlined} from '@ant-design/icons';
 import { User } from "oidc-client";
-import { createContext,  useCallback, useEffect, useState} from "react";
+import { createContext,  useCallback, useEffect, useRef, useState} from "react";
 import { useDispatch } from "react-redux";
 import { AuthenticationService } from "../../services";
 import { CallEvents } from "../../services/CallBase";
@@ -33,7 +33,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
     const dispatch = useDispatch();
     const [isCallInit,setCallInit] = useState(false);
     const [isHubConnected,setIsHubConnected] = useState(false);
-
+    const listenTimeoutRef = useRef<any>();
     useEffect(()=>{
         const singalRSubsription =SignalR.subscription('connected', async ()=>{
             await registerHub();
@@ -68,6 +68,10 @@ const AppContextProvider = (props: IContextProviderProp) => {
                 icon: <QuestionOutlined />,
                 content: `Cuộc gọi từ "${userName}"`,
                 onOk : async ()=> {
+                    if(listenTimeoutRef.current) {
+                        clearTimeout(listenTimeoutRef.current)
+                        listenTimeoutRef.current = undefined
+                    }
                     sound.stop();
                     dispatch(callActions.receiveCall({
                         conversationId: room,
@@ -85,11 +89,18 @@ const AppContextProvider = (props: IContextProviderProp) => {
                     });
                 },
                 onCancel : async ()=> {
+                    if(listenTimeoutRef.current) {
+                        clearTimeout(listenTimeoutRef.current)
+                        listenTimeoutRef.current = undefined
+                    }
                     sound.stop();
                     await CallService.ignoreCallRequest(room);
                 },
             });
-            setTimeout(()=>{
+
+            //Tự động tắt sau 1 khoảng thời gian
+            if(listenTimeoutRef.current) clearTimeout(listenTimeoutRef.current)
+            listenTimeoutRef.current = setTimeout(()=>{
                 //end call
                 sound.stop();
                 if(modal){

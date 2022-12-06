@@ -42,6 +42,7 @@ export const backgroundSetup = async()=>{
   RNCallKeep.addEventListener('endCall', endCall);
 }
 
+var listenTimeoutRef :any ;
 export const displayCallRequest = async (message: CallMessageData)=>{
     //console.log(`AppState.currentState`, AppState.currentState);
     //console.log('displayCallRequest', message)
@@ -69,8 +70,9 @@ export const displayCallRequest = async (message: CallMessageData)=>{
   
     CallService.storeCallInfo(uuid, message);
 
-   
-    setTimeout(() => {
+    //Tự động tắt sau 1 khoảng thời gian
+    if(listenTimeoutRef) clearTimeout(listenTimeoutRef);
+    listenTimeoutRef = setTimeout(() => {
       if (CallService.isRinging) {
         CallService.clearCallInfo(uuid)
         // 6 = MissedCall
@@ -78,13 +80,16 @@ export const displayCallRequest = async (message: CallMessageData)=>{
         RNCallKeep.reportEndCallWithUUID(uuid, 6);
       }
     }, CALL_WAIT_TIME);
-
   }
 
   
 
 export const answerCall = async (data: any) => {
   try {
+    if(listenTimeoutRef) {
+      clearTimeout(listenTimeoutRef);
+      listenTimeoutRef= undefined;
+    }
     //console.log(`[answerCall]: `, data);
     const { callUUID } = data;
     RNCallKeep.rejectCall(callUUID); //end RNCallKeep UI
@@ -110,6 +115,10 @@ export const answerCall = async (data: any) => {
 };
 
 export const endCall = async (data: any) => {
+  if(listenTimeoutRef) {
+    clearTimeout(listenTimeoutRef);
+    listenTimeoutRef= undefined;
+  }
   //console.log(`[endCall],: `, data);
   const { callUUID } = data;
   const callInfo = CallService.getCallInfo(callUUID);

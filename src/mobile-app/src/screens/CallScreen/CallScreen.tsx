@@ -141,6 +141,7 @@ const useCall = (callInfo?: CallMessageData)=>{
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
   const [webcamStarted, setWebcamStarted] = useState(false);
   const peerConnectionRef = useRef<RTCPeerConnection>();
+  const timeoutWaitRef = useRef<any>();
 
   const hangup = () => {
     //console.log('hangup');
@@ -191,6 +192,10 @@ const useCall = (callInfo?: CallMessageData)=>{
               //console.log("[CALL_MESSAGE] receive-" + message.type,  message.data)
               const { accepted } = message.data;
               CallService.isReceiceResponse = true;
+              if(timeoutWaitRef.current) {
+                clearTimeout(timeoutWaitRef.current)
+                timeoutWaitRef.current= undefined;
+              }
               if (!accepted) {
                 hangup();
                 dispatch(callActions.stopCall());
@@ -430,8 +435,10 @@ const useCall = (callInfo?: CallMessageData)=>{
               room : conversationId,
               callType
             });
+
           //console.log("send call request - response", response);
-          setTimeout(()=>{
+          if(timeoutWaitRef.current) clearTimeout(timeoutWaitRef.current)
+          timeoutWaitRef.current = setTimeout(()=>{
             if(!CallService.isCalling) return;
 
             //Nếu không nhận đc phản hồi thì kết thúc
@@ -441,6 +448,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               dispatch(callActions.stopCall());
             }
           },CALL_WAIT_TIME)
+
         }
         else {
           //send answer if this is receiver
@@ -462,6 +470,10 @@ const useCall = (callInfo?: CallMessageData)=>{
       }
     }
     setupCall();
+
+    return ()=>{
+      if(timeoutWaitRef.current) clearTimeout(timeoutWaitRef.current)
+    }
     
   }, [callInfo, isConnected, setRemoteStream])
 

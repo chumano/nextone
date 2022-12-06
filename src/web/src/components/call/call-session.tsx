@@ -189,6 +189,7 @@ const CallSession: React.FC = () => {
         console.log('CallService.isReceiveResponse change ', CallService.isReceiveResponse)
         if( CallService.isReceiveResponse && waitTimeOutRef.current){
             clearTimeout(waitTimeOutRef.current);
+            waitTimeOutRef.current = undefined
         }
     },[CallService.isReceiveResponse])
 
