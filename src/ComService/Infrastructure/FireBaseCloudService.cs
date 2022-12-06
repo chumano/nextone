@@ -46,7 +46,7 @@ namespace ComService.Infrastructure
             };
 
             var now = DateTime.UtcNow;
-            var timeToLive = System.TimeSpan.FromSeconds(10);
+            var timeToLive = System.TimeSpan.FromSeconds(5);
 
             var expiration = now.ToUnixTimeStamp() + (long)timeToLive.TotalMilliseconds;
             //if (message.IsNotification)
@@ -54,24 +54,26 @@ namespace ComService.Infrastructure
                 fbmessage.Android = new AndroidConfig()
                 {
                     Priority = Priority.High,
-                    TimeToLive = System.TimeSpan.FromSeconds(5),
+                    TimeToLive = timeToLive,
                     Notification = message.IsNotification? new AndroidNotification()
                     {
                         NotificationCount = 0,
                         ClickAction = "FLUTTER_NOTIFICATION_CLICK",
                     }: null
                 };
+
+                //https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW1
                 fbmessage.Apns = new ApnsConfig()
                 {
                     Headers = new Dictionary<string, string>()
                     {
-                        { "apns-expiration", (expiration/1000).ToString() },
-                        {"apns-priority","5" },
+                        {"apns-expiration", (0/1000).ToString() },
+                        {"apns-priority","10" },
                         {"apns-push-type","background"} 
                     },
                     Aps = new Aps()
                     {
-                        Badge = message.IsNotification ? 1 : null,
+                        Badge = message.IsNotification ? 1 : 1,
                         Sound = "default",
                         Category = "NEW_MESSAGE_CATEGORY",
                         ContentAvailable = true,
