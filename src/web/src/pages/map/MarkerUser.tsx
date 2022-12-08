@@ -1,8 +1,11 @@
+import { Button } from 'antd';
 import L from 'leaflet';
 import React, { useEffect, useRef, useState } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet';
 import userIconUrl from '../../assets/images/map/user-icon.png';
 import { UserStatus } from '../../models/user/UserStatus.model';
+import { MessageOutlined } from '@ant-design/icons';
+
 const userIcon = L.icon({
     iconUrl: userIconUrl,
     iconSize: [32, 32],
@@ -32,6 +35,12 @@ const MarkerUserInternal: React.FC<{ user: UserStatus, openPopup?: boolean }> = 
             }}>
             <h6>{user.userName}</h6>
             {user.lastUpdateDate}
+            
+            <div>
+                    <Button icon={ <MessageOutlined />}>
+                        Liên lạc
+                    </Button>
+                </div>
         </Popup>
     </Marker>
 }

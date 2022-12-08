@@ -180,8 +180,18 @@ export const chatSlice = createSlice({
             })
 
             conversationUpdated(state, conversation);
-        }
+        },
 
+        //events
+        deleteEvent: (state, action: PayloadAction<{ channelId: string, eventId: string }>) => {
+            const { channelId, eventId } = action.payload;
+            const conversation = state.allConversations.find(o => o.id === channelId);
+            if (!conversation) return;
+            conversation.events = conversation.events.filter(o => o.id != eventId);
+            conversation.messages = conversation.messages.filter(o=> o.event?.id !== eventId);
+        
+            conversationUpdated(state, conversation);
+        },
     },
     extraReducers: (builder) => {
         //conversation

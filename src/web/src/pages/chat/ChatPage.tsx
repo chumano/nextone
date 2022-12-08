@@ -6,7 +6,7 @@ import { IAppStore } from '../../store';
 import { chatActions } from '../../store/chat/chatReducer';
 import ConversationList from '../../components/chat/ConversationList';
 import ChatBox from '../../components/chat/ChatBox';
-import { Button } from 'antd';
+import { Button, Modal } from 'antd';
 import { PlusOutlined, MessageOutlined } from '@ant-design/icons';
 import ModalFindUser from '../../components/chat/ModalFindUser';
 import no_selected_conversation_bg from '../../assets/images/chat/no_selected_conversation_bg.png';
@@ -19,6 +19,7 @@ import ModalAddMember from '../../components/chat/ModalAddMember';
 import { getChannels, getConversations } from '../../store/chat/chatThunks';
 import { comApi } from '../../apis/comApi';
 import ModalUserInfo from '../../components/chat/ModalUserInfo';
+import { EventInfo } from '../../models/event/Event.model';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
@@ -31,6 +32,7 @@ const ChatPage: React.FC = () => {
         isShowConversationInfo,
         notLoadedConversationId
     } = useSelector((store: IAppStore) => store.chat);
+
     const user = useSelector((store: IAppStore) => store.auth.user);
     const systemUserRole = user?.profile.role;
     useEffect(() => {
@@ -65,8 +67,6 @@ const ChatPage: React.FC = () => {
     }, [selectedConversationId, allConversations])
 
 
-    console.log('conversations', conversations)
-    console.log('channels', channels)
     return <>
         <div className="chat-page">
             <div className="chat-page__sidebar">
@@ -121,14 +121,8 @@ const ChatPage: React.FC = () => {
                             </p>
                         </div>
                     }
-                    {conversation &&
-                        <>
-                            <ChatBox key={conversation.id} conversation={conversation} />
-                            {isShowConversationInfo &&
-
-                                <ConversationInfo conversation={conversation} />
-                            }
-                        </>
+                    {conversation && <ChatViewContainer conversation={conversation} isShownInfo={isShowConversationInfo}/>
+                       
                     }
                 </div>
 
@@ -171,4 +165,53 @@ const ChatPage: React.FC = () => {
     </>
 }
 
+
+const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?: boolean}> 
+    = ({conversation, isShownInfo}) => {
+    const { members } = conversation;
+    const user = useSelector((store: IAppStore) => store.auth.user);
+    const userId = user!.profile.sub;
+    const userRole = members.find(o => o.userMember.userId === userId)?.role;
+
+    const onDeleteEvent = (item: EventInfo) => {
+        Modal.confirm({
+            title: `Bạn có muốn xóa sự kiện không?`,
+            onOk: async () => {
+                const response = await comApi.deleteEvent({
+                    channelId: conversation.id,
+                    eventId: item.id
+                });
+
+                if (!response.isSuccess) {
+                    Modal.error({
+                        title: 'Không thể xóa sự kiện',
+                        content: response.errorMessage
+                      });
+                    return;
+                }
+
+                dispatch(chatActions.deleteEvent({
+                    channelId: conversation.id,
+                    eventId: item.id
+                }));
+            },
+            onCancel() {
+            },
+        });
+        
+    }
+    
+    return  <>
+        <ChatBox key={conversation.id} conversation={conversation} 
+            userRole={userRole} onDeleteEvent={onDeleteEvent}/>
+        {isShownInfo &&
+            <ConversationInfo conversation={conversation} 
+                userRole={userRole} onDeleteEvent={onDeleteEvent}/>
+        }
+    </>
+}
 export default ChatPage;
+function dispatch(arg0: { payload: { channelId: string; eventId: string; }; type: string; }) {
+    throw new Error('Function not implemented.');
+}
+

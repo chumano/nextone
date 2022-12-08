@@ -177,5 +177,16 @@ namespace ComService.Boudaries.Controllers
 
             return Ok(ApiResult.Success(evts));
         }
+
+        [HttpPost("DeleteEvent")]
+        public async Task<IActionResult> DeleteEvent([FromBody] DeleteEventDTO deleteEventDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var user = await _userStatusService.GetUser(userId);
+
+            //TODO : delete event in channel
+
+            return Ok(ApiResult.Success(null));
+        }
     }
 }
