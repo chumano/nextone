@@ -6,10 +6,9 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
-import {Button, HelperText, TextInput} from 'react-native-paper';
+import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 import {authApi} from '../../apis';
 import {PublicScreenProp} from '../../navigation/PublicStack';
 

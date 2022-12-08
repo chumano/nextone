@@ -77,7 +77,7 @@ const LoginScreen = () => {
           onChangeText={onInputChangeHandler.bind(this, 'username')}
         />
         {!loginForm.username.isValid && (
-          <HelperText type="error">Username Field is required!</HelperText>
+          <HelperText type="error">Tài khoản phải nhập!</HelperText>
         )}
         <TextInput
           label="Mật khẩu"
@@ -88,7 +88,7 @@ const LoginScreen = () => {
           onChangeText={onInputChangeHandler.bind(this, 'password')}
         />
         {!loginForm.password.isValid && (
-          <HelperText type="error">Password Field is required!</HelperText>
+          <HelperText type="error">Mật khẩu phải nhập!</HelperText>
         )}
       </View>
       {authState.error && (
