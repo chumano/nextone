@@ -16,7 +16,12 @@ const userIcon = L.icon({
     shadowAnchor: undefined
 });
 
-const MarkerUserInternal: React.FC<{ user: UserStatus, openPopup?: boolean }> = ({ user, openPopup }) => {
+const MarkerUserInternal: React.FC<{ 
+    user: UserStatus, 
+    openPopup?: boolean 
+    openConversation?:()=>void
+}> = ({ user, openPopup, openConversation }) => {
+    
     const map = useMap();
     const [refReady, setRefReady] = useState(false);
     let popupRef = useRef<L.Popup>();
@@ -37,7 +42,8 @@ const MarkerUserInternal: React.FC<{ user: UserStatus, openPopup?: boolean }> = 
             {user.lastUpdateDate}
             
             <div>
-                    <Button icon={ <MessageOutlined />}>
+                    <Button className='button-icon' icon={ <MessageOutlined />}
+                        onClick={openConversation} >
                         Liên lạc
                     </Button>
                 </div>

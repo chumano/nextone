@@ -105,8 +105,12 @@ export const comApi = {
         const responsePromise = comAxiosInstance.get('/event/GetEventsForMap', {params: data})
         return await handleAxiosApi<ApiResult<EventInfo[]>>(responsePromise);
     },
-    deleteEvent :async (data: DeleteEventDTO) =>{
+    deleteChannelEvent :async (data: DeleteEventDTO) =>{
         const responsePromise = comAxiosInstance.post(`/channel/DeleteEvent`, data)
+        return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+    },
+    deleteEvent :async (eventId: string) =>{
+        const responsePromise = comAxiosInstance.delete(`/event/${eventId}`)
         return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
     },
 

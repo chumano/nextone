@@ -183,7 +183,7 @@ export const chatSlice = createSlice({
         },
 
         //events
-        deleteEvent: (state, action: PayloadAction<{ channelId: string, eventId: string }>) => {
+        deleteChannelEvent: (state, action: PayloadAction<{ channelId: string, eventId: string }>) => {
             const { channelId, eventId } = action.payload;
             const conversation = state.allConversations.find(o => o.id === channelId);
             if (!conversation) return;

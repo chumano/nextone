@@ -6,7 +6,9 @@ import { EventInfo } from '../../models/event/Event.model';
 import EventList from './EventList';
 import UserList from './UserList';
 
-const MapSideBar = () => {
+const MapSideBar : React.FC<{
+    onDeleteEvent?: (item: EventInfo) =>void;
+}>  = ({onDeleteEvent}) => {
     const [openSidebar, setOpenSidebar] = useState(false)
     return <div className={classNames({
         'map-sidebar map-overlay': true,
@@ -37,7 +39,7 @@ const MapSideBar = () => {
                 <div className='map-sidebar__body'>
                     <Tabs defaultActiveKey="events" >
                         <Tabs.TabPane tab="Sự kiện" key="events">
-                            <EventList />
+                            <EventList onDeleteEvent={onDeleteEvent} />
                         </Tabs.TabPane>
                         <Tabs.TabPane tab="Người dùng" key="users">
                             <UserList />

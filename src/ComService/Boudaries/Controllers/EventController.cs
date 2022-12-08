@@ -1,4 +1,5 @@
 ﻿using ComService.Domain;
+using ComService.Domain.DomainEvents;
 using ComService.Domain.Repositories;
 using ComService.Domain.Services;
 using ComService.DTOs.Event;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NextOne.Infrastructure.Core;
+using NextOne.Shared.Bus;
 using NextOne.Shared.Common;
 using NextOne.Shared.Security;
 using System;
@@ -29,11 +31,14 @@ namespace ComService.Boudaries.Controllers
         private readonly IUserStatusService _userStatusService;
         private readonly IChannelService _channelService;
         private readonly IEventRepository _eventRepository;
-        private readonly IdGenerator _idGenerator;
+        private readonly IdGenerator _idGenerator; 
+        protected readonly IBus _bus;
+
         public EventController(
             ILogger<EventController> logger,
             IUserContext userContext,
             IdGenerator idGenerator,
+            IBus bus,
             IUserStatusService userService,
             IChannelService channelService,
             IEventRepository eventRepository,
@@ -42,6 +47,7 @@ namespace ComService.Boudaries.Controllers
             _logger = logger;
             _userContext = userContext;
             _idGenerator = idGenerator;
+            _bus = bus;
             _comDbContext = comDbContext;
             _channelService = channelService;
             _eventRepository = eventRepository;
@@ -181,5 +187,36 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(items));
         }
 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEvent(string id)
+        {
+            var evt = await _comDbContext.Events.FindAsync(id);
+
+            if(evt == null)
+            {
+                return Ok(ApiResult.Error("Event does not exist"));
+            }
+
+            //find channelEvents
+            var channelEvents = await _comDbContext.Set<ChannelEvent>()
+                .Where(o => o.EventId == id)
+                .ToListAsync();
+
+            //find messageEvents
+            var messages = await _comDbContext.Messages
+                .Where(o => o.EventId == id)
+                .ToListAsync();
+
+
+            _comDbContext.Set<ChannelEvent>().RemoveRange(channelEvents);
+            _comDbContext.Messages.RemoveRange(messages);
+            _comDbContext.Events.Remove(evt);
+
+            await _comDbContext.SaveChangesAsync();
+
+            await _bus.Publish(new EventDeleted());
+
+            return Ok(ApiResult.Success(null));
+        }
     }
 }

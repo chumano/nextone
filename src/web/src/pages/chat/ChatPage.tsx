@@ -16,13 +16,19 @@ import { ConversationState } from '../../store/chat/ChatState';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
 import ModalMemberRole from '../../components/chat/ModalMemberRole';
 import ModalAddMember from '../../components/chat/ModalAddMember';
-import { getChannels, getConversations } from '../../store/chat/chatThunks';
+import { getChannels, getConversations, getOrCreateConversation } from '../../store/chat/chatThunks';
 import { comApi } from '../../apis/comApi';
 import ModalUserInfo from '../../components/chat/ModalUserInfo';
 import { EventInfo } from '../../models/event/Event.model';
+import { useHistory, useLocation } from 'react-router-dom';
+import { UserStatus } from '../../models/user/UserStatus.model';
+import { CreateConverationDTO } from '../../models/dtos';
+import { useCallback } from 'react';
 
 const ChatPage: React.FC = () => {
     const dispatch = useDispatch();
+    const location = useLocation();
+    const history = useHistory();
     const { conversations, channels,
         conversationsLoading,
         modals,
@@ -34,7 +40,12 @@ const ChatPage: React.FC = () => {
     } = useSelector((store: IAppStore) => store.chat);
 
     const user = useSelector((store: IAppStore) => store.auth.user);
+    const [conversation, setConversation] = useState<ConversationState>();
+
     const systemUserRole = user?.profile.role;
+
+    console.log('location.state', location.state)
+
     useEffect(() => {
         dispatch(getChannels({
             offset: 0,
@@ -45,7 +56,40 @@ const ChatPage: React.FC = () => {
             offset: 0,
             pageSize: 20
         }))
+
+        return ()=>{
+            
+        }
     }, [dispatch]);
+
+   
+    useEffect(()=>{
+        if(location.state){
+            var actionState = location.state as  { 
+                action: 'openConversation',
+                user: UserStatus
+            }
+            if(actionState.action === 'openConversation' && actionState.user?.userId){
+                //START_P2P_CHAT
+                const conversation: CreateConverationDTO = {
+                    name: '',
+                    type: ConversationType.Peer2Peer,
+                    memberIds: [actionState.user.userId]
+                }
+                dispatch(getOrCreateConversation(conversation))
+            }
+            history.replace(location.pathname, null)
+        }
+    },[location.state])
+
+    useEffect(() => {
+        if(location.state){
+            return
+        }
+        const conversation = allConversations.find(o => o.id == selectedConversationId);
+        setConversation(conversation);
+    }, [selectedConversationId, allConversations, location.state])
+
 
     useEffect(() => {
         if (!notLoadedConversationId) return;
@@ -59,13 +103,7 @@ const ChatPage: React.FC = () => {
         fetchConversation();
     }, [dispatch, notLoadedConversationId])
 
-    const [conversation, setConversation] = useState<ConversationState>();
-
-    useEffect(() => {
-        const conversation = allConversations.find(o => o.id == selectedConversationId);
-        setConversation(conversation);
-    }, [selectedConversationId, allConversations])
-
+    
 
     return <>
         <div className="chat-page">
@@ -173,11 +211,11 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
     const userId = user!.profile.sub;
     const userRole = members.find(o => o.userMember.userId === userId)?.role;
 
-    const onDeleteEvent = (item: EventInfo) => {
+    const onDeleteEvent = useCallback((item: EventInfo) => {
         Modal.confirm({
             title: `Bạn có muốn xóa sự kiện không?`,
             onOk: async () => {
-                const response = await comApi.deleteEvent({
+                const response = await comApi.deleteChannelEvent({
                     channelId: conversation.id,
                     eventId: item.id
                 });
@@ -190,7 +228,7 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
                     return;
                 }
 
-                dispatch(chatActions.deleteEvent({
+                dispatch(chatActions.deleteChannelEvent({
                     channelId: conversation.id,
                     eventId: item.id
                 }));
@@ -199,7 +237,7 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
             },
         });
         
-    }
+    },[dispatch]);
     
     return  <>
         <ChatBox key={conversation.id} conversation={conversation} 

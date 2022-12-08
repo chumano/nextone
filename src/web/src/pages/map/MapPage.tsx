@@ -7,6 +7,8 @@ import MapSideBar from './MapSideBar';
 import MapToolBar from './MapToolBar';
 import { comApi } from '../../apis/comApi';
 import { mapActions } from '../../context/map/mapStore';
+import { EventInfo } from '../../models/event/Event.model';
+import { Modal } from 'antd';
 
 const MapPageInternal: React.FC = () => {
     const dispatch = useMapDispatch();
@@ -49,13 +51,37 @@ const MapPageInternal: React.FC = () => {
           clearInterval(intervalCall);
         };
       }, []);
+
+      const onDeleteEvent = useCallback((item: EventInfo) => {
+        Modal.confirm({
+            title: `Bạn có muốn xóa sự kiện không?`,
+            onOk: async () => {
+                const response = await comApi.deleteEvent(item.id);
+
+                if (!response.isSuccess) {
+                    Modal.error({
+                        title: 'Không thể xóa sự kiện',
+                        content: response.errorMessage
+                      });
+                    return;
+                }
+
+                dispatch(mapActions.deleteEvent({
+                    eventId: item.id
+                }));
+            },
+            onCancel() {
+            },
+        });
+        
+    },[dispatch]);
     return (
         <div className="map-page">
-            <MapView />
+            <MapView onDeleteEvent={onDeleteEvent}/>
 
             <MapToolBar />
 
-            <MapSideBar />
+            <MapSideBar onDeleteEvent={onDeleteEvent}/>
 
             {/* <div>
                 <p>

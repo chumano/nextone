@@ -278,6 +278,21 @@ namespace MasterService.Controllers
             return Ok(ApiResult.Success(null));
         }
 
+        [HttpDelete("SelfDelete")]
+        public async Task<IActionResult> SelfDelete()
+        {
+            var actionUser = _userContext.User;
+            var user = await _userService.Get(actionUser.UserId);
+            if (user == null)
+            {
+                throw new DomainException("[User/SelfDelete]", "User not exist");
+            }
+
+            await _userService.DeleteUser(user, isSelf: true);
+
+            return Ok(ApiResult.Success(null));
+        }
+
         [HttpGet("GetActivities")]
         public async Task<IActionResult> GetActivities([FromBody] GetUserActivitiesDTO getUserActivitiesDTO)
         {

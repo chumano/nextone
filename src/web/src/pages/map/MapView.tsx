@@ -19,6 +19,9 @@ import MarkerUser from './MarkerUser';
 import MarkerEvent from './MarkerEvent';
 import ModalSendLocation from './ModalSendLocation';
 import { AppWindow } from '../../config/AppWindow';
+import { useHistory } from 'react-router-dom';
+import { UserStatus } from '../../models/user/UserStatus.model';
+import { EventInfo } from '../../models/event/Event.model';
 
 declare let window: AppWindow;
 //default icon
@@ -42,8 +45,13 @@ const MapController = () => {
 
 //https://react-leaflet.js.org/docs/start-introduction/
 const zoomObjectLvl = 15;
-const MapView = () => {
-    const { onlineUsers, events, selectedEvent, selectedUser } = useMapSelector(o => o);
+const MapView : React.FC<{
+    onDeleteEvent?: (item: EventInfo) =>void;
+}> = ({onDeleteEvent})=>{
+    const history = useHistory();
+    const { onlineUsers, events, 
+        selectedEvent, selectedUser 
+    } = useMapSelector(o => o);
     const [map, setMap] = useState<L.Map | undefined>(undefined);
     const [position, setPosition] = useState<L.LatLng | undefined>(undefined);
 
@@ -125,14 +133,25 @@ const MapView = () => {
         }
     }, [map, onMove])
 
+    const openConversation = useCallback((user: UserStatus)=>{
+        return ()=>{
+            history.push('/chat', 
+            { 
+                'action': 'openConversation',
+                'user': user
+            } as any)
+        }
+    },[])
+
     const renderUserMarkers = useMemo(() => {
         return <>
             {onlineUsers.filter(o => o.lastLat != null && o.lastLon != null)
                 .map(o => <MarkerUser key={'user_' + o.userId} user={o}
+                    openConversation={openConversation(o)}
                     openPopup={selectedUser && selectedUser.userId === o.userId} />
                 )}
         </>
-    }, [onlineUsers, selectedUser])
+    }, [onlineUsers, selectedUser, openConversation])
 
     const renderEventMarkers = useMemo(() => {
         return <>
@@ -141,7 +160,7 @@ const MapView = () => {
                     openPopup={selectedEvent && selectedEvent.id === o.id} />
                 )}
         </>
-    }, [events, selectedEvent])
+    }, [events, selectedEvent, onDeleteEvent])
 
     const onSendLocation = useCallback((latlon: L.LatLng, searchType: 'users' | 'near') => {
        setSearchType(searchType);
