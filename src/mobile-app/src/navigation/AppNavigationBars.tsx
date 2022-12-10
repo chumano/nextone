@@ -27,12 +27,7 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   };
 
   const logoutHandler = async () => {
-    let fcmToken = await AsyncStorage.getItem('fcmToken');
-    if (fcmToken) {
-      const response = await notificationApi.removeToken(fcmToken);
-      //console.log('removeToken: ', response);
-      await AsyncStorage.removeItem('fcmToken');
-    }
+    
     closeMenu();
     dispatch(logout());
   };

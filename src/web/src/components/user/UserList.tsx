@@ -17,7 +17,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 
 import { ActivateUserRequest, User } from "../../models/user/User.model";
 import { userApi } from "../../apis/userApi";
@@ -37,10 +37,12 @@ import {
 import "../../styles/components/user/user-list.scss";
 
 interface IProps {
-	textSearch: string;
+	filter: {
+		textSearch: string;
+	}
 }
 
-const UserList: FC<IProps> = ({ textSearch }) => {
+const UserList: FC<IProps> = ({ filter }) => {
 	const { state, dispatch } = useContext(UserCtx) as UserContext;
 
 	const [countUser, setCountUser] = useState(0);
@@ -57,9 +59,9 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 		});
 	};
 
-	const getListUserAsync = async () => {
+	const getListUserAsync = useCallback(async () => {
 		const { offset, pageSize } = state;
-
+		const {textSearch} = filter;
 		try {
 			const { data: listUserData } = await userApi.list(textSearch, {
 				offset,
@@ -91,13 +93,13 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 		} catch (error) {
 			message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
 		}
-	};
+	},[filter]);
 
 	useEffect(() => {
 		const { offset, pageSize } = state;
 		dispatch({
 			type: UserActionType.GET_LIST_USER,
-			payload: { offset, pageSize, textSearch },
+			payload: { offset, pageSize, textSearch: '' },
 		});
 	}, []);
 
@@ -113,9 +115,9 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 
 	useEffect(() => {
 		getListUserAsync();
-	}, [state.offset, textSearch]);
+	}, [state.offset, filter]);
 
-	const activateUserHandler = async (
+	const activateUserHandler = useCallback(async (
 		userNeedToActivated: ActivateUserRequest
 	) => {
 		const response = await userApi.activateUser(userNeedToActivated);
@@ -130,7 +132,7 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 				isActive: userNeedToActivated.IsActive,
 			};
 			state.data[updateUserRowIndex] = updateUserRow;
-
+			state.data = [...state.data]
 			dispatch({
 				type: UserActionType.GET_LIST_USER_SUCCESS,
 				payload: state.data,
@@ -141,11 +143,10 @@ const UserList: FC<IProps> = ({ textSearch }) => {
 				payload: errorMessage,
 			});
 		}
-	};
+	},[filter, state.data]);
 	
 	const onMenuClick = (record:User)=>{
 		return (e:any) => {
-			console.log('click ', e);
 			const {key} = e;
 			openModalHandler(record, key);
 		};

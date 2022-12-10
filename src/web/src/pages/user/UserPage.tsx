@@ -15,11 +15,12 @@ import { IAppStore } from "../../store";
 import NoPermission from "../../components/auth/NoPermission";
 
 const UserPage = () => {
-	const [searchInput, setSearchInput] = useState("");
+	const [filter, setFilter] = useState<{textSearch: string}>({textSearch:""});
 	const [isOpenCreateUserModal, SetIsOpenCreateUserModal] = useState(false);
 
-	const searchHandler = (value: string): void => {
-		setSearchInput(value);
+
+	const searchHandler = (filter:any): void => {
+		setFilter(filter);
 	};
 
 	const onCreateUserModalHandler = () => SetIsOpenCreateUserModal(true);
@@ -57,7 +58,7 @@ const UserPage = () => {
 				</div>
 
 				<div className="user-page__body">
-					<UserList textSearch={searchInput} />
+					<UserList filter={filter} />
 				</div>
 
 				{isOpenCreateUserModal && (

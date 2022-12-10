@@ -144,8 +144,10 @@ namespace IdentityService.Boundaries.Grpc
         public override async Task<ActiveIdentityUserResponse> ActiveIdentityUser(ActiveIdentityUserRequest request, ServerCallContext context)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            var lockoutEnabled = !request.Active;
-            var identityResult =  await _userManager.SetLockoutEnabledAsync(user, lockoutEnabled);
+            var isActive = request.Active;
+            await _userManager.SetLockoutEnabledAsync(user, true);
+            DateTimeOffset? LOCKOUT_ENDDATE = (new DateTime(3000, 1, 1));
+            var identityResult = await _userManager.SetLockoutEndDateAsync(user, isActive ? null : LOCKOUT_ENDDATE);
 
             if (!identityResult.Succeeded || identityResult.Errors.Any())
             {
