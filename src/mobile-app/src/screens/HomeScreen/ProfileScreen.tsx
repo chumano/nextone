@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet} from 'react-native';
+import {View, StyleSheet, Alert, Platform} from 'react-native';
 import {Avatar, Text, TextInput, Button, Portal, Modal, HelperText} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
@@ -78,14 +78,17 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
           </Button>
         </View>
 
-        <View style={{...styles.buttonContainer, width:'auto'}}>
+        {Platform.OS ==='ios' &&<View style={{...styles.buttonContainer, width:'auto'}}>
           <Button mode="outlined" color='red' onPress={deleteUserHanlder}>
             Xóa tài khoản
           </Button>
         </View>
+        }
       </View>
 
-      <DeleteUserModal visible={visible} hideModal={hideModal}/>
+      {Platform.OS ==='ios' &&
+        <DeleteUserModal visible={visible} hideModal={hideModal}/>
+      }
     </SafeAreaView>
   );
 };
@@ -108,15 +111,18 @@ const DeleteUserModal :React.FC<{visible: boolean, hideModal: ()=>void}> = ({vis
     }
 
     const response = await userApi.selfDelete(password.value);
-    if(response.isSuccess){
-      setPassword( (state:any)=>({
-        ...state,
-        isValid: false,
-        errorMessage : response.errorMessage
-      }))
+    console.log("selfDelete ressponse:" , response)
+    if(!response.isSuccess){
+      Alert.alert('Có lỗi', response.errorMessage!)
       return;
     }
 
+    setPassword( (state:any)=>({
+      ...state,
+      isValid: false,
+      errorMessage : response.errorMessage
+    }))
+    Alert.alert('Xóa tài khoản thàng công')
     hideModal();
     dispatch(logout());
   }
@@ -175,6 +181,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 8,
   },
   inputContainer: {
+    flexDirection: 'row',
     paddingVertical: 8,
 
     borderBottomWidth: 0.5,

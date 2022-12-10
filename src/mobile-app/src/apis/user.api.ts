@@ -62,9 +62,9 @@ const checkMe = (): Promise<ApiResponse<boolean>> => {
 };
 
 const selfDelete  = (password: string): Promise<ApiResponse<undefined>> => {
-	return handleAxiosApi(axiosInstance.post(`/user/SelfDelete`, {
-    params: { password}
-  }));
+	return handleAxiosApi(axiosInstance.post(`/user/SelfDelete`, 
+   { password}
+  ));
 };
 
 export const userApi = {
