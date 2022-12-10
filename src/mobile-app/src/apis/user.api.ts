@@ -61,6 +61,12 @@ const checkMe = (): Promise<ApiResponse<boolean>> => {
 	return handleAxiosApi(axiosInstance.post(`/user/checkUser`));
 };
 
+const selfDelete  = (password: string): Promise<ApiResponse<undefined>> => {
+	return handleAxiosApi(axiosInstance.post(`/user/SelfDelete`, 
+   { password}
+  ));
+};
+
 export const userApi = {
   list,
   getUser,
@@ -68,4 +74,5 @@ export const userApi = {
   getMyProfile,
   updateMyProfile,
   changeMyPassword,
+  selfDelete
 };

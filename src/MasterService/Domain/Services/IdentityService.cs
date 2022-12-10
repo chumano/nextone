@@ -17,6 +17,7 @@ namespace MasterService.Domain.Services
         Task ActiveIdentityUser(string userId, bool isActive);
         Task UpdateIdentityUserRoles(string userId, IList<string> roleNames);
 
+        Task<bool> VerifyPassword(string userId, string password);
         Task<string> ResetPassword(string userId, string newPassword);
         Task<string> ChangePassword(string userId, string oldPassword, string newPassword);
 
@@ -114,6 +115,16 @@ namespace MasterService.Domain.Services
             {
                 throw new Exception("UpdateIdentityUserRoles: " + response.Error.Message);
             }
+        }
+        public async Task<bool> VerifyPassword(string userId, string password)
+        {
+            var response = await _grpcServiceClient.VerifyPasswordAsync(new VerifyPasswordRequest()
+            {
+                UserId = userId,
+                Password = password
+            });
+
+            return response.IsSuccess;
         }
 
         public async Task<string> ResetPassword(string userId, string newPassword)

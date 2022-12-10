@@ -43,6 +43,9 @@ export const mapSlice = createSlice({
             state.selectedUser = undefined;
             state.selectedEvent = undefined;
         },
+        deleteEvent: (state, aciton:PayloadAction<{eventId:string}>) =>{
+            state.events = state.events.filter(o=> o.id !==aciton.payload.eventId)
+        }
     }
 });
 

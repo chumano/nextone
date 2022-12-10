@@ -31,7 +31,7 @@ namespace MasterService.Domain.Services
 
         Task Active(User user, bool isActive);
 
-        Task DeleteUser(User user);
+        Task DeleteUser(User user, bool isSelf= false);
 
     }
 
@@ -177,7 +177,7 @@ namespace MasterService.Domain.Services
             await _bus.Publish(new UserActived());
         }
 
-        public async Task DeleteUser(User user)
+        public async Task DeleteUser(User user, bool isSelf = false)
         {
             _userRepository.Delete(user);
 

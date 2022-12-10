@@ -13,22 +13,23 @@ import { IAppStore } from '../../store';
 import { MemberRole } from '../../models/conversation/ConversationMember.model';
 import ConversationSubChannels from './ConversationSubChannels';
 import ModalSubchannelCreation from './ModalSubchannelCreattion';
+import { EventInfo } from '../../models/event/Event.model';
 const { TabPane } = Tabs;
 
 interface ConversationInfoProps {
-    conversation: ConversationState
+    conversation: ConversationState,
+    userRole?: MemberRole,
+    onDeleteEvent?: (item: EventInfo)=> void
 }
 
-const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => {
+const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userRole, onDeleteEvent }) => {
     const dispatch = useDispatch();
     const channel = conversation as Channel;
     const user = useSelector((store: IAppStore) => store.auth.user);
-    const userId = user!.profile.sub;
-    const { members } = channel;
-    const userRole = members.find(o => o.userMember.userId === userId)?.role;
-    const systemUserRole = user?.profile.role;
     const [subchannels, setSubchannels] = useState<SubChannel[]>();
     const [modalSubchannelCreattionVisible, setModalSubchannelCreattionVisible] = useState(false)
+
+    const systemUserRole = user?.profile.role;
 
     const onTabChange = (key: string) => {
 
@@ -114,12 +115,12 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation }) => 
                 }
                 {conversation.type == ConversationType.Channel &&
                     <TabPane tab="Sự kiện" key="events">
-                        <ChannelEvents events={channel.events} />
+                        <ChannelEvents channel={channel} userRole={userRole}/>
                     </TabPane>
                 }
 
                 <TabPane tab="Thành viên" key="members">
-                    <ConversationMembers conversation={conversation} />
+                    <ConversationMembers conversation={conversation} userRole={userRole}/>
                 </TabPane>
             </Tabs>
 

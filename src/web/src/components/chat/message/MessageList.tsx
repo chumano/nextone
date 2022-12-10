@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { Image } from 'antd';
+import { Image, Modal } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../../../models/message/Message.model'
@@ -8,11 +8,16 @@ import { ConversationState } from '../../../store/chat/ChatState'
 import { getMessageHistory } from '../../../store/chat/chatThunks'
 import Loading from '../../controls/loading/Loading'
 import MessageItem from './MessageItem'
+import { MemberRole } from '../../../models/conversation/ConversationMember.model';
+import { EventInfo } from '../../../models/event/Event.model';
+import { chatActions } from '../../../store/chat/chatReducer';
 
 interface MessageListProps {
-    conversation: ConversationState
+    conversation: ConversationState,
+    userRole?: MemberRole,
+    onDeleteEvent?: (item: EventInfo)=> void
 }
-const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
+const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDeleteEvent }) => {
     const dispatch = useDispatch();
     const {messages, messagesLoading, messagesLoadMoreEmtpy} = conversation;
     const listRef = useRef<HTMLDivElement>(null);
@@ -70,12 +75,16 @@ const MessageList: React.FC<MessageListProps> = ({ conversation }) => {
       setPlayingId(id);
     },[])
 
-    
+
     return <>
         <div className='message-list' ref={listRef}>
             <Image.PreviewGroup>
                 {messages.map(o =>{
-                   return  <MessageItem key={o.id} message={o}  onPlaying={onItemPlay} playingId={playingId} />
+                   return  <MessageItem key={o.id} message={o}  
+                    onPlaying={onItemPlay} playingId={playingId} 
+                    userRole={userRole}
+                    onDeleteEvent={()=>{onDeleteEvent && onDeleteEvent(o.event!)}}
+                    />
                 })}
              </Image.PreviewGroup>
             {loading &&
