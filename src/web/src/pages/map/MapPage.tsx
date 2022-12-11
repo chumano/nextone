@@ -15,7 +15,7 @@ const MapPageInternal: React.FC = () => {
     const { selectedEventTypeCodes } = useMapSelector(o => o)
     const fetchEvents = useCallback(async () => {
         if(!selectedEventTypeCodes) return;
-        console.log("fetchEvents", selectedEventTypeCodes)
+        //console.log("fetchEvents", selectedEventTypeCodes)
         const response = await comApi.getEventsForMap({ eventTypeCodes: selectedEventTypeCodes});
         if (!response.isSuccess) {
             return;

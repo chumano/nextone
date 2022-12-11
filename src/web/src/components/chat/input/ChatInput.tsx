@@ -21,7 +21,7 @@ const ChatInput = () => {
         if (!messageText?.trim()) {
             return;
         }
-        console.log({ messageText })
+        
         dispatch(sendMessage({
             conversationId: selectedConversationId!,
             content: messageText!
@@ -102,7 +102,7 @@ const ChatInput = () => {
                 return;
             }
         }
-        console.log('onFileInputChanged', files)
+        //console.log('onFileInputChanged', files)
         handleUploadFiles(Array.from(files))
 
     }, [handleUploadFiles])

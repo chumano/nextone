@@ -17,17 +17,17 @@ export default class Pubsub {
     subscribe = (eventName: string, func: (...args: any[]) => void) => {
         if (this.events[eventName]) {
             this.events[eventName].push(func);
-            console.log(`${func.name} has subscribed to ${eventName} Topic!`)
+            //console.log(`${func.name} has subscribed to ${eventName} Topic!`)
         } else {
             this.events[eventName] = [func];
-            console.log(`${func.name} has subscribed to ${eventName} Topic!`)
+            //console.log(`${func.name} has subscribed to ${eventName} Topic!`)
         }
     };
 
     unsubscribe= (eventName: string, func: (...args: any[]) => void) => {
         if (this.events[eventName]) {
             this.events[eventName] = this.events[eventName].filter((subscriber) => subscriber !== func);
-            console.log(`${func.name} has unsubscribed from ${eventName} Topic!`)
+            //console.log(`${func.name} has unsubscribed from ${eventName} Topic!`)
         }
     }
 

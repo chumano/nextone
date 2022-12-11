@@ -4,8 +4,6 @@ import { DeviceManager } from "./DeviceManager";
 import { WebrtcUtils } from "./WebRTCUtils";
 
 export class CallSender extends CallBase {
-
-    state: string = '';
     constructor(signaling: ISignaling,
         deviceManager: DeviceManager,
         pubSub: Pubsub,
@@ -14,25 +12,20 @@ export class CallSender extends CallBase {
     }
 
     public startCallRequest = async (room: string, callType: 'voice' | 'video',mediaConstraints?: MediaConstraints) => {
-        console.log('startCallRequest')
-        this.state = 'call-requesting';
-        this.room = room;
-        this.onEvent(this.state);       
+        //console.log('startCallRequest')
+        this.room = room;   
 
         await this.initConnection(mediaConstraints);
-        console.log('signaling.invoke SEND_CALL_REQUEST' )
-        await this.signaling.invoke(
-            CallSignalingActions.SEND_CALL_REQUEST, 
+        //console.log('signaling.invoke SEND_CALL_REQUEST' )
+        const response  = await this.signaling.invoke(CallSignalingActions.SEND_CALL_REQUEST, 
             {
                 room,
                 callType
             });
-        this.state = 'call-requested';
-        this.onEvent(this.state);
-     
-        
-        //setTimeout to await acception
-        //hangup if no response
+
+        return {
+                error: response
+            }
     }
 
     public receiveAnswer = (sdp: RTCSessionDescriptionInit )=>{
@@ -41,7 +34,7 @@ export class CallSender extends CallBase {
 
 
     public sendOffer = async () => {
-        console.log('Sending offer to peer.');
+        //console.log('Sending offer to peer.');
         this.addTransceivers();
 
         const sdp : RTCSessionDescriptionInit =  await this.peerConnection!.createOffer()
@@ -56,8 +49,7 @@ export class CallSender extends CallBase {
             }
         }
         this.peerConnection!.setLocalDescription(finalSdp);
-        await this.signaling.invoke(
-            CallSignalingActions.SEND_SESSION_DESCRIPTION,
+        await this.signaling.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
             {
                 room: this.room,
                 sdp :finalSdp

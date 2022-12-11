@@ -53,7 +53,7 @@ const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDel
         if(messages.length==0) return;
         if(loading || messagesLoadMoreEmtpy) return;
 
-        console.log('getMessageHistory...')
+        //console.log('getMessageHistory...')
         const oldestMessage = messages[messages.length-1];
         setLoading(true);
         setNeedLoadMore(false);

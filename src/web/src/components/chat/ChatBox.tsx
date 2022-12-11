@@ -67,13 +67,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent
         const devices = await deviceManager.enumerateDevices();
         const videoInputs = devices.filter(o => o.type == 'videoinput');
         const audioInputs = devices.filter(o => o.type == 'audioinput');
-        const audioOutputs = devices.filter(o => o.type == 'audiooutput');
-        console.log({
-            devices,
-            videoInputs,
-            audioInputs,
-            //audioOutputs
-        })
+        //const audioOutputs = devices.filter(o => o.type == 'audiooutput');
+        //console.log({ devices,  videoInputs,  audioInputs})
         //if has has device then start
         if (callType === 'voice') {
             if (audioInputs.length == 0) {
