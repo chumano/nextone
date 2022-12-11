@@ -52,7 +52,7 @@ const NoAuthLayout: React.FC<IProp> = (props): JSX.Element => {
                 <div className="flex-spacer"></div>
 
                 <div className="header__actions">
-                    { false && 'CHANGE_ME' && <button className="button button-default button--icon-label" onClick={download}>
+                    { 'CHANGE_ME' && <button className="button button-default button--icon-label" onClick={download}>
                         <AndroidOutlined style={{fontSize:25}}/>
                         <span className="button-label">Tải App</span>
                     </button>}

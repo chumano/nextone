@@ -1,3 +1,7 @@
+---build local
+docker-compose build
+
+
 docker save -o file.tar hub.nextone.local/nextone/file:latest
 docker save -o identity.tar hub.nextone.local/nextone/identity:latest
 docker save -o master.tar hub.nextone.local/nextone/master:latest

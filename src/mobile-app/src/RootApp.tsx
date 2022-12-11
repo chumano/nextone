@@ -29,7 +29,7 @@ const handleFBCall = async (remoteMessage: any) => {
 }
 
 //CHANGE_ME
-const useSocketToListenCall = false; //local=true
+const useSocketToListenCall = true; //local=true
 
 const RootApp = () => {
   const dispatch: AppDispatch = useDispatch();

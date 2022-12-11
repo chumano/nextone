@@ -1,4 +1,4 @@
-package com.ucom;
+package com.ucom.local;
 
 import java.util.Arrays;
 import java.util.Collections;
