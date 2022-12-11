@@ -22,14 +22,18 @@ import { UserStatus } from '../../models/user/UserStatus.model';
 import ConversationAvatar from './ConversationAvatar';
 import { DeviceManager } from '../../services/DeviceManager';
 import { message } from 'antd';
+import { MemberRole } from '../../models/conversation/ConversationMember.model';
+import { EventInfo } from '../../models/event/Event.model';
 
 interface ChatBoxProps {
-    conversation: ConversationState
+    conversation: ConversationState,
+    userRole?: MemberRole,
+    onDeleteEvent?: (item: EventInfo)=> void
 }
 
 
 const deviceManager = new DeviceManager();
-const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent }) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
     const { deviceSettings } = useSelector((store: IAppStore) => store.call);
@@ -63,13 +67,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
         const devices = await deviceManager.enumerateDevices();
         const videoInputs = devices.filter(o => o.type == 'videoinput');
         const audioInputs = devices.filter(o => o.type == 'audioinput');
-        const audioOutputs = devices.filter(o => o.type == 'audiooutput');
-        console.log({
-            devices,
-            videoInputs,
-            audioInputs,
-            //audioOutputs
-        })
+        //const audioOutputs = devices.filter(o => o.type == 'audiooutput');
+        //console.log({ devices,  videoInputs,  audioInputs})
         //if has has device then start
         if (callType === 'voice') {
             if (audioInputs.length == 0) {
@@ -147,7 +146,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation }) => {
                     </div>
                 </div>
                 <div className="chat-content">
-                    <MessageList conversation={conversation} />
+                    <MessageList conversation={conversation} userRole={userRole} onDeleteEvent={onDeleteEvent}/>
                 </div>
                 <div className="chat-send-box">
                     <ChatInput />

@@ -31,7 +31,7 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
     const [form] = Form.useForm();
 
     const fetchUsers = useCallback(async (textSearch :string) => {
-        console.log('findUsers' , textSearch);
+        //console.log('findUsers' , textSearch);
         const userResponse = await handleAxiosApi<ApiResult<User[]>>(userApi.list(textSearch, { offset: 0, pageSize: 5 },  true));
         //const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
         if(userResponse.isSuccess){
@@ -127,7 +127,7 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
                     renderItem={(item, index) => (
                         <List.Item key={item.id} className="clickable"
                             onClick={()=>{
-                                console.log("user click" , item)
+                                //console.log("user click" , item)
                                 setSelectedUserIds((userids) => {
                                     const checked = userids.find(id=> id == item.id);
                                     if (!checked) {

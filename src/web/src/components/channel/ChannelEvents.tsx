@@ -1,12 +1,23 @@
+import { Modal } from "antd";
 import React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { comApi } from "../../apis/comApi";
 import eventIcon from '../../assets/logo.png';
+import { Channel } from "../../models/channel/Channel.model";
+import { MemberRole } from "../../models/conversation/ConversationMember.model";
 import { EventInfo } from "../../models/event/Event.model";
+import { chatActions } from "../../store/chat/chatReducer";
 import EventView from "./EventView";
 
 interface ChannelEventsProps{
-    events: EventInfo[]
+    channel: Channel,
+    userRole?: MemberRole,
+    onDeleteEvent?: (item: EventInfo)=> void
 }
-const ChannelEvents :React.FC<ChannelEventsProps> = ({events})=>{
+const ChannelEvents :React.FC<ChannelEventsProps> = ({channel,userRole, onDeleteEvent})=>{
+    const dispatch = useDispatch();
+    const {events} = channel;
+    
     return <>
         <div className="channel-events">
             <div className="channel-events__header">
@@ -16,9 +27,14 @@ const ChannelEvents :React.FC<ChannelEventsProps> = ({events})=>{
             </div>
             <div className="channel-events__body">
                 {events.map(eventItem=>(
+                <>
                     <div key={eventItem.id}>
-                        <EventView eventItem={eventItem}></EventView>
+                        <EventView eventItem={eventItem} canDelete={userRole===MemberRole.MANAGER}
+                            onDelete={()=>{onDeleteEvent && onDeleteEvent(eventItem)}}
+                        />
                     </div>
+                    <hr/>
+                </>
                 ))}
 
                 {events.length ==0 &&

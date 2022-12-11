@@ -139,7 +139,6 @@ const useCall = (callInfo?: CallMessageData)=>{
   // Video Scrs
   const [localStream, setLocalStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
-  const [webcamStarted, setWebcamStarted] = useState(false);
   const peerConnectionRef = useRef<RTCPeerConnection>();
   const timeoutWaitRef = useRef<any>();
 
@@ -206,8 +205,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               let finalSdp = sdp as RTCSessionDescription;
   
               peerConnectionRef.current!.setLocalDescription(finalSdp);
-              await signalRService.invoke(
-                CallSignalingActions.SEND_SESSION_DESCRIPTION,
+              await signalRService.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
                 {
                   room: callInfo?.conversationId,
                   sdp: finalSdp
@@ -232,8 +230,7 @@ const useCall = (callInfo?: CallMessageData)=>{
                   //console.log('create answer.......')
                   const awsSdp = await peerConnectionRef.current.createAnswer();
                   peerConnectionRef.current.setLocalDescription(awsSdp as any);
-                  await signalRService.invoke(
-                    CallSignalingActions.SEND_SESSION_DESCRIPTION,
+                  await signalRService.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
                     {
                       room: callInfo?.conversationId,
                       sdp: awsSdp
@@ -383,13 +380,13 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'icecandidateerror', (event: any) => {
-          //console.log('peerConnectionRef-icecandidateerror', event)
+          console.log('peerConnectionRef-icecandidateerror', event)
           // You can ignore some candidate errors.
           // Connections can still be made even when errors occur.
         } );
         
         peerConnectionRef.current.addEventListener( 'iceconnectionstatechange', (event: any) => {
-          //console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
+          console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.iceConnectionState ) {
             case 'connected':
@@ -413,7 +410,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'signalingstatechange', (event: any) => {
-          //console.log('peerConnectionRef-signalingstatechange', event)
+          console.log('peerConnectionRef-signalingstatechange', event)
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.signalingState ) {
             case 'closed':
@@ -429,14 +426,19 @@ const useCall = (callInfo?: CallMessageData)=>{
           //console.log("send call request", { room : conversationId,  callType })
           
           CallService.isReceiceResponse = false;
-          const response = await signalRService.invoke(
-            CallSignalingActions.SEND_CALL_REQUEST, 
+          const response = await signalRService.invoke(CallSignalingActions.SEND_CALL_REQUEST, 
             {
               room : conversationId,
               callType
             });
 
-          //console.log("send call request - response", response);
+          console.log("send call request - result:", response);
+          if(response){
+            //Session không thể kết nối lúc này: vui lòng thử lại sau
+            hangup();
+            dispatch(callActions.stopCall());
+            return;
+          }
           if(timeoutWaitRef.current) clearTimeout(timeoutWaitRef.current)
           timeoutWaitRef.current = setTimeout(()=>{
             if(!CallService.isCalling) return;
@@ -453,20 +455,27 @@ const useCall = (callInfo?: CallMessageData)=>{
         else {
           //send answer if this is receiver
           //console.log("send call accepted")
-           await signalRService.invoke(
-            CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
+          const response = await signalRService.invoke(CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
               room: callInfo.conversationId,
               accepted: true
             }
           );
-        }
 
-        setWebcamStarted(true);
+          console.log("send call response - result:", response);
+          
+          if(response){
+            //Session không thể kết nối lúc này: vui lòng thử lại sau
+            //end call
+            hangup();
+            dispatch(callActions.stopCall());
+            return;
+          }
+        }
 
         //console.log('Success setupCall')
       } catch (err) {
-        //console.log('[Error] setupCall', err);
+        console.error('[Error] setupCall', err);
       }
     }
     setupCall();

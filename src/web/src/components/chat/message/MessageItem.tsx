@@ -11,19 +11,22 @@ import MessageItemUpload, { MessageUpload } from './MessageItemUpload';
 import {PhoneOutlined } from '@ant-design/icons'
 import { FileType } from '../../../models/file/FileType.model';
 import AudioPlayer from '../../player/AudioPlayer';
+import { MemberRole } from '../../../models/conversation/ConversationMember.model';
+import { Button } from 'antd';
 
 
 
 interface MessageItemProps {
     message: Message,
     onPlaying?: (id: string)=>void,
-    playingId?: string
+    playingId?: string,
+    userRole?: MemberRole,
+    onDeleteEvent?: ()=>void
 }
-const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, playingId}) => {
+const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, playingId, userRole, onDeleteEvent}) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
     const isOwner = user?.profile.sub == message.userSender.userId;
-    console.log('MessageItem rendering...', message)
 
     const displayDate = frowNow(message.sentDate);
     const properties = message.properites;
@@ -34,7 +37,8 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
     return <>
         {message.type == MessageType.Event &&
             <div className="message-item">
-                <MessageEvent message={message} />
+                <MessageEvent message={message} canDelete={userRole===MemberRole.MANAGER} 
+                    onDelete={onDeleteEvent}/>
             </div>
         }
 
@@ -58,9 +62,9 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
                     </div>
                     {location &&
                     <div>
-                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(location)}>
+                        Vị trí: <Button onClick={()=>gotoMapLocation(location)}>
                             [{location[0].toFixed(2)}, {location[1].toFixed(2)}]
-                            </a>
+                            </Button>
                     </div>
                     }
 

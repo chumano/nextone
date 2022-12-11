@@ -63,17 +63,19 @@ namespace ComService.Infrastructure
                 };
 
                 //https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CommunicatingwithAPNs.html#//apple_ref/doc/uid/TP40008194-CH11-SW1
+                //https://developer.apple.com/documentation/usernotifications/setting_up_a_remote_notification_server/sending_notification_requests_to_apns
                 fbmessage.Apns = new ApnsConfig()
                 {
                     Headers = new Dictionary<string, string>()
                     {
-                        {"apns-expiration", (0/1000).ToString() },
-                        {"apns-priority","10" },
-                        {"apns-push-type","background"} 
+                        {"apns-expiration", (expiration/1000).ToString() },
+                        {"apns-priority","5" },
+                       // {"apns-push-type","background"} ,
+                        {"apns-topic", "org.reactjs.native.example.UCom.2022" }, // your app bundle identifier
                     },
                     Aps = new Aps()
                     {
-                        Badge = message.IsNotification ? 1 : 1,
+                        Badge = message.IsNotification ? 1 : 0,
                         Sound = "default",
                         Category = "NEW_MESSAGE_CATEGORY",
                         ContentAvailable = true,

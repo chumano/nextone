@@ -55,10 +55,12 @@ namespace ComService.Boudaries.Hubs
         private static ConcurrentDictionary<string, IOnlineClient> OnlineClients = new ConcurrentDictionary<string, IOnlineClient>();
         private static ConcurrentDictionary<string, CallRoomState> CallRoomState = new ConcurrentDictionary<string, CallRoomState>();
 
-        public async Task SendCallMessage(string action, object data)
+        private const int CALL_TIMEOUT_IN_SECONDS = 30;
+        public async Task<string> SendCallMessage(string action, object data)
         {
+            var Now = DateTime.Now;
             IOnlineClient client = OnlineClients.GetOrDefault(Context.ConnectionId);
-            if (client == null) return;
+            if (client == null) return "IOnlineClient is null";
             try
             {
                 _logger.LogInformation($"[ChatHub] SendCallMessage {action} - data: {JsonConvert.SerializeObject(data)}");
@@ -70,7 +72,7 @@ namespace ComService.Boudaries.Hubs
                             var conversationId = (string)response.room;
                             var callType = (string)response.callType;
                             var conversation = await _conversationService.Get(conversationId);
-                            if (conversation == null) return;
+                            if (conversation == null) return "Conversation is null";
 
                             var callRoomState = CallRoomState.GetOrDefault(conversationId);
                             if(callRoomState == null)
@@ -81,7 +83,8 @@ namespace ComService.Boudaries.Hubs
                                     ConversationId = conversationId,
                                     SenderId = client.UserId,
                                     SenderName = client.UserName,
-                                    State = CallStateEnum.Requesting
+                                    State = CallStateEnum.Requesting,
+                                    RequestDate = Now,
                                 };
                                 CallRoomState.AddOrUpdate(conversationId, callRoomState, (string key, CallRoomState oldState) =>
                                 {
@@ -90,12 +93,33 @@ namespace ComService.Boudaries.Hubs
                             }
                             else
                             {
-                                //Đang call rồi thì không có call nữa
-                                if (callRoomState.State != CallStateEnum.End)
+                                var isOldRequestTimeout = false;
+                                //Kiểm tra call time out không
+                                if(callRoomState.State == CallStateEnum.Requesting)
                                 {
-                                    _logger.LogInformation("Đang call rồi thì không có call nữa");
-                                    //TODO: ChatHub tạo message cuộc gọi nhỡ
-                                    return;
+                                    //Mình request khi người khác cũng đang request
+                                    var dif = Now - callRoomState.RequestDate;
+                                    if (dif < TimeSpan.FromSeconds(CALL_TIMEOUT_IN_SECONDS))
+                                    {
+                                        _logger.LogInformation("CALL_ERROR: Other is requesting :"
+                                            + JsonConvert.SerializeObject(callRoomState));
+                                        //Không cho gọi nữa
+                                        return "Other is requesting";
+                                    }
+
+                                    isOldRequestTimeout = true;
+                                }
+
+                                //Đang call rồi thì không có call nữa
+                                if (!isOldRequestTimeout) {
+                                   if(callRoomState.State != CallStateEnum.End)
+                                    {
+                                        _logger.LogInformation("CALL_ERROR: Đang call rồi thì không có call nữa :"
+                                            + JsonConvert.SerializeObject(callRoomState));
+                                        //TODO: ChatHub tạo message cuộc gọi nhỡ
+                                        return "Calling: " + Enum.GetName(typeof(CallStateEnum), callRoomState.State)
+                                            + " at " + callRoomState.RequestDate.ToString();
+                                    }
                                 }
                             }
 
@@ -154,16 +178,29 @@ namespace ComService.Boudaries.Hubs
                             if (callRoomState == null)
                             {
                                 //không có trạng thái thì thôi, tức là đã hangup rồi
-                                _logger.LogInformation("không có trạng thái thì thôi, tức là đã hangup rồi");
-                                return;
+                                _logger.LogInformation("CALL_ERROR: CallState is null");
+                                return "CallState is null";
                             }
                             else
                             {
                                 //Đang call rồi thì không có call nữa
                                 if(callRoomState.State != CallStateEnum.Requesting)
                                 {
-                                    _logger.LogInformation("Đang call rồi thì không có call nữa");
-                                    return;
+                                    _logger.LogInformation("CALL_ERROR: Not requesting :"
+                                      + JsonConvert.SerializeObject(callRoomState));
+                                    return "Not requesting";
+                                }
+
+                                if (callRoomState.State == CallStateEnum.Requesting)
+                                {
+                                    var dif = Now - callRoomState.RequestDate;
+                                    if (dif >= TimeSpan.FromSeconds(CALL_TIMEOUT_IN_SECONDS))
+                                    {
+                                        _logger.LogInformation("CALL_ERROR: Call is timeout :"
+                                            + JsonConvert.SerializeObject(callRoomState));
+                                        //Không cho gọi nữa
+                                        return "Call is timeout";
+                                    }
                                 }
 
                                 if (accepted)
@@ -178,8 +215,13 @@ namespace ComService.Boudaries.Hubs
                                 else
                                 {
                                     var conversation = await _conversationService.Get(conversationId);
-                                    if (conversation == null) return;
+                                    if (conversation == null)
+                                    {
 
+                                        _logger.LogInformation("CALL_ERROR: Conversation is null :"
+                                            + JsonConvert.SerializeObject(callRoomState));
+                                        return "Conversation is null";
+                                    }
                                     callRoomState.State = CallStateEnum.End;
                                     CallRoomState.Remove(conversationId, out _);
                                     var messageId = _idGenerator.GenerateNew();
@@ -215,7 +257,7 @@ namespace ComService.Boudaries.Hubs
                             //data is room
                             var conversationId = (string)data;
                             var conversation = await _conversationService.Get(conversationId);
-                            if (conversation == null) return;
+                            if (conversation == null) return "Conversation is null";
 
                             var callRoomState = CallRoomState.GetOrDefault(conversationId);
                             if (callRoomState != null)
@@ -290,7 +332,10 @@ namespace ComService.Boudaries.Hubs
             }catch(Exception ex)
             {
                 _logger.LogError(ex, $"[ChatHub] Error on action {action}");
+                return "Unknown Error";
             }
+
+            return "";
         }
 
         private object CreateEventData(string eventKey, object eventData)

@@ -1,4 +1,6 @@
-﻿namespace ComService.Boudaries.Hubs
+﻿using System;
+
+namespace ComService.Boudaries.Hubs
 {
 
     public enum CallStateEnum
@@ -13,6 +15,7 @@
         public CallStateEnum State { get; set; }
         public string SenderId { get; set; }
         public string SenderName { get; set; }
+        public DateTime RequestDate { get; set; }
 
     }
 }

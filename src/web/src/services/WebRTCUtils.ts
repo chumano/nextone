@@ -21,7 +21,7 @@ export class WebrtcUtils {
 
     public static doIceRestart = async (peerConnection: RTCPeerConnection | any,
         sdpCallback: (sdp: RTCSessionDescriptionInit) =>any) =>{
-        console.log('doIceRestart');
+        //console.log('doIceRestart');
         try {
             // try using new restartIce method
             peerConnection.restartIce();
@@ -42,16 +42,16 @@ export class WebrtcUtils {
                 switch (type) {
                     case 'inbound':
                         if (report.type === 'inbound-rtp') {
-                            console.log('logStats-inbound',report);
+                            //console.log('logStats-inbound',report);
                         }
                         break;
                     case 'outbound':
                         if (report.type === 'outbound-rtp') {
-                            console.log('logStats-outbound',report);
+                            //console.log('logStats-outbound',report);
                         }
                         break;
                     default:
-                        console.log('logStats-default',report);
+                        //console.log('logStats-default',report);
                 }
             });
         });

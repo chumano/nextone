@@ -26,7 +26,7 @@ const ModalFindUser: React.FC<ModalFindUserProps> =
         const [selectedUserId, setSelectedUserId] = useState<string>();
 
         const fetchUsers = useCallback(async (textSearch :string) => {
-            console.log('findUsers' , textSearch);
+            //console.log('findUsers' , textSearch);
             const userResponse = await handleAxiosApi<ApiResult<User[]>>(userApi.list(textSearch, { offset: 0, pageSize: 5 },  true));
             //const usersReponse = await comApi.getUsers({ excludeMe: true, offset: 0, pageSize: 10 });
             if(userResponse.isSuccess){
@@ -44,6 +44,7 @@ const ModalFindUser: React.FC<ModalFindUserProps> =
         }, [fetchUsers])
 
         const handleOk = () => {
+            //START_P2P_CHAT
             const conversation : CreateConverationDTO={
                 name: '',
                 type: ConversationType.Peer2Peer,
@@ -89,7 +90,7 @@ const ModalFindUser: React.FC<ModalFindUserProps> =
                     renderItem={ (item,index) => (
                         <List.Item  className='clickable'
                             onClick={()=>{
-                                console.log("user click" , item)
+                                //console.log("user click" , item)
                                 setSelectedUserId(item.id)
                             }}
                             actions={[

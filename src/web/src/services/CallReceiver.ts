@@ -15,35 +15,34 @@ export class CallReciver extends CallBase {
     }
 
     public async acceptCall(room: string, mediaConstraints?: MediaConstraints){
-        console.log("accept call...")
+        //console.log("accept call...")
         this.room = room;
         await this.initConnection(mediaConstraints);
 
-        await this.signaling.invoke(
-            CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
+        var response = await this.signaling.invoke(CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
                 room,
                 accepted: true
             }
         );
     
-        //setTimeout to await offer
-        //hangup if no response
+        return {
+            error: response
+        }
     }
 
-    public receiveOffer = (sdp: RTCSessionDescriptionInit )=>{
+    public receiveOffer = async (sdp: RTCSessionDescriptionInit )=>{
         this.peerConnection!.setRemoteDescription(new RTCSessionDescription(sdp));
-        this.sendAnswer();
+        await this.sendAnswer();
     }
 
     private sendAnswer = async () => {
-        console.log('Sending answer to peer.');
+        //console.log('Sending answer to peer.');
         this.addTransceivers();
 
         const sdp = await this.peerConnection!.createAnswer();
         this.peerConnection!.setLocalDescription(sdp);
-        await this.signaling.invoke(
-            CallSignalingActions.SEND_SESSION_DESCRIPTION,
+        await this.signaling.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
             {
                 room: this.room,
                 sdp

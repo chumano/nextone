@@ -33,7 +33,7 @@ axiosInstance.interceptors.request.use(
 export const mapApi = {
     getMaps : async () =>{
         const response = await axiosInstance.get<MapInfo[]>('maps/tileUrl')
-        console.log('maps/tileUrl', response);
+        //console.log('maps/tileUrl', response);
         return response.data
     }
 }

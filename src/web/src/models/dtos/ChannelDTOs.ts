@@ -24,3 +24,8 @@ export interface GetEventsHistoryDTO{
 export interface SendEventDTO{
 
 }
+
+export interface DeleteEventDTO {
+    channelId: string;
+    eventId:string;
+}

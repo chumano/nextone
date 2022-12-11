@@ -9,6 +9,7 @@ import {authApi} from '../../apis/auth.api';
 import {UserLoginInfo} from '../../types/Auth/Auth.type';
 import {JWTDecodeInfo} from '../../types/Auth/JWTDecodeInfo.type';
 import { userApi } from '../../apis/user.api';
+import { notificationApi } from '../../apis/notificationApi';
 
 const loginErrorHandler = (error: AxiosError, rejectWithValue: Function) => {
   //console.log("isAxiosError: " +axios.isAxiosError(error), error)
@@ -76,6 +77,12 @@ export const logout = createAsyncThunk(
   'auth/logout',
   async (_, {rejectWithValue}) => {
     try {
+      let fcmToken = await AsyncStorage.getItem('fcmToken');
+      if (fcmToken) {
+        const response = await notificationApi.removeToken(fcmToken);
+        //console.log('removeToken: ', response);
+        await AsyncStorage.removeItem('fcmToken');
+      }
       await AsyncStorage.removeItem('@UserToken');
       return;
     } catch (error) {

@@ -2,20 +2,16 @@ import Search from "antd/lib/input/Search";
 import { FC, Fragment, useEffect, useState } from "react";
 
 interface IProps {
-	onSearchHandler: (value: string) => void;
+	onSearchHandler: (filter: {textSearch: string}) => void;
 }
 
 const UserFilter: FC<IProps> = ({ onSearchHandler }) => {
-	const [textSearch, setTextSearch] = useState("");
 
-	useEffect(() => {
-		const delayDebounceFn = setTimeout(() => onSearchHandler(textSearch), 1500);
-
-		return () => clearTimeout(delayDebounceFn);
-	}, [textSearch]);
 
 	const onTextSearchHandler = (value: string) => {
-		setTextSearch(value);
+		onSearchHandler({
+			textSearch: value
+		})
 	};
 
 	return (

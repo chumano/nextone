@@ -14,17 +14,19 @@ import { getOrCreateConversation } from '../../store/chat/chatThunks';
 
 interface ConversationMembersProp {
     conversation: ConversationState,
+    userRole?: MemberRole
 }
 
-const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation }) => {
+const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation, userRole }) => {
     const { members } = conversation;
     const user = useSelector((store: IAppStore) => store.auth.user);
     const userId = user!.profile.sub;
-    const userRole = members.find(o => o.userMember.userId === userId)?.role;
+
     const dispatch = useDispatch();
 
     const onMemberChat = (item: ConversationMember) => {
         return () => {
+            //START_P2P_CHAT
             const conversation: CreateConverationDTO = {
                 name: '',
                 type: ConversationType.Peer2Peer,
