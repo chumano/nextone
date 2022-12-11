@@ -70,7 +70,7 @@ namespace ComService.Infrastructure
                     {
                         {"apns-expiration", (expiration/1000).ToString() },
                         {"apns-priority","5" },
-                        {"apns-push-type","background"} ,
+                       // {"apns-push-type","background"} ,
                         {"apns-topic", "org.reactjs.native.example.UCom.2022" }, // your app bundle identifier
                     },
                     Aps = new Aps()

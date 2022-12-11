@@ -206,8 +206,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               let finalSdp = sdp as RTCSessionDescription;
   
               peerConnectionRef.current!.setLocalDescription(finalSdp);
-              await signalRService.invoke(
-                CallSignalingActions.SEND_SESSION_DESCRIPTION,
+              await signalRService.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
                 {
                   room: callInfo?.conversationId,
                   sdp: finalSdp
@@ -232,8 +231,7 @@ const useCall = (callInfo?: CallMessageData)=>{
                   //console.log('create answer.......')
                   const awsSdp = await peerConnectionRef.current.createAnswer();
                   peerConnectionRef.current.setLocalDescription(awsSdp as any);
-                  await signalRService.invoke(
-                    CallSignalingActions.SEND_SESSION_DESCRIPTION,
+                  await signalRService.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
                     {
                       room: callInfo?.conversationId,
                       sdp: awsSdp
@@ -429,14 +427,19 @@ const useCall = (callInfo?: CallMessageData)=>{
           //console.log("send call request", { room : conversationId,  callType })
           
           CallService.isReceiceResponse = false;
-          const response = await signalRService.invoke(
-            CallSignalingActions.SEND_CALL_REQUEST, 
+          const response = await signalRService.invoke(CallSignalingActions.SEND_CALL_REQUEST, 
             {
               room : conversationId,
               callType
             });
 
-          //console.log("send call request - response", response);
+          console.log("send call request - result:", response);
+          if(response){
+            //Session không thể kết nối lúc này: vui lòng thử lại sau
+            hangup();
+            dispatch(callActions.stopCall());
+            return;
+          }
           if(timeoutWaitRef.current) clearTimeout(timeoutWaitRef.current)
           timeoutWaitRef.current = setTimeout(()=>{
             if(!CallService.isCalling) return;
@@ -453,13 +456,22 @@ const useCall = (callInfo?: CallMessageData)=>{
         else {
           //send answer if this is receiver
           //console.log("send call accepted")
-           await signalRService.invoke(
-            CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
+          const response = await signalRService.invoke(CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
               room: callInfo.conversationId,
               accepted: true
             }
           );
+
+          console.log("send call response - result:", response);
+          
+          if(response){
+            //Session không thể kết nối lúc này: vui lòng thử lại sau
+            //end call
+            hangup();
+            dispatch(callActions.stopCall());
+            return;
+          }
         }
 
         setWebcamStarted(true);
