@@ -9,8 +9,8 @@ import {
 } from 'react-redux'
 import { IMapStore, mapStore } from './mapStore';
 
-export interface IMapContext 
-    extends ReactReduxContextValue<IMapStore, PayloadAction<any>> {
+export interface IMapContext extends ReactReduxContextValue<IMapStore, PayloadAction<any>> {
+    
 }
 
 const MapContext = React.createContext<IMapContext>({} as any);

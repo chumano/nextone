@@ -18,10 +18,16 @@ window.ENV = {
     },
 
     IceServers:[
+        {
+            urls: [
+              'stun:stun.l.google.com:19302',
+              'stun:stun1.l.google.com:19302',
+              'stun:stun2.l.google.com:19302',
+            ]
+          },
+        { urls: 'turn:coturn.dientoan.vn:5349', username: 'test', credential: 'test123' },
         { urls: 'stun:192.168.0.122:5349' },
         { urls: 'turn:192.168.0.122:5349', username: 'test', credential: 'test123' },
-        // { urls: 'stun:stun.1.google.com:19302' },
-        // { urls: 'stun:stun1.l.google.com:19302' }
     ],
     useWebrtcUtils: true,
 

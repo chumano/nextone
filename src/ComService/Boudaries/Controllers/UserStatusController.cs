@@ -2,6 +2,7 @@
 using ComService.Domain.Services;
 using ComService.DTOs.UserStatus;
 using ComService.Helpers;
+using ComService.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,18 +30,21 @@ namespace ComService.Boudaries.Controllers
         private readonly IUserStatusRepository _userStatusRepository;
         private readonly IUserContext _userContext;
         private readonly IConfiguration _configuration;
+        private readonly ComDbContext _comDbContext;
         public UserStatusController(
             ILogger<UserStatusController> logger,
             IUserStatusService userService,
             IUserStatusRepository userStatusRepository,
             IConfiguration configuration,
-            IUserContext userContext)
+            IUserContext userContext,
+            ComDbContext comDbContext)
         {
             _logger = logger;
             _userService = userService;
             _userStatusRepository = userStatusRepository;
             _userContext = userContext;
             _configuration = configuration;
+            _comDbContext= comDbContext;
         }
 
         //Get online user with location
@@ -51,9 +55,28 @@ namespace ComService.Boudaries.Controllers
             var actionsUser = _userContext.User;
 
             var nearDateTime = DateTime.Now.AddMinutes(-Constants.NOT_ACTIVE_MINUTES);
+            var relativeUserQuery =
+                    _comDbContext.ConversationMembers.AsNoTracking()
+                        .Where(o => o.UserId != actionsUser.UserId
+                            && (o.Role == Domain.MemberRoleEnum.MANAGER
+                                || o.Role == Domain.MemberRoleEnum.MEMBER)
+                        )
+                    .Join(
+                        _comDbContext.ConversationMembers.AsNoTracking()
+                            .Where(o => o.UserId == actionsUser.UserId)
+                            .Select(o => o.ConversationId)
+                        ,
+                        cMember => cMember.ConversationId,
+                        cId => cId,
+                        (cMember, cId)=> cMember.UserId
+                    ).Distinct();
             var query = _userStatusRepository.Users.AsNoTracking()
-                    .Where(o=>o.LastUpdateDate> nearDateTime)
-                    ;
+                    .Where(o => o.LastUpdateDate !=null && o.LastUpdateDate > nearDateTime)
+                    .Join(relativeUserQuery,
+                            o => o.UserId,
+                            rUserID => rUserID,
+                            (user, cM) => user
+                        );
 
             var users = await query
                     .OrderByDescending(o=>o.LastUpdateDate)

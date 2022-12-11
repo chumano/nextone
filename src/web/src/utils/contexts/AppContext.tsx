@@ -1,7 +1,7 @@
 import { Modal } from "antd";
 import { QuestionOutlined} from '@ant-design/icons';
 import { User } from "oidc-client";
-import { createContext,  useCallback, useEffect, useState} from "react";
+import { createContext,  useCallback, useEffect, useRef, useState} from "react";
 import { useDispatch } from "react-redux";
 import { AuthenticationService } from "../../services";
 import { CallEvents } from "../../services/CallBase";
@@ -10,6 +10,7 @@ import { SignalR } from "../../services/SignalRService";
 import { IAppStore, authActions, callActions } from "../../store";
 import { chatActions } from "../../store/chat/chatReducer";
 import sound from '../sound';
+import { CALL_WAIT_TIME } from "../constants/constants";
 
 export const GlobalContext = createContext<any>({});
 
@@ -24,7 +25,7 @@ const registerHub = async ()=>{
     const accessToken = await AuthenticationService.getAccessToken()
     if(!accessToken)  return;
     const hubRegisterResult =await SignalR.invoke('register',accessToken);
-    console.log('hubRegisterResult', hubRegisterResult)
+    //console.log('hubRegisterResult', hubRegisterResult)
 }
 
 
@@ -32,7 +33,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
     const dispatch = useDispatch();
     const [isCallInit,setCallInit] = useState(false);
     const [isHubConnected,setIsHubConnected] = useState(false);
-
+    const listenTimeoutRef = useRef<any>();
     useEffect(()=>{
         const singalRSubsription =SignalR.subscription('connected', async ()=>{
             await registerHub();
@@ -42,7 +43,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
         singalRSubsription.subscribe();
 
         const chatSubsription = SignalR.subscription('chat', (data)=>{
-            console.log('SignalR-chat', data)
+            //console.log('SignalR-chat', data)
             dispatch(chatActions.receiveChatEvent(data))
         });
         chatSubsription.subscribe();
@@ -58,7 +59,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
         CallService.init();
        
         const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, 
-            (data: {room:string, userId:string, userName: string, callType: 'voice' | 'video'})=>{
+            async (data: {room:string, userId:string, userName: string, callType: 'voice' | 'video'})=>{
             //show user confirm
             const {room,userName, callType} = data;
             sound.play();
@@ -67,12 +68,18 @@ const AppContextProvider = (props: IContextProviderProp) => {
                 icon: <QuestionOutlined />,
                 content: `Cuộc gọi từ "${userName}"`,
                 onOk : async ()=> {
+                    if(listenTimeoutRef.current) {
+                        clearTimeout(listenTimeoutRef.current)
+                        listenTimeoutRef.current = undefined
+                    }
                     sound.stop();
+                    
                     dispatch(callActions.receiveCall({
                         conversationId: room,
                         callType : callType
                     }))
-                    await CallService.acceptCallRequest(room,{
+
+                    var rs = await CallService.acceptCallRequest(room,{
                         audio : {
                             enabled:true,
                         },
@@ -82,19 +89,33 @@ const AppContextProvider = (props: IContextProviderProp) => {
                             enabled:false
                         }
                     });
+
+                    if(rs.error){
+                        console.error('CallSession acceptCallRequest',rs);
+                        await CallService.stopCall();
+                        return
+                    }
+
                 },
                 onCancel : async ()=> {
+                    if(listenTimeoutRef.current) {
+                        clearTimeout(listenTimeoutRef.current)
+                        listenTimeoutRef.current = undefined
+                    }
                     sound.stop();
                     await CallService.ignoreCallRequest(room);
                 },
             });
-            setTimeout(()=>{
+
+            //Tự động tắt sau 1 khoảng thời gian
+            if(listenTimeoutRef.current) clearTimeout(listenTimeoutRef.current)
+            listenTimeoutRef.current = setTimeout(()=>{
                 //end call
                 sound.stop();
                 if(modal){
                     modal.destroy();
                 }
-            },15000)
+            },CALL_WAIT_TIME)
         });
         callrequestSubscription.subscribe();
     },[isCallInit,isHubConnected])

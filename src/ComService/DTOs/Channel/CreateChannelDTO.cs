@@ -14,4 +14,10 @@ namespace ComService.DTOs.Channel
 
         public string ParentId { get; set; }
     }
+
+    public class DeleteEventDTO
+    {
+        public string EventId { get; set; }
+        public string ChannelId { get; set; }
+    }
 }

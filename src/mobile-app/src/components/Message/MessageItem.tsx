@@ -58,7 +58,7 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType, onPlaying, p
     return () => {
       const imageSoruces: ImageSource[] = images.map(o => {
         return {
-          title: o.fileName,
+          title: 'Hình ảnh',
           uri: o.fileUrl
         }
       })
@@ -136,7 +136,9 @@ const MessageItem: React.FC<IProps> = ({ message, conversationType, onPlaying, p
                         return <AudioPlayer key={o.item.fileId} id={o.item.fileId}  playingId={playingId}
                           durationMiliSeconds={undefined} 
                           url={o.item.fileUrl} onPlaying={onPlaying}/>
-                      return <FileView  key={o.item.fileId} file={o.item} onView={onViewImage(o.index)} />
+                      return <FileView  key={o.item.fileId} file={o.item} 
+                          onView={onViewImage(o.index)} 
+                          hiddenName={true}/>
                     }}
                     keyExtractorHandler={(item, _) => item.fileId}
                     listFile={message.files}

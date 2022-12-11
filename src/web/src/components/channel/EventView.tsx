@@ -1,11 +1,15 @@
 import { EventInfo } from "../../models/event/Event.model";
 import { NotificationOutlined } from '@ant-design/icons';
 import { showModalEvent } from "../event/ModalEvent";
+import { Button } from "antd";
+import { DeleteOutlined } from '@ant-design/icons';
 
 interface EventViewProp{
-    eventItem: EventInfo
+    eventItem: EventInfo,
+    canDelete?: boolean,
+    onDelete?:()=>void
 }
-const EventView :React.FC<EventViewProp> = ({eventItem})=>{
+const EventView :React.FC<EventViewProp> = ({eventItem, canDelete, onDelete})=>{
     const eventIcon = '';
     return <>
         <div  className="event-container">
@@ -18,12 +22,22 @@ const EventView :React.FC<EventViewProp> = ({eventItem})=>{
                 }
                 
             </div>
-            <div className="event-body clickable" onClick={()=>{
-                showModalEvent(eventItem);
-            }} >
-                <div className="event--type">
-                    {eventItem.eventType.name}
+            <div className="event-body "  >
+                <div style={{display:'flex', flexDirection:'row'}}>
+                    <div className="event--type clickable" onClick={()=>{
+                        showModalEvent(eventItem);
+                    }}>
+                        {eventItem.eventType.name}
+                    </div>
+                    <div className="flex-spacer"></div>
+                    {canDelete &&
+                        <Button size="small" danger className='button-icon' 
+                            onClick={onDelete} title="Xóa sự kiện">
+                            <DeleteOutlined />
+                        </Button>
+                    }
                 </div>
+               
                 <div className="event--content">
                     {eventItem.content}
                 </div>

@@ -144,8 +144,10 @@ namespace IdentityService.Boundaries.Grpc
         public override async Task<ActiveIdentityUserResponse> ActiveIdentityUser(ActiveIdentityUserRequest request, ServerCallContext context)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            var lockoutEnabled = !request.Active;
-            var identityResult =  await _userManager.SetLockoutEnabledAsync(user, lockoutEnabled);
+            var isActive = request.Active;
+            await _userManager.SetLockoutEnabledAsync(user, true);
+            DateTimeOffset? LOCKOUT_ENDDATE = (new DateTime(3000, 1, 1));
+            var identityResult = await _userManager.SetLockoutEndDateAsync(user, isActive ? null : LOCKOUT_ENDDATE);
 
             if (!identityResult.Succeeded || identityResult.Errors.Any())
             {
@@ -233,7 +235,29 @@ namespace IdentityService.Boundaries.Grpc
                 IsSuccess = true
             };
         }
+        public override async Task<VerifyPasswordResponse> VerifyPassword(VerifyPasswordRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(request.UserId);
 
+                var isExact = await _userManager.CheckPasswordAsync(user, request.Password);
+                return new VerifyPasswordResponse()
+                {
+                    IsSuccess = isExact
+                };
+            }catch(Exception ex)
+            {
+                return new VerifyPasswordResponse()
+                {
+                    IsSuccess = false,
+                    Error = new Error()
+                    {
+                        Message = ex.Message
+                    }
+                };
+            }
+        }
         public override async Task<ResetPasswordResponse> ResetPassword(ResetPasswordRequest request, ServerCallContext context)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);

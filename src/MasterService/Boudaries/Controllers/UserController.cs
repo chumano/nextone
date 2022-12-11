@@ -264,6 +264,29 @@ namespace MasterService.Controllers
             return Ok(ApiResult.Success(newPassword));
         }
 
+        [HttpPost("SelfDelete")]
+        public async Task<IActionResult> SelfDelete([FromBody]UserSelfDeleteDTO dto)
+        {
+            var actionUser = _userContext.User;
+            var user = await _userService.Get(actionUser.UserId);
+            if (user == null)
+            {
+                throw new DomainException("[User/SelfDelete]", "User not exist");
+            }
+
+            //check password
+            var isExact = await _identityService.VerifyPassword(actionUser.UserId, dto.Password);
+
+            if (!isExact)
+            {
+                return Ok(ApiResult.Error("Password is invalid"));
+            }
+
+            await _userService.DeleteUser(user, isSelf: true);
+
+            return Ok(ApiResult.Success(null));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {

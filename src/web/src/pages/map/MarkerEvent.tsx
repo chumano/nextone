@@ -1,3 +1,4 @@
+import { Button, Tag } from 'antd';
 import L from 'leaflet';
 import React, { useEffect, useRef, useState } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet';
@@ -6,9 +7,9 @@ import { showModalEvent } from '../../components/event/ModalEvent';
 import { EventInfo } from '../../models/event/Event.model';
 const eventIcon = L.icon({
     iconUrl: eventIconUrl,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
+    iconSize: [24, 24],
+    iconAnchor: [12, 24],
+    popupAnchor: [0, -24],
     shadowUrl: undefined,
     shadowSize: undefined,
     shadowAnchor: undefined
@@ -35,12 +36,16 @@ const MarkerEventInternal: React.FC<MarkerEventProps> = ({ evt, openPopup }) => 
                 popupRef.current = r as L.Popup;
                 setRefReady(true);
             }}>
-            <div className='clickable' onClick={()=>{
-                showModalEvent(evt)
-            }}>
-                <h6>{evt.eventType.name}</h6>
+            <div >
+                <h6 className='clickable' 
+                    onClick={()=>{
+                        showModalEvent(evt)
+                    }}>{evt.eventType.name}
+                </h6>
+                <hr style={{margin:'0.5rem 0'}}/>
                 {evt.content}
-                <div>{evt.userSender.userName} : {evt.occurDate}</div>
+                <hr style={{margin:'0.5rem 0'}}/>
+                <div><Tag>{evt.userSender.userName}</Tag>  {evt.occurDate}</div>
             </div>
 
         </Popup>

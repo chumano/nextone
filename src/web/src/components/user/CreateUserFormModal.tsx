@@ -40,7 +40,6 @@ const CreateUserFormModal: FC<IProps> = ({
 	};
 
 	const onFormFinish = async (values: any) => {
-		console.log({values});
 		setIsLoading(true);
 		try {
 			const { data } = await userApi.createUser({

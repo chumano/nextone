@@ -177,5 +177,24 @@ namespace ComService.Boudaries.Controllers
 
             return Ok(ApiResult.Success(evts));
         }
+
+        //delete event in channel
+        [HttpPost("DeleteEvent")]
+        public async Task<IActionResult> DeleteEvent([FromBody] DeleteEventDTO deleteEventDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var user = await _userStatusService.GetUser(userId);
+
+            var channel = await _channelService.Get(deleteEventDTO.ChannelId);
+            if (channel == null)
+            {
+                return Ok(ApiResult.Error("Channel does not exist"));
+            }
+
+            //check permission
+            await _channelService.DeleteEvent(channel, deleteEventDTO.EventId);
+
+            return Ok(ApiResult.Success(null));
+        }
     }
 }

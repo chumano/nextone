@@ -17,7 +17,14 @@ cd android
 ./gradlew assembleRelease  #build apk
 ./gradlew bundleRelease     #build aab to upload google play
 
-change versionCode in android/app/buid.gradle
+change  versionCode in android/app/buid.gradle
+        versionName
+```
+
+# DeepLink
+```
+npx uri-scheme open "ucom://call" --android
+npx uri-scheme open "ucom://call" --ios
 ```
 
 #

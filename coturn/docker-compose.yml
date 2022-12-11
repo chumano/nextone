@@ -2,6 +2,7 @@ version: '3'
 services:
   coturn_server:
     image: coturn/coturn
+    container_name: coturn
     restart: always
     ports:
     ## STUN/TURN

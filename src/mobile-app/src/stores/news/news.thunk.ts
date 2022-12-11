@@ -19,7 +19,7 @@ export const getList = createAsyncThunk(
 
       const response = await newsApi.list('', {
         ...pageOptions,
-        publishState: 0,
+        publishState: 1, //0: all, 1: published, 2: no
       });
 
       if (response.isSuccess) return response.data;

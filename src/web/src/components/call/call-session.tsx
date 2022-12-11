@@ -25,6 +25,7 @@ import { ConversationState } from '../../store/chat/ChatState';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
 import { UserStatus } from '../../models/user/UserStatus.model';
 import { message } from 'antd';
+import { CALL_WAIT_TIME } from '../../utils';
 
 
 const CallSession: React.FC = () => {
@@ -94,7 +95,7 @@ const CallSession: React.FC = () => {
     useEffect(()=>{
         const subscriptions: any[] = [];
         const subscription1 = CallService.listen(CallEvents.GOT_LOCAL_STREAM, (mediaStream: MediaStream) => {
-            console.log('CallSession GOT_LOCAL_STREAM', mediaStream);
+            //console.log('CallSession GOT_LOCAL_STREAM', mediaStream);
             setLocalStream({
                 stream: mediaStream,
                 streamId: 'abc'
@@ -103,7 +104,7 @@ const CallSession: React.FC = () => {
         subscriptions.push(subscription1);
 
         const subscription2 = CallService.listen(CallEvents.GOT_REOMOTE_STREAM, (mediaStream: MediaStream) => {
-            console.log('CallSession GOT_REOMOTE_STREAM', mediaStream);
+            //console.log('CallSession GOT_REOMOTE_STREAM', mediaStream);
             setRemoteStream({
                 stream: mediaStream,
                 streamId: 'xyz'
@@ -111,9 +112,10 @@ const CallSession: React.FC = () => {
         });
         subscriptions.push(subscription2);
 
-        const subscription3 = CallService.listen(CallEvents.CONNECTION_DISCONECTED, (mediaStream: MediaStream) => {
-            console.log('CallEvents.CONNECTION_DISCONECTED=> CallService.stopCall')
-            CallService.stopCall();
+        const subscription3 = CallService.listen(CallEvents.CONNECTION_DISCONECTED,
+            async (mediaStream: MediaStream) => {
+            //console.log('CallEvents.CONNECTION_DISCONECTED=> CallService.stopCall')
+            await CallService.stopCall();
         });
         subscriptions.push(subscription3);
 
@@ -132,7 +134,7 @@ const CallSession: React.FC = () => {
                 subscription.unsubscribe();
             });
         }
-    })
+    },[])
 
     useEffect(() => {
         
@@ -158,14 +160,19 @@ const CallSession: React.FC = () => {
                 }
             }
 
-
-            CallService.startCall(converstationId, callType, constraint).then(() => {
-                console.log('CallSession call started');
+            CallService.isReceiveResponse = false;
+            CallService.startCall(converstationId, callType, constraint).then((rs) => {
+                if(rs.error){
+                    console.error('CallSession startCall',rs);
+                    onStopCall('Can\'t call now');
+                }
+               
             }).catch(err => {
                 console.error('CallService.startCall error', err)
-                message.error('Có lỗi bất thường! Vui lòng thử lại')
+                message.error('Hiện tại không gọi được! Vui lòng thử lại')
             });
-            CallService.isReceiveResponse = false;
+
+            
             if(waitTimeOutRef.current){
                 clearTimeout(waitTimeOutRef.current);
             }
@@ -175,7 +182,7 @@ const CallSession: React.FC = () => {
                 }
                 onStopCall('Timeout to wait receiver responding');
 
-            },15000)
+            },CALL_WAIT_TIME)
         }
         else {
             //receive call 
@@ -185,9 +192,10 @@ const CallSession: React.FC = () => {
     }, [isSender, callStatus, converstationId, deviceSettings, callType])
 
     useEffect(()=>{
-        console.log('CallService.isReceiveResponse change ', CallService.isReceiveResponse)
+        //console.log('CallService.isReceiveResponse change ', CallService.isReceiveResponse)
         if( CallService.isReceiveResponse && waitTimeOutRef.current){
             clearTimeout(waitTimeOutRef.current);
+            waitTimeOutRef.current = undefined
         }
     },[CallService.isReceiveResponse])
 
@@ -203,9 +211,9 @@ const CallSession: React.FC = () => {
     }
 
     const onStopCall = (reason: string) => {
-        console.log(`${reason} => CallService.stopCall`)
+        //console.log(`${reason} => CallService.stopCall`)
         CallService.stopCall().then(() => {
-            console.log('CallSession call stopped',);
+            //console.log('CallSession call stopped',);
         }).catch(err => {
             console.error(' CallService.stopCall error', err)
         })

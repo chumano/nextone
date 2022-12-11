@@ -59,6 +59,7 @@ export const ICE_SERVERS = [
     ]
   },
   //coturn
+  { urls: 'turn:coturn.dientoan.vn:5349', username: 'test', credential: 'test123' },
   { urls: 'stun:192.168.0.122:5349' },
   { urls: 'turn:192.168.0.122:5349', username: 'test', credential: 'test123' },
 ]

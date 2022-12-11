@@ -18,7 +18,12 @@ export class SignalRService {
     private init() {
       this.connection.onreconnected((connectionid) => {
         //console.log(`[Hub] onreconnected: ${connectionid}`)
-        this.onConnected();
+        try{
+          this.onConnected();
+        }catch(err){
+          console.error('onConnected Error', err)
+        }
+       
       })
 
       this.connection.onclose((error) => {

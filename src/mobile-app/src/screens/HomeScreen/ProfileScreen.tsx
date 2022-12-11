@@ -1,6 +1,6 @@
-import React, {useEffect} from 'react';
-import {View, StyleSheet} from 'react-native';
-import {Avatar, Text, TextInput, Button} from 'react-native-paper';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, Alert, Platform} from 'react-native';
+import {Avatar, Text, TextInput, Button, Portal, Modal, HelperText} from 'react-native-paper';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import {APP_THEME} from '../../constants/app.theme';
@@ -13,6 +13,8 @@ import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {getMyProfile} from '../../stores/user';
 
 import {HomeStackProps} from '../../navigation/HomeStack';
+import { userApi } from '../../apis/user.api';
+import { logout } from '../../stores/auth';
 
 export const ProfileScreen = ({navigation}: HomeStackProps) => {
   const dispatch: AppDispatch = useDispatch();
@@ -28,7 +30,14 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
   const changePasswordHandler = () => {
     navigation.navigate('ChangePasswordScreen');
   };
+  const [visible, setVisible] = React.useState(false);
 
+  const hideModal = () => setVisible(false);
+
+  const deleteUserHanlder = () =>{
+    setVisible(true);
+  }
+  
   if (userState.status === 'loading' || !userState.data) return <Loading />;
 
   return (
@@ -68,10 +77,90 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
             Đổi mật khẩu
           </Button>
         </View>
+
+        {Platform.OS ==='ios' &&<View style={{...styles.buttonContainer, width:'auto'}}>
+          <Button mode="outlined" color='red' onPress={deleteUserHanlder}>
+            Xóa tài khoản
+          </Button>
+        </View>
+        }
       </View>
+
+      {Platform.OS ==='ios' &&
+        <DeleteUserModal visible={visible} hideModal={hideModal}/>
+      }
     </SafeAreaView>
   );
 };
+
+const DeleteUserModal :React.FC<{visible: boolean, hideModal: ()=>void}> = ({visible,hideModal})=>{
+  const dispatch: AppDispatch = useDispatch();
+  const containerStyle = {backgroundColor: 'white', padding: 20};
+  const [password, setPassword] = useState<any>({
+      value: '',
+      isValid: true,
+      errorMessage :undefined
+    })
+  const onDelete = async ()=>{
+    if(password.value.trim().length===0){
+      setPassword( (state:any)=>({
+        ...state,
+        isValid: false
+      }))
+      return;
+    }
+
+    const response = await userApi.selfDelete(password.value);
+    console.log("selfDelete ressponse:" , response)
+    if(!response.isSuccess){
+      Alert.alert('Có lỗi', response.errorMessage!)
+      return;
+    }
+
+    setPassword( (state:any)=>({
+      ...state,
+      isValid: false,
+      errorMessage : response.errorMessage
+    }))
+    Alert.alert('Xóa tài khoản thàng công')
+    hideModal();
+    dispatch(logout());
+  }
+
+  return <Portal>
+  <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
+    <Text style={{fontSize:20}}>Bạn có muốn xóa tài khoản?</Text>
+    <View
+      style={{
+        borderBottomColor: 'black',
+        borderBottomWidth: StyleSheet.hairlineWidth,
+      }}
+    />
+    <Text style={{color:'grey'}}>Xác nhận mật khẩu để xóa</Text>
+    <View style={styles.inputContainer}>
+      <TextInput style={{ width: '100%'}}
+          label="Mật khẩu"
+          secureTextEntry
+          value={password.value}
+          error={!password.isValid}
+          onChangeText={(txt)=> setPassword({
+            value: txt,
+            isValid: true
+          })}
+        />
+        {!password.isValid && 
+          <HelperText type="error" style={{ width: '100%'}}>
+            {password.errorMessage || 'Mật khẩu phải nhập!'}
+          </HelperText>
+        }
+    </View>
+    
+    <Button color='red' onPress={onDelete}>
+        Xóa
+    </Button>
+  </Modal>
+</Portal>
+}
 
 const styles = StyleSheet.create({
   profileContainer: {

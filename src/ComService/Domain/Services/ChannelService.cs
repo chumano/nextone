@@ -19,6 +19,8 @@ namespace ComService.Domain.Services
         Task UpdateEventTypes(Channel channel, string name,
             IList<string> eventTypeCodes);
         Task AddEvent(Channel channel, Event evt);
+
+        Task DeleteEvent(Channel channel, string eventId);
         Task<IEnumerable<Channel>> GetChannelsByEventCode(string evtCode);
 
         Task<IEnumerable<Event>> GetEventsHistory(Channel conversation, DateTime? beforeDate, PageOptions pageOptions);
@@ -34,7 +36,8 @@ namespace ComService.Domain.Services
            IEventRepository eventRepository,
            IUserStatusService userService, ComDbContext comDbContext,
            IBus bus, IdGenerator idGenerator)
-            :base(conversationRepository, messageRepository, userService, comDbContext, bus, idGenerator)
+            :base(conversationRepository, messageRepository, userService, 
+                 comDbContext, bus, idGenerator)
         {
             _channelRepository = channelRepository;
             _eventRepository = eventRepository;
@@ -181,13 +184,39 @@ namespace ComService.Domain.Services
             channel.UpdatedDate = DateTime.Now;
 
             await _messageRepository.SaveChangesAsync();
-            // TODO: send ChannelEventAdded
+
             await _bus.Publish(new ChannelEventAdded());
             await _bus.Publish(new ConversationMessageAdded()
             {
                 Conversation = channel,
                 Message = message
             });
+        }
+
+        public async Task DeleteEvent(Channel channel, string eventId)
+        {
+            _dbContext.Set<ChannelEvent>().Remove(new ChannelEvent()
+            {
+                ChannelId = channel.Id,
+                EventId = eventId
+            });
+
+            var eventMessage = await _dbContext.Messages.FirstOrDefaultAsync(o => o.ConversationId == channel.Id && o.EventId == eventId);
+            if(eventMessage!= null)
+            {
+                _dbContext.Messages.Remove(eventMessage);
+            }
+            await _dbContext.SaveChangesAsync();
+
+            await _bus.Publish(new ChannelEventDeleted());
+            if (eventMessage != null)
+            {
+                await _bus.Publish(new ConversationMessageDeleted()
+                {
+                    Conversation = channel,
+                    Message = eventMessage
+                });
+            }
         }
 
         public async Task<IEnumerable<Channel>> GetChannelsByEventCode(string evtCode)
@@ -222,6 +251,6 @@ namespace ComService.Domain.Services
             return await query.ToListAsync();
         }
 
-     
+        
     }
 }
