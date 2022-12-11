@@ -45,7 +45,7 @@ const EventDetailScreen = () => {
       return () => {
           const imageSoruces: ImageSource[] = images.map(o=> {
               return {
-                  title: o.fileName,
+                title: 'Hình ảnh',
                   uri: o.fileUrl
               }
           })
@@ -86,7 +86,9 @@ const EventDetailScreen = () => {
           <FileList
             isHorizontal={true}
             renderItem={itemData => (
-              <FileView file={itemData.item} hiddenName={true}  onView={onViewImage(itemData.index)}/>
+              <FileView file={itemData.item} hiddenName={true}  
+                onView={onViewImage(itemData.index)}
+                />
             )}
             keyExtractorHandler={(item, _) => item.fileId}
             listFile={eventInfo.files}

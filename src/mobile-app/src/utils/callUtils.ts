@@ -52,6 +52,11 @@ export const displayCallRequest = async (message: CallMessageData)=>{
     }
   
     let uuid = uuidv4();
+
+    if (!CallService.isCalling) {
+      //console.log('storeCallInfo', uuid)
+      CallService.storeCallInfo(uuid, message);
+    }
     RNCallKeep.displayIncomingCall(
       uuid,
       message.senderName,
@@ -68,8 +73,6 @@ export const displayCallRequest = async (message: CallMessageData)=>{
       return;
     }
   
-    CallService.storeCallInfo(uuid, message);
-
     //Tự động tắt sau 1 khoảng thời gian
     if(listenTimeoutRef) clearTimeout(listenTimeoutRef);
     listenTimeoutRef = setTimeout(() => {
