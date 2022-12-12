@@ -42,9 +42,12 @@ const changeMyPassword = (data: { oldPassword: string, newPassword: string }): P
 	return handleAxiosApi(axiosInstance.post(`/user/changemypassword`, data));
 };
 
-const count = (textSearch?: string): Promise<AxiosResponse<ApiResult<number>>> => {
+const count = (textSearch?: string,excludeMe?: boolean): Promise<AxiosResponse<ApiResult<number>>> => {
 	return axiosInstance.get(`/user/count`, {
-		params: textSearch
+		params: {
+			textSearch,
+			excludeMe
+		}
 	})
 }
 const checkMe = (): Promise<ApiResult<boolean>> => {

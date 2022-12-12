@@ -87,6 +87,25 @@ namespace MasterService.Controllers
             return Ok(ApiResult.Success(items));
         }
 
+
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
+        {
+            var actionUser = _userContext.User;
+            var query = _userRepository.Users.AsNoTracking();
+            if (getUserListDTO.ExcludeMe)
+            {
+                query = query.Where(o => o.Id != actionUser.UserId);
+            }
+            if (!string.IsNullOrWhiteSpace(getUserListDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getUserListDTO.TextSearch));
+            }
+
+            var count = await query.CountAsync();
+            return Ok(ApiResult.Success(count));
+        }
+
         [HttpGet("MyProfile")]
         public async Task<IActionResult> GetMyProfile()
         {
@@ -162,12 +181,6 @@ namespace MasterService.Controllers
             }
         }
 
-        [HttpGet("Count")]
-        public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
-        {
-            var count = await _userService.Count(getUserListDTO.TextSearch);
-            return Ok(ApiResult.Success(count));
-        }
 
 
         [HttpGet("{id}")]
