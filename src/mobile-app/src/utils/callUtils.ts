@@ -50,6 +50,19 @@ export const displayCallRequest = async (message: CallMessageData)=>{
       console.error('message.type', message.type)
       return;
     }
+
+    //check timeout
+    if(message.requestDate){
+      const time_to_wait_in_ms = CALL_WAIT_TIME;
+      const now = (new Date()).getTime();
+      const requestDate = Date.parse(message.requestDate);
+      if(!Number.isNaN(requestDate)){
+        if(now - requestDate > time_to_wait_in_ms){
+          console.error('Request is timeout', {message, now, requestDate})
+          return;
+        }
+      }
+    }
   
     let uuid = uuidv4();
 

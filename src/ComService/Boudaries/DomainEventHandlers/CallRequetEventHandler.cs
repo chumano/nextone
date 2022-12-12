@@ -54,7 +54,8 @@ namespace ComService.Boudaries.DomainEventHandlers
                             { "conversationId" , notification.ConversationId },
                             { "senderId" , senderUser.UserId },
                             { "senderName" , senderUser.UserName },
-                            { "callType", notification.CallType }
+                            { "callType", notification.CallType },
+                            { "requestDate", notification.RequestDate.ToString() }
                             
                         }
                     };

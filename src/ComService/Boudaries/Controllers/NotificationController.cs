@@ -142,7 +142,8 @@ namespace ComService.Boudaries.Controllers
             {
                 UserSenderId = userId,
                 UserReceiverId = callRequest.ReceiverId,
-                CallType = callRequest.CallType
+                CallType = callRequest.CallType,
+                RequestDate = DateTime.Now,
             });
             return Ok(ApiResult.Success(null));
         }
@@ -166,8 +167,6 @@ namespace ComService.Boudaries.Controllers
                         }
             };
             // dBVK9PmoTqGUvF0TKx9jpF:APA91bFFPBVouIFmF4UKhh8ZqSlr54ZXdgNuWO2_jUjHLzTwdx6R--DU_IzxV1ZY8sNAwoRzCqlVziDzr9U0LVpD4fIq0XIoxgOK9srEZoz4iGADsbLJr-03Js_j7Mu6bVmSBf_Fvo0g
-
-            // dBVK9PmoTqGUvF0TKx9jpF:APA91bFFPBVouIFmF4UKhh8ZqSlr54ZXdgNuWO2_jUjHLzTwdx6R--DU_IzxV1ZY8sNAwoRzCqlVziDzr9U0LVpD4fIq0XIoxgOK9srEZoz4iGADsbLJr-03Js_j7Mu6bVmSBf_Fvo0g 
             var userTokens = new List<string>() { token };
 
             _logger.LogInformation("_cloudService.SendMessage : " + string.Join(",", userTokens)

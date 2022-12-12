@@ -76,7 +76,7 @@ namespace ComService.Infrastructure
                     Aps = new Aps()
                     {
                         Badge = message.IsNotification ? 1 : 0,
-                        Sound = "default",
+                        //Sound = "default",
                         Category = "NEW_MESSAGE_CATEGORY",
                         ContentAvailable = true,
                     }

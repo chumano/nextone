@@ -1,4 +1,5 @@
 ﻿using NextOne.Shared.Domain;
+using System;
 
 namespace ComService.Domain.DomainEvents
 {
@@ -9,5 +10,7 @@ namespace ComService.Domain.DomainEvents
         public string UserReceiverId { get; set; }
 
         public string CallType { get; set; }
+
+        public DateTime RequestDate { get; set; }
     }
 }

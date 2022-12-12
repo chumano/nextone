@@ -129,7 +129,8 @@ namespace ComService.Boudaries.Hubs
                                 room = conversationId,
                                 userId = client.UserId,
                                 userName = client.UserName,
-                                callType = callType
+                                callType = callType,
+                                requestDate = Now.ToString(),
                             });
 
                             //TODO: ChatHub tạo message yêu cầu cuộc gọi
@@ -157,7 +158,8 @@ namespace ComService.Boudaries.Hubs
                                             ConversationId = conversationId,
                                             UserSenderId = client.UserId,
                                             UserReceiverId = member.UserId,
-                                            CallType = callType
+                                            CallType = callType,
+                                            RequestDate = Now
                                         });
                                     }
                                 }
