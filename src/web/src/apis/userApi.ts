@@ -17,7 +17,8 @@ import { handleAxiosApi } from "../utils/functions";
 const axiosInstance = createAxios(API.MASTER_SERVICE);
 const list = (
 	textSearch: string, searchParams?: PageOptions,
-	excludeMe?: boolean
+	excludeMe?: boolean,
+	orderBy?: string
 ): Promise<AxiosResponse<ApiResult<User[]>>> => {
 	if (!searchParams) searchParams = new PageOptions();
 	return axiosInstance.get(`/user/getlist`, {
@@ -25,7 +26,8 @@ const list = (
 			offset: searchParams.offset,
 			pageSize: searchParams.pageSize,
 			textSearch,
-			excludeMe
+			excludeMe,
+			orderBy
 		},
 	});
 };
@@ -42,9 +44,12 @@ const changeMyPassword = (data: { oldPassword: string, newPassword: string }): P
 	return handleAxiosApi(axiosInstance.post(`/user/changemypassword`, data));
 };
 
-const count = (textSearch?: string): Promise<AxiosResponse<ApiResult<number>>> => {
+const count = (textSearch?: string,excludeMe?: boolean): Promise<AxiosResponse<ApiResult<number>>> => {
 	return axiosInstance.get(`/user/count`, {
-		params: textSearch
+		params: {
+			textSearch,
+			excludeMe
+		}
 	})
 }
 const checkMe = (): Promise<ApiResult<boolean>> => {

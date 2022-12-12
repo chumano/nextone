@@ -77,7 +77,15 @@ namespace MasterService.Controllers
                 query = query.Where(o => o.Name.Contains(getUserListDTO.TextSearch));
             }
 
-            query = query.OrderBy(o => o.Name)
+            if(!string.IsNullOrWhiteSpace(getUserListDTO.OrderBy)  && getUserListDTO.OrderBy.ToLower() == "date")
+            {
+                query = query.OrderByDescending(o => o.CreatedDate);
+            }
+            else
+            {
+                query = query.OrderBy(o => o.Name);
+            }
+            query = query
                   .Skip(pageOptions.Offset)
                   .Take(pageOptions.PageSize);
             var items = await query.ToListAsync();
@@ -85,6 +93,25 @@ namespace MasterService.Controllers
             //var items = await _userService.GetUsers(new PageOptions(getUserListDTO.Offset, getUserListDTO.PageSize), getUserListDTO.TextSearch);
             
             return Ok(ApiResult.Success(items));
+        }
+
+
+        [HttpGet("Count")]
+        public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
+        {
+            var actionUser = _userContext.User;
+            var query = _userRepository.Users.AsNoTracking();
+            if (getUserListDTO.ExcludeMe)
+            {
+                query = query.Where(o => o.Id != actionUser.UserId);
+            }
+            if (!string.IsNullOrWhiteSpace(getUserListDTO.TextSearch))
+            {
+                query = query.Where(o => o.Name.Contains(getUserListDTO.TextSearch));
+            }
+
+            var count = await query.CountAsync();
+            return Ok(ApiResult.Success(count));
         }
 
         [HttpGet("MyProfile")]
@@ -162,12 +189,6 @@ namespace MasterService.Controllers
             }
         }
 
-        [HttpGet("Count")]
-        public async Task<IActionResult> Count([FromQuery] GetUserListDTO getUserListDTO)
-        {
-            var count = await _userService.Count(getUserListDTO.TextSearch);
-            return Ok(ApiResult.Success(count));
-        }
 
 
         [HttpGet("{id}")]

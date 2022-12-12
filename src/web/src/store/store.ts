@@ -20,5 +20,6 @@ export const store = configureStore<IAppStore>({
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false
-      }).concat(logger) as any,
+      })as any,
+      //.concat(logger)
 })
