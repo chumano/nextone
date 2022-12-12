@@ -75,7 +75,7 @@ export const getMessageHistory = createAsyncThunk(
     {
       condition: (userId, { getState, extra }) => {
         const state = getState() as any
-        console.log('getMessageHistory-state',state)
+       // console.log('getMessageHistory-state',state)
         // const fetchStatus = users.requests[userId]
         // if (fetchStatus === 'fulfilled' || fetchStatus === 'loading') {
         //   // Already fetched or in progress, don't need to re-fetch

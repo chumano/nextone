@@ -44,7 +44,7 @@ const ChatPage: React.FC = () => {
 
     const systemUserRole = user?.profile.role;
 
-    console.log('location.state', location.state)
+    //console.log('location.state', location.state)
 
     useEffect(() => {
         dispatch(getChannels({

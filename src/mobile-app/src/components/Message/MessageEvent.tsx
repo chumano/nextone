@@ -32,7 +32,7 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
         return () => {
             const imageSoruces: ImageSource[] = images.map(o=> {
                 return {
-                    title: o.fileName,
+                    title: 'Hình ảnh',
                     uri: o.fileUrl
                 }
             })
@@ -86,7 +86,8 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message }) => {
                                 <FileList
                                     isHorizontal={true}
                                     renderItem={o => (
-                                        <FileView file={o.item} onView={onViewImage(o.index)} />
+                                        <FileView file={o.item} onView={onViewImage(o.index)} 
+                                            hiddenName={true}/>
                                     )}
                                     keyExtractorHandler={(item, _) => item.fileId}
                                     listFile={group['image']}

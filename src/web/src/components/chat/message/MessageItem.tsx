@@ -12,6 +12,7 @@ import {PhoneOutlined } from '@ant-design/icons'
 import { FileType } from '../../../models/file/FileType.model';
 import AudioPlayer from '../../player/AudioPlayer';
 import { MemberRole } from '../../../models/conversation/ConversationMember.model';
+import { Button } from 'antd';
 
 
 
@@ -61,9 +62,9 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
                     </div>
                     {location &&
                     <div>
-                        Vị trí: <a href='javascript:void()' onClick={()=>gotoMapLocation(location)}>
+                        Vị trí: <Button onClick={()=>gotoMapLocation(location)}>
                             [{location[0].toFixed(2)}, {location[1].toFixed(2)}]
-                            </a>
+                            </Button>
                     </div>
                     }
 

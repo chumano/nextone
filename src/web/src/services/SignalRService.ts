@@ -37,16 +37,16 @@ class SignalRService {
 
     this.hubConnection = builder.withAutomaticReconnect().build();
     this.hubConnection.onreconnected((connectionId)=>{
-      console.log('hubConnection.onreconnected', connectionId);
+      //console.log('hubConnection.onreconnected', connectionId);
       this.onConnected();
     });
     return this.hubConnection.start()
       .then(async () => {
         if (this.isConnected()) {
           this.onConnected();
-          console.log('SignalR: Connected to the server: ' + url);
+          //console.log('SignalR: Connected to the server: ' + url);
           this.define("data", ( message: {eventKey: string, eventData:any })=>{
-            console.log("SIGNALR receive [data]", message)
+            //console.log("SIGNALR receive [data]", message)
             this.pubSub.publish(message.eventKey, message.eventData);
           });
         }
@@ -64,7 +64,7 @@ class SignalRService {
 
   invoke(methodName: string, ...args: any[]): Promise<any> {
     if (this.isConnected()) {
-      console.log("signalr-invoke", methodName, args)
+      //console.log("signalr-invoke", methodName, args)
       return this.hubConnection!.invoke(methodName, ...args);
     }
     return Promise.resolve()

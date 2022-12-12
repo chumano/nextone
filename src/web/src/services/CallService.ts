@@ -27,86 +27,89 @@ class CallService {
     
     public init = async () => {
         this.signaling.listen(CallSignalingEvents.CALL_REQUEST, (room) => {
-            //TODO: receive call-request , wait user accept
-            console.log("receiving a call...")
+            //console.log("receiving a call...")
             this.isSender = false;
             this.pubSub.publish(CallEvents.RECEIVE_CALL_REQUEST, room);
         });
 
     }
 
-    private callMessageHandler =  (message: CallMessage) => {
-        console.log("[callMessageHandler] receive-"+ message.type, message.data)
-        switch (message.type) {
-            //sender
-            case 'call-request-response':
-                const { accepted } = message.data;
-                this.isReceiveResponse = true;
-                if (!accepted) {
-                    this.callSender.hangup(this.isSender);
-                    this.pubSub.publish(CallEvents.CALL_STOPED);
-                    return;
-                }
-                this.callSender.sendOffer();
-
-                break;
-           
-
-            //sender + receiver
-            case 'other-session-description':
-                {
-                    const sdp: RTCSessionDescriptionInit = message.data;
-                    if (sdp.type === 'answer' && this.isSender) {
-                        this.callSender.receiveAnswer(sdp);
-                    }else if (sdp.type === 'offer' && !this.isSender) {
-                        this.callReceiver.receiveOffer(sdp);
+    private callMessageHandler = async (message: CallMessage) => {
+        //console.log("[callMessageHandler] receive-"+ message.type, message.data)
+        try{
+            switch (message.type) {
+                //sender
+                case 'call-request-response':
+                    const { accepted } = message.data;
+                    this.isReceiveResponse = true;
+                    if (!accepted) {
+                        this.callSender.hangup(this.isSender);
+                        this.pubSub.publish(CallEvents.CALL_STOPED);
+                        return;
                     }
+                    await this.callSender.sendOffer();
+    
                     break;
-                }
-
-            case 'other-ice-candidate':
-                {
-                    const candidateResponse = message.data;
-                    const { label, id, candidate } = message.data;
-                    if (this.isSender) {
-                        this.callSender.addIceCandidate(candidateResponse);
-                    } else {
-                        this.callReceiver.addIceCandidate(candidateResponse);
+               
+                //sender + receiver
+                case 'other-session-description':
+                    {
+                        const sdp: RTCSessionDescriptionInit = message.data;
+                        if (sdp.type === 'answer' && this.isSender) {
+                            this.callSender.receiveAnswer(sdp);
+                        }else if (sdp.type === 'offer' && !this.isSender) {
+                            await this.callReceiver.receiveOffer(sdp);
+                        }
+                        break;
                     }
-
-                    break;
-                }
-            case 'other-hangup':
-                {
-                    console.log('other-hangup => CallService.stopCall');
-                    this.stopCall();
-                    break;
-                }
+    
+                case 'other-ice-candidate':
+                    {
+                        const candidateResponse = message.data;
+                        const { label, id, candidate } = message.data;
+                        if (this.isSender) {
+                            this.callSender.addIceCandidate(candidateResponse);
+                        } else {
+                            this.callReceiver.addIceCandidate(candidateResponse);
+                        }
+    
+                        break;
+                    }
+                case 'other-hangup':
+                    {
+                        //console.log('other-hangup => CallService.stopCall');
+                        await this.stopCall();
+                        break;
+                    }
+            }
+        }catch(err){
+            console.error('callMessageHandler' , message , err)
         }
+        
     }
 
     private listenCallMessage = ()=>{
         this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE,this.callMessageHandler.bind(this));
     }
 
+    public startCall = async (room: string,callType: 'voice' | 'video' ,mediaConstraints?: MediaConstraints) => {
+        this.listenCallMessage();
+        this.isSender = true;
+        return await this.callSender.startCallRequest(room,callType, mediaConstraints);
+    }
+
     public acceptCallRequest = async(room:string, mediaConstraints?: MediaConstraints)=>{
         this.listenCallMessage();
-        this.callReceiver.acceptCall(room, mediaConstraints);
+        return this.callReceiver.acceptCall(room, mediaConstraints);
     }
 
     public ignoreCallRequest = async(room:string)=>{
-        console.log("ignore call...")
+        //console.log("ignore call...")
         this.signaling.invoke(CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {
                 room,
                 accepted: false
             })
-    }
-
-    public startCall = async (room: string,callType: 'voice' | 'video' ,mediaConstraints?: MediaConstraints) => {
-        this.listenCallMessage();
-        this.isSender = true;
-        await this.callSender.startCallRequest(room,callType, mediaConstraints);
     }
 
     public stopCall = async (notifiyOther: boolean = true) => {
@@ -142,8 +145,7 @@ class SignalRSignaling implements ISignaling {
         return SignalR.isConnected();
     }
     invoke(action: string, data: any): Promise<any> {
-        return SignalR.invoke(
-            'sendCallMessage', 
+        return SignalR.invoke('sendCallMessage', 
             action,
             data
         )

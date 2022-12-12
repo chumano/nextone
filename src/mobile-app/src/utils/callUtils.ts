@@ -50,8 +50,26 @@ export const displayCallRequest = async (message: CallMessageData)=>{
       console.error('message.type', message.type)
       return;
     }
+
+    //check timeout
+    if(message.requestDate){
+      const time_to_wait_in_ms = CALL_WAIT_TIME;
+      const now = (new Date()).getTime();
+      const requestDate = Date.parse(message.requestDate);
+      if(!Number.isNaN(requestDate)){
+        if(now - requestDate > time_to_wait_in_ms){
+          console.error('Request is timeout', {message, now, requestDate})
+          return;
+        }
+      }
+    }
   
     let uuid = uuidv4();
+
+    if (!CallService.isCalling) {
+      //console.log('storeCallInfo', uuid)
+      CallService.storeCallInfo(uuid, message);
+    }
     RNCallKeep.displayIncomingCall(
       uuid,
       message.senderName,
@@ -68,8 +86,6 @@ export const displayCallRequest = async (message: CallMessageData)=>{
       return;
     }
   
-    CallService.storeCallInfo(uuid, message);
-
     //Tự động tắt sau 1 khoảng thời gian
     if(listenTimeoutRef) clearTimeout(listenTimeoutRef);
     listenTimeoutRef = setTimeout(() => {
@@ -102,6 +118,7 @@ export const answerCall = async (data: any) => {
 
     //TODO: if in locked , open key board to unlock phone
     const callInfo = CallService.getCallInfo(callUUID);
+    console.log(`[callInfo]: `, callInfo);
     if (callInfo) {
       CallService.clearCallInfo(callUUID);
       appStore.dispatch(callActions.call({

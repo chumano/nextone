@@ -51,7 +51,7 @@ const NewsUpdateForm = () => {
       return false;
     },
     onChange: info => {
-      console.log("fileList", info.fileList);
+      //console.log("fileList", info.fileList);
       //upload file
       if (info.fileList.length > 0) {
         setFileList([])
@@ -64,7 +64,7 @@ const NewsUpdateForm = () => {
     setIsUploading(true);
     setUploadProgress(0);
     const uploadResponse = await fileApi.uploadFiles([file], (progressEvent) => {
-      console.log('upload_file', progressEvent.loaded, progressEvent)
+      //console.log('upload_file', progressEvent.loaded, progressEvent)
       const progress = Math.round((100 * progressEvent.loaded) / progressEvent.total);
       setUploadProgress(progress);
 
@@ -95,7 +95,7 @@ const NewsUpdateForm = () => {
   }
 
   const onFormFinish = async (values: any) => {
-    console.log('onFormFinish', values);
+    //console.log('onFormFinish', values);
     const imgUrl = uploadedFiles.length > 0 ? uploadedFiles[0].fileUrl : (news?.imageUrl || '')
     const data: UpdateNewsDTO = {
       title: values['title'],

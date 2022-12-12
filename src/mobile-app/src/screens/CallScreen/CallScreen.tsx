@@ -139,7 +139,6 @@ const useCall = (callInfo?: CallMessageData)=>{
   // Video Scrs
   const [localStream, setLocalStream] = useState<MediaStream>();
   const [remoteStream, setRemoteStream] = useState<MediaStream>();
-  const [webcamStarted, setWebcamStarted] = useState(false);
   const peerConnectionRef = useRef<RTCPeerConnection>();
   const timeoutWaitRef = useRef<any>();
 
@@ -381,13 +380,13 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'icecandidateerror', (event: any) => {
-          //console.log('peerConnectionRef-icecandidateerror', event)
+          console.log('peerConnectionRef-icecandidateerror', event)
           // You can ignore some candidate errors.
           // Connections can still be made even when errors occur.
         } );
         
         peerConnectionRef.current.addEventListener( 'iceconnectionstatechange', (event: any) => {
-          //console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
+          console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.iceConnectionState ) {
             case 'connected':
@@ -411,7 +410,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'signalingstatechange', (event: any) => {
-          //console.log('peerConnectionRef-signalingstatechange', event)
+          console.log('peerConnectionRef-signalingstatechange', event)
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.signalingState ) {
             case 'closed':
@@ -474,11 +473,9 @@ const useCall = (callInfo?: CallMessageData)=>{
           }
         }
 
-        setWebcamStarted(true);
-
         //console.log('Success setupCall')
       } catch (err) {
-        //console.log('[Error] setupCall', err);
+        console.error('[Error] setupCall', err);
       }
     }
     setupCall();

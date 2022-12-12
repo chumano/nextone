@@ -25,7 +25,7 @@ const registerHub = async ()=>{
     const accessToken = await AuthenticationService.getAccessToken()
     if(!accessToken)  return;
     const hubRegisterResult =await SignalR.invoke('register',accessToken);
-    console.log('hubRegisterResult', hubRegisterResult)
+    //console.log('hubRegisterResult', hubRegisterResult)
 }
 
 
@@ -43,7 +43,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
         singalRSubsription.subscribe();
 
         const chatSubsription = SignalR.subscription('chat', (data)=>{
-            console.log('SignalR-chat', data)
+            //console.log('SignalR-chat', data)
             dispatch(chatActions.receiveChatEvent(data))
         });
         chatSubsription.subscribe();
@@ -59,7 +59,7 @@ const AppContextProvider = (props: IContextProviderProp) => {
         CallService.init();
        
         const callrequestSubscription = CallService.listen(CallEvents.RECEIVE_CALL_REQUEST, 
-            (data: {room:string, userId:string, userName: string, callType: 'voice' | 'video'})=>{
+            async (data: {room:string, userId:string, userName: string, callType: 'voice' | 'video'})=>{
             //show user confirm
             const {room,userName, callType} = data;
             sound.play();
@@ -73,11 +73,13 @@ const AppContextProvider = (props: IContextProviderProp) => {
                         listenTimeoutRef.current = undefined
                     }
                     sound.stop();
+                    
                     dispatch(callActions.receiveCall({
                         conversationId: room,
                         callType : callType
                     }))
-                    await CallService.acceptCallRequest(room,{
+
+                    var rs = await CallService.acceptCallRequest(room,{
                         audio : {
                             enabled:true,
                         },
@@ -87,6 +89,13 @@ const AppContextProvider = (props: IContextProviderProp) => {
                             enabled:false
                         }
                     });
+
+                    if(rs.error){
+                        console.error('CallSession acceptCallRequest',rs);
+                        await CallService.stopCall();
+                        return
+                    }
+
                 },
                 onCancel : async ()=> {
                     if(listenTimeoutRef.current) {

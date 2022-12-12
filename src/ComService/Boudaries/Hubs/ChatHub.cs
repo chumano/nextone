@@ -98,7 +98,8 @@ namespace ComService.Boudaries.Hubs
                                 if(callRoomState.State == CallStateEnum.Requesting)
                                 {
                                     //Mình request khi người khác cũng đang request
-                                    if (Now - callRoomState.RequestDate < TimeSpan.FromSeconds(CALL_TIMEOUT_IN_SECONDS))
+                                    var dif = Now - callRoomState.RequestDate;
+                                    if (dif < TimeSpan.FromSeconds(CALL_TIMEOUT_IN_SECONDS))
                                     {
                                         _logger.LogInformation("CALL_ERROR: Other is requesting :"
                                             + JsonConvert.SerializeObject(callRoomState));
@@ -128,7 +129,8 @@ namespace ComService.Boudaries.Hubs
                                 room = conversationId,
                                 userId = client.UserId,
                                 userName = client.UserName,
-                                callType = callType
+                                callType = callType,
+                                requestDate = Now.ToString(),
                             });
 
                             //TODO: ChatHub tạo message yêu cầu cuộc gọi
@@ -156,7 +158,8 @@ namespace ComService.Boudaries.Hubs
                                             ConversationId = conversationId,
                                             UserSenderId = client.UserId,
                                             UserReceiverId = member.UserId,
-                                            CallType = callType
+                                            CallType = callType,
+                                            RequestDate = Now
                                         });
                                     }
                                 }
@@ -192,9 +195,9 @@ namespace ComService.Boudaries.Hubs
 
                                 if (callRoomState.State == CallStateEnum.Requesting)
                                 {
-                                    if (Now - callRoomState.RequestDate < TimeSpan.FromSeconds(CALL_TIMEOUT_IN_SECONDS))
+                                    var dif = Now - callRoomState.RequestDate;
+                                    if (dif >= TimeSpan.FromSeconds(CALL_TIMEOUT_IN_SECONDS))
                                     {
-
                                         _logger.LogInformation("CALL_ERROR: Call is timeout :"
                                             + JsonConvert.SerializeObject(callRoomState));
                                         //Không cho gọi nữa

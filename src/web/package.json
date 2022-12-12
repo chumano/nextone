@@ -25,6 +25,7 @@
     "react-chat-elements": "^10.16.0",
     "react-dom": "^17.0.2",
     "react-hook-form": "^7.17.2",
+    "react-infinite-scroll-component": "^6.1.0",
     "react-json-view": "^1.21.3",
     "react-leaflet": "^3.2.2",
     "react-loadable": "^5.5.0",

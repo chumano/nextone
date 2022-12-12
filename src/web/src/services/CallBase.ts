@@ -71,7 +71,7 @@ export abstract class CallBase {
     }
 
     protected initConnection = async (mediaConstraints?: MediaConstraints) => {
-        console.log("init connection...");
+        //console.log("init connection...");
         this.mediaConstraints = mediaConstraints || {};
         const constraints: MediaStreamConstraints = {
             audio: false,
@@ -113,11 +113,11 @@ export abstract class CallBase {
         const mediaStream = await this.deviceManager.getMediaStream(constraints);
 
         if (mediaStream) {
-            console.log("get-stream", mediaStream);
+            //console.log("get-stream", mediaStream);
             this.addLocalStream(mediaStream);
 
         } else {
-            console.log("get-stream-error");
+            console.error("get-stream-error");
             this.localStream = undefined;
             //check user want to continue
         }
@@ -126,12 +126,12 @@ export abstract class CallBase {
             this.createPeerConnection();
 
         } catch (e: any) {
-            console.log('Failed to create PeerConnection.', e.message);
+            console.error('Failed to create PeerConnection.', e.message);
             return;
         }
 
         if (!this.peerConnection || !this.localStream) {
-            console.log('Failed to create PeerConnection and LocalStream.');
+            console.error('Failed to create PeerConnection and LocalStream.');
             return;
         }
 
@@ -148,7 +148,7 @@ export abstract class CallBase {
     }
 
     protected createPeerConnection = (): void => {
-        console.log('Creating peer connection.');
+        //console.log('Creating peer connection.');
         if (useWebrtcUtils) {
             this.peerConnection = WebrtcUtils.createPeerConnection(this.iceServers,
                 'unified-plan', 'balanced', 'all', 'require',
@@ -165,7 +165,7 @@ export abstract class CallBase {
         }
 
         this.peerConnection.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-            console.log('peerConnection.onicecandidate', event);
+            //console.log('peerConnection.onicecandidate', event);
             if (event.candidate) {
                 this.sendIceCandidate(event);
             } else {
@@ -174,14 +174,14 @@ export abstract class CallBase {
         };
 
         this.peerConnection.ontrack = (event: RTCTrackEvent) => {
-            console.log('peerConnection.ontrack', event);
+            //console.log('peerConnection.ontrack', event);
             if (event.streams[0]) {
                 this.addRemoteStream(event.streams[0]);
             }
         };
 
         this.peerConnection.onicecandidateerror = (event: Event) => {
-            console.log('peerConnection.onicecandidateerror', event)
+            console.error('peerConnection.onicecandidateerror', event)
         }
         this.peerConnection.oniceconnectionstatechange = () => {
             console.log('peerConnection.oniceconnectionstatechange', this.peerConnection?.iceConnectionState)
@@ -194,8 +194,7 @@ export abstract class CallBase {
                 if (useWebrtcUtils) {
                     WebrtcUtils.doIceRestart(this.peerConnection, async (sdp) => {
                         this.peerConnection!.setLocalDescription(sdp);
-                        await this.signaling.invoke(
-                            CallSignalingActions.SEND_SESSION_DESCRIPTION,
+                        await this.signaling.invoke(CallSignalingActions.SEND_SESSION_DESCRIPTION,
                             {
                                 room: this.room,
                                 sdp
@@ -222,7 +221,7 @@ export abstract class CallBase {
     }
 
     protected sendIceCandidate(event: RTCPeerConnectionIceEvent): void {
-        console.log('Sending ice candidate to remote peer.');
+        //console.log('Sending ice candidate to remote peer.');
         this.signaling.invoke(CallSignalingActions.SEND_ICE_CANDIDATE, {
             room: this.room,
             iceCandidate: {
@@ -235,9 +234,9 @@ export abstract class CallBase {
     }
 
     public addIceCandidate(data: { candidate: string, label: number,id:string }): void {
-        console.log('Adding ice candidate.', data);
+       // console.log('Adding ice candidate.', data);
         if (!data.candidate) {
-            console.log('data.candidate is null');
+            //console.log('data.candidate is null');
             return;
         }
         const candidate = new RTCIceCandidate({
@@ -249,7 +248,7 @@ export abstract class CallBase {
     }
 
     protected addTransceivers(): void {
-        console.log('Adding transceivers.');
+        //console.log('Adding transceivers.');
         const init = { direction: 'recvonly', streams: [], sendEncodings: [] } as RTCRtpTransceiverInit;
         this.peerConnection!.addTransceiver('audio', init);
         this.peerConnection!.addTransceiver('video', init);
@@ -260,7 +259,7 @@ export abstract class CallBase {
     }
 
     public hangup(isSender: boolean) {
-        console.log(`hangup from ${isSender?'sender':'receiver'}`);
+        //console.log(`hangup from ${isSender?'sender':'receiver'}`);
 
         //clear something
         if (this.peerConnection) {
