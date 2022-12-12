@@ -52,21 +52,21 @@ const UserList: FC<IProps> = ({ filter }) => {
 	const [isOpenDeleteUserModal, setIsOpenDeleteUserModal] = useState(false);
 	const [isGrantedRoleUserModal, setIsGrantedRoleUserModal] = useState(false);
 
-	const onChangePageHandler = (currentPage: number) => {
+	const onChangePageHandler = (currentPage: number, pageSize: number) => {
 		dispatch({
 			type: UserActionType.SET_OFFSET_USER_PAGE,
 			payload: (currentPage - 1) * state.pageSize,
 		});
 	};
 
-	const getListUserAsync = useCallback(async () => {
+	const getListUserAsync = async () => {
 		const { offset, pageSize } = state;
 		const {textSearch} = filter;
 		try {
 			const { data: listUserData } = await userApi.list(textSearch, {
 				offset,
 				pageSize,
-			});
+			}, false,'Date');
 			const { data: countUser } = await userApi.count(textSearch);
 
 			if (listUserData.isSuccess) {
@@ -93,7 +93,7 @@ const UserList: FC<IProps> = ({ filter }) => {
 		} catch (error) {
 			message.error("Lỗi hệ thống, xin vui lòng kiểm tra lại");
 		}
-	},[filter]);
+	};
 
 	useEffect(() => {
 		const { offset, pageSize } = state;
@@ -191,10 +191,12 @@ const UserList: FC<IProps> = ({ filter }) => {
 					bordered
 					rowKey="id"
 					pagination={{
+						showSizeChanger: false,
 						total: countUser,
 						pageSize: state.pageSize,
 						onChange: onChangePageHandler,
 					}}
+					
 				>
 					<Table.Column
 						title="#"
