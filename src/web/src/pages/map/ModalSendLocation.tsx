@@ -10,7 +10,7 @@ import { AppWindow } from '../../config/AppWindow';
 import { ApiResult } from '../../models/apis/ApiResult.model';
 import { Conversation } from '../../models/conversation/Conversation.model';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
-import { SearchResult, SendMessage2UsersDTO, SendMessageDTO } from '../../models/dtos';
+import { SearchResult, SendMessage2ConversationsDTO, SendMessage2UsersDTO, SendMessageDTO } from '../../models/dtos';
 import { User } from '../../models/user/User.model';
 import { handleAxiosApi } from '../../utils/functions';
 declare let window: AppWindow;
@@ -33,7 +33,7 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
     //const [searchType, setSearchType] = useState<'users'|'near'>('users');
 
     const [channelList, setChannelList] = useState<Conversation[]>([]);
-    const [selectedChannelId, setSelectedChannelId] = useState<string>();
+    const [selectedChannelIds, setSelectedChannelIds] = useState<string[]>();
     const [content, setContent] = useState<string>();
 
     const [sending, setSending] = useState(false);
@@ -97,7 +97,7 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
 
     useEffect(()=>{
         if(searchType=='near'){
-            setSelectedChannelId(undefined)
+            setSelectedChannelIds(undefined)
             setSelectedUserIds(undefined);
             setChannelList([])
             findNearUsers(window.ENV.FindUserDistanceInMeters || 5000)
@@ -125,16 +125,16 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
         //send message
         setSending(true)
         try{
-            if(selectedChannelId){
-                const data: SendMessageDTO = {
+            if(selectedChannelIds){
+                const data: SendMessage2ConversationsDTO = {
                     content: content?.trim() || '',
-                    conversationId: selectedChannelId || '',
+                    conversationIds: selectedChannelIds || '',
                    
                     properties: {
                         "LOCATION": position
                     }
                 }
-                const response = await comApi.sendMessage(data);
+                const response = await comApi.sendMessage2Conversations(data);
                 if(!response.isSuccess){
                     message.error(response.errorMessage)
                     return;
@@ -166,7 +166,7 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
 
 
     const onUserSelect = useCallback((userId: string)=>{
-        setSelectedChannelId(undefined);
+        setSelectedChannelIds(undefined);
 
         let userIds = selectedUserIds || []
         if(userIds?.indexOf(userId)==-1){
@@ -177,6 +177,18 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
         setSelectedUserIds([...userIds])
     },[selectedUserIds])
 
+    const onConversationSelect = useCallback((conversationId: string)=>{
+        setSelectedUserIds(undefined);
+
+        let conversationIds = selectedChannelIds || []
+        if(conversationIds.indexOf(conversationId)==-1){
+            conversationIds.push(conversationId)
+        }else{
+            conversationIds = conversationIds.filter(id =>id !== conversationId);
+        }
+        setSelectedChannelIds([...conversationIds])
+    },[selectedChannelIds])
+
     return (
         <Modal
             title={'Gửi thông tin vị trí'}
@@ -184,7 +196,9 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
             visible={true}
             okButtonProps={{
                 disabled: !content?.trim() || 
-                !( (selectedUserIds && selectedUserIds.length>0 ) || selectedChannelId)
+                !( (selectedUserIds && selectedUserIds.length>0 ) 
+                    || (selectedChannelIds && selectedChannelIds.length>0 ) 
+                )
             }}
             onOk={handleOk}
             onCancel={handleCancel}
@@ -275,15 +289,11 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
                 renderItem={(item, index) => (
                     <List.Item className='clickable'
                         onClick={() => {
-                            setSelectedUserIds(undefined);
-                            setSelectedChannelId(item.id)
+                            onConversationSelect(item.id)
                         }}
                         actions={[
-                            <Checkbox checked={selectedChannelId === item.id} onChange={(e) => {
-                                const checked = e.target.value;
-                                setSelectedUserIds(undefined);
-                                setSelectedChannelId(item.id)
-                            }} />
+                            <Checkbox checked={selectedChannelIds && selectedChannelIds.indexOf(item.id)!==-1} 
+                                />
                         ]}
                     >
                         <Skeleton avatar title={false} loading={false} active >
