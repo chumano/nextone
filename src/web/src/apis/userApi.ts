@@ -17,7 +17,8 @@ import { handleAxiosApi } from "../utils/functions";
 const axiosInstance = createAxios(API.MASTER_SERVICE);
 const list = (
 	textSearch: string, searchParams?: PageOptions,
-	excludeMe?: boolean
+	excludeMe?: boolean,
+	orderBy?: string
 ): Promise<AxiosResponse<ApiResult<User[]>>> => {
 	if (!searchParams) searchParams = new PageOptions();
 	return axiosInstance.get(`/user/getlist`, {
@@ -25,7 +26,8 @@ const list = (
 			offset: searchParams.offset,
 			pageSize: searchParams.pageSize,
 			textSearch,
-			excludeMe
+			excludeMe,
+			orderBy
 		},
 	});
 };

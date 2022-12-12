@@ -11,5 +11,7 @@ namespace MasterService.DTOs.User
         public string TextSearch {  get; set; }
         public int Offset { get; set; }
         public int PageSize { get; set; }
+
+        public string OrderBy { get; set; }
     }
 }

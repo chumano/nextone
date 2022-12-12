@@ -77,7 +77,15 @@ namespace MasterService.Controllers
                 query = query.Where(o => o.Name.Contains(getUserListDTO.TextSearch));
             }
 
-            query = query.OrderBy(o => o.Name)
+            if(!string.IsNullOrWhiteSpace(getUserListDTO.OrderBy)  && getUserListDTO.OrderBy.ToLower() == "date")
+            {
+                query = query.OrderByDescending(o => o.CreatedDate);
+            }
+            else
+            {
+                query = query.OrderBy(o => o.Name);
+            }
+            query = query
                   .Skip(pageOptions.Offset)
                   .Take(pageOptions.PageSize);
             var items = await query.ToListAsync();

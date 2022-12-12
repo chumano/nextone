@@ -35,8 +35,11 @@ const ModalAddMember: React.FC<ModalAddMemberProps> = ({ onVisible, conversation
     const [form] = Form.useForm();
 
     const fetchUsers = async (textSearch: string, offset: number) => {
-        const countResponse = await handleAxiosApi<ApiResult<number>>(userApi.count(textSearch, true));
-        const userResponse = await handleAxiosApi<ApiResult<User[]>>(userApi.list(textSearch, { offset: offset, pageSize: 20 }, true));
+        const  excludeMe = true;
+        const orderBy = 'Date';
+        const countResponse = await handleAxiosApi<ApiResult<number>>(userApi.count(textSearch, excludeMe));
+        const userResponse = await handleAxiosApi<ApiResult<User[]>>(userApi.list(textSearch, { offset: offset, pageSize: 20 },
+            excludeMe, orderBy));
         if(countResponse.isSuccess && userResponse.isSuccess){
             return {
                 data: userResponse.data,
