@@ -33,7 +33,7 @@ namespace ComService.HostedServices
         {
             try
             {
-                _logger.LogInformation("CheckValidFCMHostedService running...");
+                _logger.LogInformation("CheckValidFCMHostedService RunTask...");
                 //get 100 old token
                 using var scopeService = _serviceProvider.CreateScope();
 
@@ -90,6 +90,7 @@ namespace ComService.HostedServices
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            _logger.LogInformation("CheckValidFCMHostedService running...");
             Task.Run(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)
