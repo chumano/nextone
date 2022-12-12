@@ -11,8 +11,8 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 {"assets": [{"fileName": "rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "fileSize": 4194527, "height": 3120, "type": "image/jpeg", "uri": "file:///data/user/0/com.ucom/cache/rn_image_picker_lib_temp_41377364-e5c1-4848-9dce-8b2ec3abd921.jpg", "width": 4160}]}
 -------------------------------------------
 TODO: 
-	Call: when app closed
-		- use background-timer and foreservice to get call request
+	ios: firebase:
+		https://github.com/invertase/react-native-firebase/issues/4705
 
 -------------------------------------------
 Web-TODO:
@@ -35,16 +35,9 @@ Web-TODO:
 
 -------------------------------------------
 Mobile-TODO
-- cacth event navigate on map:
-
-	
 - Chat Screen
 	//load messages : when app screen from background 
 
-- Authentication
-	- AuthService
-	- refresh token
-	
 
 =====================================================	
 =====================================================
