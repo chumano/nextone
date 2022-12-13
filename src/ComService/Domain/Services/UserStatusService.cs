@@ -95,6 +95,10 @@ namespace ComService.Domain.Services
             if(userStatus == null)
             {
                 var user = await _masterService.GetUserAsync(userId);
+                if(user == null)
+                {
+                    throw new Exception($"UserId {userId} is not found");
+                }
                 _userStatusRepository.Add(new UserStatus()
                 {
                     UserId = userId,
