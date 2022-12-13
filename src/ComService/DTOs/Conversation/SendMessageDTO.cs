@@ -25,4 +25,14 @@ namespace ComService.DTOs.Conversation
 
         public Dictionary<string, object> Properties { get; set; }
     }
+
+    public class SendMessage2ConversationsDTO
+    {
+        public IList<string> ConversationIds { get; set; }
+        public string Content { get; set; }
+
+        public IList<FileDTO> Files { get; set; }
+
+        public Dictionary<string, object> Properties { get; set; }
+    }
 }
