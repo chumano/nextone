@@ -1,5 +1,5 @@
-import { Button, message, Modal, Tabs } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { Button, Input, message, Modal, Tabs } from 'antd';
+import { DeleteOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { comApi } from '../../apis/comApi';
@@ -72,7 +72,8 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
                     <TabPane tab="Kênh" key="channel">
                         <div className='conversation-info'>
                             <div className='conversation-info__header'>
-                                <h6 style={{ textAlign: 'center' }}>{conversation.name}</h6>
+
+                               <ConversationEditableName  conversation={conversation}/>
 
                                 <div style={{ display: "flex", justifyContent: "center" }}>
                                     {(systemUserRole === 'admin' || userRole === MemberRole.MANAGER) &&
@@ -135,3 +136,33 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
 }
 
 export default ConversationInfo
+
+const ConversationEditableName : React.FC<{conversation: ConversationState}> = ({conversation})=>{
+    const isEditable = conversation.type !==  ConversationType.Peer2Peer;
+    const [isEditing, setIsEditing] = useState<boolean>(false);
+    const [name,setName] = useState<string>(conversation.name)
+
+    const onEdit = async () => {
+        setIsEditing(true)
+    }
+
+    const onSave = async ()=>{
+        setIsEditing(false)
+    }
+    return  <h6 style={{ textAlign: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+     }}>
+        
+        {!isEditing && name}
+        {isEditing && <Input maxLength={50} minLength={5} value={name} onChange={(evt)=>{
+            setName(evt.target.value)
+        }} />}
+
+        {isEditable && !isEditing && <EditOutlined className='clickable' style={{marginLeft: 5}} onClick={onEdit}/>}
+        
+        {isEditing && <SaveOutlined className='clickable' style={{marginLeft: 5}}   onClick={onSave}/>}
+    </h6>
+}

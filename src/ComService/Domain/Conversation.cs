@@ -60,6 +60,11 @@ namespace ComService.Domain
         public DateTime UpdatedDate { get; set; }
         public string UpdatedBy { get; set; }
 
+        public void UpdateName(string name)
+        {
+            this.Name = name;
+            UpdatedDate = DateTime.Now;
+        }
         public void AddMember(ConversationMember member)
         {
             Members.Add(member);

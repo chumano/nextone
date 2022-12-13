@@ -89,6 +89,26 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(conversationId));
         }
 
+        [HttpPost("UpdateName")]
+        public async Task<IActionResult> UpdateConversationName(UpdateConverationNameDTO converationDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var conversation = await _conversationService.Get(converationDTO.ConversationId);
+            if (conversation == null)
+            {
+                throw new DomainException("ConversationNotExists", "Không tồn tại");
+            }
+
+            if(conversation.Type != ConversationTypeEnum.Channel)
+            {
+                throw new DomainException("ConversationNoName", "Không thể đổi tên");
+            }
+
+            await _conversationService.UpdateName(conversation, converationDTO.Name);
+
+            return Ok(ApiResult.Success(null));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
