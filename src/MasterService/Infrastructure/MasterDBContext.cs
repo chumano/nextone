@@ -34,7 +34,7 @@ namespace MasterService.Infrastructure
                 eb.Property(o => o.Id)
                     .HasColumnType("varchar(36)");
                 eb.Property(o => o.Name)
-                    .HasColumnType("varchar(255)")
+                    .HasColumnType("nvarchar(255)")
                     .IsRequired();
                 eb.Property(o => o.Email)
                     .HasColumnType("varchar(255)");
@@ -124,7 +124,7 @@ namespace MasterService.Infrastructure
                 eb.Property(o => o.Code)
                     .HasColumnType("varchar(50)");
                 eb.Property(o => o.Name)
-                   .HasColumnType("varchar(255)")
+                   .HasColumnType("nvarchar(255)")
                    .IsRequired();
 
             });
@@ -140,7 +140,7 @@ namespace MasterService.Infrastructure
                   .HasColumnType("varchar(36)");
 
                 eb.Property(o => o.UserName)
-                   .HasColumnType("varchar(255)")
+                   .HasColumnType("nvarchar(255)")
                    .IsRequired();
 
                 eb.Property(o => o.System)
