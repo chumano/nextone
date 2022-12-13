@@ -39,6 +39,7 @@ const _setupLocationWatch = async (
                 lat: position.coords.latitude,
                 lon: position.coords.longitude
             };
+            console.log(' Geolocation.watchPosition', position)
 
             const latestPositionString = await AsyncStorage.getItem(LOCATION);
 
@@ -49,18 +50,18 @@ const _setupLocationWatch = async (
                     lon: latestPosition.lon
                 };
             }
-           
+            
             await AsyncStorage.setItem(LOCATION, JSON.stringify(newLatLng));
             calback(newLatLng);
         },
         (error) => {
-            //console.log(error)
+            console.error('LocationWatch', error)
         },
         {
             enableHighAccuracy: true,
             interval: 30000,
             fastestInterval: 2000,
-            distanceFilter: 5 //m 
+            distanceFilter: 5 //m
         }
     );
 
