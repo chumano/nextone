@@ -110,7 +110,7 @@ const DeleteUserModal :React.FC<{visible: boolean, hideModal: ()=>void}> = ({vis
     }
 
     const response = await userApi.selfDelete(password.value);
-    console.log("selfDelete ressponse:" , response)
+    //console.log("selfDelete ressponse:" , response)
     if(!response.isSuccess){
       Alert.alert('Có lỗi', response.errorMessage!)
       return;

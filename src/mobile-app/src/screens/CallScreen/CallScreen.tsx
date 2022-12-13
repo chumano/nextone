@@ -380,13 +380,13 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'icecandidateerror', (event: any) => {
-          console.log('peerConnectionRef-icecandidateerror', event)
+          //console.log('peerConnectionRef-icecandidateerror', event)
           // You can ignore some candidate errors.
           // Connections can still be made even when errors occur.
         } );
         
         peerConnectionRef.current.addEventListener( 'iceconnectionstatechange', (event: any) => {
-          console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
+          //console.log('peerConnectionRef-iceconnectionstatechange', { iceConnectionState: peerConnectionRef.current?.iceConnectionState,  event });
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.iceConnectionState ) {
             case 'connected':
@@ -410,7 +410,7 @@ const useCall = (callInfo?: CallMessageData)=>{
         } );
         
         peerConnectionRef.current.addEventListener( 'signalingstatechange', (event: any) => {
-          console.log('peerConnectionRef-signalingstatechange', event)
+          //console.log('peerConnectionRef-signalingstatechange', event)
           if(!peerConnectionRef.current) return;
           switch( peerConnectionRef.current.signalingState ) {
             case 'closed':
@@ -432,7 +432,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               callType
             });
 
-          console.log("send call request - result:", response);
+          //console.log("send call request - result:", response);
           if(response){
             //Session không thể kết nối lúc này: vui lòng thử lại sau
             hangup();
@@ -462,7 +462,7 @@ const useCall = (callInfo?: CallMessageData)=>{
             }
           );
 
-          console.log("send call response - result:", response);
+          //console.log("send call response - result:", response);
           
           if(response){
             //Session không thể kết nối lúc này: vui lòng thử lại sau

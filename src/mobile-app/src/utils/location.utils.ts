@@ -39,7 +39,7 @@ const _setupLocationWatch = async (
                 lat: position.coords.latitude,
                 lon: position.coords.longitude
             };
-            console.log(' Geolocation.watchPosition', position)
+            //console.log(' Geolocation.watchPosition', position)
 
             const latestPositionString = await AsyncStorage.getItem(LOCATION);
 
