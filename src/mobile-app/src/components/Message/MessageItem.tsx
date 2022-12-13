@@ -103,19 +103,22 @@ const MessageItem: React.FC<IProps> = ({
             styles.messageContainer,
             isOwnerMessage && styles.ownerMessageContainer,
           ]}>
-          {userAvatar}
+          <View style={{flexDirection: 'row', marginBottom: 8, alignItems: 'center'}}>
+            {userAvatar}
+
+            {conversationType !== ConversationType.Peer2Peer &&
+              !isOwnerMessage && (
+                <Text style={{opacity: 0.5, marginLeft: 8}}>
+                  {message.userSender.userName}
+                </Text>
+              )}
+          </View>
+
           <View
             style={[
               styles.messageContentContainer,
               isOwnerMessage && styles.ownerMessageContentContainer,
             ]}>
-            {conversationType !== ConversationType.Peer2Peer &&
-              !isOwnerMessage && (
-                <Text style={{opacity: 0.5, marginBottom: 5}}>
-                  {message.userSender.userName}
-                </Text>
-              )}
-
             <View style={styles.messageContentBubble}>
               <View style={{display: 'flex', flexDirection: 'row'}}>
                 {message.type === MessageType.CallMessage && (
