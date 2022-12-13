@@ -78,12 +78,11 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
           </Button>
         </View>
 
-        {Platform.OS ==='ios' &&<View style={{...styles.buttonContainer, width:'auto'}}>
+        <View style={{...styles.buttonContainer, width:'auto'}}>
           <Button mode="outlined" color='red' onPress={deleteUserHanlder}>
             Xóa tài khoản
           </Button>
         </View>
-        }
       </View>
 
       {Platform.OS ==='ios' &&
