@@ -47,7 +47,7 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
   useEffect(() => {
     const requestPermission = async () => {
       if (Platform.OS === 'ios') {
-        Geolocation.requestAuthorization('always');
+        Geolocation.requestAuthorization('whenInUse');
       } else {
         const permissionStatus = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
