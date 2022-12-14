@@ -9,8 +9,6 @@ namespace ComService.DTOs.Conversation
 {
     public class CreateConverationDTO
     {
-        [Required]
-        [MinLength(5)]
         public string Name { get; set; }
 
         [Required]

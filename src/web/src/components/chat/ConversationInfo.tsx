@@ -1,5 +1,5 @@
-import { Button, Input, message, Modal, Tabs } from 'antd';
-import { DeleteOutlined, EditOutlined, SaveOutlined } from '@ant-design/icons';
+import { Button, Input, message, Modal, Tabs, Typography } from 'antd';
+import { DeleteOutlined, EditOutlined, SaveOutlined,CloseOutlined } from '@ant-design/icons';
 import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { comApi } from '../../apis/comApi';
@@ -14,12 +14,15 @@ import { MemberRole } from '../../models/conversation/ConversationMember.model';
 import ConversationSubChannels from './ConversationSubChannels';
 import ModalSubchannelCreation from './ModalSubchannelCreattion';
 import { EventInfo } from '../../models/event/Event.model';
+import { chatActions } from '../../store/chat/chatReducer';
 const { TabPane } = Tabs;
+
+const { Text } = Typography;
 
 interface ConversationInfoProps {
     conversation: ConversationState,
     userRole?: MemberRole,
-    onDeleteEvent?: (item: EventInfo)=> void
+    onDeleteEvent?: (item: EventInfo) => void
 }
 
 const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userRole, onDeleteEvent }) => {
@@ -73,7 +76,7 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
                         <div className='conversation-info'>
                             <div className='conversation-info__header'>
 
-                               <ConversationEditableName  conversation={conversation}/>
+                                <ConversationEditableName conversation={conversation} userRole={userRole} />
 
                                 <div style={{ display: "flex", justifyContent: "center" }}>
                                     {(systemUserRole === 'admin' || userRole === MemberRole.MANAGER) &&
@@ -101,8 +104,8 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
                                 <>
                                     <div className='conversation-info__subchannels'>
                                         <div className='' style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                                            <Button onClick={() => { 
-                                                 setModalSubchannelCreattionVisible(true)
+                                            <Button onClick={() => {
+                                                setModalSubchannelCreattionVisible(true)
                                             }} >Tạo kênh con</Button>
                                         </div>
 
@@ -116,12 +119,12 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
                 }
                 {conversation.type == ConversationType.Channel &&
                     <TabPane tab="Sự kiện" key="events">
-                        <ChannelEvents channel={channel} userRole={userRole}/>
+                        <ChannelEvents channel={channel} userRole={userRole} />
                     </TabPane>
                 }
 
                 <TabPane tab="Thành viên" key="members">
-                    <ConversationMembers conversation={conversation} userRole={userRole}/>
+                    <ConversationMembers conversation={conversation} userRole={userRole} />
                 </TabPane>
             </Tabs>
 
@@ -137,32 +140,108 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
 
 export default ConversationInfo
 
-const ConversationEditableName : React.FC<{conversation: ConversationState}> = ({conversation})=>{
-    const isEditable = conversation.type !==  ConversationType.Peer2Peer;
+const ConversationEditableName: React.FC<{
+    conversation: ConversationState,
+    userRole?: MemberRole
+}> = ({ conversation, userRole }) => {
+    const dispatch = useDispatch();
+    const isEditable = conversation.type !== ConversationType.Peer2Peer && userRole === MemberRole.MANAGER;
     const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [name,setName] = useState<string>(conversation.name)
+    const [name, setName] = useState<string>(conversation.name)
 
-    const onEdit = async () => {
-        setIsEditing(true)
+    const onEdit =  () => {
+        setIsEditing(true);
+    }
+    const onCloseEditing = ()=>{
+        setIsEditing(false);
     }
 
-    const onSave = async ()=>{
-        setIsEditing(false)
+    const onSaved = async (name: string) => {
+        setIsEditing(false);
+        setName(name);
+        dispatch(chatActions.updateConversationName({ id: conversation.id, name }))
     }
-    return  <h6 style={{ textAlign: 'center',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-     }}>
-        
-        {!isEditing && name}
-        {isEditing && <Input maxLength={50} minLength={5} value={name} onChange={(evt)=>{
-            setName(evt.target.value)
-        }} />}
+    const MAX_LENGTH = 25;
+    const displayName = name.length >= MAX_LENGTH?  name.substring(0,MAX_LENGTH-3)+'...' : name;
+    return <>
+        {!isEditing && <h6 style={{
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center'
+        }} >
+            <span title={name}>{displayName}</span>
+            {isEditable && <EditOutlined title='Thay đổi tên' className='clickable' style={{ marginLeft: 5 }} onClick={onEdit} />}
+        </h6>}
+        {isEditing && <EditingName conversationId={conversation.id}
+            name={name}
+            onSaved={onSaved}
+            onClose={onCloseEditing} />}
+    </>
 
-        {isEditable && !isEditing && <EditOutlined className='clickable' style={{marginLeft: 5}} onClick={onEdit}/>}
-        
-        {isEditing && <SaveOutlined className='clickable' style={{marginLeft: 5}}   onClick={onSave}/>}
-    </h6>
+}
+
+const EditingName: React.FC<{
+    conversationId: string,
+    name: string,
+    onSaved?: (name: string) => void,
+    onClose?: ()=>void
+}> = ({ conversationId, name, onSaved, onClose }) => {
+    const [cname, setName] = useState<string>(name)
+    const [error, setError] = useState<string>()
+
+    const validate = () => {
+        let isValid = true;
+        let error = '';
+        if (!cname) {
+            setError('Thông tin bắt buộc')
+            return false;
+        }
+
+        if (cname.length < 5) {
+            setError('Số kí tự tối thiểu là 5')
+            return false;
+        }
+
+        if (cname.length > 50) {
+            setError('Số kí tự tối đa là 50')
+            return false;
+        }
+        setError(error)
+        return isValid
+    }
+    const onSave = async () => {
+
+        if (!validate()) {
+            return;
+        }
+        try{
+            const response = await comApi.updateName(conversationId, cname)
+            if(!response.isSuccess){
+                message.error("Có lỗi bất thường: " + response.errorMessage);
+                return;
+            }
+            onSaved && onSaved(cname)
+        }catch(err){
+            message.error("Có lỗi hệ thống");
+        }
+       
+    }
+    return <>
+        <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginBottom: 5
+        }}>
+            <Input value={cname} maxLength={50} allowClear  onChange={(evt) => {
+                setName(evt.target.value)
+            }} />
+            <SaveOutlined title='Lưu' className='clickable' style={{ marginLeft: 5, fontSize:20 }} onClick={onSave} />
+            <CloseOutlined title='Hủy' className='clickable' style={{ marginLeft: 5, fontSize:20 }} onClick={onClose}/>
+
+        </div>
+        {error && <Text type="danger">{error}</Text>}
+    </>
 }

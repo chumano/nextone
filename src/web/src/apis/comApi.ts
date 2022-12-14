@@ -35,6 +35,15 @@ export const comApi = {
     },
 
     //conversation or channel
+    updateName: async (id:string, name: string)=>{
+        const responsePromise = comAxiosInstance.post(`/conversation/UpdateName`,
+        {
+            conversationId: id,
+            name: name
+        });
+        return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+    },
+
     getConversation : async (id: string)=>{
         const responsePromise = comAxiosInstance.get(`/conversation/${id}`)
         return await handleAxiosApi<ApiResult<Conversation>>(responsePromise);

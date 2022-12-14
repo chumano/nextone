@@ -66,6 +66,10 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var conversation = await _conversationService.Get(id);
+            if (conversation == null)
+            {
+                throw new DomainException("ConversationNotExists", "Không tồn tại");
+            }
             if (conversation.Type == ConversationTypeEnum.Channel)
             {
                 var channel = await _channelService.Get(id);
