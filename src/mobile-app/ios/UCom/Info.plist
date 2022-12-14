@@ -36,17 +36,17 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Camera permission description</string>
+	<string>This app required access to your camera to call with people.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app required access to your location</string>
+	<string>This app required access to your location to send latlng with people who can help you with your incident.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app required access to your location</string>
+	<string>This app required access to your location to send latlng with people who can help you with your incident.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app required access to your location</string>
+	<string>This app required access to your location to send latlng with people who can help you with your incident.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Give $(PRODUCT_NAME) permission to use your microphone. Your record wont be shared without your permission.</string>
+	<string>This app required access to your microphone to start the record message and call video with people.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>This app required access to your photo</string>
+	<string>This app required access to photo to share image message with people.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

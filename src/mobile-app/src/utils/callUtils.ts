@@ -118,7 +118,7 @@ export const answerCall = async (data: any) => {
 
     //TODO: if in locked , open key board to unlock phone
     const callInfo = CallService.getCallInfo(callUUID);
-    console.log(`[callInfo]: `, callInfo);
+    //console.log(`[callInfo]: `, callInfo);
     if (callInfo) {
       CallService.clearCallInfo(callUUID);
       appStore.dispatch(callActions.call({

@@ -1,6 +1,7 @@
 using ComService.Boudaries.Hubs;
 using ComService.Domain.Repositories;
 using ComService.Domain.Services;
+using ComService.HostedServices;
 using ComService.Infrastructure;
 using ComService.Infrastructure.AppSettings;
 using MediatR;
@@ -165,6 +166,11 @@ namespace ComService
 
             var fireBaseOptions = new FireBaseOptions();
             Configuration.GetSection("FireBaseOptions").Bind(fireBaseOptions);
+
+            if (fireBaseOptions.Enabled)
+            {
+                services.AddHostedService<CheckValidFCMHostedService>();
+            }
         }
 
         private static HttpClientHandler GetHttpHandler()

@@ -75,7 +75,7 @@ const RootApp = () => {
       }
 
       const { token, oldToken, hasNewToken } = await getFCMToken();
-      console.log('FCMToken: ', token)
+      //console.log('FCMToken: ', token)
       if (!token ) {
         return;
       }
@@ -152,19 +152,25 @@ const RootApp = () => {
   //update location heart beat
   useEffect(() => {
     setupLocationWatch(newLatLng => {
-      //console.log('setupLocationWatch', newLatLng);
+      //console.log(new Date()+' setupLocationWatch', newLatLng);
     });
     startSendHeartBeat(async () => {
-      const locationString = await AsyncStorage.getItem(LOCATION);
-      //console.log('startSendHeartBeat', { locationString });
-      if (locationString) {
-        const location: { lat: number; lon: number } = JSON.parse(locationString);
-        conversationApi.updateMyStatus({
-          lat: location.lat,
-          lon: location.lon,
-        });
-      } else {
-        conversationApi.updateMyStatus({});
+      try{
+        const locationString = await AsyncStorage.getItem(LOCATION);
+        //console.log( new Date()+' startSendHeartBeat', { locationString });
+        if (locationString) {
+          const location: { lat: number; lon: number } = JSON.parse(locationString);
+          if(location?.lat && location?.lon){
+            conversationApi.updateMyStatus({
+              lat: location.lat,
+              lon: location.lon,
+            });
+          }
+        } else {
+          conversationApi.updateMyStatus({});
+        }
+      }catch(err){
+        console.error('startSendHeartBeat', err);
       }
     });
     return () => {

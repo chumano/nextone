@@ -16,7 +16,7 @@ namespace MasterService.Migrations
                 columns: table => new
                 {
                     Code = table.Column<string>(type: "varchar(50)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(255)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,7 +29,7 @@ namespace MasterService.Migrations
                 columns: table => new
                 {
                     Code = table.Column<string>(type: "varchar(20)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(255)", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(255)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -42,7 +42,7 @@ namespace MasterService.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "varchar(36)", nullable: false),
-                    Name = table.Column<string>(type: "varchar(255)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     Email = table.Column<string>(type: "varchar(255)", nullable: true),
                     Phone = table.Column<string>(type: "varchar(20)", nullable: true),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
@@ -64,7 +64,7 @@ namespace MasterService.Migrations
                 {
                     UserId = table.Column<string>(type: "varchar(36)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
-                    UserName = table.Column<string>(type: "varchar(255)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(255)", nullable: false),
                     System = table.Column<string>(type: "varchar(255)", nullable: false),
                     Action = table.Column<string>(type: "varchar(255)", nullable: false),
                     Data = table.Column<string>(type: "nvarchar(max)", nullable: false)

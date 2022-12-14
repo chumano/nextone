@@ -46,7 +46,14 @@ export const chatSlice = createSlice({
                 state.modalDatas[modal] = undefined;
             }
         },
-        //conversation
+        //conversation,
+        updateConversationName: (state, action: PayloadAction<{id: string, name:string}>)=>{
+            const { id, name } = action.payload;
+            const conversation = state.allConversations.find(o => o.id === id);
+            if (!conversation) return;
+            conversation.name = name;
+            conversationUpdated(state, conversation);
+        },
         addConversationOrChannel : (state, action : PayloadAction<Conversation>)=>{
             const conversation = action.payload;
             if (!state.allConversations.find(o => o.id === conversation.id)) {

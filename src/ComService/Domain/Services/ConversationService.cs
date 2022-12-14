@@ -17,6 +17,8 @@ namespace ComService.Domain.Services
         Task<IEnumerable<Conversation>> GetConversationsByUser(UserStatus user, PageOptions pageOptions, bool isExcludeChannel);
         Task<Conversation> Get(string id);
         Task<string> Create(UserStatus createdUser, string name, ConversationTypeEnum type, IList<string> memberIds);
+
+        Task UpdateName(Conversation conversation, string name);
         Task Delete(Conversation conversation);
 
         //message
@@ -114,6 +116,11 @@ namespace ComService.Domain.Services
             return conversation.Id;
         }
 
+        public async Task UpdateName(Conversation conversation, string name)
+        {
+            conversation.UpdateName(name);
+            await _conversationRepository.SaveChangesAsync();
+        }
         public Task<Conversation> Get(string id)
         {
             return _conversationRepository.Get(id);

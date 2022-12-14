@@ -66,6 +66,10 @@ namespace ComService.Boudaries.Controllers
         public async Task<IActionResult> Get(string id)
         {
             var conversation = await _conversationService.Get(id);
+            if (conversation == null)
+            {
+                throw new DomainException("ConversationNotExists", "Không tồn tại");
+            }
             if (conversation.Type == ConversationTypeEnum.Channel)
             {
                 var channel = await _channelService.Get(id);
@@ -87,6 +91,26 @@ namespace ComService.Boudaries.Controllers
                 createConverationDTO.MemberIds);
 
             return Ok(ApiResult.Success(conversationId));
+        }
+
+        [HttpPost("UpdateName")]
+        public async Task<IActionResult> UpdateConversationName(UpdateConverationNameDTO converationDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var conversation = await _conversationService.Get(converationDTO.ConversationId);
+            if (conversation == null)
+            {
+                throw new DomainException("ConversationNotExists", "Không tồn tại");
+            }
+
+            if(conversation.Type != ConversationTypeEnum.Channel)
+            {
+                throw new DomainException("ConversationNoName", "Không thể đổi tên");
+            }
+
+            await _conversationService.UpdateName(conversation, converationDTO.Name);
+
+            return Ok(ApiResult.Success(null));
         }
 
         [HttpDelete("{id}")]
@@ -253,7 +277,51 @@ namespace ComService.Boudaries.Controllers
             }
         }
 
-      
+        [HttpPost("SendMessage2Conversations")]
+        public async Task<IActionResult> SendMessage2Conversations([FromBody] SendMessage2ConversationsDTO sendMessageDTO)
+        {
+            try
+            {
+                _logger.LogInformation($"SendMessage2Conversations : {JsonConvert.SerializeObject(sendMessageDTO)}");
+                var conversationIds = sendMessageDTO.ConversationIds;
+                if (conversationIds == null || conversationIds.Count == 0)
+                {
+                    throw new Exception("SendMessage2Conversations ConversationIds is invalid");
+                }
+
+                if (string.IsNullOrWhiteSpace(sendMessageDTO.Content)
+                   && (sendMessageDTO.Files == null || sendMessageDTO.Files.Count == 0))
+                {
+                    throw new Exception("SendMessage2Conversations parameters is invalid");
+                }
+
+                var messageDtos = conversationIds.Distinct()
+                    .Select(conversationId => new SendMessageDTO()
+                {
+                    Content = sendMessageDTO.Content,
+                    ConversationId = conversationId,
+                    Files = sendMessageDTO.Files,
+                    Properties = sendMessageDTO.Properties
+                });
+
+                var userId = _userContext.User.UserId;
+                var user = await _userStatusService.GetUser(userId);
+
+
+                IList<Message> messages = new List<Message>();
+                foreach (var msgDto in messageDtos)
+                {
+                    var message = await this.SendInternalMessage(user, msgDto);
+                    messages.Add(message);
+                }
+
+                return Ok(ApiResult.Success(messages));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
+        }
 
         [HttpPost("SendMessage2Users")]
         public async Task<IActionResult> SendMessage2Users([FromBody] SendMessage2UsersDTO sendMessageDTO)
@@ -264,7 +332,7 @@ namespace ComService.Boudaries.Controllers
                 var userIds = sendMessageDTO.UserIds;
                 if (userIds == null || userIds.Count == 0)
                 {
-                    throw new Exception("SendMessage UserIds is invalid");
+                    throw new Exception("SendMessage2Users UserIds is invalid");
                 }
 
                 if (string.IsNullOrWhiteSpace(sendMessageDTO.Content)

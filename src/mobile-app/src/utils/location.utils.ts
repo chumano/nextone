@@ -1,4 +1,3 @@
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Alert,
@@ -8,86 +7,91 @@ import {
   ToastAndroid,
 } from 'react-native';
 import Geolocation from 'react-native-geolocation-service';
-import { getDistanceFromLatLonInM, LatLngType } from './mapUtils';
+import {getDistanceFromLatLonInM, LatLngType} from './mapUtils';
 const LOCATION_WATCH_ID = 'LOCATION_WATCH_ID';
 export const LOCATION = 'LOCATION';
 
 //https://dev-yakuza.posstree.com/en/react-native/react-native-geolocation-service/
 export const setupLocationWatch = (
-    calback: (newLatLng: LatLngType) => void
+  calback: (newLatLng: LatLngType) => void,
 ) => {
-    if (Platform.OS === "android") {
-        requestLocationPermission(() => {
-            _setupLocationWatch(calback);
-        });
-    } else {
+  if (Platform.OS === 'android') {
+    requestLocationPermission(() => {
+      _setupLocationWatch(calback);
+    });
+  } else {
+    Geolocation.requestAuthorization('whenInUse').then(rs => {
+      if (rs === 'granted') {
         _setupLocationWatch(calback);
-    }
+      }
+    });
+  }
 };
 
 const _setupLocationWatch = async (
-    calback: (newLatLng: LatLngType) => void
+  calback: (newLatLng: LatLngType) => void,
 ) => {
-    const locationWatchIdString = await AsyncStorage.getItem(LOCATION_WATCH_ID);
-    if (locationWatchIdString) {
-        Geolocation.clearWatch(parseInt(locationWatchIdString));
-    }
+  const locationWatchIdString = await AsyncStorage.getItem(LOCATION_WATCH_ID);
+  if (locationWatchIdString) {
+    Geolocation.clearWatch(parseInt(locationWatchIdString));
+  }
 
-    const locationWatchId = Geolocation.watchPosition(
-        async position => {
-            const newLatLng: LatLngType = {
-                lat: position.coords.latitude,
-                lon: position.coords.longitude
-            };
 
-            const latestPositionString = await AsyncStorage.getItem(LOCATION);
+  const locationWatchId = Geolocation.watchPosition(
+    async position => {
+      const newLatLng: LatLngType = {
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+      };
+      //console.log(' Geolocation.watchPosition', position)
 
-            if (latestPositionString) {
-                const latestPosition = JSON.parse(latestPositionString);
-                const latestLatLng: LatLngType = {
-                    lat: latestPosition.lon,
-                    lon: latestPosition.lon
-                };
-            }
-           
-            await AsyncStorage.setItem(LOCATION, JSON.stringify(newLatLng));
-            calback(newLatLng);
-        },
-        (error) => {
-            //console.log(error)
-        },
-        {
-            enableHighAccuracy: true,
-            interval: 30000,
-            fastestInterval: 2000,
-            distanceFilter: 5 //m 
-        }
-    );
+      const latestPositionString = await AsyncStorage.getItem(LOCATION);
 
-    await AsyncStorage.setItem(LOCATION_WATCH_ID, locationWatchId.toString());
+      if (latestPositionString) {
+        const latestPosition = JSON.parse(latestPositionString);
+        const latestLatLng: LatLngType = {
+          lat: latestPosition.lon,
+          lon: latestPosition.lon,
+        };
+      }
+
+      await AsyncStorage.setItem(LOCATION, JSON.stringify(newLatLng));
+      calback(newLatLng);
+    },
+    error => {
+      console.error('LocationWatch', error);
+    },
+    {
+      enableHighAccuracy: true,
+      interval: 30000,
+      fastestInterval: 2000,
+      distanceFilter: 5, //m
+    },
+  );
+
+  await AsyncStorage.setItem(LOCATION_WATCH_ID, locationWatchId.toString());
 };
 
-
 export const requestLocationPermission = async (
-    onSuccess: Function,
-    onError?: Function
+  onSuccess: Function,
+  onError?: Function,
 ) => {
-    let granted: any = await PermissionsAndroid.check(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-    );
+  let granted: any = await PermissionsAndroid.check(
+    PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+  );
 
-    if (granted) {
-        onSuccess();
+  if (granted) {
+    onSuccess();
+  } else {
+    granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+    );
+    if (granted == PermissionsAndroid.RESULTS.GRANTED) {
+      onSuccess();
     } else {
-        granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-        );
-        if (granted == PermissionsAndroid.RESULTS.GRANTED) {
-            onSuccess();
-        } else {
-            if (onError) onError();
-        }
+      if (onError) onError();
     }
+  }
 };
 
 const hasLocationPermission = async () => {

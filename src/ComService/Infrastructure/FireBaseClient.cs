@@ -70,6 +70,16 @@ namespace ComService.Infrastructure
             }
         }
 
+
+        public async Task<string> TestMessage(string token)
+        {
+            var message = new Message()
+            {
+                Notification = new Notification() { Title ="Ucom" , Body="Test"},
+                Token = token
+            };
+            return await FirebaseMessaging.DefaultInstance.SendAsync(message, true);
+        }
         public async Task SendMessage(string token, Dictionary<string, string> data)
         {
             var message = new Message()

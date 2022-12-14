@@ -78,12 +78,11 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
           </Button>
         </View>
 
-        {Platform.OS ==='ios' &&<View style={{...styles.buttonContainer, width:'auto'}}>
+        <View style={{...styles.buttonContainer, width:'auto'}}>
           <Button mode="outlined" color='red' onPress={deleteUserHanlder}>
             Xóa tài khoản
           </Button>
         </View>
-        }
       </View>
 
       {Platform.OS ==='ios' &&
@@ -111,7 +110,7 @@ const DeleteUserModal :React.FC<{visible: boolean, hideModal: ()=>void}> = ({vis
     }
 
     const response = await userApi.selfDelete(password.value);
-    console.log("selfDelete ressponse:" , response)
+    //console.log("selfDelete ressponse:" , response)
     if(!response.isSuccess){
       Alert.alert('Có lỗi', response.errorMessage!)
       return;

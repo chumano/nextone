@@ -34,6 +34,8 @@ const ConversationItem: React.FC<ConversationItemProps> =
             setName(name);
         }, [conversation])
 
+        const MAX_LENGTH = 30;
+        const displayName = name &&name.length >= MAX_LENGTH?  name.substring(0,MAX_LENGTH-3)+'...' : name;
         return (
             <div className={classNames({
                 'conversation-item clickable': true,
@@ -50,8 +52,8 @@ const ConversationItem: React.FC<ConversationItemProps> =
                     <ConversationAvatar />
                 }
 
-                <div className='conversation-name'>
-                    {name}
+                <div className='conversation-name' title={name}>
+                    {displayName}
 
                     {conversation.type === ConversationType.Channel && 
                         <>
