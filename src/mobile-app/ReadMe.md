@@ -27,8 +27,7 @@ npx uri-scheme open "ucom://call" --android
 npx uri-scheme open "ucom://call" --ios
 ```
 
-#
-3clean
+# clean when change to local
 ```
 .\gradlew.bat clean
 ```

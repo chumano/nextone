@@ -121,7 +121,12 @@ const InternalMessageItem: React.FC<MessageItemProps> = ({ message, onPlaying, p
 
                 {isDeleted && 
                     <div className='message-content'>
-                        Tin nhắn đã bị xóa
+                        <div>
+                            Tin nhắn đã bị xóa
+                        </div>
+                        <span className='message-time'>
+                            {displayDate}
+                        </span>
                     </div>
                 }
 

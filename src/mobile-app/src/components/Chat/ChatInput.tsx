@@ -263,7 +263,6 @@ export default ChatInput;
 
 const styles = StyleSheet.create({
   chatInputContainer: {
-    paddingBottom: 16,
     backgroundColor: APP_THEME.colors.white,
   },
   chatInputInnerContainer: {

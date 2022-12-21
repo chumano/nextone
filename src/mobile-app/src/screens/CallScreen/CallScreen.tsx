@@ -552,6 +552,7 @@ const useCall = (callInfo?: CallMessageData)=>{
   useEffect(() => {
     const backAction = () => {
       //console.log('hardwareBackPress')
+      //prevent back on callsreen
       return true;
     };
     const backHandler = BackHandler.addEventListener(

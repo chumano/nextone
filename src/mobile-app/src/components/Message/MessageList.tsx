@@ -16,13 +16,17 @@ import { MessageType } from '../../types/Message/MessageType.type';
 import { conversationApi } from '../../apis';
 import { Message } from '../../types/Message/Message.type';
 import { conversationActions } from '../../stores/conversation';
+import { MemberRole } from '../../types/Conversation/ConversationMember.type';
 
 interface IProps {
   conversation: Conversation;
+  userRole?:MemberRole,
+  onSelectMessage?: (message: Message)=>void,
+  selectedMessageId?: string
 }
 
 
-const MessageList: React.FC<IProps> = ({ conversation }) => {
+const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage, selectedMessageId }) => {
   const flatListRef = React.useRef<any>()
 
   const { messagesAllLoaded, messagesLoading } = useSelector(
@@ -76,20 +80,11 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
     setPlayingId(id);
   },[])
 
-  const onDeleteMessage = useCallback((message:Message)=>{
-    return async ()=>{
-        const response = await conversationApi.deleteMessage(conversation.id, message.id);
-        if(!response.isSuccess){
-            Alert.alert("Không thể xóa tin nhắn")
-            return;
-        }
-
-        dispatch(conversationActions.deleteMessage({
-            conversationId: conversation.id, 
-            messageId: message.id
-        }))
+  const onSelectMessageHandle = useCallback((message: Message)=>{
+    return ()=>{
+      onSelectMessage && onSelectMessage(message);
     }
-},[conversation.id])
+  },[onSelectMessage])
 
   return (
     <React.Fragment>
@@ -98,8 +93,13 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
           ref={flatListRef}
           inverted={true}
           renderItem={itemData => 
-            <MessageItem message={itemData.item} conversationType={conversation.type}
-              onPlaying={onItemPlay} playingId={itemData.item.type=== MessageType.AudioFile? playingId:undefined}
+            <MessageItem message={itemData.item} 
+              conversationType={conversation.type}
+              userRole={userRole}
+              onPlaying={onItemPlay} 
+              playingId={itemData.item.type=== MessageType.AudioFile? playingId:undefined}
+              onSelectMessage={onSelectMessageHandle(itemData.item)}
+              isSelected={selectedMessageId === itemData.item.id}
             />
           }
           data={conversation.messages}
