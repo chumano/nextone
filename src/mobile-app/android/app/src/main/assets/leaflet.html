@@ -68,7 +68,7 @@
             }
         }
         visibleDebug();
-        
+
         function logMessage(...message) {
             //console.log(message)
             let textMessage = JSON.stringify(message[0]);
@@ -80,8 +80,11 @@
             if (!debugEnabled) {
                 return;
             }
-            let html = debugMessages.map(o=> '<li>' + o +'</li>').join('')
-            document.getElementById("debug").innerHTML 
+            let html = debugMessages.map(o=> '<li>'
+                 + '['+ (new Date())+']'
+                 + o
+                 +'</li>').join('')
+            document.getElementById("debug").innerHTML
                 = '<ul>' + html + '</ul>';
         }
 
@@ -131,11 +134,11 @@
                 let markerid = markerInfo.type =='user'?
                         'user_'+ markerInfo.user.userId
                         : 'event_'+ markerInfo.event.eventId;
-                if(this.addMarkers[markerid]) return markerid;
+
 
                 let icon  = markerInfo.type =='user'? userIcon: eventIcon;
                 let onViewData = {
-                    object: markerInfo.type, 
+                    object: markerInfo.type,
                     objectId: markerInfo.type =='user'?
                         markerInfo.user.userId
                         :markerInfo.event.eventId
@@ -147,10 +150,17 @@
                     + "<a onclick='onView("+JSON.stringify(onViewData) + ")' > "+ textClick + " </a>"
                     +'</div>'
 
+
+                if(this.mapMarkers[markerid]) {
+                    let existMarker = this.mapMarkers[markerid];
+                    existMarker.setLatLng(markerInfo.position);
+                    existMarker.setPopupContent(popupContent);
+                    return markerid;
+                }
                 const marker = L.marker(markerInfo.position, {icon: icon})
                     .addTo(this.map).bindPopup(popupContent);
 
-                this.addMarkers[markerid] = marker;
+                this.mapMarkers[markerid] = marker;
                 return markerid;
             }
 
@@ -162,7 +172,8 @@
                 }
 
                //remove not use
-               let removeIds = Object.keys(this.mapMarkers).filter(id=> useMarkerIds.indexOf(id) === -1);
+               let removeIds = Object.keys(this.mapMarkers)
+                    .filter(id=> useMarkerIds.indexOf(id) === -1);
                removeIds.forEach(id => {
                     delete this.mapMarkers[id]
                });
@@ -189,7 +200,7 @@
                                 minZoom?: number,
                                 maxZoom?: number,
                             }
-                            
+
                             */
                             if (mapconfig.mapTileUrl && !this.customTileLayer) {
                                 this.customTileLayer = L.tileLayer(mapconfig.mapTileUrl, {tms: true});
@@ -295,7 +306,7 @@
 
             var zoom = L.control.zoom({
                 position: 'topright'
-            });  
+            });
             zoom.addTo(map);
 
             //CHANGE_ME
@@ -320,9 +331,10 @@
         }
 
         initMap();
-        
+
+        //test
         function test(){
-            setTimeout(() => {
+            setInterval(() => {
                 // MapManager.onMessage({
                 //     type: 'ZOOMTO',
                 //     data: [16.5, 107.6]
@@ -335,7 +347,7 @@
                         user : {
                             userId: 'userid',
                             userName: 'User name',
-                            lastUpdate: '2022/06/22',
+                            lastUpdate: (new Date()).toISOString(),
                         },
                     },{
                         position : [16.1, 107.2],
@@ -343,18 +355,23 @@
                         event : {
                             eventId: 'eventid',
                             eventTypeName: 'An ninh',
-                            content: 'Co xung dot',
+                            content: 'Co xung dot:'+ new Date(),
                             occurDate:  '2022/06/22',
                             userSenderName: 'Loc Hoang'
                         },
                     }]
                 })
-            }, 2000)
+            }, 5000)
+           
+        }
+
+        function test1(){
             setTimeout(() => {
                 MapManager.onMessage({
                     type: 'ZOOMTO',
                     data: [16.5, 107.6]
                 })
+
                 setTimeout(() => {
                     MapManager.onMessage({
                         type: 'ZOOMTO',
@@ -363,6 +380,8 @@
                 },3000)
             },1000)
         }
+
+        //test();
     </script>
 </body>
 

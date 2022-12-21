@@ -60,7 +60,7 @@ const ChatBox: React.FC<IProps> = ({conversation}) => {
   },[conversation])
 
   const onSelectMessage = useCallback((message: Message)=>{
-    console.log('onSelectMessage', message)
+    //console.log('onSelectMessage', message)
     setSelectedMessage(message);
   },[])
 
@@ -124,7 +124,7 @@ const ActionToolBar : React.FC<{
   const canDeleteMessage = isOwnerMessage || userRole == MemberRole.MANAGER;
   useEffect(() => {
     const backAction = () => {
-      console.log('hardwareBackPress')
+      //console.log('hardwareBackPress')
       onClearSelectedMessage && onClearSelectedMessage();
       return true;
     };
