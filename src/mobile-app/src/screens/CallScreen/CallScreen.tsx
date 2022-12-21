@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { BackHandler, Image, Keyboard, Platform, SafeAreaView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Text } from 'react-native-paper'
 
@@ -25,18 +25,16 @@ import { CallMessageData } from '../../types/CallMessageData';
 import Loading from '../../components/Loading';
 import signalRService, { SignalRService } from '../../services/SignalRService';
 import { APP_THEME } from '../../constants/app.theme';
-import { ICE_SERVERS } from '../../constants/app.config';
 import { CALL_WAIT_TIME } from '../../utils/callUtils';
+import { GlobalContext } from '../../../AppContext';
 
 //https://blog.logrocket.com/creating-rn-video-calling-app-react-native-webrtc/
 
-const iceServers = { //change the config as you need{
-  iceServers: ICE_SERVERS,
-  iceCandidatePoolSize: 10,
-};
+
 export const CallScreen = () => {
+
   const { callInfo } = useSelector((store: IAppStore) => store.call);
-  
+
   const {
     calling,
     remoteStream,
@@ -129,8 +127,15 @@ export const CallScreen = () => {
 }
 
 const useCall = (callInfo?: CallMessageData)=>{
-  
   const dispatch = useDispatch();
+
+  const globalData = useContext(GlobalContext);
+  const {applicationSettings} = globalData;
+  const iceServers = { 
+    iceServers: applicationSettings!.iceServers,
+    iceCandidatePoolSize: 10,
+  };
+  
   const [isConnected, setConnected] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -449,7 +454,7 @@ const useCall = (callInfo?: CallMessageData)=>{
               hangup();
               dispatch(callActions.stopCall());
             }
-          },CALL_WAIT_TIME)
+          }, applicationSettings!.callTimeOutInSeconds*1000|| CALL_WAIT_TIME)
 
         }
         else {
@@ -484,7 +489,7 @@ const useCall = (callInfo?: CallMessageData)=>{
       if(timeoutWaitRef.current) clearTimeout(timeoutWaitRef.current)
     }
     
-  }, [callInfo, isConnected, setRemoteStream])
+  }, [callInfo, isConnected, applicationSettings])
 
   useEffect(() => {
     setLocalStream((localStream) => {
@@ -575,7 +580,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 0,
     position: 'absolute',
-    top: Platform.OS === 'ios'? 5: 0,
+    top: 0,
     bottom: 0,
     left: 0,
     right: 0
@@ -607,7 +612,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: 80,
-    top: 0,
+    top: Platform.OS === 'ios'? 5: 0,
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',

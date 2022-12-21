@@ -20,13 +20,29 @@ const initialState: ChatState = {
     modalDatas: {}
 }
 
-const conversationUpdated = (state: ChatState, conversation: ConversationState)=>{
-    if(conversation.type === ConversationType.Channel){
-        state.channels = state.channels.filter(o=>o.id !== conversation.id);
-        state.channels.unshift(conversation as ConversationState);
+const conversationUpdated = (state: ChatState, conversation: ConversationState, isReAdd: boolean = true)=>{
+    if(isReAdd){
+        if(conversation.type === ConversationType.Channel){
+            state.channels = state.channels.filter(o=>o.id !== conversation.id);
+            state.channels.unshift(conversation as ConversationState);
+        }else{
+            state.conversations = state.conversations.filter(o=>o.id !== conversation.id);
+            state.conversations.unshift(conversation as ConversationState);
+        }
     }else{
-        state.conversations = state.conversations.filter(o=>o.id !== conversation.id);
-        state.conversations.unshift(conversation as ConversationState);
+        if(conversation.type === ConversationType.Channel){
+            state.channels = state.channels.map(o=>{
+                if(o.id === conversation.id)
+                    return conversation;
+                return o;
+            });
+        }else{
+            state.conversations = state.conversations.map(o=>{
+                if(o.id === conversation.id)
+                    return conversation;
+                return o;
+            });
+        }
     }
 }
 
@@ -139,18 +155,27 @@ export const chatSlice = createSlice({
                     break;
                 case 'user':
                     {
-                        const {userId, isOnline} = data ;
-                        //TODO: update user status of conversation
+                        const {userId, isOnline, userName} = data ;
+                        //update user status of conversation
                         state.allConversations.forEach(conversation=>{
+                            let isUpdate = false;
                             conversation.members = conversation.members.map(o=>{
                                 if(o.userMember.userId === userId){
                                     o.userMember = {
                                         ...o.userMember,
                                         status : isOnline? Status.Online: Status.Offline
                                     }
+                                    isUpdate = true;
                                 }
                                 return o;
                             })
+                            if(conversation.type == ConversationType.Peer2Peer){
+
+                            }
+
+                            if(isUpdate){
+                                conversationUpdated(state, conversation, false);
+                            }
                         })
 
                     }
@@ -182,6 +207,22 @@ export const chatSlice = createSlice({
             conversation.messages = messages.map(o => {
                 if (o.id === existMessageId) {
                     return message
+                }
+                return o;
+            })
+
+            conversationUpdated(state, conversation);
+        },
+
+        deleteMessage: (state, action: PayloadAction<{conversationId:string, messageId: string }>)=>{
+            const { conversationId, messageId } = action.payload;
+            const conversation = state.allConversations.find(o => o.id === conversationId);
+            if (!conversation) return;
+
+            let messages = conversation.messages;
+            conversation.messages = messages.map(o => {
+                if (o.id === messageId) {
+                    o.isDeleted = true;
                 }
                 return o;
             })

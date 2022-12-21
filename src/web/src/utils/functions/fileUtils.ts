@@ -19,7 +19,7 @@ export const getMessageType = (contentType: string) => {
 export const groupFileByType = (files: EventFile[]) => {
     let group: { 'image': EventFile[], 'other': EventFile[] } = { 'image': [], 'other': [] };
     for (const file of files) {
-        if (file.fileType == FileType.Image) {
+        if (file.fileType === FileType.Image) {
             group['image'].push(file);
         } else {
             group['other'].push(file);

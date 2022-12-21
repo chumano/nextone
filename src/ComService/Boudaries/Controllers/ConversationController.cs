@@ -147,6 +147,34 @@ namespace ComService.Boudaries.Controllers
             }
         }
 
+        [HttpDelete("{id}/Message/{messageId}")]
+        public async Task<IActionResult> DeleteMessage(string id, string messageId)
+        {
+            try
+            {
+                var userId = _userContext.User.UserId;
+                var conversation = await _conversationService.Get(id);
+                if (conversation == null)
+                {
+                    throw new DomainException("ConversationNotExists", "Không tồn tại");
+                }
+
+                var message = await _dbContext.Messages.FirstOrDefaultAsync(o => o.ConversationId == id && o.Id == messageId);
+
+                if (message == null)
+                {
+                    throw new DomainException("MessageNotExists", "Tin nhắn không tồn tại");
+                }
+
+                await _conversationService.DeleteMessage(conversation, message, userId);
+                return Ok(ApiResult.Success(null));
+            }
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
+        }
+
         //member 
         [HttpPost("AddMembers")]
         public async Task<IActionResult> AddMembers(AddMembersDTO addMembersDTO)

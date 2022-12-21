@@ -56,6 +56,11 @@ namespace ComService.Domain
         public Event Event { get; private set; } 
 
         public Dictionary<string, object> Properites { get; set; }
+
+        public bool? IsDeleted { get;  set; }
+        public string DeletedByUserId { get; set; }
+        public DateTime? DeletedDate { get; set; }
+
     }
 
     public enum MessageTypeEnum

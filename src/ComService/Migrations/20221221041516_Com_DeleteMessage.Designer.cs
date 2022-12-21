@@ -4,6 +4,7 @@ using ComService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ComService.Migrations
 {
     [DbContext(typeof(ComDbContext))]
-    partial class ComDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221221041516_Com_DeleteMessage")]
+    partial class Com_DeleteMessage
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -220,7 +222,7 @@ namespace ComService.Migrations
                         .HasColumnType("varchar(36)");
 
                     b.Property<string>("DeletedByUserId")
-                        .HasColumnType("nvarchar(36)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("datetime2");

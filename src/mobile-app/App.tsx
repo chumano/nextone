@@ -1,50 +1,45 @@
 import qs from 'qs';
 import jwtDecode from 'jwt-decode';
 
-import React, {useEffect, useState} from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import {Provider as PaperProvider} from 'react-native-paper';
-import {APP_THEME} from './src/constants/app.theme';
-import {Provider as StoreProvider, useDispatch} from 'react-redux';
-import {useSelector} from 'react-redux';
+import { Provider as PaperProvider } from 'react-native-paper';
+import { APP_THEME } from './src/constants/app.theme';
+import { Provider as StoreProvider, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 
-import {NavigationContainer} from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 
-import {AppDispatch, appStore, IAppStore} from './src/stores/app.store';
-import {authActions} from './src/stores/auth';
+import { AppDispatch, appStore, IAppStore } from './src/stores/app.store';
+import { authActions } from './src/stores/auth';
 
-import {CallScreen} from './src/screens/CallScreen/CallScreen';
-
-import {UserTokenInfoResponse} from './src/types/Auth/Auth.type';
-import {JWTDecodeInfo} from './src/types/Auth/JWTDecodeInfo.type';
+import { UserTokenInfoResponse } from './src/types/Auth/Auth.type';
+import { JWTDecodeInfo } from './src/types/Auth/JWTDecodeInfo.type';
 
 import RootApp from './src/RootApp';
 
 import Loading from './src/components/Loading';
 import {
+  Alert,
   AppState,
   DeviceEventEmitter,
   Linking,
   PermissionsAndroid,
   Platform,
 } from 'react-native';
-import {enableScreens} from 'react-native-screens';
+import { enableScreens } from 'react-native-screens';
 import PublicScreen from './src/screens/PublicScreen/PublicScreen';
+import { IGlobalData } from './src/types/AppConfig.type';
+import { conversationApi } from './src/apis';
+import { GlobalContext } from './AppContext';
 
 const AppContainer = () => {
-  const {isUserLogin} = useSelector((store: IAppStore) => store.auth);
+  const { isUserLogin } = useSelector((store: IAppStore) => store.auth);
   const [isLoading, setIsLoading] = useState(false);
+  const [globalData, setGlobalData] = useState<IGlobalData>({});
 
   const dispatch: AppDispatch = useDispatch();
-  useEffect(() => {
-    const getLink = async () => {
-      const initialUrl = await Linking.getInitialURL();
-      //console.log('Linking initialUrl', initialUrl);
-      //console.log('AppState.currentState', AppState.currentState)
-    };
-    getLink();
-  }, []);
 
   useEffect(() => {
     const getUserInfoFromStorage = async () => {
@@ -86,9 +81,23 @@ const AppContainer = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (!isUserLogin) return;
+    const fetchApplicationSettings = async () => {
+      const response = await conversationApi.getAppSettings();
+      if (!response.isSuccess) {
+        Alert.alert("Không thể lấy thông tin hệ thống")
+        return;
+      }
+      setGlobalData({
+        applicationSettings: response.data
+      })
+    }
+    fetchApplicationSettings();
+
+  }, [isUserLogin])
 
   if (isLoading) return <Loading />;
-
 
   const isShowLoginScreen = !isUserLogin;
   const isShowRootAppScreen = isUserLogin;
@@ -97,11 +106,15 @@ const AppContainer = () => {
     <>
       <NavigationContainer>
         {isShowLoginScreen && <PublicScreen />}
-        {isShowRootAppScreen && <RootApp />}
+        {isShowRootAppScreen && 
+          <GlobalContext.Provider value={globalData}>
+             <RootApp />
+          </GlobalContext.Provider>}
       </NavigationContainer>
     </>
   );
 };
+
 
 const App = () => {
   return (
@@ -114,3 +127,15 @@ const App = () => {
 };
 
 export default App;
+
+
+const useDeepLink = () => {
+  useEffect(() => {
+    const getLink = async () => {
+      const initialUrl = await Linking.getInitialURL();
+      //console.log('Linking initialUrl', initialUrl);
+      //console.log('AppState.currentState', AppState.currentState)
+    };
+    getLink();
+  }, []);
+}

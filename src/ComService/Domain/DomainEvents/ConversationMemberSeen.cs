@@ -6,10 +6,12 @@ namespace ComService.Domain.DomainEvents
     {
         public Conversation Conversation { get; private set; }
         public string UserId { get; private  set; }
-        public ConversationMemberSeen(Conversation conversation, string userId)
+        public string UserName { get; private set; }
+        public ConversationMemberSeen(Conversation conversation, string userId, string userName)
         {
             Conversation = conversation;
             UserId = userId;
+            UserName = userName;
         }
     }
 }

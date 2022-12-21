@@ -128,6 +128,8 @@ namespace ComService.Infrastructure
             //Message
             modelBuilder.Entity<Message>(eb =>
             {
+                eb.HasQueryFilter(o => o.IsDeleted == null || o.IsDeleted == false);
+
                 eb.ToTable("T_App_Message", DB_SCHEMA)
                    .HasKey("Id");
 

@@ -149,6 +149,7 @@ namespace ComService
             services.AddSingleton<IBus, LocalMediatRBus>();
             services.AddSingleton<INotificationService, NotificationService>();
 
+            services.Configure<ApplicationOptions>(Configuration.GetSection("Application"));
             services.AddScoped<IConversationRepository, ConversationRepository>();
             services.AddScoped<IChannelRepository, ChannelRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();

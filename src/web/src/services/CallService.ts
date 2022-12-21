@@ -92,15 +92,15 @@ class CallService {
         this.callUnsubcrideFunc = this.signaling.listen(CallSignalingEvents.CALL_MESSAGE,this.callMessageHandler.bind(this));
     }
 
-    public startCall = async (room: string,callType: 'voice' | 'video' ,mediaConstraints?: MediaConstraints) => {
+    public startCall = async (room: string,callType: 'voice' | 'video' ,iceServers: RTCIceServer[],mediaConstraints?: MediaConstraints) => {
         this.listenCallMessage();
         this.isSender = true;
-        return await this.callSender.startCallRequest(room,callType, mediaConstraints);
+        return await this.callSender.startCallRequest(room,callType,iceServers, mediaConstraints);
     }
 
-    public acceptCallRequest = async(room:string, mediaConstraints?: MediaConstraints)=>{
+    public acceptCallRequest = async(room:string,iceServers: RTCIceServer[], mediaConstraints?: MediaConstraints)=>{
         this.listenCallMessage();
-        return this.callReceiver.acceptCall(room, mediaConstraints);
+        return this.callReceiver.acceptCall(room, iceServers, mediaConstraints);
     }
 
     public ignoreCallRequest = async(room:string)=>{

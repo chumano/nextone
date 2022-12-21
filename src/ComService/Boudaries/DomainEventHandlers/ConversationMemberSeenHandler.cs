@@ -27,12 +27,17 @@ namespace ComService.Boudaries.DomainEventHandlers
                 if (user.UserId == userId) continue;
 
                 await _hubContext.Clients.Groups($"user_{user.UserId}").SendAsync("data",
-                    new HubEvent<ChatUserSeenEventData>
+                    new HubEvent<ChatUserSeenEvent>
                     {
                         EventKey = "chat",
-                        EventData = new ChatUserSeenEventData()
+                        EventData = new ChatUserSeenEvent()
                         {
-                            Data = userId
+                            Data = new ChatUserSeenEventData()
+                            {
+                                UserId = userId,
+                                ConversationId = conversation.Id,
+                                UserName = notification.UserName
+                            }
                         }
                     }, cancellationToken);
             }

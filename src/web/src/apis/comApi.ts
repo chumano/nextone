@@ -1,7 +1,7 @@
 import axios from "axios";
 import API from "../config/apis";
 import { ApiResult } from "../models/apis/ApiResult.model";
-import { AppSettings } from "../models/AppSettings";
+import { AppSettings, IApplicationSettings } from "../models/AppSettings";
 import { Channel, SubChannel } from "../models/channel/Channel.model";
 import { Conversation } from "../models/conversation/Conversation.model";
 import { ConversationMember } from "../models/conversation/ConversationMember.model";
@@ -18,6 +18,7 @@ import { handleAxiosApi } from "../utils/functions";
 
 const comAxiosInstance = createAxios(API.COM_SERVICE);
 export const comApi = {
+
     search : async (data: SearchDTO)=>{
         const responsePromise = comAxiosInstance.get('/search', {params: data})
         return await handleAxiosApi<ApiResult<SearchResult>>(responsePromise);
@@ -85,6 +86,11 @@ export const comApi = {
     sendMessage2Conversations : async (data: SendMessage2ConversationsDTO)=>{
         const responsePromise = comAxiosInstance.post(`/conversation/SendMessage2Conversations`, data)
         return await handleAxiosApi<ApiResult<Message[]>>(responsePromise);
+    },
+
+    deleteMessage: async(conversationId: string, messageId:string)=>{
+        const responsePromise = comAxiosInstance.delete(`/conversation/${conversationId}/Message/${messageId}`);
+        return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
     },
     //channel
     createChannel : async (data: CreateChannelDTO)=>{
@@ -193,5 +199,10 @@ export const comApi = {
             value
         })
         return await handleAxiosApi<ApiResult<AppSettings>>(responsePromise);
+    },
+    
+    getAppSettings: async ()=>{
+        const responsePromise = comAxiosInstance.get('/settings/Application')
+        return await handleAxiosApi<ApiResult<IApplicationSettings>>(responsePromise);
     },
 }

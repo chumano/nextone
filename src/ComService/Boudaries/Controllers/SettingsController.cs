@@ -1,10 +1,13 @@
 ﻿using ComService.Domain.Services;
 using ComService.DTOs.Settings;
 using ComService.Infrastructure;
+using ComService.Infrastructure.AppSettings;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NextOne.Infrastructure.Core;
 using NextOne.Shared.Common;
 using NextOne.Shared.Security;
@@ -15,6 +18,7 @@ using System.Threading.Tasks;
 
 namespace ComService.Boudaries.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
     [ApiController]
     public class SettingsController : ControllerBase
@@ -25,8 +29,11 @@ namespace ComService.Boudaries.Controllers
         private readonly IdGenerator _idGenerator;
         private readonly IChannelService _channelService;
         private readonly ComDbContext _comDbContext;
+        private readonly IOptionsMonitor<ApplicationOptions> _optionsApplication;
+
         public SettingsController(
             ILogger<SettingsController> logger,
+            IOptionsMonitor<ApplicationOptions> optionsApplication,
             IUserContext userContext,
             IdGenerator idGenerator,
             IUserStatusService userService,
@@ -34,6 +41,7 @@ namespace ComService.Boudaries.Controllers
             ComDbContext comDbContext)
         {
             _logger = logger;
+            _optionsApplication = optionsApplication;
             _userContext = userContext;
             _idGenerator = idGenerator;
             _userService = userService;
@@ -41,11 +49,17 @@ namespace ComService.Boudaries.Controllers
             _comDbContext = comDbContext;
         }
 
+        [HttpGet("Application")]
+        public async Task<IActionResult> GetApplicationSettings()
+        {
+            return Ok(ApiResult.Success(_optionsApplication.CurrentValue));
+        }
+
         [HttpGet()]
-        public async Task<IActionResult> GetSettings()
+        public async Task<IActionResult> GetSystemSettings()
         {
             var userId = _userContext.User.UserId;
-            var user = await _userService.GetUser(userId);
+            //var user = await _userService.GetUser(userId);
             var items = await _comDbContext.Settings.AsQueryable()
                 .ToListAsync();
             return Ok(ApiResult.Success(items));

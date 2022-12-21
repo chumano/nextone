@@ -9,13 +9,7 @@ export default async (remoteMessage) => {
     //console.log(`AppState.currentState`, AppState.currentState);
     //TODO: request open app if from background
     if (AppState.currentState === "background") {
-        //console.log("backgroundSetup from background222")
-        
         await backgroundSetup();
-
-        // if(AppState.currentState ==='background'){
-        //     RNCallKeep.backToForeground();
-        // }
 
         const message = remoteMessage.data; //CallMessageData
         await displayCallRequest(message);

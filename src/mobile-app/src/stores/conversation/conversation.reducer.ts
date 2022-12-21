@@ -84,7 +84,7 @@ export const conversationSlice = createSlice({
           case 'user':
               {
                   const {userId, isOnline} = data ;
-                  //TODO: update user status of conversation
+                  //update user status of conversation
                   conversations.forEach(conversation=>{
                       conversation.members = conversation.members.map(o=>{
                           if(o.userMember.userId === userId){
@@ -132,7 +132,23 @@ export const conversationSlice = createSlice({
       })
 
       conversationUpdated(state, conversation);
-  }
+    },
+    deleteMessage: (state, action: PayloadAction<{conversationId:string, messageId: string }>)=>{
+      const conversations = state.data || []
+      const { conversationId, messageId } = action.payload;
+      const conversation = conversations.find(o => o.id === conversationId);
+      if (!conversation) return;
+
+      let messages = conversation.messages;
+      conversation.messages = messages.map(o => {
+          if (o.id === messageId) {
+              o.isDeleted = true;
+          }
+          return o;
+      })
+
+      conversationUpdated(state, conversation);
+    },
   },
   extraReducers: builder => {
     

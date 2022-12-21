@@ -33,6 +33,7 @@ namespace ComService.Domain.Services
         Task RemoveMember(Conversation conversation, UserStatus user);
 
         Task UpdateUserSeen(Conversation conversation, string userId);
+        Task DeleteMessage(Conversation conversation, Message message, string userId);
     }
 
     public class ConversationService : IConversationService
@@ -271,12 +272,13 @@ namespace ComService.Domain.Services
         {
             var member = conversation.Members.Find(o => o.UserId == userId);
             if (member == null) return;
+            
 
             member.SeenDate = DateTime.Now;
             await _conversationRepository.SaveChangesAsync();
 
             // TODO: send ConversationMemberSeen
-            await _bus.Publish(new ConversationMemberSeen(conversation, userId));
+            await _bus.Publish(new ConversationMemberSeen(conversation, userId, member.UserMember?.UserName));
         }
 
         //message
@@ -291,6 +293,41 @@ namespace ComService.Domain.Services
 
             //send ConversationMessageAdded
             await _bus.Publish(new ConversationMessageAdded()
+            {
+                Conversation = conversation,
+                Message = message
+            });
+        }
+
+        public async Task DeleteMessage(Conversation conversation, Message message, string userId)
+        {
+            var now = DateTime.Now;
+            var CONSTRAINT_TIME_DELETE_IN_MINUTES = 24 * 60;
+            if (now.Subtract(message.SentDate).TotalSeconds > CONSTRAINT_TIME_DELETE_IN_MINUTES * 60)
+            {
+                throw new DomainException("InvalidDeleteMessage", "Không thể xóa tin nhắn");
+            }
+
+            var userMember = conversation.Members.FirstOrDefault(o => o.UserId == userId);
+            if (userMember == null)
+            {
+                throw new DomainException("NoPermissonDeleteMessage", "Không có quyền xóa tin nhắn");
+            }
+
+            if (message.UserSenderId != userId)
+            {
+                if (conversation.Type == ConversationTypeEnum.Channel && userMember.Role != MemberRoleEnum.MANAGER)
+                {
+                    throw new DomainException("NoPermissonDeleteMessage", "Không có quyền xóa tin nhắn");
+                }
+            }
+            message.IsDeleted = true;
+            message.DeletedByUserId = userId;
+            message.DeletedDate = now;
+
+            _dbContext.Messages.Update(message);
+            await _dbContext.SaveChangesAsync();
+            await _bus.Publish(new ConversationMessageDeleted()
             {
                 Conversation = conversation,
                 Message = message
@@ -331,5 +368,6 @@ namespace ComService.Domain.Services
             return await query.ToListAsync();
         }
 
+      
     }
 }

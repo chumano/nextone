@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, FlatList, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 import { AppDispatch, IAppStore } from '../../stores/app.store';
@@ -13,6 +13,9 @@ import { Conversation } from '../../types/Conversation/Conversation.type';
 import { PageOptions } from '../../types/PageOptions.type';
 import { ActivityIndicator, FAB } from 'react-native-paper';
 import { MessageType } from '../../types/Message/MessageType.type';
+import { conversationApi } from '../../apis';
+import { Message } from '../../types/Message/Message.type';
+import { conversationActions } from '../../stores/conversation';
 
 interface IProps {
   conversation: Conversation;
@@ -72,6 +75,21 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
   const onItemPlay = useCallback((id: string)=>{
     setPlayingId(id);
   },[])
+
+  const onDeleteMessage = useCallback((message:Message)=>{
+    return async ()=>{
+        const response = await conversationApi.deleteMessage(conversation.id, message.id);
+        if(!response.isSuccess){
+            Alert.alert("Không thể xóa tin nhắn")
+            return;
+        }
+
+        dispatch(conversationActions.deleteMessage({
+            conversationId: conversation.id, 
+            messageId: message.id
+        }))
+    }
+},[conversation.id])
 
   return (
     <React.Fragment>

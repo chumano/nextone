@@ -1,6 +1,5 @@
 export interface AppWindow extends Window {
     ENV: {
-        FindUserDistanceInMeters?: number,
         Map: {
             center: [number, number];
             zoom: number;
@@ -20,7 +19,6 @@ export interface AppWindow extends Window {
             mapUrl : string,
             fileUrl : string,
         },
-        IceServers:{ urls: string }[],
         useWebrtcUtils: boolean
     }
 }

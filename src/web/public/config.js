@@ -3,7 +3,6 @@
 var API_URL =  'https://ucom-apis.dientoan.vn';
 var IDENTITY_URL = 'https://ucom-id.dientoan.vn';
 window.ENV = {
-    FindUserDistanceInMeters: 5000,
     Map: {
         center : [16.21, 106.79],
         zoom : 10,
@@ -13,44 +12,32 @@ window.ENV = {
         boundingBox : [ [7.01,95.01],  [23.89,119.92]],//vietnam
         googleApiKey: '',
         baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        //baseMapUrl: 'http://localhost/{z}/{x}/{y}.png',
         mapPage: 'http://localhost:5107',
     },
 
-    IceServers:[
-        {
-            urls: [
-              'stun:stun.l.google.com:19302',
-              'stun:stun1.l.google.com:19302',
-              'stun:stun2.l.google.com:19302',
-            ]
-          },
-        { urls: 'turn:coturn.dientoan.vn:5349', username: 'test', credential: 'test123' },
-        { urls: 'stun:192.168.0.122:5349' },
-        { urls: 'turn:192.168.0.122:5349', username: 'test', credential: 'test123' },
-    ],
+
     useWebrtcUtils: true,
 
     //LOCAL //////////////////////////
-    // Identity: {
-    //     identityUrl : 'https://localhost:5102',
-    // },
-    // Apis:{
-    //     masterUrl : 'http://localhost:5103',
-    //     comUrl : 'http://localhost:5104',
-    //     mapUrl : 'http://localhost:5105',
-    //     fileUrl : 'http://localhost:5106',
-    // },
-
-    //DEMO //////////////////////////
     Identity: {
-        identityUrl : IDENTITY_URL,
+        identityUrl : 'https://localhost:5102',
     },
     Apis:{
-        masterUrl :  API_URL + '/master',
-        comUrl :  API_URL + '/com',
-        mapUrl :  API_URL + '/map',
-        fileUrl :  API_URL + '/file',
+        masterUrl : 'http://localhost:5103',
+        comUrl : 'http://localhost:5104',
+        mapUrl : 'http://localhost:5105',
+        fileUrl : 'http://localhost:5106',
     },
+
+    //DEMO //////////////////////////
+    // Identity: {
+    //     identityUrl : IDENTITY_URL,
+    // },
+    // Apis:{
+    //     masterUrl :  API_URL + '/master',
+    //     comUrl :  API_URL + '/com',
+    //     mapUrl :  API_URL + '/map',
+    //     fileUrl :  API_URL + '/file',
+    // },
 
 }
