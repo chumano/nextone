@@ -91,9 +91,13 @@ const LoginScreen = () => {
           <HelperText type="error">Mật khẩu phải nhập!</HelperText>
         )}
       </View>
-      {authState.error && (
-        <HelperText type="error">{authState.error}</HelperText>
-      )}
+      <View>
+        {!!authState.error && <HelperText type="error">
+            {authState.error}
+          </HelperText>
+        }
+      </View>
+      
       <View style={styles.buttonContainer}>
         <View style={styles.button}>
           <Button

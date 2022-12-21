@@ -63,7 +63,7 @@ export const authSlice = createSlice({
           userId,
         };
         state.status = 'success';
-        state.error = '';
+        state.error = null;
         state.isUserLogin = true;
       },
     );
