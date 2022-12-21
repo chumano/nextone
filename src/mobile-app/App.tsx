@@ -33,6 +33,7 @@ import PublicScreen from './src/screens/PublicScreen/PublicScreen';
 import { IGlobalData } from './src/types/AppConfig.type';
 import { conversationApi } from './src/apis';
 import { GlobalContext } from './AppContext';
+import signalRService from './src/services/SignalRService';
 
 const AppContainer = () => {
   const { isUserLogin } = useSelector((store: IAppStore) => store.auth);
@@ -82,7 +83,10 @@ const AppContainer = () => {
   }, []);
 
   useEffect(() => {
-    if (!isUserLogin) return;
+    if (!isUserLogin) {
+      signalRService.disconnectHub();
+      return;
+    }
     const fetchApplicationSettings = async () => {
       try{
         //console.log('fetchApplicationSettings...')
