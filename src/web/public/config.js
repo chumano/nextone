@@ -13,30 +13,33 @@ window.ENV = {
         googleApiKey: '',
         baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         mapPage: 'http://localhost:5107',
+        mapMonitorRefreshEventsIntervalInSeconds: 60,
+        mapMonitorRefreshUserssIntervalInSeconds: 20
     },
+
 
     useWebrtcUtils: true,
 
     //LOCAL //////////////////////////
-    Identity: {
-        identityUrl : 'https://localhost:5102',
-    },
-    Apis:{
-        masterUrl : 'http://localhost:5103',
-        comUrl : 'http://localhost:5104',
-        mapUrl : 'http://localhost:5105',
-        fileUrl : 'http://localhost:5106',
-    },
-
-    //DEMO //////////////////////////
     // Identity: {
-    //     identityUrl : IDENTITY_URL,
+    //     identityUrl : 'https://localhost:5102',
     // },
     // Apis:{
-    //     masterUrl :  API_URL + '/master',
-    //     comUrl :  API_URL + '/com',
-    //     mapUrl :  API_URL + '/map',
-    //     fileUrl :  API_URL + '/file',
+    //     masterUrl : 'http://localhost:5103',
+    //     comUrl : 'http://localhost:5104',
+    //     mapUrl : 'http://localhost:5105',
+    //     fileUrl : 'http://localhost:5106',
     // },
+
+    //REMOTE //////////////////////////
+    Identity: {
+        identityUrl : IDENTITY_URL,
+    },
+    Apis:{
+        masterUrl :  API_URL + '/master',
+        comUrl :  API_URL + '/com',
+        mapUrl :  API_URL + '/map',
+        fileUrl :  API_URL + '/file',
+    },
 
 }

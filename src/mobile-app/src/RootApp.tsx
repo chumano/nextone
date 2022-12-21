@@ -43,7 +43,7 @@ const RootApp = () => {
     <>
       <BottomTabNavigator />
 
-      {isShowCallScreen && <CallScreen />}
+      {isShowCallScreen && applicationSettings && <CallScreen />}
     </>
   );
 };
@@ -193,7 +193,7 @@ const useLocationWatch = (applicationSettings?: IApplicationSettings) => {
     startSendHeartBeat(intervalInSeconds, async () => {
       try {
         const locationString = await AsyncStorage.getItem(LOCATION);
-        //console.log( new Date()+' startSendHeartBeat', { locationString });
+        console.log( new Date()+` startSendHeartBeat [${intervalInSeconds}]`, { locationString });
         if (locationString) {
           const location: { lat: number; lon: number } = JSON.parse(locationString);
           if (location?.lat && location?.lon) {

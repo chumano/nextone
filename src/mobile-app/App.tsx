@@ -84,14 +84,28 @@ const AppContainer = () => {
   useEffect(() => {
     if (!isUserLogin) return;
     const fetchApplicationSettings = async () => {
-      const response = await conversationApi.getAppSettings();
-      if (!response.isSuccess) {
-        Alert.alert("Không thể lấy thông tin hệ thống")
-        return;
+      try{
+        //console.log('fetchApplicationSettings...')
+        const response = await conversationApi.getAppSettings();
+        if (!response.isSuccess) {
+          Alert.alert("Không thể lấy thông tin hệ thống")
+          return;
+        }
+        if(response.data.iceServers){
+          response.data.iceServers = response.data.iceServers.map(o=>{
+            if(!o.username) delete o.username;
+            if(!o.credential) delete o.credential;
+            return o
+          })
+        }
+        //console.log('fetchApplicationSettings...',  response.data.iceServers)
+        setGlobalData({
+          applicationSettings: response.data
+        })
+      }catch(err){
+        console.error('fetchApplicationSettings', err);
+        Alert.alert('Có lỗi', "Không thể lấy thông tin hệ thống")
       }
-      setGlobalData({
-        applicationSettings: response.data
-      })
     }
     fetchApplicationSettings();
 

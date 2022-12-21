@@ -49,6 +49,14 @@ const AppContextProvider = (props: IContextProviderProp) => {
             if(!response.isSuccess){
                 return;
             }
+            if(response.data.iceServers){
+                response.data.iceServers = response.data.iceServers.map(o=>{
+                    if(!o.username) delete o.username;
+                    if(!o.credential) delete o.credential;
+                    return o
+                })
+            }
+
             setGlobalData({
                 applicationSettings: response.data
             })

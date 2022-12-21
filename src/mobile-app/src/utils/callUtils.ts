@@ -45,8 +45,9 @@ export const backgroundSetup = async()=>{
 var listenTimeoutRef :any ;
 export const displayCallRequest = async (message: CallMessageData, time_to_wait_in_ms?: number)=>{
     //console.log(`AppState.currentState`, AppState.currentState);
-    //console.log('displayCallRequest', message)
     time_to_wait_in_ms = time_to_wait_in_ms || CALL_WAIT_TIME;
+    //console.log(`displayCallRequest ${time_to_wait_in_ms}`, message)
+    
     if (message.type != 'call') {
       console.error('message.type', message.type)
       return;

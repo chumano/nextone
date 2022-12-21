@@ -335,6 +335,7 @@ const useCall = (callInfo?: CallMessageData)=>{
           peerConnectionRef.current = undefined;
         }
 
+        //console.log("create RTCPeerConnection", iceServers)
         peerConnectionRef.current = new RTCPeerConnection(iceServers);
         peerConnectionRef.current.addStream(stream);
 
@@ -425,6 +426,7 @@ const useCall = (callInfo?: CallMessageData)=>{
           };
         } );
 
+       
         const isSender = !callInfo.senderId;
         const {callType, conversationId} = callInfo;
         if (isSender && conversationId) {
