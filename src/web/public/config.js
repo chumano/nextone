@@ -15,7 +15,6 @@ window.ENV = {
         mapPage: 'http://localhost:5107',
     },
 
-
     useWebrtcUtils: true,
 
     //LOCAL //////////////////////////
