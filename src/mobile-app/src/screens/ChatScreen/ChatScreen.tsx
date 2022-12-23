@@ -15,6 +15,7 @@ import {ConversationType} from '../../types/Conversation/ConversationType.type';
 import {UserStatus} from '../../types/User/UserStatus.type';
 import {Conversation} from '../../types/Conversation/Conversation.type';
 import Loading from '../../components/Loading';
+import { ConversationMember } from '../../types/Conversation/ConversationMember.type';
 
 interface ChatParams {
   conversationId: string;
@@ -46,41 +47,45 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
 
     setSelectedConversation(selectedConversation);
 
-    let conversationType: ReactElement<any, any>;
-
+    let conversationTypeIcon: ReactElement<any, any>;
+    let otherUser : UserStatus | undefined = undefined;
     switch (selectedConversation.type) {
       case ConversationType.Peer2Peer: {
-        const otherUser = selectedConversation.members.filter(
+        const otherUserMember = selectedConversation.members.filter(
           m => m.userMember.userId !== userInfo.userId,
         )[0];
-        conversationType =
-          otherUser.userMember.userAvatarUrl !== '' ? (
+
+        otherUser = otherUserMember.userMember;
+        
+        conversationTypeIcon =
+          otherUser.userAvatarUrl !== '' ? (
             <UserAvatar
-              imageUri={otherUser.userMember.userAvatarUrl}
+              imageUri={otherUser.userAvatarUrl}
               size={24}
             />
           ) : (
             <Avatar.Icon icon="account" size={24} />
           );
-        setOtherUser(otherUser.userMember);
+
+        
         break;
       }
       case ConversationType.Channel:
       case ConversationType.Private:
       case ConversationType.Group:
-        conversationType = (
+        conversationTypeIcon = (
           <ConversationAvatar icon="account-group" size={24} />
         );
         break;
     }
-
+    setOtherUser(otherUser);
     if (!otherUser) return;
 
     navigation.setOptions({
       title: `${otherUser.userName}`,
       headerTitle: ({children}) => (
         <View style={styles.headerContainer}>
-          {conversationType}
+          {conversationTypeIcon}
           <View style={styles.userNameContainer}>
             <Text style={styles.userNameText}>{children}</Text>
           </View>

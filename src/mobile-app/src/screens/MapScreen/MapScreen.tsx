@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useRef,
@@ -25,6 +26,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {IAppStore} from '../../stores/app.store';
 import {useSelector} from 'react-redux';
 import { useFocusEffect } from '@react-navigation/native';
+import { GlobalContext } from '../../../AppContext';
 
 const MapScreen = ({navigation, route}: MapStackProps) => {
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
@@ -34,6 +36,10 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
   const [users, setUsers] = useState<UserStatus[]>();
   const [zoomPosition, setZoomPosition] = useState<[number, number]>();
   const [myLocation, setMyLocation] = useState<[number, number]>();
+  
+  const globalData = useContext(GlobalContext);
+  const {applicationSettings} = globalData;
+  
   useLayoutEffect(() => {
     const params: any = route.params;
     if (!params) return;
@@ -92,17 +98,25 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
 
   
   useFocusEffect(useCallback(() => {
-    //console.log("Map screen is focused") 
+    const intervalCall = setInterval(async () => {
+      await fetchEvents();
+    }, 30 * 1000);
+    return () => {
+      clearInterval(intervalCall);
+    };
+  }, [fetchEvents]));
+
+  useFocusEffect(useCallback(() => {
+    //console.log("Map screen is focused",applicationSettings) 
     const intervalCall = setInterval(async () => {
       //console.log('[interval] fectch data');
-      await fetchEvents();
       await fetchUsers();
-    }, 30 * 1000);
+    }, (applicationSettings?.updateLocationHeartbeatInSeconds || 30) * 1000);
     return () => {
       //console.log("Map screen is outfocused") 
       clearInterval(intervalCall);
     };
-  }, [fetchEvents, fetchUsers]));
+  }, [fetchUsers, applicationSettings]));
 
   useEffect(() => {
     if (!myLocation) return;

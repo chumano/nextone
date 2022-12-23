@@ -14,8 +14,10 @@ import { CreateConverationDTO } from '../dto/CreateConverationDTO';
 import { UserStatus } from '../types/User/UserStatus.type';
 import { AppSettings } from '../types/AppSettings';
 import { UpdateUserStatusDTO } from '../dto/UserStatusDTO';
+import { IApplicationSettings } from '../types/AppConfig.type';
 
 const axiosInstance = createAxios(APP_CONFIG.COM_HOST);
+
 
 const getOrCreateConversation = async (data: CreateConverationDTO)=>{
   const responsePromise = axiosInstance.post('/conversation/CreateConversation', data)
@@ -47,6 +49,11 @@ const sendMessage = (
   });
 };
 
+const deleteMessage = async(conversationId: string, messageId:string)=>{
+  const responsePromise = axiosInstance.delete(`/conversation/${conversationId}/Message/${messageId}`);
+  return await handleAxiosApi<ApiResponse<undefined>>(responsePromise);
+};
+
 const getMessagesHistory = (
   data: GetMessagesHistoryDTO,
 ): Promise<AxiosResponse<ApiResponse<Message[]>>> => {
@@ -74,11 +81,18 @@ const getSettings= async ()=>{
   return await handleAxiosApi<ApiResponse<AppSettings[]>>(responsePromise);
 };
 
+const getAppSettings = async ()=>{
+  const responsePromise = axiosInstance.get('/settings/Application')
+  return await handleAxiosApi<ApiResponse<IApplicationSettings>>(responsePromise);
+}
+
 export const conversationApi = {
+  getAppSettings,
   getOrCreateConversation,
   getListConversation,
   getConversation,
   sendMessage,
+  deleteMessage,
   getMessagesHistory,
   getOnlineUsersForMap,
   getSettings,

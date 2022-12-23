@@ -13,6 +13,8 @@ export interface Message {
   content: string;
   files: MessageFile[];
   event?: EventInfo;
+
+  isDeleted?: boolean;
   
   properites?: {
     'LOCATION'?: [number, number];

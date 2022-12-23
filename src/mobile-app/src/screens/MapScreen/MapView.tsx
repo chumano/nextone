@@ -101,7 +101,7 @@ const MapView: React.FC<MapViewProps> =
     useEffect(()=>{
         if (!initialized || !mapConfig) return;
         if(!users && !eventInfos) return;
-        //console.log(" users, eventInfos change................")
+        //console.log("users, eventInfos change................")
         //console.log({users, eventInfos})
         const userList = users?.filter(o=> o.lastLat!=null && o.lastLon!=null).map(o=>{
             return {

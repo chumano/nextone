@@ -58,12 +58,12 @@ const FileView: React.FC<FileViewProps> = ({ file, hiddenName, onView }) => {
         const { fileUrl, fileName, fileType } = file
         let date = new Date();
 
-        let RootDir = fs.dirs.PictureDir;
+        let RootDir = Platform.OS==='android'? fs.dirs.PictureDir: fs.dirs.DocumentDir;
         if (fileType !== FileType.Image) {
             if (fileType === FileType.Video) {
-                RootDir = fs.dirs.MovieDir
+                RootDir = Platform.OS==='android'? fs.dirs.MovieDir: fs.dirs.DocumentDir;
             } else {
-                RootDir = fs.dirs.DocumentDir
+                RootDir = Platform.OS==='android'? fs.dirs.DownloadDir: fs.dirs.DocumentDir
             }
         }
 

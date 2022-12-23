@@ -16,6 +16,8 @@ export interface Message {
 
   event?: EventInfo,
 
+  isDeleted?: boolean,
+
   properites?: {
     'LOCATION'?: [number, number];
     'location'?: [number, number];

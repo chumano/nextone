@@ -3,7 +3,7 @@ import { AppSettings } from "../../models/AppSettings";
 import { parseData } from "./dataUtils";
 
 declare let window: AppWindow;
-const mapPage: string = window.ENV.Map.mapPage;
+//const mapPage: string = window.ENV.Map.mapPage;
 const defaultCenter: [number, number] = window.ENV.Map.center;
 const defaultZoom: number = window.ENV.Map.zoom;
 const defaultMinZoom: number = window.ENV.Map.minZoom;

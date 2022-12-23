@@ -8,7 +8,7 @@ import { AppDispatch, IAppStore, appStore } from '../stores/app.store';
 import { callActions } from '../stores/call/callReducer';
 import signalRService from '../services/SignalRService';
 
-export const CALL_WAIT_TIME = 30000; //milisecods
+export const CALL_WAIT_TIME = 60000; //milisecods
 //https://github.com/react-native-webrtc/react-native-callkeep/pull/576/files
 export const callKeepOptions = {
   ios: {
@@ -43,9 +43,11 @@ export const backgroundSetup = async()=>{
 }
 
 var listenTimeoutRef :any ;
-export const displayCallRequest = async (message: CallMessageData)=>{
+export const displayCallRequest = async (message: CallMessageData, time_to_wait_in_ms?: number)=>{
     //console.log(`AppState.currentState`, AppState.currentState);
-    //console.log('displayCallRequest', message)
+    time_to_wait_in_ms = time_to_wait_in_ms || CALL_WAIT_TIME;
+    //console.log(`displayCallRequest ${time_to_wait_in_ms}`, message)
+    
     if (message.type != 'call') {
       console.error('message.type', message.type)
       return;
@@ -53,7 +55,7 @@ export const displayCallRequest = async (message: CallMessageData)=>{
 
     //check timeout
     if(message.requestDate){
-      const time_to_wait_in_ms = CALL_WAIT_TIME;
+      
       const now = (new Date()).getTime();
       const requestDate = Date.parse(message.requestDate);
       if(!Number.isNaN(requestDate)){
@@ -95,7 +97,7 @@ export const displayCallRequest = async (message: CallMessageData)=>{
         // https://github.com/react-native-webrtc/react-native-callkeep#constants
         RNCallKeep.reportEndCallWithUUID(uuid, 6);
       }
-    }, CALL_WAIT_TIME);
+    }, time_to_wait_in_ms);
   }
 
   

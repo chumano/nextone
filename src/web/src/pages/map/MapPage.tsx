@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react'
 import 'leaflet/dist/leaflet.css';
 import '../../styles/pages/map/map.scss';
 import { MapProvider, useMapDispatch, useMapSelector } from '../../context/map/mapContext';
@@ -9,9 +9,13 @@ import { comApi } from '../../apis/comApi';
 import { mapActions } from '../../context/map/mapStore';
 import { EventInfo } from '../../models/event/Event.model';
 import { Modal } from 'antd';
+import { GlobalContext } from '../../utils/contexts/AppContext';
+import { AppWindow } from '../../config/AppWindow';
+declare let window: AppWindow;
 
 const MapPageInternal: React.FC = () => {
     const dispatch = useMapDispatch();
+    const globalData = useContext(GlobalContext)
     const { selectedEventTypeCodes } = useMapSelector(o => o)
     const fetchEvents = useCallback(async () => {
         if(!selectedEventTypeCodes) return;
@@ -34,7 +38,7 @@ const MapPageInternal: React.FC = () => {
     useEffect(() => {
         fetchEvents();
         fetchUsers();
-    }, [comApi, dispatch, mapActions, selectedEventTypeCodes]);
+    }, [fetchEvents, fetchUsers]);
 
     useEffect(() => {
         return ()=>{
@@ -43,16 +47,26 @@ const MapPageInternal: React.FC = () => {
     },[dispatch, mapActions.clearSelectedObjects]);
     
     useEffect(() => {
+        const interval = window.ENV?.Map?.mapMonitorRefreshEventsIntervalInSeconds  || 60;
         const intervalCall = setInterval(() => {
             fetchEvents();
-            fetchUsers();
-        }, 60 * 1000);
+        }, interval*1000);
         return () => {
           clearInterval(intervalCall);
         };
-      }, []);
+    }, [fetchEvents]);
 
-      const onDeleteEvent = useCallback((item: EventInfo) => {
+    useEffect(() => {
+        const interval = window.ENV?.Map?.mapMonitorRefreshUserssIntervalInSeconds  || 60;
+        const intervalCall = setInterval(() => {
+            fetchUsers();
+        }, interval*1000);
+        return () => {
+          clearInterval(intervalCall);
+        };
+    }, [ fetchUsers]);
+
+    const onDeleteEvent = useCallback((item: EventInfo) => {
         Modal.confirm({
             title: `Bạn có muốn xóa sự kiện không?`,
             onOk: async () => {

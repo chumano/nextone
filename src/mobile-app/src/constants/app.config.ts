@@ -49,17 +49,3 @@ export const OAUTH_REFRESH_TOKEN_CONFIG: OAuthRefreshTokenConfig = {
   grant_type: 'refresh_token',
 };
 
-export const ICE_SERVERS = [
-  //google
-  {
-    urls: [
-      'stun:stun.l.google.com:19302',
-      'stun:stun1.l.google.com:19302',
-      'stun:stun2.l.google.com:19302',
-    ]
-  },
-  //coturn
-  { urls: 'turn:coturn.dientoan.vn:5349', username: 'test', credential: 'test123' },
-  { urls: 'stun:192.168.0.122:5349' },
-  { urls: 'turn:192.168.0.122:5349', username: 'test', credential: 'test123' },
-]

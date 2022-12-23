@@ -8,31 +8,51 @@ namespace ComService.Boudaries.Hubs
         public T EventData { get; set; }
     }
 
-    public abstract class ChatEventData
+    public abstract class ChatEvent
     {
         public string ChatKey { get; protected set; }
     }
-    public class ChatMesageEventData : ChatEventData
+
+    //============================================
+    public class ChatMesageEvent : ChatEvent
     {
-        public ChatMesageEventData()
+        public ChatMesageEvent()
         {
             ChatKey = "message";
         }
         public Message Data { get; set; }
     }
 
-    public class ChatUserSeenEventData : ChatEventData
+    //public class ChatMesageDeletedEvent : ChatEvent
+    //{
+    //    public ChatMesageDeletedEvent()
+    //    {
+    //        ChatKey = "messageDeleted";
+    //    }
+    //    public Message Data { get; set; }
+    //}
+
+
+    public class ChatUserSeenEvent : ChatEvent
     {
-        public ChatUserSeenEventData()
+        public ChatUserSeenEvent()
         {
             ChatKey = "seen";
         }
-        public string Data { get; set; }
+        public ChatUserSeenEventData Data { get; set; }
     }
 
-    public class UserEventData : ChatEventData
+    public class ChatUserSeenEventData
     {
-        public UserEventData()
+        public string ConversationId { get; set; }
+        public string UserId { get; set; }
+        public string UserName { get; set; }
+    }
+
+    //==============================================
+    public class UserEvent : ChatEvent
+    {
+        public UserEvent()
         {
             ChatKey = "user";
         }

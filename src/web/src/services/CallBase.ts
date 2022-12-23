@@ -57,21 +57,23 @@ export interface CallMessage {
 export abstract class CallBase {
     protected room: string = '';
     public getRoom = () => this.room;
-    protected iceServers: RTCIceServer[] = window.ENV.IceServers || [];
+    protected iceServers: RTCIceServer[]= [];
 
     protected mediaConstraints?: MediaConstraints;
     protected localStream?: MediaStream = undefined;
     protected remoteStream?: MediaStream = undefined;
     protected peerConnection?: RTCPeerConnection;
 
-    constructor(protected signaling: ISignaling,
+    constructor(
+        protected signaling: ISignaling,
         protected deviceManager: DeviceManager,
         protected pubSub: Pubsub) {
 
     }
 
-    protected initConnection = async (mediaConstraints?: MediaConstraints) => {
+    protected initConnection = async (iceServers: RTCIceServer[],mediaConstraints?: MediaConstraints) => {
         //console.log("init connection...");
+        this.iceServers = iceServers;
         this.mediaConstraints = mediaConstraints || {};
         const constraints: MediaStreamConstraints = {
             audio: false,

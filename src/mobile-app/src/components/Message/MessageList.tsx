@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from 'react';
-import { FlatList, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, FlatList, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import { useDispatch } from 'react-redux';
 import { AppDispatch, IAppStore } from '../../stores/app.store';
@@ -13,13 +13,20 @@ import { Conversation } from '../../types/Conversation/Conversation.type';
 import { PageOptions } from '../../types/PageOptions.type';
 import { ActivityIndicator, FAB } from 'react-native-paper';
 import { MessageType } from '../../types/Message/MessageType.type';
+import { conversationApi } from '../../apis';
+import { Message } from '../../types/Message/Message.type';
+import { conversationActions } from '../../stores/conversation';
+import { MemberRole } from '../../types/Conversation/ConversationMember.type';
 
 interface IProps {
   conversation: Conversation;
+  userRole?:MemberRole,
+  onSelectMessage?: (message: Message)=>void,
+  selectedMessageId?: string
 }
 
 
-const MessageList: React.FC<IProps> = ({ conversation }) => {
+const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage, selectedMessageId }) => {
   const flatListRef = React.useRef<any>()
 
   const { messagesAllLoaded, messagesLoading } = useSelector(
@@ -73,6 +80,12 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
     setPlayingId(id);
   },[])
 
+  const onSelectMessageHandle = useCallback((message: Message)=>{
+    return ()=>{
+      onSelectMessage && onSelectMessage(message);
+    }
+  },[onSelectMessage])
+
   return (
     <React.Fragment>
       <TouchableWithoutFeedback onPress={dismissKeyboardHandler}>
@@ -80,8 +93,13 @@ const MessageList: React.FC<IProps> = ({ conversation }) => {
           ref={flatListRef}
           inverted={true}
           renderItem={itemData => 
-            <MessageItem message={itemData.item} conversationType={conversation.type}
-              onPlaying={onItemPlay} playingId={itemData.item.type=== MessageType.AudioFile? playingId:undefined}
+            <MessageItem message={itemData.item} 
+              conversationType={conversation.type}
+              userRole={userRole}
+              onPlaying={onItemPlay} 
+              playingId={itemData.item.type=== MessageType.AudioFile? playingId:undefined}
+              onSelectMessage={onSelectMessageHandle(itemData.item)}
+              isSelected={selectedMessageId === itemData.item.id}
             />
           }
           data={conversation.messages}

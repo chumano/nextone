@@ -73,6 +73,9 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
     let lastMessageText = '';
     if (isConversationHaveMessage) {
       const lastMessage = conversation.messages[0];
+      const {isDeleted} = lastMessage;
+      if(isDeleted) return 'Tin nhắn đã bị xóa';
+      
       if (conversation.type !== ConversationType.Peer2Peer) {
         lastMessageText += lastMessage.userSender.userName + ': ';
       }

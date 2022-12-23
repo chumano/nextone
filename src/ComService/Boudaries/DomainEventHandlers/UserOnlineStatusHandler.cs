@@ -10,28 +10,28 @@ using ComService.Domain.Services;
 
 namespace ComService.Boudaries.DomainEventHandlers
 {
-    public class UserOnlineHandler : INotificationHandler<UserOnlineEvent>
+    public class UserOnlineStatusHandler : INotificationHandler<UserOnlineStatusEvent>
     {
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly IServiceProvider _serviceProvider;
-        public UserOnlineHandler(IHubContext<ChatHub> hubContext,
+        public UserOnlineStatusHandler(IHubContext<ChatHub> hubContext,
             IServiceProvider serviceProvider)
         {
             _hubContext = hubContext;
             _serviceProvider = serviceProvider;
         }
-        public async Task Handle(UserOnlineEvent notification, CancellationToken cancellationToken)
+        public async Task Handle(UserOnlineStatusEvent notification, CancellationToken cancellationToken)
         {
             //TODO: UserOnlineHandler check user really off 
 
             //save user status
             if (notification.IsOnline)
             {
-                //using (var scope = _serviceProvider.CreateScope())
-                //{
-                //    var userService = scope.ServiceProvider.GetRequiredService<IUserStatusService>();
-                //    await userService.AddOrUpdateUserStatus(notification.UserId, null, null);
-                //}
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var userService = scope.ServiceProvider.GetRequiredService<IUserStatusService>();
+                    await userService.AddOrUpdateUserStatus(notification.UserId, null, null);
+                }
             }
             else
             {
@@ -40,10 +40,10 @@ namespace ComService.Boudaries.DomainEventHandlers
 
             //send notify
             await _hubContext.Clients.All.SendAsync("data",
-                  new HubEvent<UserEventData>
+                  new HubEvent<UserEvent>
                   {
                       EventKey = "chat",
-                      EventData = new UserEventData()
+                      EventData = new UserEvent()
                       {
                           Data = new
                           {

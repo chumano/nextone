@@ -1,6 +1,6 @@
 import { Checkbox, Input, List, message, Modal, Radio, Skeleton } from 'antd';
 import { debounce } from 'lodash';
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { comApi } from '../../apis/comApi';
 import { userApi } from '../../apis/userApi';
 import ConversationAvatar from '../../components/chat/ConversationAvatar';
@@ -12,6 +12,7 @@ import { Conversation } from '../../models/conversation/Conversation.model';
 import { ConversationType } from '../../models/conversation/ConversationType.model';
 import { SearchResult, SendMessage2ConversationsDTO, SendMessage2UsersDTO, SendMessageDTO } from '../../models/dtos';
 import { User } from '../../models/user/User.model';
+import { GlobalContext } from '../../utils/contexts/AppContext';
 import { handleAxiosApi } from '../../utils/functions';
 declare let window: AppWindow;
 
@@ -26,6 +27,9 @@ interface ModalSendLocationProps {
     onVisible: (visible: boolean) => void;
 }
 const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, position, onVisible }) => {
+    const globalData = useContext(GlobalContext)
+    const {applicationSettings} = globalData;
+
     const [loading, setLoading] = useState(true);
     const [userList, setUserList] = useState<DistanceUser[]>([]);
     //const [selectedUserId, setSelectedUserId] = useState<string>();
@@ -100,9 +104,9 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
             setSelectedChannelIds(undefined)
             setSelectedUserIds(undefined);
             setChannelList([])
-            findNearUsers(window.ENV.FindUserDistanceInMeters || 5000)
+            findNearUsers(applicationSettings?.maxFindUserDistanceInMeters || 5000)
         }
-    },[searchType, findNearUsers])
+    },[searchType, findNearUsers, applicationSettings])
 
     useEffect(()=>{
         if(searchType=='users'){

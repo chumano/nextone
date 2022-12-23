@@ -1,5 +1,5 @@
 import { debounce } from 'lodash'
-import { Image, Modal } from 'antd';
+import { Image, Modal, message as antMessage } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Message } from '../../../models/message/Message.model'
@@ -11,6 +11,7 @@ import MessageItem from './MessageItem'
 import { MemberRole } from '../../../models/conversation/ConversationMember.model';
 import { EventInfo } from '../../../models/event/Event.model';
 import { chatActions } from '../../../store/chat/chatReducer';
+import { comApi } from '../../../apis/comApi';
 
 interface MessageListProps {
     conversation: ConversationState,
@@ -75,6 +76,20 @@ const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDel
       setPlayingId(id);
     },[])
 
+    const onDeleteMessage = useCallback((message:Message)=>{
+        return async ()=>{
+            const response = await comApi.deleteMessage(conversation.id, message.id);
+            if(!response.isSuccess){
+                antMessage.error("Không thể xóa tin nhắn")
+                return;
+            }
+
+            dispatch(chatActions.deleteMessage({
+                conversationId: conversation.id, 
+                messageId: message.id
+            }))
+        }
+    },[conversation.id])
 
     return <>
         <div className='message-list' ref={listRef}>
@@ -84,6 +99,7 @@ const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDel
                     onPlaying={onItemPlay} playingId={playingId} 
                     userRole={userRole}
                     onDeleteEvent={()=>{onDeleteEvent && onDeleteEvent(o.event!)}}
+                    onDeleteMessage={onDeleteMessage(o)}
                     />
                 })}
              </Image.PreviewGroup>

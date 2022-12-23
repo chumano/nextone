@@ -22,3 +22,20 @@ export interface OAuthRefreshTokenConfig {
   grant_type: string;
   refresh_token?: string;
 }
+
+export interface RTCIceServer {
+  urls: string | string[];
+  username?: string;
+  credential?: string
+}
+
+export interface IApplicationSettings {
+  maxFindUserDistanceInMeters: number,
+  callTimeOutInSeconds: number,
+  updateLocationHeartbeatInSeconds: number,
+  iceServers: RTCIceServer[];
+}
+
+export interface IGlobalData {
+  applicationSettings?: IApplicationSettings
+}

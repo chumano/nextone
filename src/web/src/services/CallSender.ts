@@ -4,18 +4,19 @@ import { DeviceManager } from "./DeviceManager";
 import { WebrtcUtils } from "./WebRTCUtils";
 
 export class CallSender extends CallBase {
-    constructor(signaling: ISignaling,
+    constructor(
+        signaling: ISignaling,
         deviceManager: DeviceManager,
         pubSub: Pubsub,
         private user: string) {
             super(signaling, deviceManager,pubSub);
     }
 
-    public startCallRequest = async (room: string, callType: 'voice' | 'video',mediaConstraints?: MediaConstraints) => {
+    public startCallRequest = async (room: string, callType: 'voice' | 'video',iceServers: RTCIceServer[],mediaConstraints?: MediaConstraints) => {
         //console.log('startCallRequest')
         this.room = room;   
 
-        await this.initConnection(mediaConstraints);
+        await this.initConnection(iceServers, mediaConstraints);
         //console.log('signaling.invoke SEND_CALL_REQUEST' )
         const response  = await this.signaling.invoke(CallSignalingActions.SEND_CALL_REQUEST, 
             {

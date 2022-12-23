@@ -23,7 +23,6 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message, canDelete, onDelet
     }, [eventInfo])
 
     const [isHovering, setIsHovering] = useState(false);
-
     const handleMouseOver = () => {
         setIsHovering(true);
     };

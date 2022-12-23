@@ -107,21 +107,21 @@ const ConversationMembers: React.FC<ConversationMembersProp> = ({ conversation, 
                             actions={[
                                 <>
                                     {item.userMember.userId !== userId &&
-                                        <Button className='button-icon' onClick={onMemberChat(item)} title="Nhắn tin">
+                                        <Button size='small' className='button-icon' onClick={onMemberChat(item)} title="Nhắn tin">
                                             <MessageOutlined />
                                         </Button>
                                     }
                                 </>,
                                 <>
                                     {item.userMember.userId !== userId && userRole === MemberRole.MANAGER && item.role !== MemberRole.PARENT &&
-                                        <Button className='button-icon' onClick={onMemberRole(item)} title="Cấp quyền">
+                                        <Button size='small' className='button-icon' onClick={onMemberRole(item)} title="Cấp quyền">
                                             <UserSwitchOutlined />
                                         </Button>
                                     }
                                 </>,
                                 <>
                                     {item.userMember.userId !== userId && userRole === MemberRole.MANAGER && item.role !== MemberRole.PARENT &&
-                                        <Button danger className='button-icon' onClick={onDeleteMember(item)} title="Xóa thành viên">
+                                        <Button size='small' danger className='button-icon' onClick={onDeleteMember(item)} title="Xóa thành viên">
                                             <DeleteOutlined />
                                         </Button>
                                     }

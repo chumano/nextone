@@ -7,17 +7,18 @@ import { DeviceManager } from "./DeviceManager";
 export class CallReciver extends CallBase {
     state: string = '';
 
-    constructor(signaling: ISignaling,
+    constructor(
+        signaling: ISignaling,
         deviceManager: DeviceManager,
         pubSub: Pubsub,
         private user: string) {
             super(signaling, deviceManager,pubSub);
     }
 
-    public async acceptCall(room: string, mediaConstraints?: MediaConstraints){
+    public async acceptCall(room: string, iceServers: RTCIceServer[], mediaConstraints?: MediaConstraints){
         //console.log("accept call...")
         this.room = room;
-        await this.initConnection(mediaConstraints);
+        await this.initConnection(iceServers, mediaConstraints);
 
         var response = await this.signaling.invoke(CallSignalingActions.SEND_CALL_REQUEST_RESPONSE,
             {

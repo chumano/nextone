@@ -16,7 +16,7 @@ import bgImageUrl from '../../assets/images/call/bg_sample.png'
 
 import ButtonAction from './button-action';
 import CallService from '../../services/CallService';
-import { useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { CallEvents, MediaConstraints } from '../../services/CallBase';
 import Video, { StreamWithURL } from './video';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,6 +26,7 @@ import { ConversationType } from '../../models/conversation/ConversationType.mod
 import { UserStatus } from '../../models/user/UserStatus.model';
 import { message } from 'antd';
 import { CALL_WAIT_TIME } from '../../utils';
+import { GlobalContext } from '../../utils/contexts/AppContext';
 
 
 const CallSession: React.FC = () => {
@@ -38,6 +39,8 @@ const CallSession: React.FC = () => {
     const {
         allConversations,
     } = useSelector((store: IAppStore) => store.chat);
+    const globalData = useContext(GlobalContext)
+    const {applicationSettings} = globalData;
 
     const [conversationName, setConversationName] = useState<string>();
     const [otherUser, setOtherUser] = useState<UserStatus>();
@@ -138,7 +141,8 @@ const CallSession: React.FC = () => {
 
     useEffect(() => {
         
-        if (isSender && converstationId) {
+        if (isSender && converstationId && applicationSettings) {
+            //setup call
             let constraint: MediaConstraints = {
                 audio: {
                     enabled: true
@@ -161,7 +165,7 @@ const CallSession: React.FC = () => {
             }
 
             CallService.isReceiveResponse = false;
-            CallService.startCall(converstationId, callType, constraint).then((rs) => {
+            CallService.startCall(converstationId, callType, applicationSettings.iceServers, constraint).then((rs) => {
                 if(rs.error){
                     console.error('CallSession startCall',rs);
                     onStopCall('Can\'t call now');
@@ -182,14 +186,14 @@ const CallSession: React.FC = () => {
                 }
                 onStopCall('Timeout to wait receiver responding');
 
-            },CALL_WAIT_TIME)
+            },applicationSettings.callTimeOutInSeconds*1000 || CALL_WAIT_TIME)
         }
         else {
             //receive call 
         }
 
        
-    }, [isSender, callStatus, converstationId, deviceSettings, callType])
+    }, [isSender, callStatus, converstationId, deviceSettings, callType, applicationSettings])
 
     useEffect(()=>{
         //console.log('CallService.isReceiveResponse change ', CallService.isReceiveResponse)

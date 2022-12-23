@@ -11,6 +11,7 @@ export class SignalRService {
       .withUrl(APP_CONFIG.COM_HOST + "/hubChat")
       .withAutomaticReconnect()
       .build();
+
     events : { [key: string]:  ((...args: any[]) => void) []} = {};
     constructor() {
       this.init();
@@ -66,7 +67,8 @@ export class SignalRService {
   
     disconnectHub = async () => {
       if (this.connection) {
-        this.connection.stop();
+        //console.log("disconnectHub", this.connection.state)
+        await this.connection.stop();
       }
     }
 

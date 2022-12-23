@@ -53,6 +53,7 @@ namespace ComService.Boudaries.Hubs
 
         private static ConcurrentDictionary<string, string> ConnectionRooms = new ConcurrentDictionary<string, string>();
         private static ConcurrentDictionary<string, IOnlineClient> OnlineClients = new ConcurrentDictionary<string, IOnlineClient>();
+        private static ConcurrentDictionary<string, IList<IOnlineClient>> OnlineUsers = new ConcurrentDictionary<string, IList<IOnlineClient>>();
         private static ConcurrentDictionary<string, CallRoomState> CallRoomState = new ConcurrentDictionary<string, CallRoomState>();
 
         private const int CALL_TIMEOUT_IN_SECONDS = 30;
@@ -405,7 +406,6 @@ namespace ComService.Boudaries.Hubs
                 await Groups.AddToGroupAsync(this.Context.ConnectionId, $"user_{userId}");
 
                 UserStatus userStatus = null;
-
                 //get user name
                 try
                 {
@@ -420,23 +420,19 @@ namespace ComService.Boudaries.Hubs
                         UserName = userStatus?.UserName ?? nameClaim?.Value ?? userId.ToString()
                     };
 
-                OnlineClients[this.Context.ConnectionId] = onlineClient;
 
-                
-                //Update user Online
-                await _bus.Publish(new UserOnlineEvent()
-                {
-                    UserId = onlineClient.UserId,
-                    UserName = onlineClient.UserName,
-                    IsOnline = true
-                });
+                await AddConnectionClient(this.Context.ConnectionId, onlineClient);
+
                 return userId.ToString();
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "ChatHub Register Error: " + ex.Message);
                 return string.Empty;
             }
         }
+
+      
 
         public override async Task OnConnectedAsync()
         {
@@ -448,40 +444,108 @@ namespace ComService.Boudaries.Hubs
             try
             {
                 await base.OnDisconnectedAsync(exception);
-                var isRemovedUser = OnlineClients.TryRemove(Context.ConnectionId, out var client);
-                if (isRemovedUser)
-                {
-                    await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"user_{client.UserId}");
-                }
 
-                //get room that the user joined, then Emit user disconnected
-                var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var conversationId);
-                if (isRemovedRoom)
-                {
-                    var conversation = await _conversationService.Get(conversationId);
-                    if (conversation == null) return;
-                    var messageId = _idGenerator.GenerateNew();
-                    await _conversationService.AddMessage(conversation, new Message(messageId, MessageTypeEnum.CallEndMessage, client.UserId, "Cuộc gọi kết thúc"));
+                var client = await RemoveConnectionClient(this.Context.ConnectionId);
 
-                    await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
-                    CallRoomState.Remove(conversationId, out _);
-                }
-
-                //TODO: Update user Offline
-                if (client != null)
-                {
-                    await _bus.Publish(new UserOnlineEvent()
-                    {
-                        UserId = client.UserId,
-                        UserName = client.UserName,
-                        IsOnline = false
-                    });
-                }
+               
             }catch(Exception ex)
             {
                 _logger.LogError(ex, "ChatHub OnDisconnectedAsync error: " + ex.Message);
             }
          
+        }
+
+        private async Task AddConnectionClient(string connectionId, IOnlineClient onlineClient)
+        {
+            OnlineClients[connectionId] = onlineClient;
+            lock (OnlineUsers)
+            {
+                IList<IOnlineClient> clients = null;
+                if (OnlineUsers.ContainsKey(onlineClient.UserId))
+                {
+                    clients = OnlineUsers[onlineClient.UserId];
+                }
+                
+                if (clients == null)
+                {
+                    clients = new List<IOnlineClient>();
+                }
+                clients.Add(onlineClient);
+
+                OnlineUsers[onlineClient.UserId] = clients;
+            }
+
+            //Update user Online
+            await _bus.Publish(new UserOnlineStatusEvent()
+            {
+                UserId = onlineClient.UserId,
+                UserName = onlineClient.UserName,
+                IsOnline = true
+            });
+        }
+
+        private async Task<IOnlineClient> RemoveConnectionClient(string connectionId)
+        {
+            var isRemovedUser = OnlineClients.TryRemove(connectionId, out var client);
+            if (isRemovedUser)
+            {
+                await Groups.RemoveFromGroupAsync(connectionId, $"user_{client.UserId}");
+            }
+
+            if(client == null)
+            {
+                return null;
+            }
+
+            await EmitConnectionDisconnectedToRoom(client);
+
+            //Check if no connections exist
+            var isExistConnection = true;
+            lock (OnlineUsers)
+            {
+                IList<IOnlineClient> clients = null;
+                if (OnlineUsers.ContainsKey(client.UserId))
+                {
+                    clients = OnlineUsers[client.UserId];
+                }
+
+                if (clients != null)
+                {
+                    clients = clients.Where(x => x.ConnectionId != connectionId).ToList();
+                }
+
+                OnlineUsers[client.UserId] = clients;
+                isExistConnection = clients!=null && clients.Count > 0;
+            }
+
+            if (!isExistConnection)
+            {
+                //Update user Offline
+                await _bus.Publish(new UserOnlineStatusEvent()
+                {
+                    UserId = client.UserId,
+                    UserName = client.UserName,
+                    IsOnline = false
+                });
+            }
+            return client;
+        }
+
+        private async Task EmitConnectionDisconnectedToRoom(IOnlineClient client)
+        {
+            //TODO: check if the connection is real make the call
+            var isRemovedRoom = ConnectionRooms.TryRemove(Context.ConnectionId, out var conversationId);
+            if (isRemovedRoom)
+            {
+                var conversation = await _conversationService.Get(conversationId);
+                if (conversation == null) return;
+                var messageId = _idGenerator.GenerateNew();
+                await _conversationService.AddMessage(conversation,
+                    new Message(messageId, MessageTypeEnum.CallEndMessage, client.UserId, "Cuộc gọi kết thúc"));
+
+                await Groups.RemoveFromGroupAsync(this.Context.ConnectionId, $"room_{conversationId}");
+                CallRoomState.Remove(conversationId, out _);
+            }
         }
     }
 }
