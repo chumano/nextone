@@ -57,15 +57,7 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
 
         otherUser = otherUserMember.userMember;
         
-        conversationTypeIcon =
-          otherUser.userAvatarUrl !== '' ? (
-            <UserAvatar
-              imageUri={otherUser.userAvatarUrl}
-              size={24}
-            />
-          ) : (
-            <Avatar.Icon icon="account" size={24} />
-          );
+        conversationTypeIcon =<UserAvatar size={24} user={otherUser}/>
 
         
         break;

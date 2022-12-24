@@ -49,12 +49,7 @@ const MessageItem: React.FC<IProps> = ({
   const navigation = useNavigation<any>();
   const isOwnerMessage = authState.data?.userId === message.userSender.userId ?? false;
 
-  const userAvatar =
-    message.userSender.userAvatarUrl !== '' ? (
-      <UserAvatar imageUri={message.userSender.userAvatarUrl} size={24} />
-    ) : (
-      <Avatar.Icon icon="account" size={24} />
-    );
+  const userAvatar =<UserAvatar size={24} />
 
   const [imageViewVisible, setImageViewVisible] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);

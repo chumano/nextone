@@ -14,6 +14,7 @@ import { ConversationType } from '../../types/Conversation/ConversationType.type
 import { getConversationName } from '../../utils/conversation.utils';
 import { conversationActions } from '../../stores/conversation';
 import { ChatStackProps } from '../../navigation/ChatStack';
+import UserAvatar from '../../components/User/UserAvatar';
 
 const MembersScreen = ({ navigation, route }: ChatStackProps) => {
     const dispatch = useDispatch();
@@ -67,7 +68,8 @@ const MembersScreen = ({ navigation, route }: ChatStackProps) => {
                 data={members}
                 renderItem={({ item: { userMember, role }, index }) => (
                     <View style={styles.container}>
-                        <View>
+                        <UserAvatar size={48} user={userMember}/>
+                        <View style={{marginLeft:10}}>
                             <Text style={styles.textName} >{userMember.userName}</Text>
                             <View>
                             <Text style={styles.textRole} >{MemberRole[role]}</Text>

@@ -38,12 +38,7 @@ const ConversationItem: React.FC<IProps> = ({conversation}) => {
         m => m.userMember.userId !== data?.userId,
       )[0];
 
-      conversationType =
-        otherUser.userMember.userAvatarUrl !== '' ? (
-          <UserAvatar imageUri={otherUser.userMember.userAvatarUrl} size={48} />
-        ) : (
-          <Avatar.Icon icon="account" size={48} />
-        );
+      conversationType =<UserAvatar size={48} user={otherUser.userMember}/>
 
       conversationName = otherUser.userMember.userName;
       break;
