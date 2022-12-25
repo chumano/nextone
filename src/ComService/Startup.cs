@@ -34,6 +34,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Authentication;
 using System.Threading.Tasks;
+using UserDomain;
 
 namespace ComService
 {
@@ -80,6 +81,8 @@ namespace ComService
                 options.EnableSensitiveDataLogging(true);
 
             });
+
+            services.AddUserDomain(connectionString);
 
 
             var identityServerOptions = Configuration.GetSection(nameof(IdentityServerOptions)).Get<IdentityServerOptions>();

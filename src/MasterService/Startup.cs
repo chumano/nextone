@@ -31,6 +31,7 @@ using FluentValidation;
 using MasterService.Validators;
 using System.Net.Http;
 using System.Security.Authentication;
+using UserDomain;
 
 namespace MasterService
 {
@@ -63,9 +64,9 @@ namespace MasterService
                 {
                     o.EnableRetryOnFailure(maxRetryCount: 3);
                 });
-                options.EnableDetailedErrors(true);
-                options.EnableSensitiveDataLogging(false);
             });
+            services.AddUserDomain(connString, "MasterService");
+
             services.AddScoped<DbContext>(provider => provider.GetService<MasterDBContext>());
 
 

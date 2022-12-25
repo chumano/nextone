@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using UserDomain;
 
 namespace IdentityService
 {
@@ -55,6 +56,8 @@ namespace IdentityService
                 options.EnableSensitiveDataLogging(true);
 
             });
+
+            services.AddUserDomain(connectionString);
 
             var identityBuilder = services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
                 {

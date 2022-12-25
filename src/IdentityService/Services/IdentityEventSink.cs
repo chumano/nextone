@@ -5,19 +5,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UserDomain;
 
 namespace IdentityService.Services
 {
     public class IdentityEventSink : IEventSink
     {
         private readonly ILogger<IdentityEventSink> _logger;
-
-        public IdentityEventSink(ILogger<IdentityEventSink>  logger)
+        private readonly UserActivityService _userActivityService;
+        public IdentityEventSink(ILogger<IdentityEventSink>  logger,
+            UserActivityService userActivityService)
         {
             _logger = logger;
+            _userActivityService = userActivityService;
         }
 
-        public Task PersistAsync(Event evt)
+        public async Task PersistAsync(Event evt)
         {
             if (evt.EventType == EventTypes.Success ||
                 evt.EventType == EventTypes.Information)
@@ -35,7 +38,10 @@ namespace IdentityService.Services
                     evt);
             }
 
-            return Task.CompletedTask;
+            if(evt.EventType == EventTypes.Success)
+            {
+                await _userActivityService.AddUserActivity("afbd3f0a-a999-4b67-a8c7-1a4a19347507", evt.Name, "");
+            }
         }
 
         /*

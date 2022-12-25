@@ -110,6 +110,9 @@ namespace MasterService
                         Log.Debug("Users already populated");
                     }
                 }
+
+                var userDbContext = services.GetRequiredService<UserDomain.UserDBContext>();
+                userDbContext.Database.Migrate();
             }
 
         }

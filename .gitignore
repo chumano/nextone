@@ -66,3 +66,5 @@ src/MasterService/Properties/PublishProfiles
 firebasekey.json
 deploy
 capture-images
+src/UserDomain/bin
+src/UserDomain/obj

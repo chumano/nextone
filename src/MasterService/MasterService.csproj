@@ -21,7 +21,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.24" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.20" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.24" />
     <PackageReference Include="MongoDB.Driver" Version="2.13.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="3.1.18" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
@@ -43,6 +43,7 @@
     <ProjectReference Include="..\Libs\NextOne.Infrastructure.MessageBus\NextOne.Infrastructure.MessageBus.csproj" />
     <ProjectReference Include="..\Libs\NextOne.Shared\NextOne.Shared.csproj" />
     <ProjectReference Include="..\SharedDomain\SharedDomain.csproj" />
+    <ProjectReference Include="..\UserDomain\UserDomain.csproj" />
   </ItemGroup>
 
 
