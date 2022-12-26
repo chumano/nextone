@@ -1,3 +1,4 @@
+import { PermissionsAndroid, Platform } from "react-native";
 import { EventFile } from "../types/Event/EventFile.type";
 import { FileType } from "../types/File/FileType.type";
 import { MessageType } from "../types/Message/MessageType.type";
@@ -30,3 +31,25 @@ export const groupFileByType = (files: EventFile[]) => {
     }
     return group;
 }
+
+export const requestCameraPermission = async (
+  ) => {
+    if(Platform.OS==='ios') return undefined;
+
+    let granted: any = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+    );
+    //console.log('requestCameraPermission', granted)
+    if (granted) {
+       return granted
+    } else {
+      granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+      );
+      if (granted == PermissionsAndroid.RESULTS.GRANTED) {
+        
+      } 
+
+      return granted;
+    }
+  };

@@ -36,6 +36,7 @@ import AudioRecorder from './AudioRecorder';
 import RNFetchBlob from 'rn-fetch-blob';
 import {MessageType} from '../../types/Message/MessageType.type';
 import * as mime from 'react-native-mime-types';
+import ImageActionPicker, { ImageInfo } from './ImageActionPicker';
 
 interface IProps {
   conversation: Conversation;
@@ -160,9 +161,29 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
     }
   }, [send]);
 
+  const onPickedImage = useCallback(async ( imgs: ImageInfo[]) => {
+    for (let i = 0; i < imgs.length; i++) {
+      setTimeout(() => {
+        const file = imgs[i];
+        send({
+          uri: file.uri,
+          fileName: file.fileName,
+          type: file.type,
+        });
+      }, i * 500);
+    }
+  },[send])
+
+  const [imagePickerEnabled, setImagePickerEnabled] = useState(false);
+  const onToggleImagePicker = useCallback(async () => {
+    setImagePickerEnabled(state => !state);
+    setRecodingEnabled(false);
+  }, []);
+
   const [recordingEnabled, setRecodingEnabled] = useState(false);
   const onToggleRecording = useCallback(async () => {
     setRecodingEnabled(state => !state);
+    setImagePickerEnabled(false);
   }, []);
 
   const onAudioRecorded = useCallback(
@@ -236,7 +257,7 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
                 style={styles.button}
                 icon="file-image"
                 size={24}
-                onPress={pickImage}
+                onPress={onToggleImagePicker}
               />
             </View>
             <View style={styles.iconButtonContainer}>
@@ -255,6 +276,9 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
         recordingEnabled={recordingEnabled}
         onRecorded={onAudioRecorded}
       />
+      {imagePickerEnabled && 
+        <ImageActionPicker onPicked={onPickedImage}/>
+      }
     </View>
   );
 };

@@ -9,10 +9,11 @@ import { Button, RadioButton } from 'react-native-paper';
 import { APP_THEME } from '../../constants/app.theme';
 import { eventApi } from '../../apis/event.api';
 import { EventSendRouteProp, EventStackProps } from '../../navigation/EventStack';
-import FilePiker, { MediaItemType } from '../../components/File/FilePicker';
+import FilePiker from '../../components/File/FilePicker';
 import { fileApi } from '../../apis/fileApi';
 import { BaseFile } from '../../types/File/BaseFile.type';
 import { nowDate } from '../../utils/date.utils';
+import { MediaItemType } from '../../types/File/MediaItemType';
 
 
 const SendEventScreen = () => {

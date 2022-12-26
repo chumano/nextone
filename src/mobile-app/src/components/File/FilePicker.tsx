@@ -5,20 +5,10 @@ import RNFetchBlob from "rn-fetch-blob";
 import ImagePicker, { ImageLibraryOptions, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MediaItemType, MEDIA_TYPE } from "../../types/File/MediaItemType";
+import { requestCameraPermission } from "../../utils/file.utils";
 
-export interface MediaItemType {
-    uri: string;
-    name: string;
-    type: string;
-    mediaType: MEDIA_TYPE;
-    thumbnailUri?: string;
-    size?: number;
-}
 
-export enum MEDIA_TYPE {
-    VIDEO,
-    IMAGE,
-}
 
 interface MediaReviewType {
     Id: number | string;
@@ -188,6 +178,7 @@ const FilePiker = (
 
     const pickCamera = async (
         callback: (image: MediaItemType[]) => void) => {
+        await requestCameraPermission();
         const result = await launchCamera({
             cameraType: 'back',
             mediaType: 'mixed',
