@@ -9,29 +9,30 @@ using UserDomain;
 
 namespace MasterService.EventHandlers
 {
-    public class UserCreatedHandler : INotificationHandler<UserCreated>
+    public class UserUpdatedHandler : INotificationHandler<UserUpdated>
     {
         private UserActivityService _userActivityService;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ILogger<UserCreatedHandler> _logger;
-        public UserCreatedHandler(IServiceProvider serviceProvider, ILogger<UserCreatedHandler> logger)
+        private readonly ILogger<UserUpdatedHandler> _logger;
+        public UserUpdatedHandler(IServiceProvider serviceProvider, ILogger<UserUpdatedHandler> logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
         }
-        public async Task Handle(UserCreated notification, CancellationToken cancellationToken)
+        public async Task Handle(UserUpdated notification, CancellationToken cancellationToken)
         {
             try
             {
-                _logger.LogInformation($"{nameof(UserCreatedHandler)} handle....");
+                _logger.LogInformation($"{nameof(UserUpdatedHandler)} handle....");
                 using var scoped = _serviceProvider.CreateScope();
                 _userActivityService = scoped.ServiceProvider.GetService<UserActivityService>();
-                await _userActivityService.AddUserActivity(notification.CreatedBy, $"Tạo người dùng \"{notification.User.Name}\"", null);
-            }catch (Exception ex)
-            {
-                _logger.LogError(ex, $"{nameof(UserCreatedHandler)} error : {ex.Message}");
+                await _userActivityService.AddUserActivity(notification.UpdatedBy, $"Cập nhật người dùng \"{notification.User.Name}\"", null);
             }
-           
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"{nameof(UserUpdatedHandler)} error : {ex.Message}");
+            }
+
         }
     }
 }

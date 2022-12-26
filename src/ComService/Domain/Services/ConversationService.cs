@@ -19,7 +19,7 @@ namespace ComService.Domain.Services
         Task<string> Create(UserStatus createdUser, string name, ConversationTypeEnum type, IList<string> memberIds);
 
         Task UpdateName(Conversation conversation, string name);
-        Task Delete(Conversation conversation);
+        Task Delete(Conversation conversation, string deletedByUserId);
 
         //message
         Task AddMessage(Conversation conversation, Message message);
@@ -112,7 +112,7 @@ namespace ComService.Domain.Services
             await _conversationRepository.SaveChangesAsync();
 
             //TODO: send ConversationCreated
-            await _bus.Publish(new ConversationCreated());
+            await _bus.Publish(new ConversationCreated(conversation, createdUser.UserId));
 
             return conversation.Id;
         }
@@ -173,13 +173,13 @@ namespace ComService.Domain.Services
             return items;
         }
 
-        public async Task Delete(Conversation conversation)
+        public async Task Delete(Conversation conversation, string deletedByUserId)
         {
             _conversationRepository.Delete(conversation);
 
             await _conversationRepository.SaveChangesAsync();
-            // TODO: send ConvesationDeleted
-            await _bus.Publish(new ConversationDeleted());
+            //send ConvesationDeleted
+            await _bus.Publish(new ConversationDeleted(conversation, deletedByUserId));
         }
 
         //member

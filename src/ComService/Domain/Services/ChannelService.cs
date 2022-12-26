@@ -142,7 +142,7 @@ namespace ComService.Domain.Services
             await _channelRepository.SaveChangesAsync();
 
             //TODO: send Channel ConversationCreated
-            await _bus.Publish(new ConversationCreated());
+            await _bus.Publish(new ConversationCreated(channel, createdUser.UserId));
 
             return channel.Id;
         }

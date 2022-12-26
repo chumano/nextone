@@ -38,9 +38,12 @@ namespace IdentityService.Services
                     evt);
             }
 
-            if(evt.EventType == EventTypes.Success)
+            if(evt is UserLoginSuccessEvent loginSuccessEvent) 
             {
-                await _userActivityService.AddUserActivity("afbd3f0a-a999-4b67-a8c7-1a4a19347507", evt.Name, "");
+                await _userActivityService.AddUserActivity(loginSuccessEvent.SubjectId, "Đăng nhập", "");
+            }else if(evt is UserLogoutSuccessEvent logoutSuccessEvent)
+            {
+                await _userActivityService.AddUserActivity(logoutSuccessEvent.SubjectId, "Đăng xuất", "");
             }
         }
 

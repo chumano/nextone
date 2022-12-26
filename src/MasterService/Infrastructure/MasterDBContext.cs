@@ -4,12 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using UserDomain;
 
 namespace MasterService.Infrastructure
 {
     public class MasterDBContext : DbContext
     {
         public const string DB_SCHEMA = "master";
+
+        public DbSet<SystemSetting> SystemSettings { get; set; }
+        public DbSet<UserActivity> UserActivities { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
@@ -21,6 +25,13 @@ namespace MasterService.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<UserActivity>(eb =>
+            {
+                eb.ToTable("UserActivity", DB_SCHEMA);
+
+                eb.HasQueryFilter(p => !p.IsDeleted);
+            });
 
             //user
             modelBuilder.Entity<User>(eb =>
@@ -128,6 +139,23 @@ namespace MasterService.Infrastructure
 
             });
 
+
+            modelBuilder.Entity<SystemSetting>(eb =>
+            {
+                eb.ToTable("SystemSetting", DB_SCHEMA)
+                 .HasKey("Code");
+
+                eb.Property(o => o.Code)
+                 .HasColumnType("varchar(50)");
+                
+                eb.Property(o => o.Name)
+                   .HasColumnType("nvarchar(255)")
+                   .IsRequired();
+
+                eb.Property(o => o.Data)
+                   .HasColumnType("nvarchar(max)")
+                   .IsRequired();
+            });
         }
 
 

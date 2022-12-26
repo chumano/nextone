@@ -8,43 +8,41 @@ import {
     ReactReduxContextValue,
 } from 'react-redux'
 
-export interface News{
-    id: string
+export interface UserActivity{
+    id: string,
+    userId: string,
+    userName: string,
+    action:string,
+    system?:string,
+    createdDate: string
 }
-export interface NewsFilter{
-    page: number,
-    pageSize: number,
+export interface UserActivityFilter{
+    textSearch?: string,
+    page?: number,
+    pageSize?: number,
 }
-export interface INewsStore {
-    view: 'main' | 'new' | 'update'
+export interface IUserActivityStore {
     loading?: boolean,
     count: number,
-    newsList: News[],
-    filters?: NewsFilter,
-    selectedNewsId?: string
+    userActivityList: UserActivity[],
+    filters?: UserActivityFilter
 }
 
-const initState: INewsStore = {
-    view: 'main',
+const initState: IUserActivityStore = {
     count: 0,
-    newsList: []
+    userActivityList: []
 }
-export const newsSlice = createSlice({
+export const userActivitySlice = createSlice({
     name: 'news',
     initialState: initState ,
     reducers: {
-        setNewsList: (state, action: PayloadAction<News[]>) => {
-            state.newsList = action.payload;
+        setUserActivityList: (state, action: PayloadAction<UserActivity[]>) => {
+            state.userActivityList = action.payload;
         },
-        setNewsCount: (state, action: PayloadAction<number>) => {
+        setUserActivityCount: (state, action: PayloadAction<number>) => {
             state.count = action.payload;
         },
-        setView: (state, action: PayloadAction<'main' | 'new' | 'update'>) => {
-            state.view = action.payload;
-        },
-        viewNews: (state, action: PayloadAction<string>)=>{
-            state.selectedNewsId = action.payload;
-        },
+       
         setPagination: (state, action: PayloadAction<{page:number, pageSize:number}>) =>{
             state.filters = {
                 ...state.filters,
@@ -52,25 +50,15 @@ export const newsSlice = createSlice({
                 pageSize: action.payload.pageSize
             }
         },
-        setFilter: (state, action: PayloadAction<NewsFilter>) =>{
+        setFilter: (state, action: PayloadAction<UserActivityFilter>) =>{
             state.filters = action.payload
         },
-        setPublished: (state, action: PayloadAction<{id:string, isPublished:boolean}>) =>{
-            state.newsList = state.newsList.map(o=>{
-                if(o.id === action.payload.id){
-                    return {
-                        ...o,
-                        isPublished: action.payload.isPublished
-                    }
-                }
-                return o;
-            })
-        },
-        deleteNews: (state, action: PayloadAction<string>) =>{
-            state.newsList = state.newsList.filter(o=>{
+        
+        deleteUserActivity: (state, action: PayloadAction<string>) =>{
+            state.userActivityList = state.userActivityList.filter(o=>{
                 return o.id !== action.payload
             })
-            if(state.newsList.length === 0 
+            if(state.userActivityList.length === 0 
                 && state.filters && state.filters.page!==undefined 
                 && state.filters.page >1){
                 state.filters.page = state.filters.page-1;
@@ -79,32 +67,31 @@ export const newsSlice = createSlice({
     }
 });
 
-export const newsActions = newsSlice.actions;
+export const userActivityActions = userActivitySlice.actions;
 
-export const getNewsList = (store: INewsStore) => store.newsList;
 
-export const newsStore = configureStore<INewsStore>({
-    reducer: newsSlice.reducer,
+export const newsStore = configureStore<IUserActivityStore>({
+    reducer: userActivitySlice.reducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         serializableCheck: false
     })as any,
     //.concat(logger) 
 })
 
-export interface INewsContext 
-    extends ReactReduxContextValue<INewsStore, PayloadAction<any>> {
+export interface IUserActivityContext 
+    extends ReactReduxContextValue<IUserActivityStore, PayloadAction<any>> {
 }
 
-const NewsContext = React.createContext<INewsContext>({} as any);
+const UserActivityContext = React.createContext<IUserActivityContext>({} as any);
 
 //hooks for context
-export const useNewsStore = createStoreHook(NewsContext)
-export const useNewsDispatch = createDispatchHook(NewsContext)
-export const useNewsSelector = createSelectorHook(NewsContext)
+export const useUserActivityStore = createStoreHook(UserActivityContext)
+export const useUserActivityDispatch = createDispatchHook(UserActivityContext)
+export const useUserActivitySelector = createSelectorHook(UserActivityContext)
 
-export const NewsProvider: React.FC<{children: ReactNode}> = ({ children }) => {
+export const UserActivityContextProvider: React.FC<{children: ReactNode}> = ({ children }) => {
     return (
-        <Provider context={NewsContext as any} store={newsStore}>
+        <Provider context={UserActivityContext as any} store={newsStore}>
             {children}
         </Provider>
     )

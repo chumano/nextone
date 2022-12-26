@@ -18,20 +18,19 @@ namespace MasterService.Domain.Services
         Task<User> GetUserByEmail(string email);
 
         Task<IList<User>> GetUsers(PageOptions pageOptions, string textSearch);
+        Task<int> Count(string textSearch);
 
         Task CreateUserFromIdentityUser(string userId);
 
-        Task<User> CreateUser(string name, string email, string phone);
+        Task<User> CreateUser(string name, string email, string phone, string createdBy);
 
-        Task<User> UpdateUser(User user, string name, string email, string phone);
+        Task<User> UpdateUser(User user, string name, string email, string phone, string updatedBy);
 
-        Task<User> UpdateUserRoles(User user, List<string> roleCodes);
+        Task<User> UpdateUserRoles(User user, List<string> roleCodes, string updatedBy);
 
-        Task<int> Count(string textSearch);
+        Task Active(User user, bool isActive, string updatedBy);
 
-        Task Active(User user, bool isActive);
-
-        Task DeleteUser(User user, bool isSelf= false);
+        Task DeleteUser(User user, bool isSelf, string deletedBy);
 
     }
 
@@ -95,7 +94,7 @@ namespace MasterService.Domain.Services
             await _userRepository.SaveChangesAsync();
         }
 
-        public async Task<User> CreateUser(string name, string email, string phone)
+        public async Task<User> CreateUser(string name, string email, string phone, string createdBy)
         {
             var id = _idGenerator.GenerateNew();
             var user = new User(id, name, email, phone);
@@ -111,12 +110,12 @@ namespace MasterService.Domain.Services
             //add default roleCode = "member" 
             await this.UpdateUserRoles(user, new List<string> { "member" });
 
-            //TODO : Send domainevent UserCreated
-            await _bus.Publish(new UserCreated());
+            //Send domainevent UserCreated
+            await _bus.Publish(new UserCreated(user, createdBy));
             return user;
         }
 
-        public async Task<User> UpdateUser(User user, string name, string email, string phone)
+        public async Task<User> UpdateUser(User user, string name, string email, string phone, string updatedBy)
         {
             //var roles = await _roleRepository.Roles
             //        .Where(o => roleCodes.Contains(o.Code))
@@ -139,12 +138,12 @@ namespace MasterService.Domain.Services
 
             await _userRepository.SaveChangesAsync();
 
-            //TODO : Send domainevent UserUpdated
-            await _bus.Publish(new UserUpdated());
+            //Send domainevent UserUpdated
+            await _bus.Publish(new UserUpdated(user, updatedBy));
             return user;
         }
 
-        public async Task<User> UpdateUserRoles(User user, List<string> roleCodes)
+        public async Task<User> UpdateUserRoles(User user, List<string> roleCodes, string updatedBy = null)
         {
             var roles = await _roleRepository.Roles.Where(o => roleCodes.Contains(o.Code)).ToListAsync();
 
@@ -158,12 +157,12 @@ namespace MasterService.Domain.Services
             await _identityService.UpdateIdentityUserRoles(user.Id, userRoles.Select(o => o.RoleCode).ToList());
             await _userRepository.SaveChangesAsync();
 
-            // TODO : Send domainevent UserUpdated
-             await _bus.Publish(new UserUpdated());
+            //Send domainevent UserUpdated
+             await _bus.Publish(new UserUpdated(user, updatedBy));
             return user;
         }
 
-        public async Task Active(User user, bool isActive)
+        public async Task Active(User user, bool isActive, string updatedBy = null)
         {
             user.IsActive = isActive;
 
@@ -174,10 +173,10 @@ namespace MasterService.Domain.Services
             await _userRepository.SaveChangesAsync();
 
             //TODO : Send domainevent UserActived
-            await _bus.Publish(new UserActived());
+            await _bus.Publish(new UserActived(user, updatedBy));
         }
 
-        public async Task DeleteUser(User user, bool isSelf = false)
+        public async Task DeleteUser(User user, bool isSelf, string updatedBy )
         {
             _userRepository.Delete(user);
 
@@ -185,9 +184,8 @@ namespace MasterService.Domain.Services
 
             await _userRepository.SaveChangesAsync();
 
-            //TODO : Send domainevent UserDeleted
-
-            await _bus.Publish(new UserDeleted());
+            //Send domainevent UserDeleted
+            await _bus.Publish(new UserDeleted(user, updatedBy));
         }
 
         public async Task<int> Count(string textSearch)

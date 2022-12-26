@@ -68,3 +68,4 @@ deploy
 capture-images
 src/UserDomain/bin
 src/UserDomain/obj
+src/MasterService/backups

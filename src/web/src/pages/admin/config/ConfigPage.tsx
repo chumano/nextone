@@ -6,6 +6,8 @@ import NoPermission from "../../../components/auth/NoPermission";
 import { MapInfo } from "../../../models/map/Map.modal";
 import { IAppStore } from "../../../store";
 import '../../../styles/pages/admin-config/system-config.scss'
+import BackupPage from "../backup/BackupPage";
+import UserActivityPage from "../user-activity/UserActivityPage";
 import ConfigEventTypes from "./ConfigEventTypes";
 import ConfigMap from "./ConfigMap";
 
@@ -29,6 +31,13 @@ const ConfigPage: React.FC = () => {
                 <Tabs.TabPane tab={`Loại sự kiện`} key={'event-type'} >
                     <ConfigEventTypes/>
                 </Tabs.TabPane>
+                <Tabs.TabPane tab={`Hoạt động người dùng`} key={'user-activity'} >
+                    <UserActivityPage/>
+                </Tabs.TabPane>
+                <Tabs.TabPane tab={`Backup dữ liệu`} key={'backup'} >
+                    <BackupPage/>
+                </Tabs.TabPane>
+                
             </Tabs>
 
         </div>

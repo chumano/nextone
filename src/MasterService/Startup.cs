@@ -32,6 +32,7 @@ using MasterService.Validators;
 using System.Net.Http;
 using System.Security.Authentication;
 using UserDomain;
+using MasterService.HostedServices;
 
 namespace MasterService
 {
@@ -140,6 +141,11 @@ namespace MasterService
             services.AddScoped<IIdentityService, IdentityService>();
 
             services.AddValidatorsFromAssemblyContaining(typeof(CreateUserValidator));
+
+            //database backup
+            services.Configure<DBBackupOptions>(Configuration.GetSection(nameof(DBBackupOptions)));
+            services.AddTransient<DatabaseManager>();
+            services.AddHostedService<DatabaseBackupHostedService>();
         }
 
         private static HttpClientHandler GetHttpHandler()

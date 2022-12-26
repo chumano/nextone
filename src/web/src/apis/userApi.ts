@@ -13,6 +13,8 @@ import { CreateUserRequest, User } from "../models/user/User.model";
 import { createAxios } from "../utils";
 import API from "../config/apis";
 import { handleAxiosApi } from "../utils/functions";
+import { UserActivity } from "../pages/admin/user-activity/userActivityContext";
+import { Backup, BackupSchedule } from "../pages/admin/backup/backupContext";
 
 const axiosInstance = createAxios(API.MASTER_SERVICE);
 const list = (
@@ -101,27 +103,57 @@ const resetPassword = (
 const getUserActivities = (
 	textSearch: string, searchParams?: PageOptions,
 	
-): Promise<AxiosResponse<ApiResult<User[]>>> => {
+): Promise<ApiResult<UserActivity[]>> => {
 	if (!searchParams) searchParams = new PageOptions();
-	return axiosInstance.get(`/user/GetActivities`, {
+	return handleAxiosApi(axiosInstance.get(`/user/GetActivities`, {
 		params: {
 			offset: searchParams.offset,
 			pageSize: searchParams.pageSize,
 			textSearch
 		},
-	});
+	}));
 };
 
 const countUserActivities = (
 	textSearch: string
 	
-): Promise<AxiosResponse<ApiResult<User[]>>> => {
-	return axiosInstance.get(`/user/CountActivities`, {
+): Promise<ApiResult<number>> => {
+	return handleAxiosApi(axiosInstance.get(`/user/CountActivities`, {
 		params: {
 			textSearch
 		},
-	});
+	}));
 };
+
+const deleteUserActivity = (
+	activityId: string
+): Promise<ApiResult<null>> => {
+	return handleAxiosApi(axiosInstance.delete(`/user/activity/${activityId}`));
+};
+
+//system
+const getBackups = (
+): Promise<ApiResult<Backup[]>> => {
+	return handleAxiosApi(axiosInstance.get(`/system/GetBackups`, {
+		params: { },
+	}));
+};
+
+const createBackup = () : Promise<ApiResult<undefined>>=>{
+	return handleAxiosApi(axiosInstance.post(`/system/Backup`));
+}
+
+const getBackupSchedule = (	): Promise<ApiResult<BackupSchedule>> => {
+	return handleAxiosApi(axiosInstance.get(`/system/GetBackupSchedule`));
+};
+	
+const updateBackupSchedule = (backupIntervalInDays: number, keepNumber:number): Promise<ApiResult<undefined>> =>{
+	return handleAxiosApi(axiosInstance.post(`/system/UpdateBackupSchedule`,{
+		backupIntervalInDays,
+		keepNumber
+	}));
+}
+
 export const userApi = {
 	checkMe,
 	getMyProfile,
@@ -139,5 +171,11 @@ export const userApi = {
 	resetPassword,
 
 	getUserActivities,
-	countUserActivities
+	countUserActivities,
+	deleteUserActivity,
+
+	getBackups,
+	createBackup,
+	getBackupSchedule,
+	updateBackupSchedule
 };

@@ -118,6 +118,7 @@ namespace ComService.Boudaries.Controllers
         {
             try
             {
+                var userId = _userContext.User.UserId;
                 var conversation = await _conversationService.Get(id);
                 if (conversation == null)
                 {
@@ -137,7 +138,7 @@ namespace ComService.Boudaries.Controllers
                     }
                 }
 
-                await _conversationService.Delete(conversation);
+                await _conversationService.Delete(conversation, userId);
 
                 return Ok(ApiResult.Success(null));
             }

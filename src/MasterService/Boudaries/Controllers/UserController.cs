@@ -3,6 +3,7 @@ using MasterService.Domain;
 using MasterService.Domain.Repositories;
 using MasterService.Domain.Services;
 using MasterService.DTOs.User;
+using MasterService.Infrastructure;
 using MasterService.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,10 +32,12 @@ namespace MasterService.Controllers
         private readonly IUserActivityRepository _activityRepository;
         private readonly IUserContext _userContext;
         private readonly IRoleRepository _roleRepository;
+        private readonly MasterDBContext _dbContext;
 
         private readonly IValidator<CreateUserDTO> _createUserValidator;
         private readonly IValidator<UpdateUserDTO> _updateUserValidator;
         public UserController(ILogger<UserController> logger,
+             MasterDBContext dbContext,
             IUserRepository userRepository,
             IUserService userService,
             IIdentityService identityService,
@@ -45,6 +48,7 @@ namespace MasterService.Controllers
             IRoleRepository roleRepository)
         {
             _logger = logger;
+            _dbContext = dbContext;
             _userRepository = userRepository;
             _userService = userService;
             _identityService = identityService;
@@ -53,6 +57,7 @@ namespace MasterService.Controllers
             _createUserValidator = createUserValidator;
             _updateUserValidator = updateUserValidator;
             _roleRepository = roleRepository;
+
         }
 
         [HttpGet]
@@ -141,7 +146,7 @@ namespace MasterService.Controllers
                 throw new DomainException("[User/UpdateMyProfile]", "User not exist");
             }
 
-            await _userService.UpdateUser(user, userDTO.Name, user.Email, userDTO.Phone);
+            await _userService.UpdateUser(user, userDTO.Name, user.Email, userDTO.Phone, actionUser.UserId);
 
             return Ok(ApiResult.Success(null));
         }
@@ -202,6 +207,7 @@ namespace MasterService.Controllers
         [HttpPost("CreateUser")]
         public async Task<IActionResult> CreateUser(CreateUserDTO userDTO)
         {
+            var actionUser = _userContext.User;
             var validationResult = _createUserValidator.Validate(userDTO);
                 
             if(!validationResult.IsValid)
@@ -217,13 +223,14 @@ namespace MasterService.Controllers
                 return Ok(ApiResult.Error("Email Already Exist"));
             }
 
-            var user = await _userService.CreateUser(userDTO.Name, userDTO.Email, userDTO.Phone);
+            var user = await _userService.CreateUser(userDTO.Name, userDTO.Email, userDTO.Phone, actionUser.UserId);
             return Ok(ApiResult.Success(user));
         }
 
         [HttpPost("UpdateUser")]
         public async Task<IActionResult> UpdateUser(UpdateUserDTO userDTO)
         {
+            var actionUser = _userContext.User;
             var validationResult = _updateUserValidator.Validate(userDTO);
 
             if (!validationResult.IsValid)
@@ -238,7 +245,7 @@ namespace MasterService.Controllers
                 throw new DomainException("[User/UpdateUser]", "User not exist");
             }
 
-            await _userService.UpdateUser(user, userDTO.Name, userDTO.Email, userDTO.Phone);
+            await _userService.UpdateUser(user, userDTO.Name, userDTO.Email, userDTO.Phone, actionUser.UserId);
 
             return Ok(ApiResult.Success(null));
         }
@@ -246,13 +253,14 @@ namespace MasterService.Controllers
         [HttpPost("UpdateUserRoles")]
         public async Task<IActionResult> UpdateUserRoles(UpdateUserRolesDTO userDTO)
         {
+            var actionUser = _userContext.User;
             var user = await _userService.Get(userDTO.UserId);
             if(user == null)
             {
                 throw new DomainException("[User/UpdateUserRoles]", "User not exist");
             }
 
-            await _userService.UpdateUserRoles(user, userDTO.RoleCodes);
+            await _userService.UpdateUserRoles(user, userDTO.RoleCodes, actionUser.UserId);
 
             return Ok(ApiResult.Success(null));
         }
@@ -260,13 +268,14 @@ namespace MasterService.Controllers
         [HttpPost("ActiveUser")]
         public async Task<IActionResult> ActiveUser(ActiveUserDTO userDTO)
         {
+            var actionUser = _userContext.User;
             var user = await _userService.Get(userDTO.UserId);
             if (user == null)
             {
                 throw new DomainException("User/ActivateUser", "User not exist");
             }
 
-            await _userService.Active(user, userDTO.IsActive);
+            await _userService.Active(user, userDTO.IsActive, actionUser.UserId);
 
             return Ok(ApiResult.Success(null));
         }
@@ -274,6 +283,7 @@ namespace MasterService.Controllers
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassowrd(ResetUserPasswordDTO userDTO)
         {
+            var actionUser = _userContext.User;
             var user = await _userService.Get(userDTO.UserId);
             if (user == null)
             {
@@ -304,7 +314,7 @@ namespace MasterService.Controllers
                 return Ok(ApiResult.Error("Password is invalid"));
             }
 
-            await _userService.DeleteUser(user, isSelf: true);
+            await _userService.DeleteUser(user, isSelf: true, actionUser.UserId);
 
             return Ok(ApiResult.Success(null));
         }
@@ -312,21 +322,22 @@ namespace MasterService.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
+            var actionUser = _userContext.User;
             var user = await _userService.Get(id);
             if (user == null)
             {
                 throw new DomainException("[User/DeleteUser]", "User not exist");
             }
 
-            await _userService.DeleteUser(user);
+            await _userService.DeleteUser(user, isSelf: false, actionUser.UserId);
 
             return Ok(ApiResult.Success(null));
         }
 
         [HttpGet("GetActivities")]
-        public async Task<IActionResult> GetActivities([FromBody] GetUserActivitiesDTO getUserActivitiesDTO)
+        public async Task<IActionResult> GetActivities([FromQuery] GetUserActivitiesDTO getUserActivitiesDTO)
         {
-            var query = _activityRepository.UserActivities.AsNoTracking();
+            var query = _dbContext.UserActivities.AsNoTracking();
             if (!string.IsNullOrWhiteSpace(getUserActivitiesDTO.UserId))
             {
                 query = query.Where(o => o.UserId == getUserActivitiesDTO.UserId);
@@ -337,20 +348,30 @@ namespace MasterService.Controllers
                 query = query.Where(o => o.Action.Contains(getUserActivitiesDTO.TextSearch));
             }
 
+            var users = _dbContext.Users.AsNoTracking();
             var pageOptions = new PageOptions(getUserActivitiesDTO.Offset, getUserActivitiesDTO.PageSize);
             var items =  await query
-                .OrderByDescending(o => o.CreatedDate)
+                .Join(users, ua=> ua.UserId, u => u.Id, (ua, u) => new {ua, u })
+                .OrderByDescending(o => o.ua.CreatedDate)
                 .Skip(pageOptions.Offset)
                 .Take(pageOptions.PageSize)
                 .ToListAsync();
-               
-            return Ok(ApiResult.Success(items));
+            var mapItems = items.Select(o => new
+            {
+                Id = o.ua.Id,
+                UserId = o.u.Id,
+                UserName = o.u.Name,
+                CreatedDate = o.ua.CreatedDate,
+                Action = o.ua.Action,
+                System = o.ua.System
+            });
+            return Ok(ApiResult.Success(mapItems));
         }
 
         [HttpGet("CountActivities")]
-        public async Task<IActionResult> CountActivities([FromBody] GetUserActivitiesDTO getUserActivitiesDTO)
+        public async Task<IActionResult> CountActivities([FromQuery] GetUserActivitiesDTO getUserActivitiesDTO)
         {
-            var query = _activityRepository.UserActivities.AsNoTracking();
+            var query = _dbContext.UserActivities.AsNoTracking();
             if (!string.IsNullOrWhiteSpace(getUserActivitiesDTO.UserId))
             {
                 query = query.Where(o => o.UserId == getUserActivitiesDTO.UserId);
@@ -365,6 +386,21 @@ namespace MasterService.Controllers
                 .CountAsync();
 
             return Ok(ApiResult.Success(count));
+        }
+
+        [HttpDelete("activity/{id}")]
+        public async Task<IActionResult> DeleteUserActivity(string id)
+        {
+            var actionUser = _userContext.User;
+            var activity = await _activityRepository.UserActivities.FirstOrDefaultAsync (o => o.Id == id);
+
+            if(activity == null)
+            {
+                throw new DomainException("[User/DeleteUserActivity]", "UserActivity not exist");
+            }
+            _activityRepository.Delete(activity);
+            await _activityRepository.SaveChangesAsync();
+            return Ok(ApiResult.Success(null));
         }
     }
 }

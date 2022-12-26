@@ -13,33 +13,7 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 TODO: 
 	ios: firebase:
 		https://github.com/invertase/react-native-firebase/issues/4705
-
-
---sync Master.User -> Com.UserStatus
-CREATE OR ALTER TRIGGER [master].update_user_status_name ON [master].[User]
-AFTER UPDATE
-AS
-BEGIN
-	UPDATE [com].[T_App_UserStatus]
-    SET    [com].[T_App_UserStatus].UserName = [INSERTED].Name
-    FROM   INSERTED
-    WHERE  INSERTED.Id = [com].[T_App_UserStatus].UserId
-END
-
-
-SELECT TOP (1000) us.[UserId]
-      ,us.[UserName]
-      ,us.[LastUpdateDate]
-	  ,u.Name,u.Phone
-  FROM [NextOne].[com].[T_App_UserStatus] us
-  Join [NextOne].[master].[User] u on us.UserId = u.Id
-  where us.UserName <> u.Name
-
-  update us
-  set us.UserName = u.Name
-  FROM [NextOne].[com].[T_App_UserStatus] us
-  Join [NextOne].[master].[User] u on us.UserId = u.Id
-  where us.UserName <> u.Name
+ 
 -------------------------------------------
 Web-TODO:
 - Chat
@@ -105,8 +79,36 @@ Mobile-TODO
 	https://dev-yakuza.posstree.com/en/react-native/react-native-geolocation-service/
 	
 	https://www.npmjs.com/package/react-native-toast-message
-===================
+============================================
 icons: https://oblador.github.io/react-native-vector-icons/
+
+=============================================
+--sync Master.User -> Com.UserStatus
+CREATE OR ALTER TRIGGER [master].update_user_status_name ON [master].[User]
+AFTER UPDATE
+AS
+BEGIN
+	UPDATE [com].[T_App_UserStatus]
+    SET    [com].[T_App_UserStatus].UserName = [INSERTED].Name
+    FROM   INSERTED
+    WHERE  INSERTED.Id = [com].[T_App_UserStatus].UserId
+END
+
+
+SELECT TOP (1000) us.[UserId]
+      ,us.[UserName]
+      ,us.[LastUpdateDate]
+	  ,u.Name,u.Phone
+  FROM [NextOne].[com].[T_App_UserStatus] us
+  Join [NextOne].[master].[User] u on us.UserId = u.Id
+  where us.UserName <> u.Name
+
+  update us
+  set us.UserName = u.Name
+  FROM [NextOne].[com].[T_App_UserStatus] us
+  Join [NextOne].[master].[User] u on us.UserId = u.Id
+  where us.UserName <> u.Name
+=============================================
 files
 {
             "fileId": "dc85f870-898d-42f2-97b7-b9ebda2e1446",
