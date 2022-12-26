@@ -13,7 +13,8 @@ adb shell am start -a android.intent.action.VIEW -d "ucom://chat/World" com.ucom
 TODO: 
 	ios: firebase:
 		https://github.com/invertase/react-native-firebase/issues/4705
- 
+	
+	video player
 -------------------------------------------
 Web-TODO:
 - Chat

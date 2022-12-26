@@ -70,6 +70,7 @@ namespace MasterService.Infrastructure
             //var dirPath = GetBackupFolderPath();
             //mount /var/opt/mssql/data/backups
             //var filePath = Path.Combine(dirPath, backupName);
+            PrepareDirs();
             string backupSQL = string.Format(@"BACKUP DATABASE [{0}] TO  DISK = N'{1}' WITH NOFORMAT, NOINIT,  NAME = N'UCOM-Full Database Backup', SKIP, NOREWIND, NOUNLOAD,  STATS = 10",
                     "NextOne", $"backups/{backupName}");
             var num = await _dbContext.Database.ExecuteSqlRawAsync(backupSQL);
@@ -144,6 +145,11 @@ namespace MasterService.Infrastructure
             await _dbContext.SaveChangesAsync();
         }
 
+        private void PrepareDirs()
+        {
+            var dirPath = GetBackupFolderPath();
+            Directory.CreateDirectory(dirPath);
+        }
         private string GetBackupFolderPath()
         {
             var dirPath = _backupOptions.Value.Folder;// Path.Combine(_environment.ContentRootPath, _backupOptions.Value.Folder);
