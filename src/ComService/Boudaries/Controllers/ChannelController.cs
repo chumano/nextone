@@ -182,19 +182,27 @@ namespace ComService.Boudaries.Controllers
         [HttpPost("DeleteEvent")]
         public async Task<IActionResult> DeleteEvent([FromBody] DeleteEventDTO deleteEventDTO)
         {
-            var userId = _userContext.User.UserId;
-            var user = await _userStatusService.GetUser(userId);
-
-            var channel = await _channelService.Get(deleteEventDTO.ChannelId);
-            if (channel == null)
+            try
             {
-                return Ok(ApiResult.Error("Channel does not exist"));
+                var userId = _userContext.User.UserId;
+                var user = await _userStatusService.GetUser(userId);
+
+                var channel = await _channelService.Get(deleteEventDTO.ChannelId);
+                if (channel == null)
+                {
+                    return Ok(ApiResult.Error("Channel does not exist"));
+                }
+
+                //check permission
+                await _channelService.DeleteEvent(channel, deleteEventDTO.EventId);
+
+                return Ok(ApiResult.Success(null));
+            }catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Channel DeleteEvent error: {ex.Message}");
+                return Ok(ApiResult.Error(ex.Message));
             }
-
-            //check permission
-            await _channelService.DeleteEvent(channel, deleteEventDTO.EventId);
-
-            return Ok(ApiResult.Success(null));
+           
         }
     }
 }

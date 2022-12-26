@@ -31,7 +31,7 @@ namespace ComService.Boudaries.Controllers
         private readonly IUserStatusService _userStatusService;
         private readonly IChannelService _channelService;
         private readonly IEventRepository _eventRepository;
-        private readonly IdGenerator _idGenerator; 
+        private readonly IdGenerator _idGenerator;
         protected readonly IBus _bus;
 
         public EventController(
@@ -158,7 +158,7 @@ namespace ComService.Boudaries.Controllers
             var items = await query
                 .Include(o => o.EventType)
                 .Include(o => o.UserSender)
-                .Include(o=> o.Files)
+                .Include(o => o.Files)
                 .OrderByDescending(o => o.CreatedDate)
                 .ToListAsync();
             return Ok(ApiResult.Success(items));
@@ -190,33 +190,41 @@ namespace ComService.Boudaries.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(string id)
         {
-            var evt = await _comDbContext.Events.FindAsync(id);
-
-            if(evt == null)
+            try
             {
-                return Ok(ApiResult.Error("Event does not exist"));
+                var evt = await _comDbContext.Events.FindAsync(id);
+
+                if (evt == null)
+                {
+                    return Ok(ApiResult.Error("Event does not exist"));
+                }
+
+                //find channelEvents
+                var channelEvents = await _comDbContext.Set<ChannelEvent>()
+                    .Where(o => o.EventId == id)
+                    .ToListAsync();
+
+                //find messageEvents
+                var messages = await _comDbContext.Messages
+                    .Where(o => o.EventId == id)
+                    .ToListAsync();
+
+
+                _comDbContext.Set<ChannelEvent>().RemoveRange(channelEvents);
+                _comDbContext.Messages.RemoveRange(messages);
+                _comDbContext.Events.Remove(evt);
+
+                await _comDbContext.SaveChangesAsync();
+
+                await _bus.Publish(new EventDeleted());
+
+                return Ok(ApiResult.Success(null));
             }
-
-            //find channelEvents
-            var channelEvents = await _comDbContext.Set<ChannelEvent>()
-                .Where(o => o.EventId == id)
-                .ToListAsync();
-
-            //find messageEvents
-            var messages = await _comDbContext.Messages
-                .Where(o => o.EventId == id)
-                .ToListAsync();
-
-
-            _comDbContext.Set<ChannelEvent>().RemoveRange(channelEvents);
-            _comDbContext.Messages.RemoveRange(messages);
-            _comDbContext.Events.Remove(evt);
-
-            await _comDbContext.SaveChangesAsync();
-
-            await _bus.Publish(new EventDeleted());
-
-            return Ok(ApiResult.Success(null));
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"EventController DeleteEvent error: {ex.Message}");
+                return Ok(ApiResult.Error(ex.Message));
+            }
         }
     }
 }

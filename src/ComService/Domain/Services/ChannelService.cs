@@ -195,10 +195,15 @@ namespace ComService.Domain.Services
 
         public async Task DeleteEvent(Channel channel, string eventId)
         {
-            _dbContext.Set<ChannelEvent>().Remove(new ChannelEvent()
+            //_dbContext.Set<ChannelEvent>().Remove(new ChannelEvent()
+            //{
+            //    ChannelId = channel.Id,
+            //    EventId = eventId
+            //});
+            channel.RecentEvents.Remove(new ChannelEvent()
             {
-                ChannelId = channel.Id,
-                EventId = eventId
+                EventId = eventId,
+                ChannelId = channel.Id
             });
 
             var eventMessage = await _dbContext.Messages.FirstOrDefaultAsync(o => o.ConversationId == channel.Id && o.EventId == eventId);
