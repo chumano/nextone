@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MasterService.Migrations.UserDB
 {
-    public partial class Master_UserActivity : Migration
+    public partial class Master_AddUserActivity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,8 +15,10 @@ namespace MasterService.Migrations.UserDB
                 schema: "master",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "varchar(36)", nullable: false),
+                    Id = table.Column<string>(type: "varchar(36)", nullable: false),
+                    UserId = table.Column<string>(type: "varchar(36)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(255)", nullable: true),
+                    System = table.Column<string>(type: "nvarchar(255)", nullable: true),
                     Action = table.Column<string>(type: "nvarchar(255)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime", nullable: false),
@@ -26,7 +28,7 @@ namespace MasterService.Migrations.UserDB
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserActivity", x => x.UserId);
+                    table.PrimaryKey("PK_UserActivity", x => x.Id);
                 });
         }
 

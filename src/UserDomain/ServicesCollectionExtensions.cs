@@ -30,6 +30,7 @@ namespace UserDomain
 
 
             services.TryAddSingleton<IdGenerator, DefaultIdGenerator>();
+            services.AddScoped<IUserActivityRepository, UserActivityRepository>();
             services.AddScoped<UserActivityService>();
             return services;
         }

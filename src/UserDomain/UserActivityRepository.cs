@@ -1,11 +1,11 @@
-﻿using MasterService.Infrastructure;
+﻿
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MasterService.Domain.Repositories
+namespace UserDomain
 {
     public interface IUserActivityRepository
     {
@@ -21,9 +21,9 @@ namespace MasterService.Domain.Repositories
 
     public class UserActivityRepository : IUserActivityRepository
     {
-        private readonly MasterDBContext _dbContext;
+        private readonly UserDBContext _dbContext;
 
-        public UserActivityRepository(MasterDBContext masterDBContext)
+        public UserActivityRepository(UserDBContext masterDBContext)
         {
             _dbContext = masterDBContext;
         }

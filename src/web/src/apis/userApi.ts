@@ -98,7 +98,30 @@ const resetPassword = (
 	);
 };
 
+const getUserActivities = (
+	textSearch: string, searchParams?: PageOptions,
+	
+): Promise<AxiosResponse<ApiResult<User[]>>> => {
+	if (!searchParams) searchParams = new PageOptions();
+	return axiosInstance.get(`/user/GetActivities`, {
+		params: {
+			offset: searchParams.offset,
+			pageSize: searchParams.pageSize,
+			textSearch
+		},
+	});
+};
 
+const countUserActivities = (
+	textSearch: string
+	
+): Promise<AxiosResponse<ApiResult<User[]>>> => {
+	return axiosInstance.get(`/user/CountActivities`, {
+		params: {
+			textSearch
+		},
+	});
+};
 export const userApi = {
 	checkMe,
 	getMyProfile,
@@ -113,5 +136,8 @@ export const userApi = {
 	updateUserRole,
 	deleteUser,
 	activateUser,
-	resetPassword
+	resetPassword,
+
+	getUserActivities,
+	countUserActivities
 };

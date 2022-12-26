@@ -13,7 +13,6 @@ namespace MasterService.Infrastructure
         public DbSet<User> Users { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
-        public DbSet<UserActivity> UserActivities { get; set; }
         public MasterDBContext(DbContextOptions<MasterDBContext> options) : base(options)
         {
             System.Diagnostics.Debug.WriteLine("MasterDBContext::ctor ->" + this.GetHashCode());
@@ -129,36 +128,6 @@ namespace MasterService.Infrastructure
 
             });
 
-            //user activity
-
-            modelBuilder.Entity<UserActivity>(eb =>
-            {
-                eb.ToTable("UserActivity", DB_SCHEMA)
-                   .HasKey(nameof(UserActivity.UserId), nameof(UserActivity.CreatedDate));
-
-                eb.Property(o => o.UserId)
-                  .HasColumnType("varchar(36)");
-
-                eb.Property(o => o.UserName)
-                   .HasColumnType("nvarchar(255)")
-                   .IsRequired();
-
-                eb.Property(o => o.System)
-                   .HasColumnType("varchar(255)")
-                   .IsRequired();
-
-                eb.Property(o => o.Action)
-                   .HasColumnType("varchar(255)")
-                   .IsRequired();
-
-                eb.Property(o => o.Data)
-                   .HasColumnType("nvarchar(max)")
-                   .IsRequired();
-
-                eb.Property(o => o.CreatedDate)
-                   .HasColumnType("datetime")
-                   .IsRequired();
-            });
         }
 
 

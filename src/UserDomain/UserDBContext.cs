@@ -7,7 +7,7 @@ namespace UserDomain
     {
         public const string DB_SCHEMA = "master";
 
-        public DbSet<UserActivity> UserActivitys { get; set; }
+        public DbSet<UserActivity> UserActivities { get; set; }
 
         public UserDBContext(DbContextOptions<UserDBContext> options) : base(options)
         {
@@ -33,6 +33,8 @@ namespace UserDomain
                 eb.Property(o => o.UserName)
                     .HasColumnType("nvarchar(255)");
 
+                eb.Property(o => o.System)
+                    .HasColumnType("nvarchar(255)");
 
                 eb.Property(o => o.Action)
                     .HasColumnType("nvarchar(255)");

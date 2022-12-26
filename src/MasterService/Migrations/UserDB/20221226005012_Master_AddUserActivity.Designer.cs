@@ -10,8 +10,8 @@ using UserDomain;
 namespace MasterService.Migrations.UserDB
 {
     [DbContext(typeof(UserDBContext))]
-    [Migration("20221225092756_Master_UserActivityAddId")]
-    partial class Master_UserActivityAddId
+    [Migration("20221226005012_Master_AddUserActivity")]
+    partial class Master_AddUserActivity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -45,6 +45,9 @@ namespace MasterService.Migrations.UserDB
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
+
+                    b.Property<string>("System")
+                        .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(36)");

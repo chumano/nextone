@@ -10,16 +10,20 @@ namespace UserDomain
     {
         private readonly UserDBContext _dbContext;
         private readonly IdGenerator _idGenerator;
-        public UserActivityService(UserDBContext dBContext, IdGenerator idGenerator)
+        private readonly IUserActivityRepository _userActivityRepository;
+        public UserActivityService(UserDBContext dBContext,
+            IUserActivityRepository repository,
+            IdGenerator idGenerator)
         {
             _dbContext = dBContext;
             _idGenerator = idGenerator;
+            _userActivityRepository = repository;
         }
 
         public async Task AddUserActivity(string userId, string action, string description)
         {
             var id = _idGenerator.GenerateNew();
-            _dbContext.UserActivitys.Add(new UserActivity()
+            _userActivityRepository.Add(new UserActivity()
             {
                 Id = id,
                 UserId = userId,
@@ -27,12 +31,12 @@ namespace UserDomain
                 Description = description,
             });
 
-            await _dbContext.SaveChangesAsync();
+            await _userActivityRepository.SaveChangesAsync();
         }
 
         public async Task DeleteUserActivity(string activityId, string deletedByUserId =null)
         {
-            var activity = await _dbContext.UserActivitys.FindAsync(activityId);
+            var activity = await _dbContext.UserActivities.FindAsync(activityId);
             if (activity == null)
             {
                 throw new Exception("Not found ActivityId");
@@ -44,6 +48,8 @@ namespace UserDomain
             {
                 activity.DeletedBy = deletedByUserId;
             }
+
+            await _userActivityRepository.SaveChangesAsync();
         }
     }
 }

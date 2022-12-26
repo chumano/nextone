@@ -8,6 +8,7 @@ namespace MasterService.DTOs.User
     public class GetUserActivitiesDTO
     {
         public string UserId { get; set; }
+        public string TextSearch { get; set; }
         public int Offset { get; set; }
         public int PageSize { get; set; }
     }

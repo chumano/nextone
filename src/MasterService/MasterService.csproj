@@ -35,6 +35,7 @@
     <Folder Include="Boudaries\IntegrationEvents\Handlers\" />
     <Folder Include="Infrastructure\DBEntityConfigurations\" />
     <Folder Include="Migrations\" />
+    <Folder Include="Migrations\UserDB\" />
     <Folder Include="UseCases\Commands\" />
     <Folder Include="UseCases\Queries\" />
   </ItemGroup>

@@ -44,6 +44,9 @@ namespace MasterService.Migrations.UserDB
                         .HasColumnType("bit")
                         .HasDefaultValue(false);
 
+                    b.Property<string>("System")
+                        .HasColumnType("nvarchar(255)");
+
                     b.Property<string>("UserId")
                         .HasColumnType("varchar(36)");
 

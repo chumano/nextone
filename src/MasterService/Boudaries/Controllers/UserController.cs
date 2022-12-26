@@ -15,6 +15,7 @@ using NextOne.Shared.Security;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using UserDomain;
 
 namespace MasterService.Controllers
 {
@@ -325,19 +326,45 @@ namespace MasterService.Controllers
         [HttpGet("GetActivities")]
         public async Task<IActionResult> GetActivities([FromBody] GetUserActivitiesDTO getUserActivitiesDTO)
         {
-            var query = _activityRepository.UserActivities;
+            var query = _activityRepository.UserActivities.AsNoTracking();
             if (!string.IsNullOrWhiteSpace(getUserActivitiesDTO.UserId))
             {
                 query = query.Where(o => o.UserId == getUserActivitiesDTO.UserId);
             }
 
+            if (!string.IsNullOrWhiteSpace(getUserActivitiesDTO.TextSearch))
+            {
+                query = query.Where(o => o.Action.Contains(getUserActivitiesDTO.TextSearch));
+            }
+
             var pageOptions = new PageOptions(getUserActivitiesDTO.Offset, getUserActivitiesDTO.PageSize);
-            var items =  await query.OrderByDescending(o => o.CreatedDate)
+            var items =  await query
+                .OrderByDescending(o => o.CreatedDate)
                 .Skip(pageOptions.Offset)
                 .Take(pageOptions.PageSize)
                 .ToListAsync();
                
             return Ok(ApiResult.Success(items));
+        }
+
+        [HttpGet("CountActivities")]
+        public async Task<IActionResult> CountActivities([FromBody] GetUserActivitiesDTO getUserActivitiesDTO)
+        {
+            var query = _activityRepository.UserActivities.AsNoTracking();
+            if (!string.IsNullOrWhiteSpace(getUserActivitiesDTO.UserId))
+            {
+                query = query.Where(o => o.UserId == getUserActivitiesDTO.UserId);
+            }
+
+            if (!string.IsNullOrWhiteSpace(getUserActivitiesDTO.TextSearch))
+            {
+                query = query.Where(o => o.Action.Contains(getUserActivitiesDTO.TextSearch));
+            }
+
+            var count = await query
+                .CountAsync();
+
+            return Ok(ApiResult.Success(count));
         }
     }
 }
