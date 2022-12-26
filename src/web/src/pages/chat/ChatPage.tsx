@@ -206,6 +206,7 @@ const ChatPage: React.FC = () => {
 
 const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?: boolean}> 
     = ({conversation, isShownInfo}) => {
+    const dispatch = useDispatch();
     const { members } = conversation;
     const user = useSelector((store: IAppStore) => store.auth.user);
     const userId = user!.profile.sub;
@@ -232,6 +233,7 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
                     channelId: conversation.id,
                     eventId: item.id
                 }));
+
             },
             onCancel() {
             },
@@ -249,7 +251,3 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
     </>
 }
 export default ChatPage;
-function dispatch(arg0: { payload: { channelId: string; eventId: string; }; type: string; }) {
-    throw new Error('Function not implemented.');
-}
-
