@@ -205,7 +205,9 @@ const ModalSendLocation: React.FC<ModalSendLocationProps> = ({searchType, positi
                 )
             }}
             onOk={handleOk}
+            okText='Đồng ý'
             onCancel={handleCancel}
+            cancelText='Hủy bỏ'
         >
             <div style={{marginBottom: 5}}>
                 <label >Vị trí: [{position[0].toFixed(2)} , {position[1].toFixed(2)} ]</label>

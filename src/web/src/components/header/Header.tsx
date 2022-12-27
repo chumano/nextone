@@ -27,7 +27,7 @@ const Header :React.FC<IProp> = ({toggleDrawer}):JSX.Element=>{
                 <FontAwesomeIcon icon={faBars} />
             </div>
             <div>
-                Welcome: {userName}!
+                Xin chào: {userName}!
                 
             </div>
 

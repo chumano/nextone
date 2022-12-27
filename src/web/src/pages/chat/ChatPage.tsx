@@ -153,7 +153,7 @@ const ChatPage: React.FC = () => {
                         <div className='no-selected-conversation'>
                             <img src={no_selected_conversation_bg} />
 
-                            <h1>Welcome to Ucom!</h1>
+                            <h1>Chào mừng đến với Ucom!</h1>
                             <p>
                                 Chọn một kênh/tin nhắn để bắt đầu
                             </p>
