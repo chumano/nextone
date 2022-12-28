@@ -26,7 +26,7 @@ const FieldSource: React.FC<FieldSourceProps> = (props) => {
   // }, [props.name, props.value])
 
 
-  return <Block label={"Source"}>
+  return <Block label={"Dữ liệu"}>
     <Select placeholder="" value={props.value} style={{ 'width': '100%' }}
       disabled={props.disabled}
       onChange={props.onChange}>

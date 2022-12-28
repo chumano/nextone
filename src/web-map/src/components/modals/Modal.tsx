@@ -24,6 +24,8 @@ const Modal: React.FC<ModalProps> = (props) => {
           onOk={props.onOk}
           confirmLoading={props.confirmLoading}
           onCancel={props.onCancel}
+          okText='Đồng ý'
+          cancelText='Hủy bỏ'
       >
          <div className={classnames("maputnik-modal", props.className)}>
             <div className="maputnik-modal-scroller">

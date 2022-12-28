@@ -100,7 +100,7 @@ const ModalSymbol: React.FC = () => {
             Modal.error({
                 title: 'Có lỗi',
                 content: <>
-                    {`Không thể upload `}
+                    {`Không thể tải dữ liệu `}
                     <b>{item.name}</b>
                 </>,
             });

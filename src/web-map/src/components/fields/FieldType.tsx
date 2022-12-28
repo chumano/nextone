@@ -5,7 +5,7 @@ import Block from './Block'
 
 const FieldType: React.FC<any> = (props) => {
 
-  return <Block label={"Type"}>
+  return <Block label={"Loại dữ liệu"}>
     <Input
       disabled={true}
       value={props.value}

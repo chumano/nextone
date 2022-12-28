@@ -95,7 +95,7 @@ const MapViewContainer: React.FC<MapViewProps> = (props) => {
                     />
                 </LayersControl.BaseLayer>}
 
-                <LayersControl.Overlay name="Current Map" checked={true}>
+                <LayersControl.Overlay name="Bản đồ hiện tại" checked={true}>
                     <TileLayer tms={true} ref={ref}
                         url={tileMapUrl}
                     />

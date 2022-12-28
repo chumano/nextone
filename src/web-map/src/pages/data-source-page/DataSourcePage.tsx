@@ -45,7 +45,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
                     <div className='source-item-shapefile'>
                         <div>
                             
-                            Feature Count: {item.properties[ShapeFileProps.FEATURECOUNT]}
+                            Số dữ liệu: {item.properties[ShapeFileProps.FEATURECOUNT]}
                             
                         </div>
                         <div>
@@ -137,12 +137,12 @@ const DataSourcePage: React.FC = () => {
     const [currentPage, setCurentPage] = useState<number>(1);
 
     useEffect(()=>{
-        console.log("search...", searchFilter)
+        //console.log("search...", searchFilter)
         sourceStore.list(searchFilter);
     },[searchFilter])
 
     const onSearch = useCallback((value:string)=>{
-        console.log(`search text ${value}`);
+        //console.log(`search text ${value}`);
         setCurentPage(1);
         setSearchFilter((filter:any)=>{
            return {
@@ -154,7 +154,7 @@ const DataSourcePage: React.FC = () => {
     },[setSearchFilter])
 
     const filterGeoTypeChange = useCallback((values: any[])=>{
-        console.log(`selected geotypes `, values);
+        //console.log(`selected geotypes `, values);
         const types = values;
         setCurentPage(1);
         setSearchFilter((filter:any)=>{
@@ -175,7 +175,7 @@ const DataSourcePage: React.FC = () => {
                 </div>
                 <div className="flex-spacer"></div>
                 <div className="datasource-page__header__actions">
-                    <Button type="primary" onClick={handleCreateSource}> Upload dữ liệu </Button>
+                    <Button type="primary" onClick={handleCreateSource}> Tải dữ liệu </Button>
                 </div>
             </div>
             <div className="datasource-page__filter">
@@ -183,7 +183,7 @@ const DataSourcePage: React.FC = () => {
                     mode="multiple"
                     allowClear
                     style={{ width: '400px' }}
-                    placeholder="Chọn loại vector"
+                    placeholder="Chọn loại dữ liệu"
                     onChange={filterGeoTypeChange}
                     >
                     {geoTypeOptions}

@@ -16,8 +16,9 @@ const AntDCollapse: any = Collapse;
 
 const  getLayoutGroups = (layerType:LayerType)=> {
   const layerGroup = {
-    name: 'Layer',
+    name: 'Thông tin lớp bản đồ',
     type: 'layer',
+    title: undefined,
     properties : [] as string[]
   }
 
@@ -32,7 +33,7 @@ const  getLayoutGroups = (layerType:LayerType)=> {
   );
   
   return [layerGroup,]
-    .concat(painGroups)
+    .concat(painGroups as any)
 }
 
 const LayerEditor: React.FC = () => {
@@ -155,7 +156,7 @@ const LayerEditor: React.FC = () => {
   return <>
     <div className="layer-editor">
       <div className="layer-editor__header">
-        <span> Layer: '{layer.name}'</span>
+        <span> Lớp: '{layer.name}'</span>
       </div>
 
       <div className="layer-editor__body">
@@ -165,7 +166,7 @@ const LayerEditor: React.FC = () => {
           expandIconPosition={'right' as any}
         >
           {layoutGroups.map( (group, index)=>{
-            return <AntDCollapse.Panel key={index} header={ capitalize(group.name) }>
+            return <AntDCollapse.Panel key={index} header={ capitalize(group.title|| group.name ) }>
               <div>
                 {renderGroupType(group.type, { ...layer }, group.properties)}
               </div>

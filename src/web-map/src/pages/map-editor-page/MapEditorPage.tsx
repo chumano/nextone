@@ -39,7 +39,7 @@ const MapEditorPage: React.FC = () => {
 
     useEffect(() => {
         const mapid = params['mapid'] as string;
-        console.log("edit map", mapid);
+        //console.log("edit map", mapid);
         if (!mapid) return;
         const fetchMapInfo = async () => {
             const map = await mapStore.get(mapid);
@@ -69,7 +69,7 @@ const MapEditorPage: React.FC = () => {
             <ModalMap />
         }
     </>
-    console.log('MapEditorPage render....')
+    //console.log('MapEditorPage render....')
     return <>
         <MapEditorLayout
             toolbar={<ToolBar map={mapEditor.mapEditorState.mapInfo} />}

@@ -31,7 +31,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             await mapEditor.saveMap();
             
             notification['success']({
-                message: 'Lưu map',
+                message: 'Lưu bản đồ',
                 description:
                   'Đã lưu thành công',
               });
@@ -58,7 +58,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             mapEditor.setMapInfo(updated);
 
             notification['success']({
-                message: 'Lưu map',
+                message: 'Lưu bản đồ',
                 description:
                   'Đã lưu thành công',
               });
@@ -80,7 +80,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             await mapApi.remove(props.map!.id);
             
             notification['success']({
-                message: 'Xóa map',
+                message: 'Xóa bản đồ',
                 description:
                   'Đã xóa thành công',
               });
@@ -96,7 +96,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
     }
     const onDelete = ()=>{
         AntDModal.confirm({
-            title: `Bạn có muốn xóa map này không?`,
+            title: `Bạn có muốn xóa bản đồ này không?`,
             icon: <ExclamationCircleOutlined />,
            
             onOk() {
@@ -119,7 +119,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
         {mapInfo &&
         <div className="map-editor-toolbar">
             <h3 style={{ width: '600px' }}>
-                <Link className="link" to="/maps">Maps</Link>
+                <Link className="link" to="/maps">Bản đồ</Link>
                 /{props.map?.name}
 
                 <EditOutlined color={'#1890ff'}  
@@ -135,18 +135,18 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
             
             <div>
                 <Button type="primary" onClick={onSave} loading={loading}>
-                    <SaveOutlined /> Lưu Map
+                    <SaveOutlined /> Lưu bản đồ
                 </Button>
 
                 {!mapInfo.isPublished &&
                 <Button type="default" onClick={()=>{onPublish(true)}} >
-                    <GlobalOutlined/> Publish
+                    <GlobalOutlined/> Xuất bản
                 </Button>
                 }
 
                 {mapInfo.isPublished &&
                 <Button type="default" onClick={()=>{onPublish(false)}} >
-                    <PauseOutlined /> Unpublish
+                    <PauseOutlined /> Hủy xuất bản
                 </Button>
                 }
 
@@ -161,7 +161,7 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
                 <Button className='delete-btn' onClick={onDelete} 
                         disabled={!props.map?.id}
                         danger icon={<DeleteOutlined />} >
-                        Xóa Map
+                        Xóa bản đồ
                 </Button>
             </div>
         </div>
