@@ -3,6 +3,7 @@ import { LayerType } from "../interfaces";
 interface PropertiesConfig {
     groups: {
         name: string,
+        title?: string,
         properties: string[]
     }[]
 }
@@ -58,6 +59,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
         groups: [
             {
                 name: 'paint',
+                title:'Thuộc tính vẽ',
                 properties: [
                     'circle-color',
                     'circle-size',
@@ -70,6 +72,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
             },
             {
                 name: 'symbol',
+                title: 'Biểu tượng',
                 properties: [
                     'symbol-enabled',
                     'symbol-image',
@@ -78,6 +81,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
             },
             {
                 name: 'text',
+                title:'Chữ',
                 properties: [
                     'text-enabled',
                     'text-column',
@@ -100,6 +104,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
         groups: [
             {
                 name: 'paint',
+                title:'Thuộc tính vẽ',
                 properties: [
                     'line-color',
                     'line-width',
@@ -113,6 +118,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
             },
             {
                 name: 'text',
+                title:'Chữ',
                 properties: [
                     'text-enabled',
                     'text-column',
@@ -134,6 +140,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
         groups: [
             {
                 name: 'paint',
+                title:'Thuộc tính vẽ',
                 properties: [
                     'fill-transparent-enabled',
                     'fill-color',
@@ -146,6 +153,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
             },
             {
                 name: 'theme',
+                title:'Màu nền',
                 properties: [
                     'theme-enabled',
                     'theme-column',
@@ -160,6 +168,7 @@ export const paintPropertiesConfig: { [key: LayerType]: PropertiesConfig } = {
             ,
             {
                 name: 'text',
+                title:'Chữ',
                 properties: [
                     'text-enabled',
                     'text-column',

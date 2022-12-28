@@ -15,7 +15,7 @@ const FieldId: React.FC<any> = (props) => {
     props.onChange(value);
   };
   
-  return <Block label={"Name"}>
+  return <Block label={"Tên"}>
     <Input
       value={value}
       onChange={onChange}
