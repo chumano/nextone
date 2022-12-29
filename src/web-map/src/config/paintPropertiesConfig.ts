@@ -7,6 +7,52 @@ interface PropertiesConfig {
         properties: string[]
     }[]
 }
+export const PropertyNames :{[key:string]:string} ={
+    //point
+    'circle-color' :'Màu điểm',
+    'circle-size':'Kích thước điểm',
+
+    'symbol-enabled': 'Dùng biểu tượng?',
+    'symbol-image' : 'Biểu tượng',
+    'symbol-scale' : 'Tỉ lệ biểu tượng',
+
+    //line
+    'line-color': 'Màu đường',
+    'line-width': 'Chiều rộng',
+    'line-style': 'Kiểu đường',
+
+    //fill
+    'fill-transparent-enabled': 'Nền trong suốt?',
+    'fill-color':'Màu nền',
+    
+    'theme-enabled': 'Tô màu theo giá trị?',
+    'theme-column': 'Trường dữ liệu',
+    'theme-value-min':'Giá trị nhỏ nhất',
+    'theme-value-max': 'Giá trị lớn nhất',
+    'theme-color1': 'Màu 1',
+    'theme-color2': 'Màu 2',
+    'theme-color3': 'Màu 3',
+
+    //text
+    'text-enabled': 'Sử dụng chữ',
+    'text-column': 'Trường dữ liệu',
+    'text-color':'Màu chữ',
+    'text-font':'Kiểu chữ',
+    'text-size':'Kích thước chữ',
+
+    'text-halo-enabled': 'Vẽ bóng chữ?',
+    'text-halo-color':'Màu bóng',
+    'text-halo-width':'Kích thước bóng',
+
+    'text-rotate-enabled':'Xoay chữ?',
+    'text-rorate-column':'Trường xoay',
+
+    //common
+    'outline-enabled': 'Vẽ viền?',
+    'outline-color':'Màu viền',
+    'outline-width':'Chiều rộng',
+    'outline-style':'Kiểu viền'
+}
 
 export const paintProperties = [
     //point

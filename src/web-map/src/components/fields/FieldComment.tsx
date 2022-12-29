@@ -18,7 +18,7 @@ const FieldComment: React.FC<any> = (props) => {
   const fieldSpec = {
     doc: "Comments for the current layer."
   };
-  return <Block label={"Ghi chú"} fieldSpec={fieldSpec}
+  return <Block label={"Ghi chú"} fieldSpec={undefined}
       style={{alignItems:'flex-start'}}>
     <Input.TextArea
       value={value}

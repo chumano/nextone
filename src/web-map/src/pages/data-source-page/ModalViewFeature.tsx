@@ -23,7 +23,7 @@ const ModalViewFeature: React.FC<ModalViewFeatureProps> = (props) => {
     return <>
         <Modal {...{
             width: 800,
-            title: 'Features',
+            title: 'Thông tin dữ liệu',
             isOpen: props.visible,
             onOk: handleOk,
             onCancel: handleOk
@@ -31,7 +31,7 @@ const ModalViewFeature: React.FC<ModalViewFeatureProps> = (props) => {
             <Tabs defaultActiveKey="column" tabPosition={'top'} style={{ height: 400 }}
                 size={'large'}
             >
-                <Tabs.TabPane tab={`Columns`} key={'column'} disabled={false}>
+                <Tabs.TabPane tab={`Trường thông tin`} key={'column'} disabled={false}>
                     {/* columns */}
                     {columns && columns.length > 0 &&
                         <div style={{ maxHeight: '300px', overflow: 'auto' }}>
@@ -59,11 +59,11 @@ const ModalViewFeature: React.FC<ModalViewFeatureProps> = (props) => {
                     }
                 </Tabs.TabPane>
 
-                <Tabs.TabPane tab={`Data`} key={'data'} disabled={false}>
+                <Tabs.TabPane tab={`Dữ liệu chi tiết`} key={'data'} disabled={false}>
                     {/* features */}
                     {featureCount && !(featureData && featureData.length > 0) &&
                         <>
-                            Có {featureCount} features
+                            Có {featureCount} dữ liệu
                             <br />
                             Số lượng data {">"} 1000 nên không hiển thị
                         </>

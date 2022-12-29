@@ -14,7 +14,7 @@ const Doc : React.FC<any> = (props)=>{
 
     const renderValues = (
       !!values &&
-      // HACK: Currently we merge additional values into the stylespec, so this is required
+      // HACK: Currently we merge additional values into the stylespec, 
       // See <https://github.com/maputnik/editor/blob/master/src/components/fields/PropertyGroup.jsx#L16>
       !Array.isArray(values)
     );

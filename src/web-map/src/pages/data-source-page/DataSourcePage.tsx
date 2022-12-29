@@ -2,7 +2,7 @@ import { Button, Input, Modal as AntDModal, Pagination, Select } from 'antd';
 import { DeleteOutlined, ExclamationCircleOutlined, TableOutlined } from '@ant-design/icons';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../components/modals/Modal';
-import { DataSource, DataSourceType, FeatureData, GeoType, ShapeFileProps } from '../../interfaces';
+import { DataSource, DataSourceType, FeatureData, GeoType, GeoTypeNames, ShapeFileProps } from '../../interfaces';
 import { useDatasourceStore } from '../../stores/useDataSourceStore';
 import '../../styles/pages/data-source-page.scss';
 import ModalCreateDataSource from './ModalCreateDataSource';
@@ -16,7 +16,8 @@ interface DatasouceItemProps {
     onViewData?: (item: DataSource) => void
 }
 const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, onViewData }) => {
-
+    const geoType = GeoType[item.geoType];
+    const geoTypeName = GeoTypeNames[geoType] || geoType;
     return <>
         <div className="source-item" title={item.name} >
             <div className='source-item-image'>
@@ -36,7 +37,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
                         {DataSourceType[item.dataSourceType]}
                     </span>
                     <span className='source-info'>
-                        {GeoType[item.geoType]}
+                        {geoTypeName}
                     </span>
 
                 </div>
@@ -66,7 +67,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
 
                 {item.tags &&
                     <div className='tags__block'>
-                        Tags :
+                        Nhãn :
                         <ul className='tags__list'>
                             {item.tags.map(tag =>
                                 <li className='tag-item' key={tag}> {tag} </li>
@@ -122,10 +123,9 @@ const DataSourcePage: React.FC = () => {
     const geoTypeOptions = useMemo(()=>{
         const keytypes = Object.keys(GeoType)
             .filter(key => isNaN(Number(GeoType[key as any])));
-        
         return keytypes.map(key =>(
             <Select.Option key={key}>
-                {GeoType[key as any]}
+                {GeoTypeNames[GeoType[key as any]] || GeoType[key as any]}
             </Select.Option>
         ));
     },[]);

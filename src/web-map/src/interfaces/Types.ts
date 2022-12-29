@@ -7,6 +7,13 @@ export enum GeoType{
     other
 }
 
+export const GeoTypeNames : {[key:string]: string}={
+    'point': 'Điểm',
+    'line': 'Đường',
+    'fill': 'Vùng',
+    'other': 'Khác' 
+}
+
 export enum DataSourceType{
     shapeFile,
 }
@@ -22,6 +29,14 @@ export enum DashStyle
     dashDotDot,
     //custom
 }
+export const DashStyleNames : {[key:string]: string}={
+    'solid': 'Nét liền',
+    'dash': 'Nét đứt',
+    'dot': 'Chấm',
+    'dashDot': 'Gạch chấm',
+    'dashDotDot': 'Gạch chấm chấm' 
+}
+
 
 export const ShapeFileProps = {
     COLUMNS : "ShapeFile_Columns",

@@ -62,21 +62,21 @@ const ModalEditDataSource :React.FC<ModalEditDataSourceProps> = (props)=>{
             onCancel: handleCancel
         }}>
             <Form form={form}
-                labelCol={{ span: 4 }}
-                wrapperCol={{ span: 14 }}
+                labelCol={{ span: 8 }}
+                wrapperCol={{ span: 12 }}
                 layout="horizontal"
                 initialValues={{ size: 'default', requiredMarkValue: 'required'}}
                 onValuesChange={onFormValuesChange}
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="name" label="Tên dữ liệu" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'Name is required' }]}>
+                <Form.Item name="name" label="Tên dữ liệu" required tooltip="Bắt buộc"
+                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                     <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="tags" label="Tags" tooltip="This is a optional field">
-                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode">
+                <Form.Item name="tags" label="Nhãn" >
+                    <Select mode="tags" style={{ width: '100%' }} placeholder="Gán nhãn">
                     </Select>
                 </Form.Item>
             </Form>

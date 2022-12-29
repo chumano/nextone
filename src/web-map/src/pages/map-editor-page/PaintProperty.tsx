@@ -2,12 +2,13 @@ import { Avatar, Button, Input, InputNumber, Select, Switch } from "antd";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Block from "../../components/fields/Block";
 import InputColor from "../../components/ui-inputs/InputColor";
-import { DashStyle, DataSource, ShapeFileProps, Symbol } from "../../interfaces";
+import { DashStyle, DashStyleNames, DataSource, ShapeFileProps, Symbol } from "../../interfaces";
 import { useSymbolStore } from "../../stores";
 import { capitalize } from "../../utils/functions";
 import { useMapEditor } from "./useMapEditor";
 import { EnvironmentOutlined} from "@ant-design/icons";
 import SymbolSelect from "../../components/SymbolSelect";
+import { PropertyNames } from "../../config/paintPropertiesConfig";
 
 interface PaintPropertyProps {
     property: string;
@@ -16,6 +17,9 @@ interface PaintPropertyProps {
     onChange: (val: any) => void;
 }
 const getPropertyName = (property: string) => {
+    const pname = PropertyNames[property];
+    if(pname) return pname;
+
     let parts = property.split('-').map((p, index) => {
         if (index === 0)
             return p;
@@ -110,7 +114,7 @@ const PropertyInput : React.FC<PropertyInputProps> = ({property,
             onChange={onChange}>
             {styles.map((style) => {
                 return <Select.Option key={style} value={style}  >
-                    {DashStyle[style as any]}
+                    {DashStyleNames[DashStyle[style as any]] ||DashStyle[style as any] }
                 </Select.Option>
             })}
         </Select>;
@@ -121,7 +125,6 @@ const PropertyInput : React.FC<PropertyInputProps> = ({property,
 
 const InternalPaintProperty: React.FC<PaintPropertyProps> = ({ property, value, dataSource, onChange }) => {
     const name = getPropertyName(property);
-
 
     const handleChange = useCallback((val: any) => {
         console.log('PaintProperty-' + property, val);
