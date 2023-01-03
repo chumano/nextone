@@ -40,6 +40,9 @@ const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDel
                 needLoadMore && setNeedLoadMore(false);
             }
 
+            if(currentScrollY < delta){
+                console.log('at bottom.........')
+            }
             //console.log({goToTop, currentScrollY, divHeight, scrollHeight});
         };
 

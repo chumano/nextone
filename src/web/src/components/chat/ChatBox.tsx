@@ -51,6 +51,10 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent
         }
     }, [conversation])
 
+    useEffect(()=>{
+        console.log('Conversation change', conversation.id)
+    },[conversation])
+
     const showDeviceSetting = () => {
         //TODO: show Modal select devices
         // if (!deviceSettings) {

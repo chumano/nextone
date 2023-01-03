@@ -277,7 +277,6 @@ namespace ComService.Domain.Services
             member.SeenDate = DateTime.Now;
             await _conversationRepository.SaveChangesAsync();
 
-            // TODO: send ConversationMemberSeen
             await _bus.Publish(new ConversationMemberSeen(conversation, userId, member.UserMember?.UserName));
         }
 

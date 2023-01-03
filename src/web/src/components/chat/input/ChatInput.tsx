@@ -29,8 +29,6 @@ const ChatInput = () => {
         setMessageText('');
     }, [selectedConversationId, messageText, setMessageText])
 
-
-
     const onUploadFiles = useCallback((type: string) => {
         if (!fileInputRef.current) return;
         let fileAcceptExtestions = '';
@@ -107,6 +105,9 @@ const ChatInput = () => {
 
     }, [handleUploadFiles])
 
+    const onTextFocus = async ()=>{
+        console.log('onTextFocus')
+    }
     return (
         <div>
             <div className='chat-input'>
@@ -122,6 +123,7 @@ const ChatInput = () => {
                 </div>
                 <div className='text-input'>
                     <Input value={messageText}
+                        onFocus={onTextFocus}
                         onKeyUp={(e) => {
                             if (e.key === 'Enter') {
                                 e.preventDefault();
