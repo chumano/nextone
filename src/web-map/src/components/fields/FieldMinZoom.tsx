@@ -15,7 +15,7 @@ const FieldMixZoom: React.FC<any> = (props) => {
     props.onChange(value);
   };
 
-  return <Block label={"MinZoom"}>
+  return <Block label={"Zoom tối thiểu"}>
     <div className='input-slider'>
       <Slider
         min={1}

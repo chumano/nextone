@@ -57,9 +57,11 @@ const ConversationItem: React.FC<ConversationItemProps> =
 
                     {conversation.type === ConversationType.Channel && 
                         <>
+                        {(conversation as Channel).allowedEventTypes.length >0 &&
                         <div style={{fontSize:10}}>
                             {(conversation as Channel).allowedEventTypes[0].name}
                         </div>
+                        }
                         {(conversation as Channel).ancestors &&
                             <div>
                                 {(conversation as Channel).ancestors!.map(o=>(

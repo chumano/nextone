@@ -1,7 +1,7 @@
 import { AutoComplete, Avatar, Select, Spin } from "antd"
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDatasourceApi } from "../apis";
-import { DataSource, GeoType } from "../interfaces";
+import { DataSource, GeoType, GeoTypeNames } from "../interfaces";
 import { handleAxiosApi } from "../utils/functions";
 import debounce from 'lodash/debounce';
 
@@ -12,6 +12,8 @@ interface DataSourceAutocompleteProps {
 }
 
 const renderDataSourceOption = (o: DataSource) => {
+    const geoType = GeoType[o.geoType];
+    const geoTypeName = GeoTypeNames[geoType] || geoType;
     return <AutoComplete.Option key={o.id} value={o.name} label={o.name} 
         data-geotype={o.geoType} >
         <div style={{
@@ -22,7 +24,7 @@ const renderDataSourceOption = (o: DataSource) => {
             <Avatar src={o.imageUrl} shape="square" size={'small'} />
             <span style={{ marginLeft: '5px' }}>{o.name} </span>
             <div className="flex-spacer"></div>
-            <span>{GeoType[o.geoType]}</span>
+            <span>{geoTypeName}</span>
         </div>
     </AutoComplete.Option>
 }

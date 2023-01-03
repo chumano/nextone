@@ -23,7 +23,7 @@ const checkPermission = async (callback: () => void) => {
                 //console.log('Storage Permission Granted.');
             } else {
                 // If permission denied then show alert
-                Alert.alert('Error', 'Storage Permission Not Granted');
+                Alert.alert('Error', 'Cần cho phép quyền lưu dữ liệu');//'Storage Permission Not Granted');
             }
         } catch (err) {
             // To handle permission related exception

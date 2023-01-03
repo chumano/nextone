@@ -47,13 +47,13 @@ const MainHeader: React.FC = (props: any) => {
                 <Logo />
             </div>
             <div className="main-header__app-title">
-                Map
+                
             </div>
 
             <div className="main-header__nav">
-                <Link className="link" to="/maps">Maps</Link>
+                <Link className="link" to="/maps">Bản đồ</Link>
 
-                <Link className="link" to="/data">Data Sources</Link>
+                <Link className="link" to="/data">Dữ liệu bản đồ</Link>
 
                 {/* <Link className="link" to="/maps/new">Map Editor</Link> */}
             </div>
@@ -63,18 +63,18 @@ const MainHeader: React.FC = (props: any) => {
             <div className="main-header__right">
            
 
-                <AntD.Dropdown overlay={menu} trigger={['click']} >
+                {/* <AntD.Dropdown overlay={menu} trigger={['click']} >
                     <div className="nav-links-btn clickable">
                         <AppstoreOutlined />
                     </div>
-                </AntD.Dropdown>
+                </AntD.Dropdown> */}
 
-                <div className="nav-links-btn clickable"  
+                {/* <div className="nav-links-btn clickable"  
                     onClick={()=>{
                         setShowModalSettings(true);
                     }}>
                     <SettingOutlined />
-                </div>
+                </div> */}
 
                 <div className="user-info">
                     <span>{userName}</span>

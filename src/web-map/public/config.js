@@ -6,13 +6,15 @@ window.ENV = {
         //boundingBox : [ [7.01,95.01],  [23.89,119.92]] //vietnam
         boundingBox : undefined,
         //apiUrl: 'http://localhost:5105',
-        apiUrl: 'https://192.168.0.122:7443/map',
+        //apiUrl: 'https://192.168.0.122:7443/map',
+        apiUrl : 'https://ucom-apis.dientoan.vn/map',
         googleApiKey: '',
-        //baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        baseMapUrl: 'http://localhost/{z}/{x}/{y}.png',
+        baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        //baseMapUrl: 'http://localhost/{z}/{x}/{y}.png',
     },
     Identity: {
         //identityUrl : 'https://localhost:5102',
-        identityUrl : 'https://192.168.0.122:8443',
+        //identityUrl : 'https://192.168.0.122:8443',
+        identityUrl : 'https://ucom-id.dientoan.vn'
     }
 }

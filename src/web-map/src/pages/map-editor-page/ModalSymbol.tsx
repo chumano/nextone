@@ -100,7 +100,7 @@ const ModalSymbol: React.FC = () => {
             Modal.error({
                 title: 'Có lỗi',
                 content: <>
-                    {`Không thể upload `}
+                    {`Không thể tải dữ liệu `}
                     <b>{item.name}</b>
                 </>,
             });
@@ -196,8 +196,8 @@ const ModalSymbol: React.FC = () => {
                         onFinish={onFormFinish}
                         size={'default' as SizeType}
                     >
-                        <Form.Item name="file" label="File" required tooltip="This is a required field"
-                            rules={[{ required: true, message: 'File is required' }]}>
+                        <Form.Item name="file" label="File" required tooltip="Bắt buộc"
+                            rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                             <Upload {...uploadProps}>
                                 <Button icon={<UploadOutlined />}>Select File</Button>
                             </Upload>
@@ -215,8 +215,8 @@ const ModalSymbol: React.FC = () => {
                         }
 
 
-                        <Form.Item name="name" label="Name" required tooltip="This is a required field"
-                            rules={[{ required: true, message: 'Name is required' }]}>
+                        <Form.Item name="name" label="Name" required tooltip="Bắt buộc"
+                            rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                             <Input placeholder="" autoComplete="newpassword" />
                         </Form.Item>
                     </Form>

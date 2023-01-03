@@ -121,7 +121,7 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
     };
     return <>
         <Modal {...{
-            title: 'Thêm layer',
+            title: 'Thêm lớp bản đồ',
             isOpen: props.visible,
             onOk: async () => {
                 await form.validateFields(); //Hàm này sẽ throw error nếu có field ko hợp lệ
@@ -140,23 +140,23 @@ const ModalAddLayer: React.FC<ModalAddLayerProps> = (props) => {
                 onFinish={(onFormFinish)}
                 size={'default' as SizeType}
             >
-                <Form.Item name="Name" label="Name" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'Name is required' },
+                <Form.Item name="Name" label="Tên" required tooltip="Bắt buộc"
+                    rules={[{ required: true, message: 'Thông tin bắt buộc' },
                     { min: 4, message: 'Name\'s length >= 4' }]}>
                     <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
-                <Form.Item name="Source" label="Source" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'Source is required' }]}>
+                <Form.Item name="Source" label="Dữ liệu" required tooltip="Bắt buộc"
+                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                     <DataSourceAutocomplete datasources={datasources} />
                 </Form.Item>
 
-                <Form.Item name="GroupName" label="Group Name" tooltip="This is a required field"
-                    rules={[{ min: 4, message: 'GroupName\'s length >= 4' }]}>
+                <Form.Item name="GroupName" label="Tên nhóm" tooltip="Bắt buộc"
+                    rules={[{ min: 4, message: 'Số ký tự >= 4' }]}>
                     <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
-                <Form.Item name="Note" label="Note" tooltip="This is a optional field">
+                <Form.Item name="Note" label="Ghi chú" >
                     <TextArea rows={4} placeholder="" maxLength={255} />
                 </Form.Item>
             </Form>

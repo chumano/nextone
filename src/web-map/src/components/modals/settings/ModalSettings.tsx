@@ -57,7 +57,7 @@ const ModalSettings: React.FC<ModalSettingsProps> = ({ onClose }) => {
     return <>
         <Modal
             width={800}
-            title={'Settings'}
+            title={'Cấu hình'}
             visible={true}
             confirmLoading={confirmLoading}
             onOk={handleOk}
@@ -69,7 +69,7 @@ const ModalSettings: React.FC<ModalSettingsProps> = ({ onClose }) => {
                 <Tabs.TabPane tab={`Cấu hình Map`} key={'map'} disabled={false}>
                     <SettingMap onMap={setMap}/>
                 </Tabs.TabPane>
-                <Tabs.TabPane tab={`Cấu hình Chung`} key={'common'} disabled={false}>
+                {/* <Tabs.TabPane tab={`Cấu hình Chung`} key={'common'} disabled={false}>
                     <Form form={form}
                         labelCol={{ span: 4 }}
                         wrapperCol={{ span: 14 }}
@@ -80,7 +80,7 @@ const ModalSettings: React.FC<ModalSettingsProps> = ({ onClose }) => {
                     >
                         Settings
                     </Form>
-                </Tabs.TabPane>
+                </Tabs.TabPane> */}
             </Tabs>
 
         </Modal>

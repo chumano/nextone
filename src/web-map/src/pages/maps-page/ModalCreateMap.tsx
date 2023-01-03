@@ -52,7 +52,7 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
             AntDModal.error({
                 title: 'Có lỗi',
                 content:  <>
-                    {`Không thể tạo map `}
+                    {`Không thể tạo bản đồ`}
                     <b>{map.name}</b>
                 </>,
             });
@@ -64,7 +64,7 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
     };
     return <>
         <Modal {...{
-            title: 'Tạo map',
+            title: 'Tạo bản đồ',
             isOpen: props.visible,
             confirmLoading: confirmLoading,
             onOk: handleOk,
@@ -79,12 +79,12 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="name" label="Name" required tooltip="This is a required field"
-                     rules={[{ required: true, message: 'Name is required' }]}>
+                <Form.Item name="name" label="Tên" required tooltip="Bắt buộc"
+                     rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                     <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="note" label="Note" tooltip="This is a optional field">
+                <Form.Item name="note" label="Ghi chú">
                     <TextArea rows={4} placeholder="" maxLength={255} />
                 </Form.Item>
             </Form>

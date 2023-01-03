@@ -12,6 +12,12 @@ interface LayerListItemProps {
     className: string;
     onLayerAction: (layerIndex:number, action:string)=> void;
 }
+const actionsText : { [key:string]: string}= {
+    'hide': "Ẩn",
+    'show': "Hiển thị",
+    'duplicate': 'Nhân bản',
+    'delete': 'Xóa'
+}
 
 const IconAction: React.FC<any> = (props) => {
 
@@ -35,7 +41,7 @@ const IconAction: React.FC<any> = (props) => {
     }
 
     return <button
-        title={props.action}
+        title={actionsText[props.action] || props.action}
         className={`clickable layer-list-icon-action ${classAdditions}`}
         onClick={props.onClick}
         aria-hidden="true"

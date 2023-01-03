@@ -15,7 +15,7 @@ const FieldMaxZoom: React.FC<any> = (props) => {
     props.onChange(value);
   };
 
-  return <Block label={"MaxZoom"}>
+  return <Block label={"Zoom tối đa"}>
     <div className='input-slider'>
       <Slider
         min={1}

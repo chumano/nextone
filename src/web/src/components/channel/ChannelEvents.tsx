@@ -1,7 +1,5 @@
-import { Modal } from "antd";
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { comApi } from "../../apis/comApi";
 import eventIcon from '../../assets/logo.png';
 import { Channel } from "../../models/channel/Channel.model";
 import { MemberRole } from "../../models/conversation/ConversationMember.model";

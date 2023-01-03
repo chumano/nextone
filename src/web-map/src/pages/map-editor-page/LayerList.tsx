@@ -66,7 +66,7 @@ const LayerListContainer: React.FC = () => {
     }
     
     useEffect(() => {
-        console.log('mapEditor.mapEditorState', mapEditor.mapEditorState)
+        //console.log('mapEditor.mapEditorState', mapEditor.mapEditorState)
         let idx = 0;
         const items: JSX.Element[] = [];
         const itemIds:string[] = [];
@@ -132,7 +132,7 @@ const LayerListContainer: React.FC = () => {
     return <>
         <div className="layer-list">
             <div className="layer-list__header">
-                <div>Layers</div>
+                <div>Lớp bản đồ</div>
                 <div className="flex-spacer"></div>
                 {/* <button
                     className="maputnik-button">
@@ -143,7 +143,7 @@ const LayerListContainer: React.FC = () => {
                     setModalAddLayerVisible(true);
                 }}
                     className="maputnik-button">
-                    Add Layer
+                    Thêm lớp
                 </button>
             </div>
 
@@ -226,7 +226,7 @@ const LayerListContainerSortable : React.FC<any> = (props)=>{
     const handleDragEnd = (event:DragEndEvent) => {
         const {active, over} = event;
         if(!over) return;
-        console.log(`active.id  ${active.id} -> over.id ${over.id}`)
+        //console.log(`active.id  ${active.id} -> over.id ${over.id}`)
         if (active.id !== over.id) {
             const typeActive = active.id.indexOf('group') >= 0? 'group' : 'item';
             const typeOVer = over.id.indexOf('group') >= 0? 'group' : 'item';

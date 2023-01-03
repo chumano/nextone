@@ -46,7 +46,7 @@ const SendEventScreen = () => {
     const hasPermission = await hasLocationPermission();
 
     if (!hasPermission) {
-      Alert.alert('Need Location Permission');
+      Alert.alert('Cần cho phép lấy thông tin vị trí');
       errCallback();
       return;
     }

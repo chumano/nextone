@@ -49,7 +49,7 @@ const ModalMap: React.FC = () => {
             mapEditor.setMapInfo(updated);
 
             notification['success']({
-                message: 'Lưu map',
+                message: 'Lưu bản đồ',
                 description:
                   'Đã lưu thành công',
               });
@@ -71,11 +71,13 @@ const ModalMap: React.FC = () => {
     };
     return <>
         <Modal  width={500}
-            title={'Map'}
+            title={'Bản đồ'}
             visible={true}
             confirmLoading={confirmLoading}
             onOk={handleOk}
             onCancel={handleCancel}
+            okText="Đồng ý"
+            cancelText="Hủy bỏ"
             >
             <Form form={form}
                 labelCol={{ span: 4 }}
@@ -89,17 +91,17 @@ const ModalMap: React.FC = () => {
                 size={'default' as SizeType}
             >
               
-                <Form.Item name="name" label="Name" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'Name is required' }]}>
+                <Form.Item name="name" label="Tên" required tooltip="Bắt buộc"
+                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                     <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="offsetX" label="Offset X"  
+                <Form.Item name="offsetX" label="Độ dời X"  
                     rules={[]}>
                     <Input type={'number'} placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="offsetY" label="Offset Y"  
+                <Form.Item name="offsetY" label="Độ dời Y"  
                     rules={[]}>
                     <Input type={'number'} placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>

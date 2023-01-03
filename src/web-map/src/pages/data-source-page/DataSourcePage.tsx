@@ -2,7 +2,7 @@ import { Button, Input, Modal as AntDModal, Pagination, Select } from 'antd';
 import { DeleteOutlined, ExclamationCircleOutlined, TableOutlined } from '@ant-design/icons';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Modal from '../../components/modals/Modal';
-import { DataSource, DataSourceType, FeatureData, GeoType, ShapeFileProps } from '../../interfaces';
+import { DataSource, DataSourceType, FeatureData, GeoType, GeoTypeNames, ShapeFileProps } from '../../interfaces';
 import { useDatasourceStore } from '../../stores/useDataSourceStore';
 import '../../styles/pages/data-source-page.scss';
 import ModalCreateDataSource from './ModalCreateDataSource';
@@ -16,7 +16,8 @@ interface DatasouceItemProps {
     onViewData?: (item: DataSource) => void
 }
 const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, onViewData }) => {
-
+    const geoType = GeoType[item.geoType];
+    const geoTypeName = GeoTypeNames[geoType] || geoType;
     return <>
         <div className="source-item" title={item.name} >
             <div className='source-item-image'>
@@ -36,7 +37,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
                         {DataSourceType[item.dataSourceType]}
                     </span>
                     <span className='source-info'>
-                        {GeoType[item.geoType]}
+                        {geoTypeName}
                     </span>
 
                 </div>
@@ -45,7 +46,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
                     <div className='source-item-shapefile'>
                         <div>
                             
-                            Feature Count: {item.properties[ShapeFileProps.FEATURECOUNT]}
+                            Số dữ liệu: {item.properties[ShapeFileProps.FEATURECOUNT]}
                             
                         </div>
                         <div>
@@ -66,7 +67,7 @@ const DatasouceItem: React.FC<DatasouceItemProps> = ({ item, onClick, onDelete, 
 
                 {item.tags &&
                     <div className='tags__block'>
-                        Tags :
+                        Nhãn :
                         <ul className='tags__list'>
                             {item.tags.map(tag =>
                                 <li className='tag-item' key={tag}> {tag} </li>
@@ -122,10 +123,9 @@ const DataSourcePage: React.FC = () => {
     const geoTypeOptions = useMemo(()=>{
         const keytypes = Object.keys(GeoType)
             .filter(key => isNaN(Number(GeoType[key as any])));
-        
         return keytypes.map(key =>(
             <Select.Option key={key}>
-                {GeoType[key as any]}
+                {GeoTypeNames[GeoType[key as any]] || GeoType[key as any]}
             </Select.Option>
         ));
     },[]);
@@ -137,12 +137,12 @@ const DataSourcePage: React.FC = () => {
     const [currentPage, setCurentPage] = useState<number>(1);
 
     useEffect(()=>{
-        console.log("search...", searchFilter)
+        //console.log("search...", searchFilter)
         sourceStore.list(searchFilter);
     },[searchFilter])
 
     const onSearch = useCallback((value:string)=>{
-        console.log(`search text ${value}`);
+        //console.log(`search text ${value}`);
         setCurentPage(1);
         setSearchFilter((filter:any)=>{
            return {
@@ -154,7 +154,7 @@ const DataSourcePage: React.FC = () => {
     },[setSearchFilter])
 
     const filterGeoTypeChange = useCallback((values: any[])=>{
-        console.log(`selected geotypes `, values);
+        //console.log(`selected geotypes `, values);
         const types = values;
         setCurentPage(1);
         setSearchFilter((filter:any)=>{
@@ -175,7 +175,7 @@ const DataSourcePage: React.FC = () => {
                 </div>
                 <div className="flex-spacer"></div>
                 <div className="datasource-page__header__actions">
-                    <Button type="primary" onClick={handleCreateSource}> Upload dữ liệu </Button>
+                    <Button type="primary" onClick={handleCreateSource}> Tải dữ liệu </Button>
                 </div>
             </div>
             <div className="datasource-page__filter">
@@ -183,7 +183,7 @@ const DataSourcePage: React.FC = () => {
                     mode="multiple"
                     allowClear
                     style={{ width: '400px' }}
-                    placeholder="Chọn loại vector"
+                    placeholder="Chọn loại dữ liệu"
                     onChange={filterGeoTypeChange}
                     >
                     {geoTypeOptions}

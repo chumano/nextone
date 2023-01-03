@@ -29,19 +29,19 @@ const MapItem = ( {map, onClick } : {map:MapInfo, onClick : any})=>{
                 <div  className="map-item__title">
                     {map.name} 
                     {map.isPublished &&
-                       <GlobalOutlined title="Đã publish" style={{marginLeft: '5px'}}/>
+                       <GlobalOutlined title="Đã xuất bản" style={{marginLeft: '5px'}}/>
                     }
                     
                 </div>
                 <div style={{marginTop: '10px'}}>
                     <div className="tile-info">
-                        <label>Current Tile Url: </label>
+                        <label>Đường dẫn bản đồ hiện tại: </label>
                         <div className="url-path">
                             <Paragraph code={true} copyable>{MAP_API + map.currentTileUrl}</Paragraph>
                         </div>
                     </div>
                     <div className="tile-info">
-                        <label>Latest Tile Url: </label>
+                        <label>Đường dẫn bản đồ mới nhất: </label>
                         <div className="url-path">
                             <Paragraph code={true} copyable>{MAP_API + map.latestTileUrl}</Paragraph>
                         </div>
@@ -109,12 +109,12 @@ const MapsPage : React.FC = ()=>{
         <div className="maps-page">
             <div className="maps-page__header">
                 <div className="maps-page__header__title">
-                    Danh sách map
+                    Danh sách bản đồ
                 </div>
                 <div className="flex-spacer"></div>
                 <div className="maps-page__header__actions">
                     {/* <Link to="/maps/new">Tạo map</Link> */}
-                    <Button type="primary" onClick={showModalCreate}> Tạo Map </Button>
+                    <Button type="primary" onClick={showModalCreate}> Tạo bản đồ </Button>
                 </div>
             </div>
             <div className="maps-page__filter">
@@ -122,8 +122,8 @@ const MapsPage : React.FC = ()=>{
                 <Select defaultValue={0} style={{ width: '110px', marginRight: '10px' }}
                     onChange={handlePublishFilterChange}>
                     <Select.Option value={0}>Tất cả</Select.Option>
-                    <Select.Option value={1}>Đã publish</Select.Option>
-                    <Select.Option value={2}>Chưa publish</Select.Option>
+                    <Select.Option value={1}>Đã xuất bản</Select.Option>
+                    <Select.Option value={2}>Chưa xuất bản</Select.Option>
                 </Select>
 
                 <Search

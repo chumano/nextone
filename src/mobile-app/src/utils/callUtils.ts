@@ -15,10 +15,10 @@ export const callKeepOptions = {
     appName: 'UCOM',
   },
   android: {
-    alertTitle: 'Permissions required',
-    alertDescription: 'This application needs to access your phone accounts',
-    cancelButton: 'Cancel',
-    okButton: 'ok',
+    alertTitle: 'Yêu cầu cấp quyền',//'Permissions required',
+    alertDescription: 'Ứng dụng cần quyền để nhận cuộc gọi',//'This application needs to access your phone accounts',
+    cancelButton: 'Hủy',//'Cancel',
+    okButton: 'Đồng ý',//'ok',
     imageName: 'phone_account_icon',
     additionalPermissions:  [],
     // Required to get audio in background when using Android 11
@@ -26,7 +26,7 @@ export const callKeepOptions = {
       channelId: 'com.ucom',
       channelName: 'Foreground service for UCOM',
       notificationTitle: 'UCOM is running on background',
-      notificationIcon: 'Path to the resource icon of the notification',
+      //notificationIcon: 'Path to the resource icon of the notification',
     },
   },
 };

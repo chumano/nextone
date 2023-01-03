@@ -232,7 +232,7 @@ const UserList: FC<IProps> = ({ filter }) => {
 					></Table.Column>
 					<Table.Column
 						align="center"
-						title="Active?"
+						title="Đã kích hoạt?"
 						dataIndex="isActive"
 						key="isActive"
 						render={(_, value, _1) => {
