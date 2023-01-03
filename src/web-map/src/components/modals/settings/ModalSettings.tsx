@@ -62,6 +62,8 @@ const ModalSettings: React.FC<ModalSettingsProps> = ({ onClose }) => {
             confirmLoading={confirmLoading}
             onOk={handleOk}
             onCancel={handleCancel}
+            okText='Đồng ý'
+            cancelText='Hủy bỏ'
         >
             <Tabs defaultActiveKey="map" tabPosition={'left'} style={{ height: 400 }}
                 size={'large'} onChange={onTabChange}

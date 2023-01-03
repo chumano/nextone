@@ -52,11 +52,13 @@ const MapEditorPage: React.FC = () => {
                 AntDModal.error({
                     title: 'Có lỗi',
                     content: <>
-                        {`Không thể lấy thông tin map ${mapid} `}
+                        {`Không thể lấy thông tin bản đồ ${mapid} `}
                     </>,
                     onOk(){
                         navigate("/maps");
-                    }
+                    },
+                    okText:'Đồng ý',
+                    cancelText:'Hủy bỏ'
                 });
             })
     }, [params]);

@@ -2,7 +2,7 @@ import { Button, Form, Input,  Modal, notification, Select, Upload } from "antd"
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import React, { useEffect, useState } from "react";
 import { useMapApi } from "../../apis";
-import { MapInfo } from "../../interfaces";
+import { ApiResult, MapInfo } from "../../interfaces";
 import { UpdateMapNameDTO } from "../../interfaces/dtos";
 import { useMapStore } from "../../stores";
 import { handleAxiosApi } from "../../utils/functions";
@@ -45,7 +45,19 @@ const ModalMap: React.FC = () => {
         
         const mapid = mapEditor.mapEditorState.mapInfo!.id;
         try{
-            const updated = await handleAxiosApi<MapInfo>(api.updateName(mapid, item));
+            const updatedResponse = await handleAxiosApi<ApiResult<MapInfo>>(api.updateName(mapid, item));
+        
+            if(!updatedResponse.isSuccess){
+                Modal.error({
+                    title: 'Có lỗi',
+                    content: <>
+                        {`Không thể cập nhật `}
+                        <b>{updatedResponse.errorMessage}</b>
+                    </>,
+                });
+              return
+            }
+            const updated = updatedResponse.data;
             mapEditor.setMapInfo(updated);
 
             notification['success']({
@@ -64,10 +76,10 @@ const ModalMap: React.FC = () => {
                 </>,
             });
             return;
+        }finally{
+            setConfirmLoading(false);
         }
       
-        setConfirmLoading(false);
-
     };
     return <>
         <Modal  width={500}

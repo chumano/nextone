@@ -110,6 +110,8 @@ const DataSourcePage: React.FC = () => {
                 },
                 onCancel() {
                 },
+                okText:'Đồng ý',
+                cancelText:'Hủy bỏ'
             });
         }
     }, [sourceStore])

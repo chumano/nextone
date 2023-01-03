@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using System.Drawing.Imaging;
 using Microsoft.AspNetCore.Authorization;
 using MapService.Authorization;
+using NextOne.Infrastructure.Core;
 
 namespace MapService.Controllers
 {
@@ -45,7 +46,7 @@ namespace MapService.Controllers
         [HttpGet("count")]
         public async Task<IActionResult> Count([FromQuery] CountDataSourcesDTO getDataSourcesDTO)
         {
-           
+
             var query = _dataSourceRepository.DataSources.AsNoTracking();
             var tagSearch = "," + getDataSourcesDTO.TextSearch + ",";
             if (!string.IsNullOrWhiteSpace(getDataSourcesDTO.TextSearch))
@@ -66,18 +67,18 @@ namespace MapService.Controllers
         public async Task<IActionResult> GetDataSources([FromQuery] GetDataSourcesDTO getDataSourcesDTO)
         {
             var pagingOptions = new PageOptions(getDataSourcesDTO.Offset, getDataSourcesDTO.PageSize);
-            var query =  _dataSourceRepository.DataSources.AsNoTracking();
+            var query = _dataSourceRepository.DataSources.AsNoTracking();
             var tagSearch = "," + getDataSourcesDTO.TextSearch + ",";
             if (!string.IsNullOrWhiteSpace(getDataSourcesDTO.TextSearch))
             {
                 query = query.Where(o => o.Name.Contains(getDataSourcesDTO.TextSearch) || o.RawTags.Contains(tagSearch));
             }
-            if (getDataSourcesDTO.GeoTypes !=null && getDataSourcesDTO.GeoTypes.Count>0)
+            if (getDataSourcesDTO.GeoTypes != null && getDataSourcesDTO.GeoTypes.Count > 0)
             {
                 query = query.Where(o => getDataSourcesDTO.GeoTypes.Contains(o.GeoType));
             }
 
-            var datasources  = await query.OrderByDescending(o=>o.CreatedDate)
+            var datasources = await query.OrderByDescending(o => o.CreatedDate)
                     .Skip(pagingOptions.Offset)
                     .Take(pagingOptions.PageSize)
                     .ToListAsync();
@@ -103,80 +104,88 @@ namespace MapService.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateDataSource([FromForm] CreateDataSourceDTO createDataSourceDTO)
         {
-            if (createDataSourceDTO.File == null)
+            try
             {
-                throw new Exception("File is not found");
+
+                if (createDataSourceDTO.File == null)
+                {
+                    throw new Exception("File is not found");
+                }
+
+                var existNameObj = await _dataSourceRepository.DataSources.Where(o => o.Name == createDataSourceDTO.Name).FirstOrDefaultAsync();
+
+                if (existNameObj != null)
+                {
+                    throw new Exception($"Tên đã được dùng");
+                }
+
+                var nameOnly = Path.GetFileNameWithoutExtension(createDataSourceDTO.File.FileName);
+                var ext = Path.GetExtension(createDataSourceDTO.File.FileName);
+                if (ext.ToLower() != ".zip")
+                {
+                    throw new Exception("Không phải ShapeFile zip");
+                }
+                var newId = _idGenerator.GenerateNew();
+
+                var filePath = await SaveFile(createDataSourceDTO.File, "Data/Uploads");
+                var shapefileFolder = nameOnly.ToSafeFileName() + "_" + newId;
+                var mapFolder = Path.Combine("Data/ShapeFiles", shapefileFolder);
+
+                var files = ZipHelper.Unzip(filePath, mapFolder);
+                var shapefilePath = files.FirstOrDefault(o => o.ToLower().Contains(".shp"));
+                if (string.IsNullOrWhiteSpace(shapefilePath))
+                {
+                    throw new Exception($"Không tìm thấy .shp trong {createDataSourceDTO.File.FileName}");
+                }
+
+                //TODO: delete files if have something wrong
+                var shapeFileInfo = ShapefileHelper.ReadShapeFile(shapefilePath, _mapRender);
+
+                var geoType = shapeFileInfo.GeometryType.ToGeoType();
+
+                var props = new Dictionary<string, object>();
+                props.Add(DataSource.SHAPE_FILE_PROP_FEATURECOUNT, shapeFileInfo.FeatureCount);
+                props.Add(DataSource.SHAPE_FILE_PROP_SRID, shapeFileInfo.SRID);
+                props.Add(DataSource.SHAPE_FILE_PROP_COLUMNS, shapeFileInfo.Columns);
+
+                var dataSource = new DataSource(newId,
+                    createDataSourceDTO.Name,
+                    createDataSourceDTO.DataSourceType,
+                    geoType,
+                    shapefilePath,
+                    props,
+                    featureData: JsonConvert.SerializeObject(shapeFileInfo.AttributeData)
+                    )
+                {
+                    Tags = createDataSourceDTO.Tags,
+                };
+
+                dataSource.SetBoudingBox(
+                    new MapBoundingBox(shapeFileInfo.Extents.MinX,
+                    shapeFileInfo.Extents.MinY,
+                    shapeFileInfo.Extents.MaxX,
+                    shapeFileInfo.Extents.MaxY));
+
+                if (shapeFileInfo.Image != null)
+                {
+                    var bytes = ImageHelper.ImageToByteArray(shapeFileInfo.Image, ImageFormat.Jpeg);
+                    dataSource.ImageData = bytes;
+                }
+
+                _dataSourceRepository.Add(dataSource);
+
+                await _dataSourceRepository.SaveChangesAsync();
+                //TODO: send DomainEvent DataSoruceCreated
+
+                return Ok(ApiResult.Success(DataSourceDTO.From(dataSource)));
             }
-
-            var existNameObj = await _dataSourceRepository.DataSources.Where(o => o.Name == createDataSourceDTO.Name).FirstOrDefaultAsync();
-
-            if (existNameObj != null)
+            catch (Exception ex)
             {
-                throw new Exception($"DataSource Name is in use");
+                return Ok(ApiResult.Error(ex.Message));
             }
-
-            var nameOnly = Path.GetFileNameWithoutExtension(createDataSourceDTO.File.FileName);
-            var ext = Path.GetExtension(createDataSourceDTO.File.FileName);
-            if (ext.ToLower() != ".zip")
-            {
-                throw new Exception("Need to ShapeFile Zip");
-            }
-            var newId = _idGenerator.GenerateNew();
-
-            var filePath = await SaveFile(createDataSourceDTO.File, "Data/Uploads");
-            var shapefileFolder = nameOnly.ToSafeFileName() + "_" + newId;
-            var mapFolder = Path.Combine("Data/ShapeFiles", shapefileFolder);
-
-            var files = ZipHelper.Unzip(filePath, mapFolder);
-            var shapefilePath = files.FirstOrDefault(o => o.ToLower().Contains(".shp"));
-            if (string.IsNullOrWhiteSpace(shapefilePath))
-            {
-                throw new Exception($"Can't found .shp in {createDataSourceDTO.File.FileName}");
-            }
-
-            //TODO: delete files if have something wrong
-            var shapeFileInfo = ShapefileHelper.ReadShapeFile(shapefilePath, _mapRender);
-
-            var geoType = shapeFileInfo.GeometryType.ToGeoType();
-
-            var props = new Dictionary<string, object>();
-            props.Add(DataSource.SHAPE_FILE_PROP_FEATURECOUNT, shapeFileInfo.FeatureCount);
-            props.Add(DataSource.SHAPE_FILE_PROP_SRID, shapeFileInfo.SRID);
-            props.Add(DataSource.SHAPE_FILE_PROP_COLUMNS, shapeFileInfo.Columns);
-
-            var dataSource = new DataSource(newId,
-                createDataSourceDTO.Name,
-                createDataSourceDTO.DataSourceType,
-                geoType,
-                shapefilePath,
-                props,
-                featureData: JsonConvert.SerializeObject(shapeFileInfo.AttributeData)
-                )
-            {
-                Tags = createDataSourceDTO.Tags,
-            };
-
-            dataSource.SetBoudingBox(
-                new MapBoundingBox(shapeFileInfo.Extents.MinX, 
-                shapeFileInfo.Extents.MinY, 
-                shapeFileInfo.Extents.MaxX, 
-                shapeFileInfo.Extents.MaxY));
-
-            if (shapeFileInfo.Image != null)
-            {
-                var bytes = ImageHelper.ImageToByteArray(shapeFileInfo.Image, ImageFormat.Jpeg);
-                dataSource.ImageData = bytes;
-            }
-
-            _dataSourceRepository.Add(dataSource);
-
-            await _dataSourceRepository.SaveChangesAsync();
-            //TODO: send DomainEvent DataSoruceCreated
-
-            return Ok(DataSourceDTO.From(dataSource));
         }
 
-       
+
         private async Task<string> SaveFile(IFormFile file, string fileFolder)
         {
             var name_only = Path.GetFileNameWithoutExtension(file.FileName);
@@ -185,7 +194,7 @@ namespace MapService.Controllers
 
             Directory.CreateDirectory(fileFolder);
 
-            string path = Path.Combine(fileFolder,file_name);
+            string path = Path.Combine(fileFolder, file_name);
             using (Stream fileStream = new FileStream(path, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
@@ -197,19 +206,33 @@ namespace MapService.Controllers
         [HttpPost("Update/{id}")]
         public async Task<IActionResult> UpdateDataSource(string id, [FromBody] UpdateDataSourceDTO updateDataSourceDTO)
         {
-            var datasource = await _dataSourceRepository.Get(id);
-            if(datasource == null)
+            try
             {
-                throw new Exception($"DataSource {id} is not found");
+                var datasource = await _dataSourceRepository.Get(id);
+                if (datasource == null)
+                {
+                    throw new Exception($"DataSource {id} is not found");
+                }
+
+                var existNameObj = await _dataSourceRepository.DataSources.Where(o => o.Name == updateDataSourceDTO.Name && o.Id != id).FirstOrDefaultAsync();
+
+                if (existNameObj != null)
+                {
+                    throw new Exception($"Tên đã được dùng");
+                }
+
+                datasource.Update(updateDataSourceDTO.Name, updateDataSourceDTO.Tags);
+
+                _dataSourceRepository.Update(datasource);
+                await _dataSourceRepository.SaveChangesAsync();
+
+                //TODO: send DomainEvent DataSoruceUpdated
+                return Ok(ApiResult.Success(DataSourceDTO.From(datasource)));
             }
-
-            datasource.Update(updateDataSourceDTO.Name, updateDataSourceDTO.Tags);
-
-            _dataSourceRepository.Update(datasource);
-            await _dataSourceRepository.SaveChangesAsync();
-
-            //TODO: send DomainEvent DataSoruceUpdated
-            return Ok(DataSourceDTO.From(datasource));
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
         }
 
         [HttpDelete("{id}")]

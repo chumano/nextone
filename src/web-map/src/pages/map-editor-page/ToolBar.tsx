@@ -98,7 +98,8 @@ const ToolBar : React.FC<ToolBarProps> = (props) => {
         AntDModal.confirm({
             title: `Bạn có muốn xóa bản đồ này không?`,
             icon: <ExclamationCircleOutlined />,
-           
+            okText:'Đồng ý',
+            cancelText:'Hủy hỏ',
             onOk() {
                 deleteMap();
             },

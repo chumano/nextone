@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NextOne.Infrastructure.Core;
 using NextOne.Infrastructure.Core.Caching;
 using NextOne.Shared.Common;
 using System;
@@ -53,7 +54,7 @@ namespace MapService.Controllers
         {
             var pagingOptions = new PageOptions(getMapDTO.Offset, getMapDTO.PageSize);
             var query = _mapRepository.MapQuery
-                    .Where(o=>o.IsPublished);
+                    .Where(o => o.IsPublished);
             if (!string.IsNullOrWhiteSpace(getMapDTO.TextSearch))
             {
                 query = query.Where(o => o.Name.Contains(getMapDTO.TextSearch));
@@ -72,7 +73,7 @@ namespace MapService.Controllers
         {
             var pagingOptions = new PageOptions(getMapDTO.Offset, getMapDTO.PageSize);
             var query = _mapRepository.MapQuery;
-            if(getMapDTO.PublishState!=null && getMapDTO.PublishState!= YesNoEnum.All)
+            if (getMapDTO.PublishState != null && getMapDTO.PublishState != YesNoEnum.All)
             {
                 bool isPublished = getMapDTO.PublishState == YesNoEnum.Yes;
                 query = query.Where(o => o.IsPublished == isPublished);
@@ -88,13 +89,13 @@ namespace MapService.Controllers
                 .Skip(pagingOptions.Offset)
                 .Take(pagingOptions.PageSize)
                 .ToListAsync();
-            return Ok(objs.Select(o=> MapSimpleDTO.From(o)));
+            return Ok(objs.Select(o => MapSimpleDTO.From(o)));
         }
 
         [HttpGet("Count")]
         public async Task<IActionResult> Count([FromQuery] GetMapDTO getMapDTO)
         {
-           
+
             var query = _mapRepository.Maps;
             if (getMapDTO.PublishState != null && getMapDTO.PublishState != YesNoEnum.All)
             {
@@ -129,47 +130,67 @@ namespace MapService.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateMap([FromBody] CreateMapDTO createMapDTO)
         {
-
-            var existNameObj = await _mapRepository.Maps.Where(o => o.Name == createMapDTO.Name).FirstOrDefaultAsync();
-
-            if (existNameObj != null)
+            try
             {
-                throw new Exception($"Map Name is in use");
+                var existNameObj = await _mapRepository.Maps.Where(o => o.Name == createMapDTO.Name).FirstOrDefaultAsync();
+
+                if (existNameObj != null)
+                {
+                    throw new Exception($"Tên đã được dùng");
+                }
+
+                var newId = _idGenerator.GenerateNew();
+                var map = new MapInfo(newId, createMapDTO.Name, createMapDTO.Note);
+
+                _mapRepository.Add(map);
+
+                await _mapRepository.SaveChangesAsync();
+                //TODO: send DomainEvent MapCreated
+                var mapDto = MapDTO.From(map);
+
+                return Ok(ApiResult.Success(mapDto));
             }
-
-            var newId = _idGenerator.GenerateNew();
-            var map = new MapInfo(newId, createMapDTO.Name, createMapDTO.Note);
-
-            _mapRepository.Add(map);
-
-            await _mapRepository.SaveChangesAsync();
-            //TODO: send DomainEvent MapCreated
-            var mapDto = MapDTO.From(map);
-            return Ok(mapDto);
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
         }
 
         [HttpPost("UpdateName/{id}")]
         public async Task<IActionResult> UpdateMapName(string id, [FromBody] UpdateMapNameDTO updateMapDTO)
         {
-            var map = await _mapRepository.Get(id);
-            if (map == null)
+            try
             {
-                throw new Exception($"Map {id} is not found");
+                var map = await _mapRepository.Get(id);
+                if (map == null)
+                {
+                    throw new Exception($"Map {id} is not found");
+                }
+
+                var existNameObj = await _mapRepository.Maps.Where(o => o.Name == updateMapDTO.Name && o.Id != id).FirstOrDefaultAsync();
+                if (existNameObj != null)
+                {
+                    throw new Exception($"Tên đã được dùng");
+                }
+
+                map.Name = updateMapDTO.Name;
+                map.OffsetX = updateMapDTO.OffsetX;
+                map.OffsetY = updateMapDTO.OffsetY;
+                map.Note = updateMapDTO.Note;
+
+                _mapRepository.Update(map);
+                await _mapRepository.SaveChangesAsync();
+
+                //clear Map Cache
+                await _cacheStore.Remove<MapContainer>(map.Id, out var _);
+
+                var mapDto = MapDTO.From(map);
+                return Ok(ApiResult.Success(mapDto));
             }
-
-            map.Name = updateMapDTO.Name;
-            map.OffsetX = updateMapDTO.OffsetX;
-            map.OffsetY = updateMapDTO.OffsetY;
-            map.Note = updateMapDTO.Note;
-
-            _mapRepository.Update(map);
-            await _mapRepository.SaveChangesAsync();
-
-            //clear Map Cache
-            await _cacheStore.Remove<MapContainer>(map.Id, out var _);
-
-            var mapDto = MapDTO.From(map);
-            return Ok(mapDto);
+            catch (Exception ex)
+            {
+                return Ok(ApiResult.Error(ex.Message));
+            }
         }
 
         [HttpPost("Publish/{id}")]
@@ -205,7 +226,7 @@ namespace MapService.Controllers
 
             var layers = new List<MapLayer>();
             var index = 0;
-            foreach(var l in updateMapDTO.Layers)
+            foreach (var l in updateMapDTO.Layers)
             {
                 layers.Add(new MapLayer()
                 {
@@ -249,12 +270,12 @@ namespace MapService.Controllers
                             transformedExtents.MaxX, transformedExtents.MaxY
                         ));
                 }
-                  
+
                 _mapRepository.Update(map);
 
                 await _mapRepository.SaveChangesAsync();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError(ex, $"MapController-RenderImage {ex.Message}");
             }

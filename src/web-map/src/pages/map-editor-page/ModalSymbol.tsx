@@ -123,7 +123,7 @@ const ModalSymbol: React.FC = () => {
     const onDelete = (item:Symbol) =>{
         return async (e:any)=>{
             Modal.confirm({
-                title: `Bạn có muốn xóa symbol này không?`,
+                title: `Bạn có muốn xóa biểu tượng này không?`,
                 icon: <ExclamationCircleOutlined />,
                
                 onOk: async() => {

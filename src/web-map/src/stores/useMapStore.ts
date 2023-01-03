@@ -1,5 +1,5 @@
 import { useMapApi } from "../apis";
-import { MapInfo } from "../interfaces";
+import { ApiResult, MapInfo } from "../interfaces";
 import { CreateMapDTO, PublishMapDTO, SearchMapDTO, UpdateMapNameDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
@@ -32,11 +32,12 @@ export const useMapStore = () => {
     const create = async (obj: CreateMapDTO) => {
       try {
         observable.creating(true);
-        const createdObj = await handleAxiosApi<MapInfo>(api.create(obj));
-        //await new Promise(f => setTimeout(f, 1000));
-         
+        const createdObjResponse = await handleAxiosApi<ApiResult<MapInfo>>(api.create(obj));
+        if(createdObjResponse.isSuccess){
+          const createdObj = createdObjResponse.data;
         observable.create(createdObj);
-        return createdObj;
+        }
+        return createdObjResponse;
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
@@ -45,6 +46,26 @@ export const useMapStore = () => {
       return undefined;
     };
   
+    // const updateName = async (id: string, obj: UpdateMapNameDTO) => {
+    //   try {
+    //     observable.updating(true);
+    //     const updatedResponse = await handleAxiosApi<ApiResult<MapInfo>>(api.updateName(id, obj));
+        
+    //     if(!updatedResponse.isSuccess){
+    //       observable.error(updatedResponse.errorMessage);
+    //       return
+    //     }
+    //     const updated = updatedResponse.data;
+    //     observable.update(id, updated);
+    //     return true;
+    //   } catch (error) {
+    //     observable.error(getResponseErrorMessage(error));
+    //   } finally {
+    //     observable.updating(false);
+    //   }
+    // };
+
+
     const update = async (id: string, obj: MapInfo) => {
       try {
         observable.updating(true);
@@ -57,18 +78,7 @@ export const useMapStore = () => {
       }
     };
 
-    const updateName = async (id: string, obj: UpdateMapNameDTO) => {
-      try {
-        observable.updating(true);
-        const updated = await handleAxiosApi<MapInfo>(api.updateName(id, obj));
-        observable.update(id, updated);
-      } catch (error) {
-        observable.error(getResponseErrorMessage(error));
-      } finally {
-        observable.updating(false);
-      }
-    };
-
+    
     const remove = async (id: string) => {
       try {
         observable.removing(true);
@@ -88,7 +98,7 @@ export const useMapStore = () => {
       get,
       create,
       update,
-      updateName,
+      //updateName,
       remove,
       getMapObservable,
     };

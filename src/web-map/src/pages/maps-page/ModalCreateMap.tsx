@@ -43,23 +43,22 @@ const ModalCreateMap: React.FC<ModalCreateMapProps> = (props) => {
         const map: CreateMapDTO = {
             name: values['name'],
         }
-        const createdMap = await mapStore.create(map);
+        const createdObjResponse = await mapStore.create(map);
 
         props.onToggle(false);
         setConfirmLoading(false);
 
-        if (!createdMap) {
+        if (!createdObjResponse?.isSuccess) {
             AntDModal.error({
                 title: 'Có lỗi',
                 content:  <>
-                    {`Không thể tạo bản đồ`}
-                    <b>{map.name}</b>
+                    <b>{createdObjResponse?.errorMessage||'Có lỗi bất thường'}</b>
                 </>,
             });
             return;
         }
 
-        const id = createdMap.id || '';
+        const id = createdObjResponse.data.id || '';
         navigate("/maps/" + id);
     };
     return <>

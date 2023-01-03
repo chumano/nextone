@@ -1,4 +1,4 @@
-import { Form, Input, Select } from "antd";
+import { Form, Input, Select, Modal as AntDModal, notification } from "antd";
 import { SizeType } from "antd/lib/config-provider/SizeContext";
 import { useEffect, useState } from "react";
 import Modal from "../../components/modals/Modal";
@@ -6,21 +6,21 @@ import { DataSource, DataSourceType } from "../../interfaces";
 import { UpdateDataSourceDTO } from "../../interfaces/dtos";
 import { useDatasourceStore } from "../../stores/useDataSourceStore";
 
-interface ModalEditDataSourceProps{
+interface ModalEditDataSourceProps {
     source: DataSource;
-    visible : boolean;
+    visible: boolean;
     onToggle: (visible: boolean) => void;
 }
-const ModalEditDataSource :React.FC<ModalEditDataSourceProps> = (props)=>{
+const ModalEditDataSource: React.FC<ModalEditDataSourceProps> = (props) => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const { datasourceState: sourceState, ...sourceStore } = useDatasourceStore();
-    useEffect(()=>{
-        const formData :any = {};
+    useEffect(() => {
+        const formData: any = {};
         const data = props.source as any;
 
-        Object.keys(data).forEach((key:string) => {
-            if(data[key]!=undefined){
-              formData[key] =data[key];
+        Object.keys(data).forEach((key: string) => {
+            if (data[key] != undefined) {
+                formData[key] = data[key];
             }
         });
 
@@ -35,24 +35,43 @@ const ModalEditDataSource :React.FC<ModalEditDataSourceProps> = (props)=>{
     const handleCancel = () => {
         props.onToggle(false);
     };
-    
+
     const [form] = Form.useForm();
     const onFormValuesChange = (values: any) => {
-        
+
     };
 
     const onFormFinish = async (values: any) => {
-        setConfirmLoading(true);
-        const source : UpdateDataSourceDTO = {
-            name: values['name'],
-            tags : values['tags']
-        };
-        await sourceStore.update(props.source.id, source);
+        try {
+            setConfirmLoading(true);
+            const source: UpdateDataSourceDTO = {
+                name: values['name'],
+                tags: values['tags']
+            };
+            const response = await sourceStore.update(props.source.id, source);
 
-        setConfirmLoading(false);
-        props.onToggle(false);
+            if(!response?.isSuccess){
+                AntDModal.error({
+                    title: 'Có lỗi',
+                    content: <>
+                        <b>{response?.errorMessage|| 'Có lỗi bất thường'}</b>
+                    </>,
+                });
+                return;
+            }
+
+            notification['success']({
+                message: 'Lưu dữ liệu',
+                description:
+                  'Đã lưu thành công',
+              });
+              
+            props.onToggle(false);
+        } finally {
+            setConfirmLoading(false);
+        }
     }
-    
+
     return <>
         <Modal {...{
             title: 'Cập nhật dữ liệu',
@@ -65,14 +84,14 @@ const ModalEditDataSource :React.FC<ModalEditDataSourceProps> = (props)=>{
                 labelCol={{ span: 8 }}
                 wrapperCol={{ span: 12 }}
                 layout="horizontal"
-                initialValues={{ size: 'default', requiredMarkValue: 'required'}}
+                initialValues={{ size: 'default', requiredMarkValue: 'required' }}
                 onValuesChange={onFormValuesChange}
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
                 <Form.Item name="name" label="Tên dữ liệu" required tooltip="Bắt buộc"
                     rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
-                    <Input placeholder=""  autoComplete="newpassword"/>
+                    <Input placeholder="" autoComplete="newpassword" />
                 </Form.Item>
 
                 <Form.Item name="tags" label="Nhãn" >

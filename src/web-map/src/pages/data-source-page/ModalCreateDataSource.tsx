@@ -69,15 +69,14 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
             tags : values['tags']
         };
         
-        const createdSource = await sourceStore.create(source);
+        const createdSourceResponse = await sourceStore.create(source);
        
         setConfirmLoading(false);
-        if(!createdSource){
+        if(!createdSourceResponse?.isSuccess){
             AntDModal.error({
                 title: 'Có lỗi',
                 content: <>
-                    {`Không thể upload `}
-                    <b>{source.name}</b>
+                    <b>{createdSourceResponse?.errorMessage || 'Không thể upload dữ liệu'}</b>
                 </>,
             });
             return;
@@ -92,30 +91,30 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
             isOpen: props.visible,
             confirmLoading: confirmLoading,
             onOk: handleOk,
-            onCancel: handleCancel
+            onCancel: handleCancel,
         }}>
             <Form form={form}
-                labelCol={{ span: 8 }}
-                wrapperCol={{ span: 12 }}
+                labelCol={{ span: 7 }}
+                wrapperCol={{ span: 11 }}
                 layout="horizontal"
-                initialValues={{ size: 'default', requiredMarkValue: 'required', Note: '' }}
+                initialValues={{ size: 'default', requiredMarkValue: 'required', Note: 'dd' }}
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="file" label="Shapefile" required tooltip="Bắt buộc"
-                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
+                <Form.Item name="file" label="Shapefile" required tooltip="This is a required field"
+                    rules={[{ required: true, message: 'File is required' }]}>
                     <Upload {...uploadProps}>
                         <Button icon={<UploadOutlined />}>Chọn tệp tin</Button>
                     </Upload>
                 </Form.Item>
 
-                <Form.Item name="name" label="Tên dữ liệu" required tooltip="Bắt buộc"
-                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
+                <Form.Item name="name" label="Tên dữ liệu" required tooltip="This is a required field"
+                    rules={[{ required: true, message: 'Name is required' }]}>
                     <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="tags" label="Nhãn" >
-                    <Select mode="tags" style={{ width: '100%' }} placeholder="Gán nhãn">
+                <Form.Item name="tags" label="Tags" tooltip="This is a optional field">
+                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode">
                         {childrenTags}
                     </Select>
                 </Form.Item>

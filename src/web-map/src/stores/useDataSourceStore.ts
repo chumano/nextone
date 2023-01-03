@@ -1,5 +1,5 @@
 import { useDatasourceApi, } from "../apis";
-import { DataSource } from "../interfaces";
+import { ApiResult, DataSource } from "../interfaces";
 import { CreateDataSourceDTO, SearchDataSourceDTO, UpdateDataSourceDTO } from "../interfaces/dtos";
 import { getResponseErrorMessage, handleAxiosApi } from "../utils/functions";
 import { useObservable } from "../utils/hooks";
@@ -28,12 +28,13 @@ export const useDatasourceStore = () => {
     const create = async (obj: CreateDataSourceDTO) => {
       try {
         observable.creating(true);
-        const createdObj = await handleAxiosApi<DataSource>(api.create(obj));
+        const createdObjResponse = await handleAxiosApi<ApiResult<DataSource>>(api.create(obj));
         //await new Promise(f => setTimeout(f, 1000));
-         
-        observable.create(createdObj);
-
-        return createdObj;
+        if(createdObjResponse.isSuccess){
+          const createdObj = createdObjResponse.data;
+          observable.create(createdObj);
+        }
+        return createdObjResponse;
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
@@ -45,8 +46,13 @@ export const useDatasourceStore = () => {
     const update = async (id: string, obj: UpdateDataSourceDTO) => {
       try {
         observable.updating(true);
-        const updated = await handleAxiosApi<DataSource>(api.update(id, obj));
-        observable.update(id, updated);
+        const updatedResponse = await handleAxiosApi<ApiResult<DataSource>>(api.update(id, obj));
+        if(updatedResponse.isSuccess){
+          const updated = updatedResponse.data;
+          observable.update(id, updated);
+        }
+        
+        return updatedResponse;
       } catch (error) {
         observable.error(getResponseErrorMessage(error));
       } finally {
