@@ -22,9 +22,12 @@ namespace ComService.Boudaries.DomainEventHandlers
         public async Task Handle(ConversationCreated notification, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"{nameof(ConversationCreatedHandler)} handle....");
-            using var scoped = _serviceProvider.CreateScope();
-            _userActivityService = scoped.ServiceProvider.GetService<UserActivityService>();    
-            await _userActivityService.AddUserActivity(notification.UserId, $"Tạo kênh \"{notification.Conversation.Name}\"", null);
+            if(notification.Conversation.Type == Domain.ConversationTypeEnum.Channel)
+            {
+                using var scoped = _serviceProvider.CreateScope();
+                _userActivityService = scoped.ServiceProvider.GetService<UserActivityService>();
+                await _userActivityService.AddUserActivity(notification.UserId, $"Tạo kênh \"{notification.Conversation.Name}\"", null);
+            }
         }
     }
 }

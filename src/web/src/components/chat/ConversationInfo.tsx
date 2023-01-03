@@ -119,7 +119,8 @@ const ConversationInfo: React.FC<ConversationInfoProps> = ({ conversation, userR
                 }
                 {conversation.type == ConversationType.Channel &&
                     <TabPane tab="Sự kiện" key="events">
-                        <ChannelEvents channel={channel} userRole={userRole} />
+                        <ChannelEvents channel={channel} userRole={userRole} 
+                            onDeleteEvent={onDeleteEvent}/>
                     </TabPane>
                 }
 

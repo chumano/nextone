@@ -32,6 +32,9 @@ const MessageEvent: React.FC<MessageEventProps> = ({ message, canDelete, onDelet
     };
 
     const displayDate = frowNow(message.sentDate);
+    if(!eventInfo){
+        return <div title={message.id}>Đã bị xóa</div>
+    }
     return (
         <div className='message-event' onMouseOver={handleMouseOver} onMouseLeave={handleMouseOut}>
             <div>

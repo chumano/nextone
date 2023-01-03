@@ -34,7 +34,7 @@ const ConfigEventTypes = () => {
                 const { isSuccess, errorMessage } = response;
                 if (!isSuccess) {
                     Modal.error({
-                        title: 'Có lỗi bất thường xảy ra!',
+                        title: 'Có lỗi!',
                         content: errorMessage
                     });
                     return;

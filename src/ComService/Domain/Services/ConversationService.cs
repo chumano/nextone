@@ -341,14 +341,22 @@ namespace ComService.Domain.Services
 
         public async Task<IEnumerable<Message>> GetMessagesNearBy(Conversation conversation, string messageId, int prevNum = 10, int nextNum = 10)
         {
-            var message = await _messageRepository.Messages.FirstOrDefaultAsync(o => o.Id == messageId);
+            var messageQuery = _messageRepository.Messages.AsNoTracking()
+                                .Include(m => m.Event)
+                                    .ThenInclude(o => o.EventType)
+                                .Include(o => o.Event)
+                                    .ThenInclude(o => o.Files)
+                                .Include(o => o.Event)
+                                    .ThenInclude(o => o.UserSender);
 
-            var prevMessages = _messageRepository.Messages
+            var message = await messageQuery.FirstOrDefaultAsync(o => o.Id == messageId);
+
+            var prevMessages = messageQuery
                                 .Where(o => o.SentDate <= message.SentDate && o.Id != message.Id)
                                 .OrderByDescending(o => o.SentDate)
 
                                 .Take(prevNum);
-            var nextMessages = _messageRepository.Messages
+            var nextMessages = messageQuery
                                 .OrderByDescending(o => o.SentDate)
                                 .Where(o => o.SentDate >= message.SentDate && o.Id != message.Id)
                                 .Take(nextNum);
@@ -358,7 +366,15 @@ namespace ComService.Domain.Services
 
         public async Task<IEnumerable<Message>> GetMessagesHistory(Conversation conversation, DateTime beforeDate, PageOptions pageOptions)
         {
-            var query = _messageRepository.Messages
+            var messageQuery = _messageRepository.Messages.AsNoTracking()
+                                .Include(m => m.Event)
+                                    .ThenInclude(o => o.EventType)
+                                .Include(o => o.Event)
+                                    .ThenInclude(o => o.Files)
+                                .Include(o => o.Event)
+                                    .ThenInclude(o => o.UserSender);
+
+            var query = messageQuery
                                .Where(o => o.ConversationId == conversation.Id
                                         && o.SentDate < beforeDate)
                                .OrderByDescending(o => o.SentDate)

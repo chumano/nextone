@@ -75,7 +75,7 @@ const ModalUpdateEventType: React.FC<ModalUpdateEventTypeProps> = ({eventType, o
                         { min: 4, message: "Phải lớn hơn 4 ký tự" }
                     ]}
                 >
-                    <Input
+                    <Input disabled
                         type="text"
                         placeholder="Mã"
                     />

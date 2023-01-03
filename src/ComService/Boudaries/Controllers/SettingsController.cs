@@ -1,4 +1,5 @@
-﻿using ComService.Domain.Services;
+﻿using ComService.Domain;
+using ComService.Domain.Services;
 using ComService.DTOs.Settings;
 using ComService.Infrastructure;
 using ComService.Infrastructure.AppSettings;
@@ -168,7 +169,23 @@ namespace ComService.Boudaries.Controllers
                 {
                     throw new Exception($"{code} is not found");
                 }
+                var isUsed = await _comDbContext.Set<ChannelEventType>().AnyAsync(o => o.EventTypeCode == code);
+                if (isUsed)
+                {
+                    throw new Exception($"Loại sự kiện đang được dùng");
+                }
 
+                //isUsed = await _comDbContext.Events.AnyAsync(o => o.EventTypeCode == code);
+                //if (isUsed)
+                //{
+                //    throw new Exception($"Loại sự kiện đang được dùng");
+                //}
+
+                isUsed = await _comDbContext.Set<ChannelEvent>().AnyAsync(o => o.Event.EventTypeCode == code);
+                if (isUsed)
+                {
+                    throw new Exception($"Loại sự kiện đang được dùng");
+                }
                 _comDbContext.EventTypes.Remove(eventType);
                 await _comDbContext.SaveChangesAsync();
 

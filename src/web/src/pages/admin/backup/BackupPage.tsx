@@ -96,7 +96,7 @@ const BackupPageInternal = () => {
                 <div>
                     <Space>
                         <Button onClick={()=>{dispatch(backupActions.setFilter({}))}}>
-                            Tải lại
+                            Tải lại danh sách
                         </Button>
 
                         <Button type="default" danger 

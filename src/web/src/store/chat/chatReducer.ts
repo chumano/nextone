@@ -236,8 +236,7 @@ export const chatSlice = createSlice({
             const conversation = state.allConversations.find(o => o.id === channelId);
             if (!conversation) return;
             conversation.events = conversation.events.filter(o => o.id != eventId);
-            conversation.messages = conversation.messages.filter(o=> o.event?.id !== eventId);
-        
+            conversation.messages = conversation.messages.filter(o=> o.eventId !== eventId);
             conversationUpdated(state, conversation);
         },
     },

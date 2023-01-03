@@ -15,6 +15,7 @@ export interface Message {
   files: MessageFile[];
 
   event?: EventInfo,
+  eventId?:string,
 
   isDeleted?: boolean,
 

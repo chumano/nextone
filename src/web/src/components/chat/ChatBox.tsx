@@ -146,7 +146,8 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent
                     </div>
                 </div>
                 <div className="chat-content">
-                    <MessageList conversation={conversation} userRole={userRole} onDeleteEvent={onDeleteEvent}/>
+                    <MessageList conversation={conversation} userRole={userRole} 
+                        onDeleteEvent={onDeleteEvent}/>
                 </div>
                 <div className="chat-send-box">
                     <ChatInput />
