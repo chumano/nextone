@@ -169,7 +169,7 @@ namespace ComService
             services.AddSingleton<FireBaseClient>();
 
             services.AddSingleton<IUserNotificationService, UserNotificationService>();
-            services.AddHostedService<UserNotificationHostedService>();
+            //services.AddHostedService<UserNotificationHostedService>();
             services.AddDistributedMemoryCache();
 
             var fireBaseOptions = new FireBaseOptions();

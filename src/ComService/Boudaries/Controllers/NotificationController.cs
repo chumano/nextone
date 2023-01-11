@@ -155,16 +155,16 @@ namespace ComService.Boudaries.Controllers
             var senderUser = await _userStatusService.GetUser(userId);
             var message = new CloudMessage()
             {
-                IsNotification = false,
-                Title = "Call Request",
-                Body = "Có cuộc gọi",
-                Data = new System.Collections.Generic.Dictionary<string, string>
-                        {
-                            { "type",  "call" },
-                            { "senderId" , senderUser.UserId },
-                            { "senderName" , senderUser.UserName },
-                            { "callType", callType }
-                        }
+                IsNotification = true,
+                Title = "Có tin nhắn",
+                Body = "Test",
+                //Data = new System.Collections.Generic.Dictionary<string, string>
+                //        {
+                //            { "type",  "call" },
+                //            { "senderId" , senderUser.UserId },
+                //            { "senderName" , senderUser.UserName },
+                //            { "callType", callType }
+                //        }
             };
             // dBVK9PmoTqGUvF0TKx9jpF:APA91bFFPBVouIFmF4UKhh8ZqSlr54ZXdgNuWO2_jUjHLzTwdx6R--DU_IzxV1ZY8sNAwoRzCqlVziDzr9U0LVpD4fIq0XIoxgOK9srEZoz4iGADsbLJr-03Js_j7Mu6bVmSBf_Fvo0g
             var userTokens = new List<string>() { token };

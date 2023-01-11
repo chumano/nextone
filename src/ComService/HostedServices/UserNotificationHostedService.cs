@@ -51,6 +51,7 @@ namespace ComService.HostedServices
                 {
                     try
                     {
+                        //TODO: check last send to the user
                         var userTokens = await comDbContext.UserDeviceTokens.AsNoTracking()
                            .Where(o => o.UserId == userNotification.UserId)
                            .Select(o => o.Token)
