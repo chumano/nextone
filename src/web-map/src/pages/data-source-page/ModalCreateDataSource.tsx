@@ -101,20 +101,20 @@ const ModalCreateDataSource: React.FC<ModalCreateDataSourceProps> = (props) => {
                 onFinish={onFormFinish}
                 size={'default' as SizeType}
             >
-                <Form.Item name="file" label="Shapefile" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'File is required' }]}>
+                <Form.Item name="file" label="Shapefile" required 
+                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                     <Upload {...uploadProps}>
                         <Button icon={<UploadOutlined />}>Chọn tệp tin</Button>
                     </Upload>
                 </Form.Item>
 
-                <Form.Item name="name" label="Tên dữ liệu" required tooltip="This is a required field"
-                    rules={[{ required: true, message: 'Name is required' }]}>
+                <Form.Item name="name" label="Tên dữ liệu" required
+                    rules={[{ required: true, message: 'Thông tin bắt buộc' }]}>
                     <Input placeholder=""  autoComplete="newpassword"/>
                 </Form.Item>
 
-                <Form.Item name="tags" label="Tags" tooltip="This is a optional field">
-                    <Select mode="tags" style={{ width: '100%' }} placeholder="Tags Mode">
+                <Form.Item name="tags" label="Nhãn">
+                    <Select mode="tags" style={{ width: '100%' }} placeholder="Nhãn dữ liệu">
                         {childrenTags}
                     </Select>
                 </Form.Item>
