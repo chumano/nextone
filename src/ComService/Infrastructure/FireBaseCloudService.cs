@@ -58,7 +58,7 @@ namespace ComService.Infrastructure
                     Notification = message.IsNotification? new AndroidNotification()
                     {
                         NotificationCount = 1,
-                        ClickAction = "FLUTTER_NOTIFICATION_CLICK",
+                        //ClickAction = "FLUTTER_NOTIFICATION_CLICK",
                     }: null
                 };
 
