@@ -149,7 +149,7 @@ namespace ComService.Boudaries.Controllers
         }
 
         [HttpPost("Test")]
-        public async Task<IActionResult> Test([FromForm] string token, [FromForm] string callType)
+        public async Task<IActionResult> Test([FromForm] string token, [FromForm] string type)
         {
             var userId = _userContext.User.UserId;
             var senderUser = await _userStatusService.GetUser(userId);
@@ -158,13 +158,13 @@ namespace ComService.Boudaries.Controllers
                 IsNotification = true,
                 Title = "Có tin nhắn",
                 Body = "Test",
-                //Data = new System.Collections.Generic.Dictionary<string, string>
-                //        {
-                //            { "type",  "call" },
-                //            { "senderId" , senderUser.UserId },
-                //            { "senderName" , senderUser.UserName },
-                //            { "callType", callType }
-                //        }
+                Data = new System.Collections.Generic.Dictionary<string, string>
+                        {
+                            { "type",  type ?? "call" },
+                            { "senderId" , senderUser.UserId },
+                            { "senderName" , senderUser.UserName },
+                            { "callType", "video" }
+                        }
             };
             // dBVK9PmoTqGUvF0TKx9jpF:APA91bFFPBVouIFmF4UKhh8ZqSlr54ZXdgNuWO2_jUjHLzTwdx6R--DU_IzxV1ZY8sNAwoRzCqlVziDzr9U0LVpD4fIq0XIoxgOK9srEZoz4iGADsbLJr-03Js_j7Mu6bVmSBf_Fvo0g
             var userTokens = new List<string>() { token };

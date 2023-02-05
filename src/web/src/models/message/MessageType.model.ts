@@ -7,4 +7,5 @@ export enum MessageType {
   CallMessage,
   Event,
   CallEndMessage,
+  AudioFile,
 }

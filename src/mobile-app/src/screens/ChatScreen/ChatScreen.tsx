@@ -89,7 +89,7 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
   return (
     <React.Fragment>
       { selectedConversation &&
-        <ChatBox conversation={selectedConversation} />
+        <ChatBox key={conversationId} conversation={selectedConversation} />
       }
       { !selectedConversation &&
         <Loading/>

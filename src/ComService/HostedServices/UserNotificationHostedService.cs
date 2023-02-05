@@ -1,9 +1,11 @@
 ﻿using ComService.Domain.Services;
 using ComService.Infrastructure;
+using ComService.Infrastructure.AppSettings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NCrontab;
 using System;
 using System.Linq;
@@ -41,44 +43,65 @@ namespace ComService.HostedServices
                 //get 100 old token
                 using var scopeService = _serviceProvider.CreateScope();
 
+                var applicationOptions = scopeService.ServiceProvider.GetRequiredService<IOptionsMonitor<ApplicationOptions>>();
+
                 var comDbContext = scopeService.ServiceProvider.GetRequiredService<ComDbContext>();
                 var userNotificationService = scopeService.ServiceProvider.GetRequiredService<IUserNotificationService>();
 
                 var oldDate = DateTime.Now.Subtract(TimeSpan.FromDays(1));
                 var userNotifications = await userNotificationService.GeNotifications();
 
-                foreach(var userNotification in userNotifications)
+                foreach (var userNotification in userNotifications)
                 {
                     try
                     {
-                        //TODO: check last send to the user
-                        var userTokens = await comDbContext.UserDeviceTokens.AsNoTracking()
-                           .Where(o => o.UserId == userNotification.UserId)
-                           .Select(o => o.Token)
-                           .ToListAsync();
+                        //Todo: check last seen
+                        var conversationMemberInfo = await comDbContext.ConversationMembers.AsNoTracking()
+                                .Where(o => o.UserId == userNotification.UserId && o.ConversationId == userNotification.TopicOrConversation)
+                                .FirstOrDefaultAsync();
 
-                        if (userTokens.Any())
+                        if (conversationMemberInfo == null) continue;
+                        if (conversationMemberInfo.SeenDate > userNotification.CreatedDate)
                         {
-                            var cloudMessage = new CloudMessage()
-                            {
-                                IsNotification = true,
-                                Title = userNotification.Title,
-                                Body = userNotification.Content,
-                                Data = new System.Collections.Generic.Dictionary<string, string>
-                                {
-                                    { "topicOrConversation" , userNotification.TopicOrConversation }
-                                }
-                            };
-                            await _cloudService.SendMessage(userTokens, cloudMessage);
+                            continue;
                         }
 
-                        await userNotificationService.RemoveNotification(userNotification.UserId, userNotification.TopicOrConversation);
+                        _logger.LogInformation($"UserNotificationHostedService SendCloudMessage[{applicationOptions.CurrentValue.SendCloudMessageNotificationEnabled}] to User {userNotification.UserId} : {userNotification.Content}");
+
+                        if (applicationOptions.CurrentValue.SendCloudMessageNotificationEnabled)
+                        {
+                            var userTokens = await comDbContext.UserDeviceTokens.AsNoTracking()
+                             .Where(o => o.UserId == userNotification.UserId)
+                             .Select(o => o.Token)
+                             .ToListAsync();
+
+                            if (userTokens.Any())
+                            {
+                                var cloudMessage = new CloudMessage()
+                                {
+                                    IsNotification = true,
+                                    Title = userNotification.Title,
+                                    Body = userNotification.Content,
+                                    Data = new System.Collections.Generic.Dictionary<string, string>
+                                    {
+                                        { "type",  "message" },
+                                        { "conversationId" , userNotification.TopicOrConversation }
+                                    }
+                                };
+
+                                await _cloudService.SendMessage(userTokens, cloudMessage);
+                            }
+                        }
                     }
                     catch (Exception ex)
                     {
                         _logger.LogError(ex, $"UserNotificationHostedService send to user {userNotification.UserId} Error: " + ex.Message);
                     }
-                   
+                    finally
+                    {
+                        await userNotificationService.RemoveNotification(userNotification.UserId, userNotification.TopicOrConversation);
+                    }
+
                 }
 
             }

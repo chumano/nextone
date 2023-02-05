@@ -126,6 +126,18 @@ export const chatSlice = createSlice({
             conversationUpdated(state, conversation);
         },
 
+        updateMemberSeenDate: (state, action: PayloadAction<{ conversationId: string, memberId:string, seenDate: string }>) => {
+            const { conversationId, memberId, seenDate } = action.payload;
+            const conversation = state.allConversations.find(o => o.id === conversationId);
+            if (!conversation) return;
+            conversation.members = conversation.members.map(o=>{
+                if(o.userMember.userId === memberId){
+                    o.seenDate = seenDate;
+                }
+                return o;
+            })
+            conversationUpdated(state, conversation);
+        },
         //chat
         receiveChatEvent: (state, action: PayloadAction<ChatMesageEventData>) => {
             const { chatKey, data } = action.payload;

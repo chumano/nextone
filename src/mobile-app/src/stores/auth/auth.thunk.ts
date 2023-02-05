@@ -86,6 +86,7 @@ export const logout = createAsyncThunk(
       await AsyncStorage.removeItem('@UserToken');
       return;
     } catch (error) {
+      await AsyncStorage.removeItem('@UserToken');
       return rejectWithValue('Something went wrong');
     }
   },

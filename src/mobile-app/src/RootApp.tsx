@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import BottomTabNavigator from './navigation/BottomTabNavigator';
 import { AppState, Linking, NativeModules, PermissionsAndroid, Platform } from 'react-native';
+import messaging, {firebase} from '@react-native-firebase/messaging';
 import { ChatData } from './stores/conversation/conversation.payloads';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, IAppStore } from './stores/app.store';
@@ -15,12 +16,15 @@ import { LOCATION, setupLocationWatch } from './utils/location.utils';
 import { startSendHeartBeat, stopSendHeartBeat } from './utils/internet.utils';
 import { conversationApi } from './apis';
 import { notificationApi } from './apis/notificationApi';
-import { CallMessageData } from './types/CallMessageData';
+import { CallMessageData, ChatMessageData, IMessageData } from './types/CallMessageData';
 import { CallScreen } from './screens/CallScreen/CallScreen';
 import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } from './utils/fcm';
 import { callKeepOptions, displayCallRequest, answerCall, endCall, CALL_WAIT_TIME } from './utils/callUtils';
 import { GlobalContext } from '../AppContext';
 import { IApplicationSettings } from './types/AppConfig.type';
+import { useNavigation } from '@react-navigation/native';
+import { ConversationScreenProp } from './navigation/ChatStack';
+import { ConversationType } from './types/Conversation/ConversationType.type';
 
 
 //CHANGE_ME
@@ -51,6 +55,8 @@ const RootApp = () => {
 export default RootApp;
 
 const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
+  const dispatch = useDispatch();
+  const navigation = useNavigation<ConversationScreenProp>();
   //use firebase to receive call request
   useEffect(() => {
     const initNotification = async () => {
@@ -77,11 +83,52 @@ const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
     if(!applicationSettings) return;
     const unsubscribe = registerFBForegroundHandler(async (remoteMessage: any) => {
       //console.log(`[${new Date()}] ` + 'handleFBCall', remoteMessage);
-      const message: CallMessageData = remoteMessage.data as any;
-      displayCallRequest(message,applicationSettings.callTimeOutInSeconds*1000 || CALL_WAIT_TIME);
+      const message: IMessageData = remoteMessage.data as any;
+      if(message.type==='call'){
+        const callMessage= message as CallMessageData;
+        displayCallRequest(callMessage,applicationSettings.callTimeOutInSeconds*1000 || CALL_WAIT_TIME);
+      }else if(message.type==='message'){
+        console.log("have message data", message as ChatMessageData)
+      }
+      
     });
     return unsubscribe;
   }, [applicationSettings])
+
+  // useEffect(() => {
+  //   // Assume a message-notification contains a "type" property in the data payload of the screen to open
+  //   console.log('aaaaaaaaaaaaaaa')
+  //   messaging().onNotificationOpenedApp(remoteMessage => {
+  //     console.log(
+  //       'Notification caused app to open from background state:',
+  //       remoteMessage,
+  //     );
+
+  //     const message: ChatMessageData = remoteMessage.data as any;
+  //     if(message.type==='message'){
+  //       const conversationId = message.conversationId;
+  //       dispatch(conversationActions.selectConversation(conversationId));
+  //       navigation.navigate('ChatScreen', {
+  //         conversationId: conversationId,
+  //         name: 'conversationId',
+  //         conversationType: ConversationType.Peer2Peer
+  //       });
+  //     }
+  //   });
+
+  //   // Check whether an initial notification is available
+  //   messaging()
+  //     .getInitialNotification()
+  //     .then(remoteMessage => {
+  //       if (remoteMessage) {
+  //         console.log(
+  //           'Notification caused app to open from quit state:',
+  //           remoteMessage,
+  //         );
+  //       }
+        
+  //     });
+  // }, []);
 }
 
 const useCallKeep = () => {

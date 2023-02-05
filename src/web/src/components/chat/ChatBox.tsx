@@ -22,24 +22,27 @@ import { UserStatus } from '../../models/user/UserStatus.model';
 import ConversationAvatar from './ConversationAvatar';
 import { DeviceManager } from '../../services/DeviceManager';
 import { message } from 'antd';
-import { MemberRole } from '../../models/conversation/ConversationMember.model';
+import { ConversationMember, MemberRole } from '../../models/conversation/ConversationMember.model';
 import { EventInfo } from '../../models/event/Event.model';
+import { compareDate, nowDate } from '../../utils/functions';
+import { comApi } from '../../apis/comApi';
 
 interface ChatBoxProps {
     conversation: ConversationState,
-    userRole?: MemberRole,
+    conversationMember?: ConversationMember,
     onDeleteEvent?: (item: EventInfo)=> void
 }
 
-
 const deviceManager = new DeviceManager();
-const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent }) => {
+const ChatBox: React.FC<ChatBoxProps> = ({ conversation, conversationMember, onDeleteEvent }) => {
     const dispatch = useDispatch();
     const user = useSelector((store: IAppStore) => store.auth.user);
     const { deviceSettings } = useSelector((store: IAppStore) => store.call);
     const userId = user!.profile.sub;
     const [conversationName, setConversationName] = useState<string>();
     const [otherUser, setOtherUser] = useState<UserStatus>();
+
+    const userRole = conversationMember?.role;
 
     useEffect(() => {
         if (conversation.type === ConversationType.Peer2Peer) {
@@ -51,9 +54,6 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent
         }
     }, [conversation])
 
-    useEffect(()=>{
-        console.log('Conversation change', conversation.id)
-    },[conversation])
 
     const showDeviceSetting = () => {
         //TODO: show Modal select devices
@@ -101,6 +101,24 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent
         dispatch(chatActions.toggleConversationInfo());
     }, [dispatch]);
 
+    const onMessageSeen = useCallback(async()=>{
+        const seenDate = conversationMember?.seenDate;
+        const lastMessage =  conversation.messages.length>0 ? conversation.messages[0] : undefined;
+
+        const lastMessageDate = lastMessage?.sentDate || nowDate();
+        
+        if(!seenDate || compareDate(seenDate, lastMessageDate) === -1){ //seenDate < lastMessageDate
+            console.log(' update seenDate')
+            dispatch(chatActions.updateMemberSeenDate({
+                conversationId: conversation.id,
+                memberId: userId,
+                seenDate: lastMessageDate
+            }))
+
+            await comApi.userSeenCoversation(conversation.id)
+        }
+        
+    },[conversationMember,userId, conversation.id, conversation.messages])
     return <>
         {conversation &&
             <div className='chatbox'>
@@ -151,7 +169,7 @@ const ChatBox: React.FC<ChatBoxProps> = ({ conversation, userRole, onDeleteEvent
                 </div>
                 <div className="chat-content">
                     <MessageList conversation={conversation} userRole={userRole} 
-                        onDeleteEvent={onDeleteEvent}/>
+                        onDeleteEvent={onDeleteEvent} onMessageSeen={onMessageSeen} />
                 </div>
                 <div className="chat-send-box">
                     <ChatInput />
