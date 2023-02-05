@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {View, Text, Button, StyleSheet, Image} from 'react-native';
 
 import notifee from '@notifee/react-native';
 import {useNavigation} from '@react-navigation/native';
 import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
 import {notificationApi} from '../../apis/notificationApi';
-import {IAppStore} from '../../stores/app.store';
-import {useSelector} from 'react-redux';
+import {AppDispatch, IAppStore} from '../../stores/app.store';
+import {useDispatch, useSelector} from 'react-redux';
 import NewsList from '../../components/News/NewsList';
+import { getListConversation } from '../../stores/conversation';
 
 export const HomeScreen = () => {
+  const dispatch: AppDispatch = useDispatch();
   const navigation = useNavigation<DetailsScreenNavigationProp>();
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
   const onDetailScreenHandler = () => {
@@ -37,6 +39,10 @@ export const HomeScreen = () => {
     const response = await notificationApi.testCall(userInfo!.userId);
     //console.log('testCall', response);
   };
+
+  useEffect(() => {
+    dispatch(getListConversation({pageOptions: {offset: 0}}));
+  }, []);
   return (
     <View style={styles.homeScreenContainer}>
       <View style={styles.logoContainer}>

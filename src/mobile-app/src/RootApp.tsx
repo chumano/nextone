@@ -23,7 +23,7 @@ import { callKeepOptions, displayCallRequest, answerCall, endCall, CALL_WAIT_TIM
 import { GlobalContext } from '../AppContext';
 import { IApplicationSettings } from './types/AppConfig.type';
 import { useNavigation } from '@react-navigation/native';
-import { ConversationScreenProp } from './navigation/ChatStack';
+import { ChatStackProps, ConversationScreenProp } from './navigation/ChatStack';
 import { ConversationType } from './types/Conversation/ConversationType.type';
 
 
@@ -56,7 +56,7 @@ export default RootApp;
 
 const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
   const dispatch = useDispatch();
-  const navigation = useNavigation<ConversationScreenProp>();
+  const navigation = useNavigation<any>();
   //use firebase to receive call request
   useEffect(() => {
     const initNotification = async () => {
@@ -95,40 +95,45 @@ const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
     return unsubscribe;
   }, [applicationSettings])
 
-  // useEffect(() => {
-  //   // Assume a message-notification contains a "type" property in the data payload of the screen to open
-  //   console.log('aaaaaaaaaaaaaaa')
-  //   messaging().onNotificationOpenedApp(remoteMessage => {
-  //     console.log(
-  //       'Notification caused app to open from background state:',
-  //       remoteMessage,
-  //     );
+  useEffect(() => {
+    const openConversationScreen = (message: ChatMessageData)=>{
+      if(message.type==='message'){
+        const conversationId = message.conversationId;
+        dispatch(conversationActions.selectConversation(conversationId));
+        navigation.navigate('ChatScreen',{
+          conversationId: conversationId,
+            name: '...',
+            conversationType: ConversationType.Peer2Peer
+        });
+      }
+    }
 
-  //     const message: ChatMessageData = remoteMessage.data as any;
-  //     if(message.type==='message'){
-  //       const conversationId = message.conversationId;
-  //       dispatch(conversationActions.selectConversation(conversationId));
-  //       navigation.navigate('ChatScreen', {
-  //         conversationId: conversationId,
-  //         name: 'conversationId',
-  //         conversationType: ConversationType.Peer2Peer
-  //       });
-  //     }
-  //   });
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage,
+      );
 
-  //   // Check whether an initial notification is available
-  //   messaging()
-  //     .getInitialNotification()
-  //     .then(remoteMessage => {
-  //       if (remoteMessage) {
-  //         console.log(
-  //           'Notification caused app to open from quit state:',
-  //           remoteMessage,
-  //         );
-  //       }
+      const message: ChatMessageData = remoteMessage.data as any;
+      openConversationScreen(message);
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage,
+          );
+
+          const message: ChatMessageData = remoteMessage.data as any;
+          openConversationScreen(message);
+        }
         
-  //     });
-  // }, []);
+      });
+  }, []);
 }
 
 const useCallKeep = () => {
