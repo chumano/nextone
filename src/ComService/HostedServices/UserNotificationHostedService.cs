@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using NCrontab;
 using System;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,6 +24,7 @@ namespace ComService.HostedServices
         private readonly IServiceProvider _serviceProvider;
         private readonly ICloudService _cloudService;
         private bool _running = false;
+        private readonly ConcurrentDictionary<string, DateTime> _lastSentNotfications;
         public UserNotificationHostedService(IServiceProvider serviceProvider,
              ICloudService cloudService,
             ILogger<UserNotificationHostedService> logger)
@@ -32,6 +34,7 @@ namespace ComService.HostedServices
             _logger = logger;
             _serviceProvider = serviceProvider;
             _cloudService = cloudService;
+            _lastSentNotfications = new ConcurrentDictionary<string, DateTime>();
         }
 
         private async Task RunTask()
@@ -61,12 +64,23 @@ namespace ComService.HostedServices
                                 .FirstOrDefaultAsync();
 
                         if (conversationMemberInfo == null) continue;
-                        if (conversationMemberInfo.SeenDate > userNotification.CreatedDate)
+                        if (conversationMemberInfo.SeenDate!=null && conversationMemberInfo.SeenDate > userNotification.CreatedDate)
                         {
                             continue;
                         }
+                        var userConverationKey = $"SEND_{userNotification.UserId}_{userNotification.TopicOrConversation}";
+                        var sent = _lastSentNotfications.TryGetValue(userConverationKey, out var lastSent);
+
+                        if (sent)
+                        {
+                            if (conversationMemberInfo.SeenDate != null && conversationMemberInfo.SeenDate < lastSent)
+                            {
+                                continue;
+                            }
+                        }
 
                         _logger.LogInformation($"UserNotificationHostedService SendCloudMessage[{applicationOptions.CurrentValue.SendCloudMessageNotificationEnabled}] to User {userNotification.UserId} : {userNotification.Content}");
+                        _lastSentNotfications.AddOrUpdate(userConverationKey, DateTime.Now, (key, exist) => DateTime.Now);
 
                         if (applicationOptions.CurrentValue.SendCloudMessageNotificationEnabled)
                         {
