@@ -25,7 +25,7 @@ import { IApplicationSettings } from './types/AppConfig.type';
 import { useNavigation } from '@react-navigation/native';
 import { ConversationScreenProp } from './navigation/ChatStack';
 import { ConversationType } from './types/Conversation/ConversationType.type';
-
+import notifee from '@notifee/react-native';
 
 //CHANGE_ME
 const useSocketToListenCall = false; //local=true
@@ -95,6 +95,12 @@ const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
     return unsubscribe;
   }, [applicationSettings])
 
+  useEffect(()=>{
+    const requestPermission =async () => {
+      await notifee.requestPermission()
+    }
+    requestPermission();
+  },[])
   // useEffect(() => {
   //   // Assume a message-notification contains a "type" property in the data payload of the screen to open
   //   console.log('aaaaaaaaaaaaaaa')
