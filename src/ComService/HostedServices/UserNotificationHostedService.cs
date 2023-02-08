@@ -17,7 +17,7 @@ namespace ComService.HostedServices
 {
     public class UserNotificationHostedService : IHostedService
     {
-        private readonly CrontabSchedule _crontabSchedule;
+        private CrontabSchedule _crontabSchedule;
         private DateTime _nextRun;
         private const string Schedule = "0 */1 * * * *"; // run day at each minute
         private readonly ILogger<UserNotificationHostedService> _logger;
@@ -29,8 +29,6 @@ namespace ComService.HostedServices
              ICloudService cloudService,
             ILogger<UserNotificationHostedService> logger)
         {
-            _crontabSchedule = CrontabSchedule.Parse(Schedule, new CrontabSchedule.ParseOptions { IncludingSeconds = true });
-            _nextRun = _crontabSchedule.GetNextOccurrence(DateTime.Now);
             _logger = logger;
             _serviceProvider = serviceProvider;
             _cloudService = cloudService;
@@ -69,14 +67,34 @@ namespace ComService.HostedServices
                             continue;
                         }
                         var userConverationKey = $"SEND_{userNotification.UserId}_{userNotification.TopicOrConversation}";
-                        var sent = _lastSentNotfications.TryGetValue(userConverationKey, out var lastSent);
+                        var isSent = _lastSentNotfications.TryGetValue(userConverationKey, out var lastSent);
 
-                        if (sent)
+                        var isAllowSendNotification = true;
+                        if (isSent)
                         {
-                            if (conversationMemberInfo.SeenDate != null && conversationMemberInfo.SeenDate < lastSent)
+                            var now = DateTime.Now;
+                            int minutes = applicationOptions.CurrentValue.ReSendCloudMessageNotificationInMinutes;
+                            //-------------LASTSENT-------->= minutes-------NOW
+                            //[                  SEEN                     ]
+                            if (now.Subtract(lastSent).TotalMilliseconds > minutes*60)
                             {
-                                continue;
+                                //đã lâu rồi chưa sent, giờ có notification mới thì send luôn
                             }
+                            else
+                            {
+                                //----------------SEEN-----------LASTSENT
+                                //Đã send rồi không cần send lại nữa, vì cái cũ user cũng chưa xem
+                                if (conversationMemberInfo.SeenDate != null && conversationMemberInfo.SeenDate < lastSent)
+                                {
+                                    isAllowSendNotification = false;
+                                }
+                            }
+                           
+                        }
+
+                        if (!isAllowSendNotification)
+                        {
+                            continue;
                         }
 
                         _logger.LogInformation($"UserNotificationHostedService SendCloudMessage[{applicationOptions.CurrentValue.SendCloudMessageNotificationEnabled}] to User {userNotification.UserId} : {userNotification.Content}");
@@ -132,6 +150,8 @@ namespace ComService.HostedServices
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.LogInformation("UserNotificationHostedService running...");
+            _crontabSchedule = CrontabSchedule.Parse(Schedule, new CrontabSchedule.ParseOptions { IncludingSeconds = true });
+            _nextRun = _crontabSchedule.GetNextOccurrence(DateTime.Now);
             Task.Run(async () =>
             {
                 while (!cancellationToken.IsCancellationRequested)

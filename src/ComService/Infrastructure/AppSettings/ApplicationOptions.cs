@@ -10,6 +10,7 @@ namespace ComService.Infrastructure.AppSettings
         public List<IceServer> IceServers { get; set; }
 
         public bool SendCloudMessageNotificationEnabled { get; set; }
+        public int ReSendCloudMessageNotificationInMinutes { get; set; } = 60;
     }
     public class IceServer
     {
