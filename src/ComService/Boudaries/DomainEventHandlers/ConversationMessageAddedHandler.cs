@@ -39,7 +39,16 @@ namespace ComService.Boudaries.DomainEventHandlers
 
                 if(message.UserSenderId!= user.UserId)
                 {
-                    await _userNotificationService.AddNotification(user.UserId, conversation.Id, "Có tin nhắn", $"Từ {message.UserSender.UserName}");
+                    var title = "Có tin nhắn";
+                    var content = $"Từ {message.UserSender.UserName}";
+                    if(conversation.Type != ConversationTypeEnum.Peer2Peer && !string.IsNullOrWhiteSpace(conversation.Name))
+                    {
+                        content += $" ({conversation.Name})";
+                    }
+                    await _userNotificationService.AddNotification(user.UserId, conversation.Id,
+                        title,
+                       content
+                   );
                 }
             }
         }
