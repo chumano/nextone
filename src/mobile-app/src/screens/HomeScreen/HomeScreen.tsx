@@ -2,13 +2,14 @@ import React, { useEffect } from 'react';
 import {View, Text, Button, StyleSheet, Image} from 'react-native';
 
 import notifee from '@notifee/react-native';
-import {useNavigation} from '@react-navigation/native';
+import {CommonActions, TabActions, useNavigation} from '@react-navigation/native';
 import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
 import {notificationApi} from '../../apis/notificationApi';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {useDispatch, useSelector} from 'react-redux';
 import NewsList from '../../components/News/NewsList';
-import { getListConversation } from '../../stores/conversation';
+import { conversationActions } from '../../stores/conversation';
+import { ConversationType } from '../../types/Conversation/ConversationType.type';
 
 export const HomeScreen = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -36,13 +37,11 @@ export const HomeScreen = () => {
     // });
 
     //call myself
-    const response = await notificationApi.testCall(userInfo!.userId);
+    //const response = await notificationApi.testCall(userInfo!.userId);
     //console.log('testCall', response);
+    
   };
 
-  useEffect(() => {
-    dispatch(getListConversation({pageOptions: {offset: 0}}));
-  }, []);
   return (
     <View style={styles.homeScreenContainer}>
       <View style={styles.logoContainer}>

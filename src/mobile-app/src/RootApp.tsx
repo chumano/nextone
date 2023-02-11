@@ -22,7 +22,7 @@ import { getFCMToken, registerFBForegroundHandler, requestFBUserPermission } fro
 import { callKeepOptions, displayCallRequest, answerCall, endCall, CALL_WAIT_TIME } from './utils/callUtils';
 import { GlobalContext } from '../AppContext';
 import { IApplicationSettings } from './types/AppConfig.type';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, StackActions, CommonActions  } from '@react-navigation/native';
 import { ChatStackProps, ConversationScreenProp } from './navigation/ChatStack';
 import { ConversationType } from './types/Conversation/ConversationType.type';
 
@@ -100,11 +100,26 @@ const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
       if(message.type==='message'){
         const conversationId = message.conversationId;
         dispatch(conversationActions.selectConversation(conversationId));
-        navigation.navigate('ChatScreen',{
-          conversationId: conversationId,
-            name: '...',
-            conversationType: ConversationType.Peer2Peer
+        const chatScreen =  { name: 'ChatScreen' ,
+            params:{
+                conversationId: conversationId
+              
+          },
+        };
+        const resetAction = CommonActions.reset({
+          routes: [
+            {
+              name: 'ChatTab',
+              state: {
+                routes: [
+                  { name: 'ConversationScreen' },
+                  chatScreen
+                ]
+              }
+            }
+          ]
         });
+        navigation.dispatch( resetAction );
       }
     }
 

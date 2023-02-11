@@ -12,24 +12,13 @@ import {
   ChangePasswordScreen,
 } from '../screens/HomeScreen';
 import {AppStackNavigationBar} from './AppNavigationBars';
-import ChatScreen from '../screens/ChatScreen/ChatScreen';
-import { ConversationType } from '../types/Conversation/ConversationType.type';
-import { TouchableOpacity } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { callActions } from '../stores/call/callReducer';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
 
 type HomeStackParamsList = {
   HomeScreen: undefined;
   ProfileScreen: undefined;
   DetailsScreen: undefined;
   ChangePasswordScreen: undefined;
-  
-  ChatScreen: {
-    conversationId: string;
-    name: string;
-    conversationType: ConversationType;
-  };
 };
 
 export type HomeStackProps = NativeStackScreenProps<
@@ -79,80 +68,7 @@ const HomeStack = () => {
           title: 'ChangePassword Page',
         }}
       />
-      <Stack.Screen
-          name="ChatScreen"
-          component={ChatScreen}
-          options={({route, navigation}) => {
-            console.log('[ChatScreen]route.params', route.params);
-            const {conversationId, name, conversationType} = route.params;
-            return {
-              title: name,
-              headerRight: () => {
-                const iconSize = 20;
-                return (
-                  <>
-                    {conversationType === ConversationType.Peer2Peer && (
-                      <>
-                        <TouchableOpacity
-                          onPress={() => {
-                            dispatch(
-                              callActions.call({
-                                callInfo: {
-                                  type: 'call',
-                                  senderId: '',
-                                  senderName: name,
-                                  conversationId: conversationId,
-                                  callType: 'voice',
-                                },
-                              }),
-                            );
-                          }}>
-                          <AwesomeIcon name="phone" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
 
-                        <TouchableOpacity
-                          style={{marginHorizontal: 20}}
-                          onPress={() => {
-                            dispatch(
-                              callActions.call({
-                                callInfo: {
-                                  type: 'call',
-                                  senderId: '',
-                                  senderName: name,
-                                  conversationId: conversationId,
-                                  callType: 'video',
-                                },
-                              }),
-                            );
-                          }}>
-                          <AwesomeIcon name="video" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate('UserDetailInfoScreen', {
-                              conversationId,
-                            });
-                          }}>
-                          <AwesomeIcon name="info" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                    {conversationType === ConversationType.Channel && (
-                      <>
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate('MembersScreen');
-                          }}>
-                          <AwesomeIcon name="info" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  </>
-                );
-              },
-            };
-          }}
-        />
     </Stack.Navigator>
   );
 };

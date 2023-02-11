@@ -28,9 +28,10 @@ const ConversationScreen = () => {
     fetchConversation();
   }, [dispatch, notLoadedConversationId])
   
-  // useEffect(() => {
-  //   dispatch(getListConversation({pageOptions: {offset: 0}}));
-  // }, [dispatch]);
+  useEffect(() => {
+    console.log('ConversationScreen getListConversation')
+    dispatch(getListConversation({pageOptions: {offset: 0}}));
+  }, [dispatch]);
   
   useFocusEffect(useCallback(() => {
     //console.log("ConversationScreen is focused") 

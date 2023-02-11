@@ -76,7 +76,7 @@ namespace ComService.HostedServices
                             int minutes = applicationOptions.CurrentValue.ReSendCloudMessageNotificationInMinutes;
                             //-------------LASTSENT-------->= minutes-------NOW
                             //[                  SEEN                     ]
-                            if (now.Subtract(lastSent).TotalMilliseconds > minutes*60)
+                            if (now.Subtract(lastSent).TotalMilliseconds > minutes*60*1000)
                             {
                                 //đã lâu rồi chưa sent, giờ có notification mới thì send luôn
                             }
