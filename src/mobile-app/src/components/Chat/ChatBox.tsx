@@ -15,6 +15,7 @@ import { Message } from '../../types/Message/Message.type';
 import { conversationActions } from '../../stores/conversation';
 import { APP_THEME } from '../../constants/app.theme';
 import { MemberRole } from '../../types/Conversation/ConversationMember.type';
+import { compareDate, nowDate } from '../../utils/date.utils';
 
 interface IProps {
   conversation: Conversation;
@@ -24,7 +25,8 @@ const ChatBox: React.FC<IProps> = ({conversation}) => {
   const dispatch: AppDispatch = useDispatch();
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
   const {members} = conversation;
-  const userRole = members.find(o => o.userMember.userId === userInfo?.userId)?.role;
+  const conversationMember = members.find(o => o.userMember.userId === userInfo?.userId)
+  const userRole = conversationMember?.role;
 
   const [selectedMessage, setSelectedMessage]= useState<Message>();
   useEffect(()=>{
@@ -74,12 +76,32 @@ const ChatBox: React.FC<IProps> = ({conversation}) => {
     setSelectedMessage(undefined)
   },[])
   
+  const onMessageSeen = useCallback(async()=>{
+    const seenDate = conversationMember?.seenDate;
+    const lastMessage =  conversation.messages.length>0 ? conversation.messages[0] : undefined;
+
+    const lastMessageDate = lastMessage?.sentDate || nowDate();
+    
+    if(!seenDate || compareDate(seenDate, lastMessageDate) === -1){ //seenDate < lastMessageDate
+      console.log('updateMemberSeenDate')
+      dispatch(conversationActions.updateMemberSeenDate({
+          conversationId: conversation.id,
+          memberId: userInfo?.userId!,
+          seenDate: lastMessageDate
+      }))
+
+      await conversationApi.userSeenCoversation(conversation.id)
+    }
+    
+},[conversationMember,userInfo?.userId, conversation.id, conversation.messages])
+
   let content: ReactElement<any, any> = conversation ? (
     <>
       <MessageList conversation={conversation} 
         userRole={userRole} 
         onSelectMessage={onSelectMessage}
         selectedMessageId={selectedMessage?.id}
+        onMessageSeen={onMessageSeen} 
         />
 
       {!selectedMessage &&

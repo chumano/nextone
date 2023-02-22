@@ -2,6 +2,7 @@ import { UserStatus } from "./../user/UserStatus.model";
 export interface ConversationMember {
   userMember: UserStatus;
   role: MemberRole;
+  seenDate?: string;
 }
 
 export enum MemberRole {

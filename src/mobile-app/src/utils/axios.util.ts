@@ -47,10 +47,11 @@ export const createAxios = (baseUrl: string) => {
   newInstance.interceptors.response.use(
     response => response,
     async error => {
-      //console.log('axios interceptors error', JSON.stringify(error));
+     console.log('axios interceptors error', JSON.stringify(error));
       // error 401
       let originalConfig = error.config;
-      if (error?.response?.status === 401) {
+      if (error?.response?.status === 401 
+        || (error?.message && error?.message.indexOf('401')!==-1) ) {
         const userTokenInfoString = await AsyncStorage.getItem('@UserToken');
         if (!userTokenInfoString) {
           //logout

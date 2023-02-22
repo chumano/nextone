@@ -1,5 +1,3 @@
-//var API_URL =  'https://192.168.0.122:7443';
-//var IDENTITY_URL = 'https://192.168.0.122:8443';
 var API_URL =  'https://ucom-apis.dientoan.vn';
 var IDENTITY_URL = 'https://ucom-id.dientoan.vn';
 window.ENV = {

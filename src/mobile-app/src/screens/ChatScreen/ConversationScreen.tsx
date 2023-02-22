@@ -29,6 +29,7 @@ const ConversationScreen = () => {
   }, [dispatch, notLoadedConversationId])
   
   useEffect(() => {
+    console.log('ConversationScreen getListConversation')
     dispatch(getListConversation({pageOptions: {offset: 0}}));
   }, [dispatch]);
   

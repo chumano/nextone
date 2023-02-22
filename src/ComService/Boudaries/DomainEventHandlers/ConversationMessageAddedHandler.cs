@@ -1,6 +1,7 @@
 ﻿using ComService.Boudaries.Hubs;
 using ComService.Domain;
 using ComService.Domain.DomainEvents;
+using ComService.Domain.Services;
 using MediatR;
 using Microsoft.AspNetCore.SignalR;
 using System.Threading;
@@ -11,9 +12,11 @@ namespace ComService.Boudaries.DomainEventHandlers
     public class ConversationMessageAddedHandler : INotificationHandler<ConversationMessageAdded>
     {
         private readonly IHubContext<ChatHub> _hubContext;
-        public ConversationMessageAddedHandler(IHubContext<ChatHub> hubContext)
+        private readonly IUserNotificationService _userNotificationService;
+        public ConversationMessageAddedHandler(IHubContext<ChatHub> hubContext, IUserNotificationService userNotificationService)
         {
             _hubContext = hubContext;
+            _userNotificationService = userNotificationService;
         }
         public async Task Handle(ConversationMessageAdded notification, CancellationToken cancellationToken)
         {
@@ -33,6 +36,20 @@ namespace ComService.Boudaries.DomainEventHandlers
                             Data = message
                         }
                     }, cancellationToken);
+
+                if(message.UserSenderId!= user.UserId)
+                {
+                    var title = "Có tin nhắn";
+                    var content = $"Từ {message.UserSender.UserName}";
+                    if(conversation.Type != ConversationTypeEnum.Peer2Peer && !string.IsNullOrWhiteSpace(conversation.Name))
+                    {
+                        content += $" ({conversation.Name})";
+                    }
+                    await _userNotificationService.AddNotification(user.UserId, conversation.Id,
+                        title,
+                       content
+                   );
+                }
             }
         }
     }

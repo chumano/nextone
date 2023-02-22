@@ -29,8 +29,6 @@ type ChatStackParamsList = {
   ConversationScreen: undefined;
   ChatScreen: {
     conversationId: string;
-    name: string;
-    conversationType: ConversationType;
   };
   MembersScreen: undefined;
   FindUsersScreen: undefined;
@@ -61,7 +59,7 @@ export type ConversationScreenProp = NativeStackNavigationProp<
 const Stack = createNativeStackNavigator<ChatStackParamsList>();
 
 const ChatStack = ({navigation, route}: BottomTabProps) => {
-  const dispatch = useDispatch();
+ 
 
   useEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
@@ -111,72 +109,10 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
           component={ChatScreen}
           options={({route, navigation}) => {
             //console.log('[ChatScreen]route.params', route.params);
-            const {conversationId, name, conversationType} = route.params;
+            const {conversationId, } = route.params;
             return {
-              title: name,
-              headerRight: () => {
-                const iconSize = 20;
-                return (
-                  <>
-                    {conversationType === ConversationType.Peer2Peer && (
-                      <>
-                        <TouchableOpacity
-                          onPress={() => {
-                            dispatch(
-                              callActions.call({
-                                callInfo: {
-                                  type: 'call',
-                                  senderId: '',
-                                  senderName: name,
-                                  conversationId: conversationId,
-                                  callType: 'voice',
-                                },
-                              }),
-                            );
-                          }}>
-                          <AwesomeIcon name="phone" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                          style={{marginHorizontal: 20}}
-                          onPress={() => {
-                            dispatch(
-                              callActions.call({
-                                callInfo: {
-                                  type: 'call',
-                                  senderId: '',
-                                  senderName: name,
-                                  conversationId: conversationId,
-                                  callType: 'video',
-                                },
-                              }),
-                            );
-                          }}>
-                          <AwesomeIcon name="video" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate('UserDetailInfoScreen', {
-                              conversationId,
-                            });
-                          }}>
-                          <AwesomeIcon name="info" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                    {conversationType === ConversationType.Channel && (
-                      <>
-                        <TouchableOpacity
-                          onPress={() => {
-                            navigation.navigate('MembersScreen');
-                          }}>
-                          <AwesomeIcon name="info" size={iconSize} color={'#000'} />
-                        </TouchableOpacity>
-                      </>
-                    )}
-                  </>
-                );
-              },
+              title: '...',
+              
             };
           }}
         />

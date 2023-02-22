@@ -22,3 +22,13 @@ export const frowNow = (dateTime: string, format?: string) => {
 export const nowDate = () => {
   return dayjs().format(DATETIME_FORMAT);
 };
+
+export const compareDate= (dateTime1:string, dateTime2:string )=>{
+  const date1 = dayjs(dateTime1, DATETIME_FORMAT).valueOf();
+  const date2 = dayjs(dateTime2, DATETIME_FORMAT).valueOf();
+
+  if(date1 === date2) return 0;
+
+  if(date1 > date2) return 1;
+  return -1;
+}

@@ -168,6 +168,10 @@ namespace ComService
             services.AddSingleton<ICloudService, FireBaseCloudService>();
             services.AddSingleton<FireBaseClient>();
 
+            services.AddSingleton<IUserNotificationService, UserNotificationService>();
+            services.AddHostedService<UserNotificationHostedService>();
+            services.AddDistributedMemoryCache();
+
             var fireBaseOptions = new FireBaseOptions();
             Configuration.GetSection("FireBaseOptions").Bind(fireBaseOptions);
 

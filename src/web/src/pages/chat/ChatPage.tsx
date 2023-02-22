@@ -159,8 +159,8 @@ const ChatPage: React.FC = () => {
                             </p>
                         </div>
                     }
-                    {conversation && <ChatViewContainer conversation={conversation} isShownInfo={isShowConversationInfo}/>
-                       
+                    {conversation && <ChatViewContainer conversation={conversation} 
+                        isShownInfo={isShowConversationInfo}/>
                     }
                 </div>
 
@@ -210,7 +210,9 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
     const { members } = conversation;
     const user = useSelector((store: IAppStore) => store.auth.user);
     const userId = user!.profile.sub;
-    const userRole = members.find(o => o.userMember.userId === userId)?.role;
+
+    const userConversationMember = members.find(o => o.userMember.userId === userId);
+    const userRole = userConversationMember?.role;
 
     const onDeleteEvent = useCallback((item: EventInfo) => {
         Modal.confirm({
@@ -243,7 +245,8 @@ const ChatViewContainer: React.FC<{conversation: ConversationState, isShownInfo?
     
     return  <>
         <ChatBox key={conversation.id} conversation={conversation} 
-            userRole={userRole} onDeleteEvent={onDeleteEvent}/>
+            conversationMember={userConversationMember} onDeleteEvent={onDeleteEvent}/>
+
         {isShownInfo &&
             <ConversationInfo conversation={conversation} 
                 userRole={userRole} onDeleteEvent={onDeleteEvent}/>

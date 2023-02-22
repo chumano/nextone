@@ -42,7 +42,7 @@ export async function getFCMToken() {
 
 export function registerFBForegroundHandler(callback: any){
     return messaging().onMessage((msg:any)=>{
-        //console.log(`[${new Date()}] ` + 'Message handled in the foreground!', msg);
+        console.log(`[${new Date()}] ` + 'Message handled in the foreground!', msg);
         callback(msg)
     });
 }

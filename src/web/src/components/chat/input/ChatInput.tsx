@@ -4,7 +4,6 @@ import { Button, Input, Modal } from 'antd';
 import React, { useCallback, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { fileApi } from '../../../apis/fileApi';
-import { MessageType } from '../../../models/message/MessageType.model';
 import { UserStatus } from '../../../models/user/UserStatus.model';
 import { callActions, IAppStore } from '../../../store';
 import { sendMessage } from '../../../store/chat/chatThunks';
@@ -12,7 +11,10 @@ import { getMessageType, nowDate } from '../../../utils/functions';
 import { MessageUpload } from '../message/MessageItemUpload';
 import { chatActions } from '../../../store/chat/chatReducer';
 
-const ChatInput = () => {
+interface ChatInputProps {
+    onInputAction? : (action:string)=>void
+}
+const ChatInput : React.FC<ChatInputProps> = ({onInputAction}) => {
     const dispatch = useDispatch();
     const { selectedConversationId, userId } = useSelector((store: IAppStore) => store.chat);
     const [messageText, setMessageText] = useState<string>();
@@ -27,9 +29,8 @@ const ChatInput = () => {
             content: messageText!
         }))
         setMessageText('');
-    }, [selectedConversationId, messageText, setMessageText])
-
-
+        onInputAction && onInputAction('send')
+    }, [selectedConversationId, messageText, setMessageText, onInputAction])
 
     const onUploadFiles = useCallback((type: string) => {
         if (!fileInputRef.current) return;
@@ -107,6 +108,9 @@ const ChatInput = () => {
 
     }, [handleUploadFiles])
 
+    const onTextFocus = async ()=>{
+        onInputAction && onInputAction('input-focus')
+    }
     return (
         <div>
             <div className='chat-input'>
@@ -122,6 +126,7 @@ const ChatInput = () => {
                 </div>
                 <div className='text-input'>
                     <Input value={messageText}
+                        onFocus={onTextFocus}
                         onKeyUp={(e) => {
                             if (e.key === 'Enter') {
                                 e.preventDefault();

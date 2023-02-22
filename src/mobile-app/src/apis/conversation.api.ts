@@ -49,6 +49,12 @@ const sendMessage = (
   });
 };
 
+const userSeenCoversation = async (id:string)=>{
+  const responsePromise = axiosInstance.post(`/conversation/${id}/Seen`);
+  return await handleAxiosApi<ApiResponse<undefined>>(responsePromise);
+}
+
+
 const deleteMessage = async(conversationId: string, messageId:string)=>{
   const responsePromise = axiosInstance.delete(`/conversation/${conversationId}/Message/${messageId}`);
   return await handleAxiosApi<ApiResponse<undefined>>(responsePromise);
@@ -92,6 +98,7 @@ export const conversationApi = {
   getListConversation,
   getConversation,
   sendMessage,
+  userSeenCoversation,
   deleteMessage,
   getMessagesHistory,
   getOnlineUsersForMap,

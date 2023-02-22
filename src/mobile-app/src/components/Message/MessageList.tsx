@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Keyboard, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 
 import { useDispatch } from 'react-redux';
@@ -20,19 +20,21 @@ import { MemberRole } from '../../types/Conversation/ConversationMember.type';
 
 interface IProps {
   conversation: Conversation;
-  userRole?:MemberRole,
-  onSelectMessage?: (message: Message)=>void,
-  selectedMessageId?: string
+  userRole?: MemberRole,
+  onSelectMessage?: (message: Message) => void,
+  selectedMessageId?: string,
+  onMessageSeen?: () => void,
 }
 
 
-const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage, selectedMessageId }) => {
+const MessageList: React.FC<IProps> = ({ conversation, userRole, onSelectMessage, selectedMessageId, onMessageSeen }) => {
   const flatListRef = React.useRef<any>()
 
   const { messagesAllLoaded, messagesLoading } = useSelector(
     (store: IAppStore) => store.conversation,
   );
-  const [scrollBtnVisivle, setScrollButnVisible ] = useState(false);
+  const [isBottom, setIsBottom] = useState(true);
+  const [messageSeen, setMessageSeen] = useState(false)
 
   const dispatch: AppDispatch = useDispatch();
   const dismissKeyboardHandler = () => {
@@ -58,11 +60,33 @@ const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage,
       }),
     );
 
-
   }, [conversation, messagesAllLoaded]);
 
-  const scrollToBottom = ()=>{
-    flatListRef.current.scrollToOffset({animating: false, offset: 0});
+  useEffect(() => {
+    setIsBottom(true)
+  }, [])
+
+  useEffect(() => {
+    if (messageSeen) {
+      onMessageSeen && onMessageSeen();
+      setMessageSeen(false);
+    }
+  }, [messageSeen, onMessageSeen])
+
+  useEffect(() => {
+    if (isBottom) {
+      setMessageSeen(true)
+    }
+  }, [isBottom])
+
+  const onClick = useCallback(() => {
+    if (isBottom) {
+      setMessageSeen(true);
+    }
+  }, [isBottom])
+  
+  const scrollToBottom = () => {
+    flatListRef.current.scrollToOffset({ animating: false, offset: 0 });
   }
   const onScrollBeginDragHandler = () => {
     //setLoadingMore(false);
@@ -76,15 +100,15 @@ const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage,
   };
 
   const [playingId, setPlayingId] = useState<string>();
-  const onItemPlay = useCallback((id: string)=>{
+  const onItemPlay = useCallback((id: string) => {
     setPlayingId(id);
-  },[])
+  }, [])
 
-  const onSelectMessageHandle = useCallback((message: Message)=>{
-    return ()=>{
+  const onSelectMessageHandle = useCallback((message: Message) => {
+    return () => {
       onSelectMessage && onSelectMessage(message);
     }
-  },[onSelectMessage])
+  }, [onSelectMessage])
 
   return (
     <React.Fragment>
@@ -92,12 +116,12 @@ const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage,
         <FlatList
           ref={flatListRef}
           inverted={true}
-          renderItem={itemData => 
-            <MessageItem message={itemData.item} 
+          renderItem={itemData =>
+            <MessageItem message={itemData.item}
               conversationType={conversation.type}
               userRole={userRole}
-              onPlaying={onItemPlay} 
-              playingId={itemData.item.type=== MessageType.AudioFile? playingId:undefined}
+              onPlaying={onItemPlay}
+              playingId={itemData.item.type === MessageType.AudioFile ? playingId : undefined}
               onSelectMessage={onSelectMessageHandle(itemData.item)}
               isSelected={selectedMessageId === itemData.item.id}
             />
@@ -108,26 +132,27 @@ const MessageList: React.FC<IProps> = ({ conversation,userRole, onSelectMessage,
           onEndReached={handleOnTopReached}
           onEndReachedThreshold={0.4}
 
-          onScroll={(evt)=>{
-            if(evt.nativeEvent.contentOffset.y > 20){
-              setScrollButnVisible(true)
-            }else{
-              setScrollButnVisible(false)
+          onScroll={(evt) => {
+            if (evt.nativeEvent.contentOffset.y > 20) {
+              setIsBottom(false)
+            } else {
+              setIsBottom(true)
             }
           }}
 
           onScrollBeginDrag={onScrollBeginDragHandler}
           ListFooterComponent={renderFooter()}
+          onTouchEnd={onClick}
         />
       </TouchableWithoutFeedback>
-      
-      {scrollBtnVisivle &&
+
+      {!isBottom &&
         <FAB
           style={styles.floatScrollBottomBtn}
           small
           icon="arrow-down"
           onPress={scrollToBottom}
-          />
+        />
       }
     </React.Fragment>
 

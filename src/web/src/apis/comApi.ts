@@ -35,6 +35,11 @@ export const comApi = {
         return await handleAxiosApi<ApiResult<Conversation[]>>(responsePromise);
     },
 
+    userSeenCoversation: async (id:string)=>{
+        const responsePromise = comAxiosInstance.post(`/conversation/${id}/Seen`);
+        return await handleAxiosApi<ApiResult<undefined>>(responsePromise);
+    },
+
     //conversation or channel
     updateName: async (id:string, name: string)=>{
         const responsePromise = comAxiosInstance.post(`/conversation/UpdateName`,

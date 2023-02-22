@@ -57,8 +57,8 @@ namespace ComService.Infrastructure
                     TimeToLive = timeToLive,
                     Notification = message.IsNotification? new AndroidNotification()
                     {
-                        NotificationCount = 0,
-                        ClickAction = "FLUTTER_NOTIFICATION_CLICK",
+                        NotificationCount = 1,
+                        //ClickAction = "FLUTTER_NOTIFICATION_CLICK",
                     }: null
                 };
 

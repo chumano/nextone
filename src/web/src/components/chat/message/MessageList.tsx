@@ -16,14 +16,19 @@ import { comApi } from '../../../apis/comApi';
 interface MessageListProps {
     conversation: ConversationState,
     userRole?: MemberRole,
-    onDeleteEvent?: (item: EventInfo)=> void
+    onDeleteEvent?: (item: EventInfo)=> void,
+    onMessageSeen?: ()=> void,
 }
-const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDeleteEvent }) => {
+const MessageList: React.FC<MessageListProps> = ({ conversation, userRole,
+     onDeleteEvent,onMessageSeen }) => {
     const dispatch = useDispatch();
     const {messages, messagesLoading, messagesLoadMoreEmtpy} = conversation;
     const listRef = useRef<HTMLDivElement>(null);
     const [needLoadMore, setNeedLoadMore] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [isBottom, setIsBottom] = useState(false)
+    const [messageSeen, setMessageSeen] = useState(false)
+    const [lastInteractionTime, setLastInteractionTime]= useState(new Date().getTime())
 
     useEffect(() => {
         if (!listRef.current) {
@@ -40,13 +45,45 @@ const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDel
                 needLoadMore && setNeedLoadMore(false);
             }
 
+            if(Math.abs(currentScrollY) < delta){
+                setIsBottom(true);
+                
+            }else{
+                setIsBottom(false);
+            }
+
+            setLastInteractionTime(new Date().getTime())
             //console.log({goToTop, currentScrollY, divHeight, scrollHeight});
         };
 
         listRef.current.addEventListener("scroll",  debounce(handleScroll,500));
 
         return () => listRef.current?.removeEventListener("scroll", handleScroll);
-    }, [needLoadMore, setNeedLoadMore, listRef]);
+    }, [needLoadMore,isBottom,  setNeedLoadMore, listRef]);
+
+    useEffect(()=>{
+        setIsBottom(true);
+    },[])
+
+    useEffect(()=>{
+        if(messageSeen){
+            onMessageSeen && onMessageSeen();
+            setMessageSeen(false);
+        }
+    },[messageSeen, onMessageSeen])
+
+    useEffect(()=>{
+        if(isBottom) {
+            const now = new Date().getTime();
+            setMessageSeen(true)
+        }
+    },[isBottom])
+
+    const onClick = useCallback(()=>{
+        if(isBottom){
+            setMessageSeen(true);
+        }
+    },[isBottom])
 
     useEffect(()=>{
         if(!needLoadMore) return;
@@ -91,8 +128,9 @@ const MessageList: React.FC<MessageListProps> = ({ conversation, userRole, onDel
         }
     },[conversation.id])
 
+
     return <>
-        <div className='message-list' ref={listRef}>
+        <div className='message-list' ref={listRef} onClick={onClick}>
             <Image.PreviewGroup>
                 {messages.map(o =>{
                    return  <MessageItem key={o.id} message={o}  
