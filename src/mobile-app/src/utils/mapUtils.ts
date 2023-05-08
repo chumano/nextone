@@ -18,11 +18,15 @@ export interface MapConfig {
 export const parseMapConfig = (appSettings: AppSettings[]): MapConfig => {
     let centerValue = appSettings.find(o => o.code === 'MapDefaultCenter')?.value;
     let zoomValue = appSettings.find(o => o.code === 'MapDefaultZoom')?.value;
+    let minZoomValue = appSettings.find(o => o.code === 'MapMinZoom')?.value;
+    let maxZoomValue = appSettings.find(o => o.code === 'MapMaxZoom')?.value;
     let boundingBoxValue = appSettings.find(o => o.code === 'MapBounding')?.value;
     let layersValue = appSettings.find(o => o.code === 'MapTileLayers')?.value;
 
     let center = parseData<[number, number]>(centerValue, defaultCenter);
     let zoom = parseData<number>(zoomValue, defaultZoom);
+    let minZoom = parseData<number>(minZoomValue, defaultMinZoom);
+    let maxZoom = parseData<number>(maxZoomValue, defaultMaxZoom);
     let boundingBox = parseData<[[number, number], [number, number]] | undefined>(boundingBoxValue, defaultBoundingBox);
     let layers = parseData< {id:string, url: string}[]>(layersValue, []);
     return {
@@ -30,8 +34,8 @@ export const parseMapConfig = (appSettings: AppSettings[]): MapConfig => {
         zoom: zoom,
         boundingBox: boundingBox,
         layers: layers,
-        minZoom: defaultMinZoom,
-        maxZoom: defaultMaxZoom
+        minZoom: minZoom,
+        maxZoom: maxZoom
     };
 }
 
