@@ -9,7 +9,8 @@ window.ENV = {
         //southWest: LatLngExpression, northEast: LatLngExpression
         boundingBox : [ [7.01,95.01],  [23.89,119.92]],//vietnam
         googleApiKey: '',
-        baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        baseMapUrl: 'https://maps.vnpost.vn/api/tm/{z}/{x}/{y}@2x.png?apikey=8fb3246c12d442525034be04bcd038f22e34571be4adbd4c',
+        //baseMapUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         mapPage: 'http://localhost:5107',
         mapMonitorRefreshEventsIntervalInSeconds: 60,
         mapMonitorRefreshUserssIntervalInSeconds: 20
