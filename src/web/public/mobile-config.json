@@ -1,0 +1,5 @@
+{
+    "Map": {
+		"baseMapUrl": "https://maps.vnpost.vn/api/tm/{z}/{x}/{y}@2x.png?apikey=8fb3246c12d442525034be04bcd038f22e34571be4adbd4c"
+    }
+}
