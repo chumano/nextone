@@ -14,14 +14,16 @@ import {
   RouteProp,
 } from '@react-navigation/native';
 import {BottomTabProps} from './BottomTabNavigator';
-import {IconButton} from 'react-native-paper';
+import {Appbar} from 'react-native-paper';
 
 import {EventInfo} from '../types/Event/EventInfo.type';
 import EventTypePickScreen from '../screens/EventScreen/EventTypePickScreen';
+import {APP_THEME} from '../constants/app.theme';
+import {StyleSheet} from 'react-native';
 
 type EventStackParamsList = {
   EventScreen: {
-    reload? : boolean
+    reload?: boolean;
   };
   EventDetailScreen: {
     eventInfo: EventInfo;
@@ -29,9 +31,8 @@ type EventStackParamsList = {
 
   EventTypePickScreen: undefined;
   SendEventScreen: {
-    eventType: any
+    eventType: any;
   };
-  
 };
 
 export type EventStackProps = NativeStackNavigationProp<
@@ -50,10 +51,7 @@ export type EventSendRouteProp = RouteProp<
   'SendEventScreen'
 >;
 
-export type EventsRouteProp = RouteProp<
-  EventStackParamsList,
-  'EventScreen'
->;
+export type EventsRouteProp = RouteProp<EventStackParamsList, 'EventScreen'>;
 
 const Stack = createNativeStackNavigator<EventStackParamsList>();
 
@@ -79,33 +77,88 @@ const EventStack = ({navigation, route}: BottomTabProps) => {
           };
 
           return {
-            title: 'Sự kiện',
-            headerRight: _ => {
-              return <IconButton icon="plus" onPress={onNavigateHandler} />;
+            header: props => {
+              return (
+                <Appbar.Header
+                  style={{
+                    backgroundColor: APP_THEME.colors.primary,
+                  }}>
+                  {props.back && (
+                    <Appbar.BackAction
+                      color={APP_THEME.colors.accent}
+                      onPress={() => {
+                        props.navigation.goBack();
+                      }}
+                    />
+                  )}
+                  <Appbar.Content
+                    title={'Sự kiện'}
+                    color={APP_THEME.colors.accent}
+                    titleStyle={styles.title}
+                  />
+
+                  <Appbar.Action
+                    icon={'plus'}
+                    color={APP_THEME.colors.accent}
+                    onPress={onNavigateHandler}
+                  />
+                </Appbar.Header>
+              );
             },
           };
         }}
       />
-      <Stack.Screen name="EventDetailScreen" 
-        component={EventDetailScreen} 
-          options={{
-            title: 'Thông tin sự kiện',
-          }} />
+      <Stack.Screen
+        name="EventDetailScreen"
+        component={EventDetailScreen}
+        options={{
+          title: 'Thông tin sự kiện',
+        }}
+      />
 
-      <Stack.Screen name="EventTypePickScreen"
-         component={EventTypePickScreen} 
-         
-         options={{
+      <Stack.Screen
+        name="EventTypePickScreen"
+        component={EventTypePickScreen}
+        options={{
+          header: props => {
+            return (
+              <Appbar.Header
+                style={{
+                  backgroundColor: APP_THEME.colors.primary,
+                }}>
+                {props.back && (
+                  <Appbar.BackAction
+                    color={APP_THEME.colors.accent}
+                    onPress={() => {
+                      props.navigation.goBack();
+                    }}
+                  />
+                )}
+                <Appbar.Content
+                  title={'Gửi sự kiện'}
+                  color={APP_THEME.colors.accent}
+                  titleStyle={styles.title}
+                />
+              </Appbar.Header>
+            );
+          },
+        }}
+      />
+      <Stack.Screen
+        name="SendEventScreen"
+        component={SendEventScreen}
+        options={{
           title: 'Gửi sự kiện',
-        }}/>
-      <Stack.Screen name="SendEventScreen"
-         component={SendEventScreen} 
-         
-         options={{
-          title: 'Gửi sự kiện',
-        }}/>
+        }}
+      />
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    fontWeight: '500',
+  },
+});
 
 export default EventStack;

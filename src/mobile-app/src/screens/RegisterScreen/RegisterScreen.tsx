@@ -1,5 +1,4 @@
 import {useNavigation} from '@react-navigation/native';
-import {AxiosError} from 'axios';
 import React, {useState} from 'react';
 import {
   Alert,
@@ -11,9 +10,11 @@ import {
 import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 import {authApi} from '../../apis';
 import {PublicScreenProp} from '../../navigation/PublicStack';
+import {APP_THEME} from '../../constants/app.theme';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const RegisterScreen = () => {
-  const nagivation = useNavigation<PublicScreenProp>();
+  const navigation = useNavigation<PublicScreenProp>();
   const [registerForm, setRegisterForm] = useState({
     email: {
       value: '',
@@ -76,7 +77,7 @@ const RegisterScreen = () => {
             text: 'Đăng nhập',
             onPress: () => {
               //back to login screen
-              nagivation.goBack();
+              navigation.goBack();
             },
           },
         ]);
@@ -93,23 +94,47 @@ const RegisterScreen = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 96 : 96}
       style={styles.container}>
-      <Text style={styles.headerText}> Đăng ký </Text>
-      <View style={styles.loginForm}>
+      <View style={styles.registerForm}>
+        <View style={styles.centerContainer}>
+          <View style={styles.iconContainer}>
+            <MaterialCommunityIcon
+              name="form-select"
+              size={48}
+              color={APP_THEME.colors.primary}
+            />
+          </View>
+        </View>
         <TextInput
-          label="Email"
+          label={
+            <Text
+              style={{
+                color: APP_THEME.colors.accent,
+              }}>
+              Email
+            </Text>
+          }
+          activeUnderlineColor={APP_THEME.colors.accent}
           style={styles.input}
           value={registerForm.email.value}
           error={!registerForm.email.isValid}
           onChangeText={onInputChangeHandler.bind(this, 'email')}
         />
         {!registerForm.email.isValid && (
-          <HelperText type="error">Email phải nhập</HelperText>
+          <HelperText type="error">Vui lòng nhập email!</HelperText>
         )}
         <TextInput
-          label="Mật khẩu"
+          label={
+            <Text
+              style={{
+                color: APP_THEME.colors.accent,
+              }}>
+              Mật khẩu
+            </Text>
+          }
+          activeUnderlineColor={APP_THEME.colors.accent}
           secureTextEntry
           style={styles.input}
           value={registerForm.password.value}
@@ -117,11 +142,19 @@ const RegisterScreen = () => {
           onChangeText={onInputChangeHandler.bind(this, 'password')}
         />
         {!registerForm.password.isValid && (
-          <HelperText type="error">Mật khẩu phải nhập</HelperText>
+          <HelperText type="error">Vui lòng nhập mật khẩu!</HelperText>
         )}
 
         <TextInput
-          label="Nhập lại mật khẩu"
+          label={
+            <Text
+              style={{
+                color: APP_THEME.colors.accent,
+              }}>
+              Xác nhận mật khẩu
+            </Text>
+          }
+          activeUnderlineColor={APP_THEME.colors.accent}
           secureTextEntry
           style={styles.input}
           value={registerForm.confirmPassword.value}
@@ -131,15 +164,21 @@ const RegisterScreen = () => {
         {!registerForm.confirmPassword.isValid && (
           <HelperText type="error">Mật khẩu không trùng khớp</HelperText>
         )}
-      </View>
-      {error && <HelperText type="error">{error}</HelperText>}
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}>
-          <Button mode="contained" onPress={onRegister} loading={loading}>
+
+        <View style={styles.buttonContainer}>
+          <Button
+            style={styles.buttonRegister}
+            mode="contained"
+            labelStyle={{
+              color: APP_THEME.colors.primary,
+            }}
+            onPress={onRegister}
+            loading={loading}>
             Đăng ký
           </Button>
         </View>
       </View>
+      {error && <HelperText type="error">{error}</HelperText>}
     </KeyboardAvoidingView>
   );
 };
@@ -150,26 +189,43 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
+    padding: APP_THEME.spacing.padding,
+    maxWidth: '100%',
+  },
+  registerForm: {
+    width: '100%',
+    shadowOpacity: 1,
+    shadowRadius: APP_THEME.rounded,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    padding: APP_THEME.spacing.padding,
+    borderRadius: APP_THEME.rounded,
+  },
+  centerContainer: {
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  headerText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    letterSpacing: 2,
-    marginBottom: 24,
-  },
-  loginForm: {
-    width: '80%',
+  iconContainer: {
+    borderRadius: 9999,
+    backgroundColor: APP_THEME.colors.accent,
+    padding: 8,
   },
   input: {
     width: '100%',
-    marginVertical: 4,
+    height: 56,
+    marginVertical: APP_THEME.spacing.between_component,
+    backgroundColor: APP_THEME.colors.background,
   },
   buttonContainer: {
-    marginTop: 8,
-    width: '80%',
+    marginTop: APP_THEME.spacing.between_component,
+    width: '100%',
   },
-  button: {
-    marginVertical: 4,
+  buttonRegister: {
+    marginTop: APP_THEME.spacing.between_component,
+    backgroundColor: APP_THEME.colors.accent,
   },
 });

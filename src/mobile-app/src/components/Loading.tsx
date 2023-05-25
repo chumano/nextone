@@ -1,12 +1,13 @@
 import React from 'react';
-import {View, StyleSheet} from 'react-native';
-import {ActivityIndicator, Colors} from 'react-native-paper';
+import {StyleSheet, View} from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
+import {APP_THEME} from '../constants/app.theme';
 
 const Loading = () => {
   return (
     <View style={styles.activityOverlayStyle}>
       <View style={styles.activityIndicatorContainer}>
-        <ActivityIndicator animating={true} color={Colors.red800} />
+        <ActivityIndicator animating={true} color={APP_THEME.colors.accent} />
       </View>
     </View>
   );
@@ -22,17 +23,17 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   activityIndicatorContainer: {
-    backgroundColor: 'lightgray',
-    padding: 10,
-    borderRadius: 50,
+    backgroundColor: APP_THEME.colors.primary,
+    padding: 8,
+    borderRadius: 9999,
     alignSelf: 'center',
-    shadowColor: '#000000',
     shadowOffset: {
-      width: 0,
-      height: 3,
+      width: 6,
+      height: 6,
     },
-    shadowRadius: 5,
-    shadowOpacity: 1.0,
+    shadowColor: APP_THEME.colors.backdrop,
+    shadowRadius: APP_THEME.rounded,
+    shadowOpacity: 1,
   },
 });
 

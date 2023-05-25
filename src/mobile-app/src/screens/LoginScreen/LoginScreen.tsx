@@ -1,17 +1,19 @@
 import React, {useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {View, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
+import {KeyboardAvoidingView, Platform, StyleSheet, View} from 'react-native';
 import {Button, HelperText, Text, TextInput} from 'react-native-paper';
 
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {authLogin} from '../../stores/auth';
 import {useNavigation} from '@react-navigation/native';
 import {PublicScreenProp} from '../../navigation/PublicStack';
+import {APP_THEME} from '../../constants/app.theme';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const LoginScreen = () => {
   const dispatch: AppDispatch = useDispatch();
-  const nagivation = useNavigation<PublicScreenProp>();
+  const navigation = useNavigation<PublicScreenProp>();
   const authState = useSelector((store: IAppStore) => store.auth);
   const [loginForm, setLoginForm] = useState({
     username: {
@@ -49,7 +51,7 @@ const LoginScreen = () => {
   };
 
   const onRegisterHandler = () => {
-    nagivation.push('Register');
+    navigation.push('Register');
   };
 
   const onInputChangeHandler = (inputType: string, enteredText: string) => {
@@ -64,23 +66,47 @@ const LoginScreen = () => {
 
   return (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 96 : 96}
       style={styles.container}>
-      <Text style={styles.headerText}> Đăng nhập </Text>
       <View style={styles.loginForm}>
+        <View style={styles.centerContainer}>
+          <View style={styles.iconContainer}>
+            <MaterialCommunityIcon
+              name="account"
+              size={48}
+              color={APP_THEME.colors.primary}
+            />
+          </View>
+        </View>
         <TextInput
-          label="Tài khoản"
+          label={
+            <Text
+              style={{
+                color: APP_THEME.colors.accent,
+              }}>
+              Tài khoản
+            </Text>
+          }
+          activeUnderlineColor={APP_THEME.colors.accent}
           style={styles.input}
           value={loginForm.username.value}
           error={!loginForm.username.isValid}
           onChangeText={onInputChangeHandler.bind(this, 'username')}
         />
         {!loginForm.username.isValid && (
-          <HelperText type="error">Tài khoản phải nhập!</HelperText>
+          <HelperText type="error">Vui lòng nhập tài khoản!</HelperText>
         )}
         <TextInput
-          label="Mật khẩu"
+          label={
+            <Text
+              style={{
+                color: APP_THEME.colors.accent,
+              }}>
+              Mật khẩu
+            </Text>
+          }
+          activeUnderlineColor={APP_THEME.colors.accent}
           secureTextEntry
           style={styles.input}
           value={loginForm.password.value}
@@ -88,30 +114,36 @@ const LoginScreen = () => {
           onChangeText={onInputChangeHandler.bind(this, 'password')}
         />
         {!loginForm.password.isValid && (
-          <HelperText type="error">Mật khẩu phải nhập!</HelperText>
+          <HelperText type="error">Vui lòng nhập mật khẩu!</HelperText>
         )}
-      </View>
-      <View>
-        {!!authState.error && <HelperText type="error">
-            {authState.error}
-          </HelperText>
-        }
-      </View>
-      
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}>
+
+        <View style={styles.buttonContainer}>
           <Button
             mode="contained"
+            labelStyle={{
+              color: APP_THEME.colors.primary,
+            }}
+            style={styles.buttonLogin}
             onPress={onLoginHandler}
             loading={authState.status === 'loading'}>
             Đăng nhập
           </Button>
-        </View>
 
-        <View style={styles.buttonRegister}>
-          <Button mode="outlined" onPress={onRegisterHandler}>
+          <Button
+            labelStyle={{
+              color: APP_THEME.colors.accent,
+            }}
+            mode="outlined"
+            style={styles.buttonRegister}
+            onPress={onRegisterHandler}>
             Đăng ký
           </Button>
+        </View>
+
+        <View style={styles.helperTextContainer}>
+          {!!authState.error && (
+            <HelperText type="error">{authState.error}</HelperText>
+          )}
         </View>
       </View>
     </KeyboardAvoidingView>
@@ -124,29 +156,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    letterSpacing: 2,
-    marginBottom: 24,
+    padding: APP_THEME.spacing.padding,
+    maxWidth: '100%',
   },
   loginForm: {
-    width: '80%',
+    width: '100%',
+    shadowOpacity: 1,
+    shadowRadius: APP_THEME.rounded,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    padding: APP_THEME.spacing.padding,
+    borderRadius: APP_THEME.rounded,
+  },
+  centerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconContainer: {
+    borderRadius: 9999,
+    backgroundColor: APP_THEME.colors.accent,
+    padding: 8,
   },
   input: {
     width: '100%',
-    marginVertical: 4,
+    height: 56,
+    marginVertical: APP_THEME.spacing.between_component,
+    backgroundColor: APP_THEME.colors.background,
   },
   buttonContainer: {
-    marginTop: 8,
-    width: '80%',
-  },
-  button: {
-    marginVertical: 4,
+    marginTop: APP_THEME.spacing.between_component,
+    width: '100%',
   },
   buttonRegister: {
-    marginTop: 20,
+    marginTop: APP_THEME.spacing.between_component,
+  },
+  buttonLogin: {
+    backgroundColor: APP_THEME.colors.accent,
+  },
+  helperTextContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

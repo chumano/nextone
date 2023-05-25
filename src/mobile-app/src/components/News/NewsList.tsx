@@ -5,6 +5,7 @@ import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {getList} from '../../stores/news';
 import Loading from '../Loading';
 import NewsItem from './NewsItem';
+import {APP_THEME} from '../../constants/app.theme';
 
 const NewsList = () => {
   const {data, allLoaded, newsLoading, newsOffset, status} = useSelector(
@@ -21,32 +22,37 @@ const NewsList = () => {
   }, []);
 
   const loadMoreResults = useCallback(() => {
-    if (newsLoading || allLoaded) return;
+    if (newsLoading || allLoaded) {
+      return;
+    }
 
     dispatch(
       getList({params: {offset: newsOffset, publishState: 0}, loadMore: true}),
     );
   }, [newsLoading, allLoaded, newsOffset]);
 
-  if (status === 'loading') return <Loading />;
+  if (status === 'loading') {
+    return <Loading />;
+  }
 
   return (
     <FlatList
+      style={styles.listContainer}
       refreshing={false}
-      style={styles.newsListContainer}
       data={data}
       keyExtractor={item => item.id}
       renderItem={({item}) => <NewsItem item={item} />}
       onRefresh={() => onRefresh()}
       onEndReached={() => loadMoreResults()}
+      showsVerticalScrollIndicator={false}
     />
   );
 };
 
-export default NewsList;
-
 const styles = StyleSheet.create({
-  newsListContainer: {
-    padding: 8,
+  listContainer: {
+    paddingHorizontal: APP_THEME.spacing.padding,
   },
 });
+
+export default NewsList;

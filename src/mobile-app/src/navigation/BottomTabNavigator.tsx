@@ -12,6 +12,7 @@ import EventStack from './EventStack';
 import MapStack from './MapStack';
 import ChatStack from './ChatStack';
 import HomeStack from './HomeStack';
+import {APP_THEME} from '../constants/app.theme';
 
 type BottomTabParamsList = {
   HomeTab: undefined;
@@ -51,8 +52,8 @@ const BottomTabNavigator = () => {
           // You can return any component that you like here!
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'tomato',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: APP_THEME.colors.accent,
+        tabBarInactiveTintColor: APP_THEME.colors.disabled,
       })}>
       <Tab.Screen
         name="HomeTab"
