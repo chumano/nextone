@@ -20,6 +20,7 @@ import {authApi} from '../../apis';
 import {PublicScreenProp} from '../../navigation/PublicStack';
 import {APP_THEME} from '../../constants/app.theme';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {APP_CONFIG} from '../../constants/app.config';
 
 const RegisterScreen = () => {
   const navigation = useNavigation<PublicScreenProp>();
@@ -227,7 +228,9 @@ const RegisterScreen = () => {
             <Text style={styles.conditionText}>
               Đồng ý với các{' '}
               <TouchableWithoutFeedback
-                onPress={() => Linking.openURL('https://google.com.vn')}>
+                onPress={() =>
+                  Linking.openURL(`${APP_CONFIG.WEBAPP}/dieukhoan`)
+                }>
                 <Text style={styles.termLink}>điều khoản</Text>
               </TouchableWithoutFeedback>{' '}
               UCOM
