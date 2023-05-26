@@ -1,5 +1,5 @@
 import React from 'react';
-import {FlatList, StyleSheet, View} from 'react-native';
+import {FlatList} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {useDispatch, useSelector} from 'react-redux';
@@ -9,7 +9,6 @@ import Loading from '../Loading';
 import ConversationItem from './ConversationItem';
 
 import {Conversation} from '../../types/Conversation/Conversation.type';
-import {APP_THEME} from '../../constants/app.theme';
 
 const wait = (timeout: number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -61,39 +60,20 @@ const ConversationList = () => {
     return <Loading />;
   }
   return (
-    <View style={styles.conversationContainer}>
-      <FlatList
-        showsVerticalScrollIndicator={false}
-        onRefresh={() => onRefresh()}
-        refreshing={refreshing}
-        keyExtractor={(item: Conversation, _) => item.id}
-        data={conversations}
-        renderItem={props => <ConversationItem conversation={props.item} />}
-        onEndReachedThreshold={0.4}
-        onEndReached={info => {
-          loadMoreResults();
-        }}
-        ListFooterComponent={renderFooter()}
-      />
-    </View>
+    <FlatList
+      showsVerticalScrollIndicator={false}
+      onRefresh={() => onRefresh()}
+      refreshing={refreshing}
+      keyExtractor={(item: Conversation, _) => item.id}
+      data={conversations}
+      renderItem={props => <ConversationItem conversation={props.item} />}
+      onEndReachedThreshold={0.4}
+      onEndReached={info => {
+        loadMoreResults();
+      }}
+      ListFooterComponent={renderFooter()}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  conversationContainer: {
-    flex: 1,
-    width: '100%',
-    shadowOpacity: 1,
-    shadowRadius: APP_THEME.rounded,
-    shadowOffset: {
-      width: 6,
-      height: 6,
-    },
-    shadowColor: APP_THEME.colors.backdrop,
-    backgroundColor: APP_THEME.colors.primary,
-    padding: APP_THEME.spacing.padding,
-    borderRadius: APP_THEME.rounded,
-  },
-});
 
 export default ConversationList;

@@ -6,7 +6,6 @@ import EventList from '../../components/Event/EventList';
 import {EventsRouteProp, EventStackProps} from '../../navigation/EventStack';
 import {AppDispatch} from '../../stores/app.store';
 import {getEventsByMe} from '../../stores/event';
-import {APP_THEME} from '../../constants/app.theme';
 
 const EventScreen = () => {
   const navigation = useNavigation<EventStackProps>();
@@ -37,6 +36,6 @@ export default EventScreen;
 const styles = StyleSheet.create({
   eventScreenContainer: {
     flex: 1,
-    paddingVertical: APP_THEME.spacing.padding,
+    padding: 8,
   },
 });

@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {FlatList, StyleSheet, TouchableOpacity, View} from 'react-native';
 import {debounce} from 'lodash';
-import {Button, Checkbox, Text, TextInput} from 'react-native-paper';
+import {Text, TextInput} from 'react-native-paper';
 import {userApi} from '../../apis/user.api';
 import {CreateConverationDTO} from '../../dto/CreateConverationDTO';
 import {ConversationType} from '../../types/Conversation/ConversationType.type';
@@ -14,12 +14,12 @@ import {IAppStore} from '../../stores/app.store';
 import {getConversationName} from '../../utils/conversation.utils';
 import {APP_THEME} from '../../constants/app.theme';
 import Loading from '../../components/Loading';
+import UserAvatar from '../../components/User/UserAvatar';
 
 const FindUsersScreen = ({navigation, route}: ChatStackProps) => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [userList, setUserList] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string>();
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
 
   const fetchUsers = useCallback(
@@ -45,7 +45,7 @@ const FindUsersScreen = ({navigation, route}: ChatStackProps) => {
     fetchUsers('');
   }, [fetchUsers]);
 
-  const handleOk = async () => {
+  const handleOk = async (selectedUserId: string) => {
     const conversationDTO: CreateConverationDTO = {
       name: '',
       type: ConversationType.Peer2Peer,
@@ -105,58 +105,39 @@ const FindUsersScreen = ({navigation, route}: ChatStackProps) => {
           style={styles.input}
           onChangeText={onTextSearchChange}
         />
-
-        <Button
-          labelStyle={{
-            color: APP_THEME.colors.primary,
-          }}
-          style={{
-            backgroundColor: !selectedUserId
-              ? APP_THEME.colors.disabled
-              : APP_THEME.colors.accent,
-          }}
-          mode={'contained'}
-          disabled={!selectedUserId}
-          onPress={handleOk}>
-          Chọn
-        </Button>
       </View>
 
       {loading && <Loading />}
 
-      <View style={styles.flatListCard}>
-        <FlatList
-          keyExtractor={(item: User, _) => item.id}
-          data={userList}
-          ListEmptyComponent={() => {
-            return (
-              <>
-                {!loading ? (
-                  <View style={styles.notFoundContainer}>
-                    <Text style={styles.notFoundText}>
-                      Không tìm thấy người dùng!
-                    </Text>
-                  </View>
-                ) : null}
-              </>
-            );
-          }}
-          renderItem={props => (
-            <TouchableOpacity
-              style={styles.itemContainer}
-              onPress={() => {
-                setSelectedUserId(props.item.id);
-              }}>
-              <Checkbox.Item
-                label={props.item.name}
-                status={
-                  selectedUserId === props.item.id ? 'checked' : 'unchecked'
-                }
-              />
-            </TouchableOpacity>
-          )}
-        />
-      </View>
+      <FlatList
+        keyExtractor={(item: User, _) => item.id}
+        data={userList}
+        ListEmptyComponent={() => {
+          return (
+            <>
+              {!loading ? (
+                <View style={styles.notFoundContainer}>
+                  <Text style={styles.notFoundText}>
+                    Không tìm thấy người dùng!
+                  </Text>
+                </View>
+              ) : null}
+            </>
+          );
+        }}
+        renderItem={props => (
+          <TouchableOpacity
+            style={styles.itemContainer}
+            onPress={() => {
+              handleOk(props.item.id).then();
+            }}>
+            <UserAvatar size={32} />
+            <View style={styles.userNameContainer}>
+              <Text style={styles.userName}>{props.item.name}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+      />
     </View>
   );
 };
@@ -166,22 +147,22 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: APP_THEME.spacing.padding,
   },
-  flatListCard: {
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     width: '100%',
-    shadowOpacity: 1,
-    shadowRadius: APP_THEME.rounded,
+    marginBottom: APP_THEME.spacing.between_component,
+
+    shadowOpacity: 0.2,
     shadowOffset: {
-      width: 6,
-      height: 6,
+      width: 1,
+      height: 1,
     },
     shadowColor: APP_THEME.colors.backdrop,
     backgroundColor: APP_THEME.colors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
     borderRadius: APP_THEME.rounded,
-    paddingHorizontal: APP_THEME.spacing.padding,
-  },
-  itemContainer: {
-    borderBottomColor: `${APP_THEME.colors.black}3a`,
-    borderBottomWidth: 1,
   },
   notFoundContainer: {
     padding: APP_THEME.spacing.padding,
@@ -198,6 +179,13 @@ const styles = StyleSheet.create({
     marginVertical: APP_THEME.spacing.between_component,
     backgroundColor: APP_THEME.colors.background,
     marginRight: APP_THEME.spacing.between_component,
+  },
+  userNameContainer: {
+    marginLeft: APP_THEME.spacing.between_component,
+  },
+  userName: {
+    fontSize: 16,
+    lineHeight: 20,
   },
 });
 

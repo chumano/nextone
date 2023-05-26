@@ -8,7 +8,6 @@ import ConversationList from '../../components/Conversation/ConversationList';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {conversationActions} from '../../stores/conversation';
 import {getListConversation} from '../../stores/conversation/conversation.thunk';
-import {APP_THEME} from '../../constants/app.theme';
 
 const ConversationScreen = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -59,6 +58,6 @@ export default ConversationScreen;
 const styles = StyleSheet.create({
   conversationScreenContainer: {
     flex: 1,
-    paddingVertical: APP_THEME.spacing.padding,
+    padding: 8,
   },
 });

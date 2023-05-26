@@ -55,15 +55,25 @@ export default EventItem;
 
 const styles = StyleSheet.create({
   eventItemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     width: '100%',
     marginBottom: APP_THEME.spacing.between_component,
+
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: APP_THEME.rounded,
   },
   eventItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomColor: `${APP_THEME.colors.black}3a`,
-    borderBottomWidth: 1,
-    paddingVertical: 8,
   },
   eventInformationContainer: {
     flex: 1,

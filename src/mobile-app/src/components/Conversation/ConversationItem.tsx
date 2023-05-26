@@ -136,16 +136,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     marginBottom: APP_THEME.spacing.between_component,
+
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: APP_THEME.rounded,
   },
   conversionType: {},
   conversationInformation: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'baseline',
-    paddingVertical: 12,
     marginLeft: APP_THEME.spacing.between_component,
-    borderBottomColor: `${APP_THEME.colors.black}3a`,
-    borderBottomWidth: 1,
   },
   conversationContent: {
     maxWidth: '70%',

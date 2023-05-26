@@ -90,23 +90,27 @@ const MembersScreen = ({navigation, route}: ChatStackProps) => {
         renderItem={({item: {userMember, role}, index}) => (
           <View style={styles.container}>
             <UserAvatar size={48} user={userMember} />
-            <View style={styles.memberContainer}>
-              <Text style={styles.textName}>{userMember.userName}</Text>
-              <Text style={styles.textRole}>{MemberRole[role]}</Text>
-            </View>
-            <View style={styles.actionsContainer}>
-              {userInfo?.userId !== userMember.userId && (
-                <Button
-                  onPress={() => {
-                    startConversation(userMember.userId);
-                  }}>
-                  <MaterialCommunityIcon
-                    name="chat-processing-outline"
-                    size={24}
-                    color={APP_THEME.colors.accent}
-                  />
-                </Button>
-              )}
+            <View style={styles.memberInformation}>
+              <View style={styles.memberContainer}>
+                <Text numberOfLines={1} style={styles.textName}>
+                  {userMember.userName}
+                </Text>
+                <Text style={styles.textRole}>{MemberRole[role]}</Text>
+              </View>
+              <View style={styles.actionsContainer}>
+                {userInfo?.userId !== userMember.userId && (
+                  <Button
+                    onPress={() => {
+                      startConversation(userMember.userId);
+                    }}>
+                    <MaterialCommunityIcon
+                      name="chat-processing-outline"
+                      size={24}
+                      color={APP_THEME.colors.accent}
+                    />
+                  </Button>
+                )}
+              </View>
             </View>
           </View>
         )}
@@ -120,18 +124,32 @@ export default MembersScreen;
 const styles = StyleSheet.create({
   memberScreenContainer: {
     flex: 1,
-    padding: APP_THEME.spacing.padding,
+    padding: 8,
   },
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    paddingVertical: 8,
-    borderBottomColor: `${APP_THEME.colors.black}3a`,
-    borderBottomWidth: 1,
+    marginBottom: APP_THEME.spacing.between_component,
+
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: APP_THEME.rounded,
+  },
+  memberInformation: {
+    flex: 1,
+    flexDirection: 'row',
+    marginLeft: APP_THEME.spacing.between_component,
   },
   memberContainer: {
-    marginLeft: 10,
+    maxWidth: '70%',
   },
   actionsContainer: {
     marginLeft: 'auto',
