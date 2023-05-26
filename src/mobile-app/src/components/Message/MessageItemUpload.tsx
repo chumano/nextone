@@ -112,8 +112,13 @@ const MessageItemUpload: React.FC<MessageUploadProps> = ({message}) => {
         </View>
       )}
 
-      {!isAudio && <Text>{uploadFile.name}</Text>}
-      <ProgressBar progress={uploadProgress} />
+      {/*{!isAudio && (*/}
+      {/*  <Text numberOfLines={1} style={styles.fileNameText}>*/}
+      {/*    {uploadFile.name}*/}
+      {/*  </Text>*/}
+      {/*)}*/}
+
+      <ProgressBar progress={uploadProgress} color={APP_THEME.colors.accent} />
     </View>
   );
 };
