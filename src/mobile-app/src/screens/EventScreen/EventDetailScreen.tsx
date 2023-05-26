@@ -1,7 +1,7 @@
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {StyleSheet, View} from 'react-native';
-import {Text} from 'react-native-paper';
+import {Appbar, Text} from 'react-native-paper';
 
 import {
   EventDetailRouteProp,
@@ -27,7 +27,28 @@ const EventDetailScreen = () => {
   useLayoutEffect(() => {
     const {eventInfo} = route.params;
     navigation.setOptions({
-      title: `Sự kiện : ${eventInfo.eventType.name}`,
+      header: props => {
+        return (
+          <Appbar.Header
+            style={{
+              backgroundColor: APP_THEME.colors.primary,
+            }}>
+            {props.back && (
+              <Appbar.BackAction
+                color={APP_THEME.colors.accent}
+                onPress={() => {
+                  props.navigation.goBack();
+                }}
+              />
+            )}
+            <Appbar.Content
+              title={`Sự kiện : ${eventInfo.eventType.name}`}
+              color={APP_THEME.colors.accent}
+              titleStyle={styles.title}
+            />
+          </Appbar.Header>
+        );
+      },
     });
 
     //console.log('EventDetailScreen',{eventInfo})
@@ -148,6 +169,9 @@ const EventDetailScreen = () => {
 export default EventDetailScreen;
 
 const styles = StyleSheet.create({
+  title: {
+    fontWeight: '500',
+  },
   eventDetailContainer: {
     flex: 1,
     alignItems: 'center',

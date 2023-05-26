@@ -59,6 +59,6 @@ export default ConversationScreen;
 const styles = StyleSheet.create({
   conversationScreenContainer: {
     flex: 1,
-    padding: APP_THEME.spacing.padding,
+    paddingVertical: APP_THEME.spacing.padding,
   },
 });

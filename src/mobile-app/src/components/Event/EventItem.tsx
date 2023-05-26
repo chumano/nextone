@@ -56,7 +56,6 @@ export default EventItem;
 const styles = StyleSheet.create({
   eventItemContainer: {
     width: '100%',
-    paddingHorizontal: APP_THEME.spacing.padding,
     marginBottom: APP_THEME.spacing.between_component,
   },
   eventItem: {

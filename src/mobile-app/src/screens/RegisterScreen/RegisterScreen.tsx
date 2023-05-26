@@ -3,11 +3,19 @@ import React, {useState} from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
+  Linking,
   Platform,
   StyleSheet,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import {Button, HelperText, Text, TextInput} from 'react-native-paper';
+import {
+  Button,
+  Checkbox,
+  HelperText,
+  Text,
+  TextInput,
+} from 'react-native-paper';
 import {authApi} from '../../apis';
 import {PublicScreenProp} from '../../navigation/PublicStack';
 import {APP_THEME} from '../../constants/app.theme';
@@ -28,9 +36,17 @@ const RegisterScreen = () => {
       value: '',
       isValid: true,
     },
+    acceptTerm: {
+      isValid: true,
+    },
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>();
+  const [showPassword, setShowPassword] = useState(true);
+  const [acceptTerm, setAcceptTerm] = useState(false);
+
+  const toggleShowPasswordHandler = () => setShowPassword(prev => !prev);
+  const acceptTermHandler = () => setAcceptTerm(prev => !prev);
 
   const onInputChangeHandler = (inputType: string, enteredText: string) => {
     setRegisterForm(prevState => ({
@@ -61,6 +77,9 @@ const RegisterScreen = () => {
         confirmPassword: {
           value: prevState.confirmPassword.value,
           isValid: checkCorfirmPasswordValid,
+        },
+        acceptTerm: {
+          isValid: acceptTerm,
         },
       }));
 
@@ -135,11 +154,28 @@ const RegisterScreen = () => {
             </Text>
           }
           activeUnderlineColor={APP_THEME.colors.accent}
-          secureTextEntry
+          secureTextEntry={showPassword}
           style={styles.input}
           value={registerForm.password.value}
           error={!registerForm.password.isValid}
           onChangeText={onInputChangeHandler.bind(this, 'password')}
+          right={
+            showPassword ? (
+              <TextInput.Icon
+                onPress={toggleShowPasswordHandler}
+                name="eye"
+                size={16}
+                color={APP_THEME.colors.accent}
+              />
+            ) : (
+              <TextInput.Icon
+                onPress={toggleShowPasswordHandler}
+                name="eye-off"
+                size={16}
+                color={APP_THEME.colors.accent}
+              />
+            )
+          }
         />
         {!registerForm.password.isValid && (
           <HelperText type="error">Vui lòng nhập mật khẩu!</HelperText>
@@ -155,14 +191,54 @@ const RegisterScreen = () => {
             </Text>
           }
           activeUnderlineColor={APP_THEME.colors.accent}
-          secureTextEntry
+          secureTextEntry={showPassword}
           style={styles.input}
           value={registerForm.confirmPassword.value}
           error={!registerForm.confirmPassword.isValid}
           onChangeText={onInputChangeHandler.bind(this, 'confirmPassword')}
+          right={
+            showPassword ? (
+              <TextInput.Icon
+                onPress={toggleShowPasswordHandler}
+                name="eye"
+                size={16}
+                color={APP_THEME.colors.accent}
+              />
+            ) : (
+              <TextInput.Icon
+                onPress={toggleShowPasswordHandler}
+                name="eye-off"
+                size={16}
+                color={APP_THEME.colors.accent}
+              />
+            )
+          }
         />
         {!registerForm.confirmPassword.isValid && (
           <HelperText type="error">Mật khẩu không trùng khớp</HelperText>
+        )}
+
+        <View style={styles.termContainer}>
+          <Checkbox.Android
+            status={acceptTerm ? 'checked' : 'unchecked'}
+            onPress={acceptTermHandler}
+          />
+          <View style={styles.conditionContainer}>
+            <Text style={styles.conditionText}>
+              Đồng ý với các{' '}
+              <TouchableWithoutFeedback
+                onPress={() => Linking.openURL('https://google.com.vn')}>
+                <Text style={styles.termLink}>điều khoản</Text>
+              </TouchableWithoutFeedback>{' '}
+              UCOM
+            </Text>
+          </View>
+        </View>
+
+        {!registerForm.acceptTerm.isValid && (
+          <HelperText type="error">
+            Vui lòng đọc và đồng ý với điều khoản!
+          </HelperText>
         )}
 
         <View style={styles.buttonContainer}>
@@ -227,5 +303,24 @@ const styles = StyleSheet.create({
   buttonRegister: {
     marginTop: APP_THEME.spacing.between_component,
     backgroundColor: APP_THEME.colors.accent,
+  },
+  termContainer: {
+    marginVertical: APP_THEME.spacing.between_component,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  conditionContainer: {
+    flexDirection: 'row',
+    marginLeft: 2,
+  },
+  conditionText: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: APP_THEME.colors.text,
+  },
+  termLink: {
+    textDecorationLine: 'underline',
+    color: APP_THEME.colors.link,
   },
 });

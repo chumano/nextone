@@ -36,14 +36,17 @@ const UserAvatar: React.FC<IProps> = ({size, user}) => {
   );
 };
 
-export default UserAvatar;
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: APP_THEME.colors.accent,
+    borderRadius: 999,
   },
   badgeContainer: {
     top: 0,
     position: 'absolute',
   },
 });
+
+export default UserAvatar;

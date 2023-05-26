@@ -25,6 +25,9 @@ const LoginScreen = () => {
       isValid: true,
     },
   });
+  const [showPassword, setShowPassword] = useState(true);
+
+  const toggleShowPasswordHandler = () => setShowPassword(prev => !prev);
 
   const onLoginHandler = () => {
     const {username, password} = loginForm;
@@ -107,11 +110,28 @@ const LoginScreen = () => {
             </Text>
           }
           activeUnderlineColor={APP_THEME.colors.accent}
-          secureTextEntry
+          secureTextEntry={showPassword}
           style={styles.input}
           value={loginForm.password.value}
           error={!loginForm.password.isValid}
           onChangeText={onInputChangeHandler.bind(this, 'password')}
+          right={
+            showPassword ? (
+              <TextInput.Icon
+                onPress={toggleShowPasswordHandler}
+                name="eye"
+                size={16}
+                color={APP_THEME.colors.accent}
+              />
+            ) : (
+              <TextInput.Icon
+                onPress={toggleShowPasswordHandler}
+                name="eye-off"
+                size={16}
+                color={APP_THEME.colors.accent}
+              />
+            )
+          }
         />
         {!loginForm.password.isValid && (
           <HelperText type="error">Vui lòng nhập mật khẩu!</HelperText>

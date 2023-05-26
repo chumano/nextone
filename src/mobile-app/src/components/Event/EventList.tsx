@@ -63,18 +63,20 @@ const EventList: React.FC<EventListProps> = () => {
   }
 
   return (
-    <FlatList
-      onRefresh={() => onRefresh()}
-      refreshing={refreshing}
-      data={eventState.data}
-      renderItem={itemData => <EventItem eventInfo={itemData.item} />}
-      keyExtractor={(item, _) => item.id}
-      onEndReachedThreshold={0.4}
-      onEndReached={info => {
-        loadMoreResults();
-      }}
-      ListFooterComponent={renderFooter()}
-    />
+    <View style={styles.eventContainer}>
+      <FlatList
+        onRefresh={() => onRefresh()}
+        refreshing={refreshing}
+        data={eventState.data}
+        renderItem={itemData => <EventItem eventInfo={itemData.item} />}
+        keyExtractor={(item, _) => item.id}
+        onEndReachedThreshold={0.4}
+        onEndReached={info => {
+          loadMoreResults();
+        }}
+        ListFooterComponent={renderFooter()}
+      />
+    </View>
   );
 };
 
@@ -88,6 +90,20 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     fontWeight: '300',
     opacity: 0.7,
+  },
+  eventContainer: {
+    flex: 1,
+    width: '100%',
+    shadowOpacity: 1,
+    shadowRadius: APP_THEME.rounded,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    padding: APP_THEME.spacing.padding,
+    borderRadius: APP_THEME.rounded,
   },
 });
 

@@ -230,6 +230,7 @@ const FilePiker = ({onFileChanged: onPickMedia}: Props) => {
           />
         </TouchableOpacity>
       </View>
+
       <FlatList
         keyExtractor={(item: MediaItemType) => item.name}
         data={medias}
@@ -286,9 +287,9 @@ const MediaItem = ({item, onRemoveItem, onItemPress}: MediaItemProps) => {
         style={styles.trashIconWrapper}
         onPress={() => onRemoveItem(item)}>
         <MaterialCommunityIcon
-          name="close-circle-outline"
+          name="delete-outline"
           color={APP_THEME.colors.red}
-          size={32}
+          size={16}
         />
       </TouchableOpacity>
     </TouchableOpacity>
@@ -301,6 +302,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginBottom: APP_THEME.spacing.between_component,
   },
   pickerItem: {
     borderColor: `${APP_THEME.colors.black}3a`,
@@ -330,6 +332,7 @@ const mediaItemStyle = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    borderRadius: APP_THEME.rounded,
   },
 
   trashIconWrapper: {
@@ -339,5 +342,8 @@ const mediaItemStyle = StyleSheet.create({
     right: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 8,
+    borderRadius: 999,
+    backgroundColor: APP_THEME.colors.primary,
   },
 });
