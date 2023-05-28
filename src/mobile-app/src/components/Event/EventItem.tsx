@@ -1,11 +1,11 @@
 import React from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {Pressable, StyleSheet, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Avatar, Text} from 'react-native-paper';
 import {APP_THEME} from '../../constants/app.theme';
 import {EventStackProps} from '../../navigation/EventStack';
 import {EventInfo} from '../../types/Event/EventInfo.type';
-import { frowNow } from '../../utils/date.utils';
+import {frowNow} from '../../utils/date.utils';
 
 interface IProps {
   eventInfo: EventInfo;
@@ -21,31 +21,33 @@ const EventItem: React.FC<IProps> = ({eventInfo}) => {
 
   const displayDate = frowNow(eventInfo.createdDate);
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={loadEventDetailHandler}
-      style={({pressed}) => [
-        styles.eventItemContainer,
-        pressed && styles.eventInfoPressed,
-      ]}>
-      <View style={styles.eventTypeIconContainer}>
-        <Avatar.Icon size={36} icon="bell-ring" />
-      </View>
-      <View style={styles.eventInformationContainer}>
-        <View style={styles.conversationContent}>
-          <Text style={styles.eventTypeNameText}>
-            {eventInfo.eventType.name}
-          </Text>
-          <View style={styles.eventContentContainer}>
-            <Text numberOfLines={2} style={styles.eventContentText}>
-              {eventInfo.content}
+      style={styles.eventItemContainer}>
+      <View style={styles.eventItem}>
+        <Avatar.Icon
+          size={36}
+          icon="bell-ring"
+          color={APP_THEME.colors.yellow}
+        />
+
+        <View style={styles.eventInformationContainer}>
+          <View style={styles.conversationContent}>
+            <Text style={styles.eventTypeNameText}>
+              {eventInfo.eventType.name}
             </Text>
+            <View style={styles.eventContentContainer}>
+              <Text numberOfLines={2} style={styles.eventContentText}>
+                {eventInfo.content}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.eventOccurredDateContainer}>
+            <Text style={styles.eventOccurredDateText}>{displayDate}</Text>
           </View>
         </View>
-        <View style={styles.eventOccurredDateContainer}>
-          <Text style={styles.eventOccurredDateText}>{displayDate}</Text>
-        </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 };
 
@@ -56,17 +58,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: 12,
-    marginBottom: 8,
+    marginBottom: APP_THEME.spacing.between_component,
+
+    shadowOpacity: 0.2,
+    shadowOffset: {
+      width: 1,
+      height: 1,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    borderRadius: APP_THEME.rounded,
   },
-  eventTypeIconContainer: {},
+  eventItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   eventInformationContainer: {
     flex: 1,
     flexDirection: 'row',
-    paddingVertical: 24,
-    marginLeft: 16,
-    borderBottomColor: APP_THEME.colors.disabled,
-    borderBottomWidth: 0.2,
+    marginLeft: APP_THEME.spacing.between_component,
   },
   conversationContent: {
     flexDirection: 'column',
@@ -74,23 +86,27 @@ const styles = StyleSheet.create({
   eventOccurredDateContainer: {
     marginLeft: 'auto',
   },
-  eventInfoPressed: {
-    opacity: 0.7,
-  },
+
   eventContentContainer: {
-    marginVertical: 4,
+    marginTop: 4,
     maxWidth: '100%',
   },
   eventTypeNameText: {
-    fontSize: 16,
+    fontSize: 18,
+    lineHeight: 22,
+    fontWeight: 'normal',
     textTransform: 'uppercase',
   },
   eventContentText: {
     fontSize: 12,
-    fontWeight: '400',
+    lineHeight: 16,
+    fontWeight: 'normal',
+    opacity: 0.7,
   },
   eventOccurredDateText: {
-    fontSize: 12,
-    fontWeight: '200',
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '100',
+    opacity: 0.7,
   },
 });

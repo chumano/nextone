@@ -1,29 +1,13 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Keyboard,
-  Text,
-  Platform,
-  PermissionsAndroid,
-} from 'react-native';
-import {IconButton} from 'react-native-paper';
+import React, {useCallback, useState} from 'react';
+import {Platform, StyleSheet, View} from 'react-native';
+import {IconButton, TextInput} from 'react-native-paper';
 
 import {APP_THEME} from '../../constants/app.theme';
 import {
-  Asset,
   ImageLibraryOptions,
-  launchCamera,
   launchImageLibrary,
 } from 'react-native-image-picker';
-import DocumentPicker, {
-  DirectoryPickerResponse,
-  DocumentPickerResponse,
-  isInProgress,
-  types,
-} from 'react-native-document-picker';
+import DocumentPicker from 'react-native-document-picker';
 import {getMessageType} from '../../utils/file.utils';
 import {MessageUpload} from '../Message/MessageItemUpload';
 import {Conversation} from '../../types/Conversation/Conversation.type';
@@ -36,7 +20,7 @@ import AudioRecorder from './AudioRecorder';
 import RNFetchBlob from 'rn-fetch-blob';
 import {MessageType} from '../../types/Message/MessageType.type';
 import * as mime from 'react-native-mime-types';
-import ImageActionPicker, { ImageInfo } from './ImageActionPicker';
+import ImageActionPicker, {ImageInfo} from './ImageActionPicker';
 
 interface IProps {
   conversation: Conversation;
@@ -161,18 +145,21 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
     }
   }, [send]);
 
-  const onPickedImage = useCallback(async ( imgs: ImageInfo[]) => {
-    for (let i = 0; i < imgs.length; i++) {
-      setTimeout(() => {
-        const file = imgs[i];
-        send({
-          uri: file.uri,
-          fileName: file.fileName,
-          type: file.type,
-        });
-      }, i * 500);
-    }
-  },[send])
+  const onPickedImage = useCallback(
+    async (imgs: ImageInfo[]) => {
+      for (let i = 0; i < imgs.length; i++) {
+        setTimeout(() => {
+          const file = imgs[i];
+          send({
+            uri: file.uri,
+            fileName: file.fileName,
+            type: file.type,
+          });
+        }, i * 500);
+      }
+    },
+    [send],
+  );
 
   const [imagePickerEnabled, setImagePickerEnabled] = useState(false);
   const onToggleImagePicker = useCallback(async () => {
@@ -191,7 +178,7 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
       //console.log('onAudioRecorded', uri)
 
       if (Platform.OS === 'ios') {
-        uri = uri.replace(`file://`, ``);
+        uri = uri.replace('file://', '');
       }
 
       RNFetchBlob.fs.stat(uri).then(file => {
@@ -222,12 +209,18 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
         </View> */}
         <View style={styles.inputContainer}>
           <TextInput
-            style={{color: '#000'}}
+            mode={'flat'}
+            style={{
+              backgroundColor: APP_THEME.colors.primary,
+            }}
+            underlineColor={'transparent'}
+            activeUnderlineColor={'transparent'}
+            selectionColor={APP_THEME.colors.accent}
             onChangeText={onChangeTextHandler}
             onKeyPress={onKeyPressHandler}
             multiline={true}
             numberOfLines={3}
-            placeholder="Enter your message"
+            placeholder="Tin nhắn"
             value={message}
           />
         </View>
@@ -238,7 +231,8 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
                 onPress={sendMessageHandler}
                 style={styles.button}
                 icon="send"
-                size={24}
+                size={20}
+                color={APP_THEME.colors.accent}
               />
             </View>
           </View>
@@ -248,24 +242,30 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
               <IconButton
                 style={styles.button}
                 icon="paperclip"
-                size={24}
+                size={20}
                 onPress={pickFile}
+                color={APP_THEME.colors.accent}
               />
             </View>
             <View style={styles.iconButtonContainer}>
               <IconButton
                 style={styles.button}
                 icon="file-image"
-                size={24}
+                size={20}
                 onPress={onToggleImagePicker}
+                color={APP_THEME.colors.accent}
               />
             </View>
             <View style={styles.iconButtonContainer}>
               <IconButton
                 icon="microphone"
-                size={24}
+                size={20}
                 onPress={onToggleRecording}
-                color={recordingEnabled ? APP_THEME.colors.primary : 'black'}
+                color={
+                  recordingEnabled
+                    ? APP_THEME.colors.red
+                    : APP_THEME.colors.accent
+                }
               />
             </View>
           </View>
@@ -276,9 +276,7 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
         recordingEnabled={recordingEnabled}
         onRecorded={onAudioRecorded}
       />
-      {imagePickerEnabled && 
-        <ImageActionPicker onPicked={onPickedImage}/>
-      }
+      {imagePickerEnabled && <ImageActionPicker onPicked={onPickedImage} />}
     </View>
   );
 };
@@ -287,7 +285,9 @@ export default ChatInput;
 
 const styles = StyleSheet.create({
   chatInputContainer: {
-    backgroundColor: APP_THEME.colors.white,
+    backgroundColor: APP_THEME.colors.primary,
+    paddingLeft: 8,
+    minHeight: 80,
   },
   chatInputInnerContainer: {
     flexDirection: 'row',
@@ -298,7 +298,6 @@ const styles = StyleSheet.create({
   },
   iconButtonContainer: {
     alignSelf: 'center',
-
     marginHorizontal: 4,
   },
   inputContainer: {
@@ -307,7 +306,6 @@ const styles = StyleSheet.create({
     maxHeight: 48,
   },
   button: {
-    padding: 4,
-    margin: 0,
+    marginRight: APP_THEME.spacing.between_component,
   },
 });

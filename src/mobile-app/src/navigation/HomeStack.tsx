@@ -6,13 +6,12 @@ import {
   NativeStackScreenProps,
 } from '@react-navigation/native-stack';
 import {
+  ChangePasswordScreen,
+  DetailsScreen,
   HomeScreen,
   ProfileScreen,
-  DetailsScreen,
-  ChangePasswordScreen,
 } from '../screens/HomeScreen';
 import {AppStackNavigationBar} from './AppNavigationBars';
-import { useDispatch } from 'react-redux';
 
 type HomeStackParamsList = {
   HomeScreen: undefined;
@@ -35,7 +34,6 @@ export type DetailsScreenNavigationProp = NativeStackNavigationProp<
 const Stack = createNativeStackNavigator<HomeStackParamsList>();
 
 const HomeStack = () => {
-  const dispatch = useDispatch();
   return (
     <Stack.Navigator
       initialRouteName="HomeScreen"
@@ -68,7 +66,6 @@ const HomeStack = () => {
           title: 'ChangePassword Page',
         }}
       />
-
     </Stack.Navigator>
   );
 };

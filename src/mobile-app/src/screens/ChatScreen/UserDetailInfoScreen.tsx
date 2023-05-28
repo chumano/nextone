@@ -1,7 +1,7 @@
 import {useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {Linking, StyleSheet, TouchableOpacity, View} from 'react-native';
-import {Text, TextInput} from 'react-native-paper';
+import {Text} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import {userApi} from '../../apis/user.api';
 import Loading from '../../components/Loading';
@@ -9,6 +9,7 @@ import {APP_THEME} from '../../constants/app.theme';
 import {UserDetailInfoRouteProp} from '../../navigation/ChatStack';
 import {IAppStore} from '../../stores/app.store';
 import {User} from '../../types/User/User.type';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const UserDetailInfoScreen = () => {
   const {data: conversationList} = useSelector(
@@ -28,11 +29,15 @@ const UserDetailInfoScreen = () => {
     const foundConversation = conversationList?.find(
       c => c.id === router.params.conversationId,
     );
-    if (!foundConversation) return;
+    if (!foundConversation) {
+      return;
+    }
     const notUserAuthMember = foundConversation.members.find(
       m => m.userMember.userId !== userAuth?.userId,
     );
-    if (!notUserAuthMember) return;
+    if (!notUserAuthMember) {
+      return;
+    }
 
     const fetchUser = async (userId: string) => {
       try {
@@ -50,40 +55,53 @@ const UserDetailInfoScreen = () => {
     fetchUser(notUserAuthMember.userMember.userId);
   }, [conversationList, userAuth, setUser]);
 
-  if (!user)
+  if (!user) {
     return (
       <View style={styles.errorTextContainer}>
         <Loading />
       </View>
     );
+  }
 
   return (
     <View style={styles.userDetailInfoContainer}>
-      <View style={styles.inputContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.labelText}>Tên</Text>
+      <View style={styles.userDetailInfoForm}>
+        <View style={styles.inputContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.labelText}>Tên:</Text>
+          </View>
+          <View style={styles.valueContainer}>
+            <Text>{user.name}</Text>
+          </View>
         </View>
-        <View style={styles.valueContainer}>
-          <Text>{user.name}</Text>
+        <View style={styles.inputContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.labelText}>Email:</Text>
+          </View>
+          <View style={styles.valueContainer}>
+            <Text>{user.email}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.inputContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.labelText}>Email</Text>
+        <View style={styles.inputContainer}>
+          <View style={styles.labelContainer}>
+            <Text style={styles.labelText}>Số điện thoại:</Text>
+          </View>
+          {user.phone ? (
+            <TouchableOpacity
+              style={styles.valueContainer}
+              onPress={() => Linking.openURL(`tel:${user.phone}`)}>
+              <MaterialCommunityIcon
+                style={styles.iconContainer}
+                name={'phone'}
+                size={18}
+                color={APP_THEME.colors.link}
+              />
+              <Text style={styles.phoneNumberText}>{user.phone}</Text>
+            </TouchableOpacity>
+          ) : (
+            <></>
+          )}
         </View>
-        <View style={styles.valueContainer}>
-          <Text>{user.email}</Text>
-        </View>
-      </View>
-      <View style={styles.inputContainer}>
-        <View style={styles.labelContainer}>
-          <Text style={styles.labelText}>Số điện thoại</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.valueContainer}
-          onPress={() => Linking.openURL(`tel:${user.phone}`)}>
-          <Text style={styles.phoneNumber}>{user.phone}</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -99,14 +117,29 @@ const styles = StyleSheet.create({
   },
   userDetailInfoContainer: {
     flex: 1,
-    padding: 16,
+    alignItems: 'center',
+    padding: APP_THEME.spacing.padding,
+    maxWidth: '100%',
+  },
+  userDetailInfoForm: {
+    width: '100%',
+    shadowOpacity: 1,
+    shadowRadius: APP_THEME.rounded,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    padding: APP_THEME.spacing.padding,
+    borderRadius: APP_THEME.rounded,
   },
   inputContainer: {
     flexDirection: 'row',
     paddingVertical: 8,
-    marginTop: 16,
-    borderBottomWidth: 0.5,
-    borderColor: APP_THEME.colors.placeholder,
+    marginBottom: APP_THEME.spacing.between_component,
+    borderBottomWidth: 1,
+    borderBottomColor: `${APP_THEME.colors.black}3a`,
   },
   labelContainer: {
     flexDirection: 'row',
@@ -115,11 +148,15 @@ const styles = StyleSheet.create({
   },
   valueContainer: {
     flex: 1,
+    flexDirection: 'row',
+  },
+  iconContainer: {
+    marginRight: 10,
   },
   labelText: {
-    fontWeight: '200',
+    fontWeight: '300',
   },
-  phoneNumber: {
-    color: APP_THEME.colors.primary,
+  phoneNumberText: {
+    color: APP_THEME.colors.link,
   },
 });

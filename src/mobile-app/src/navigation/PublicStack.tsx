@@ -8,6 +8,8 @@ import LoginScreen from '../screens/LoginScreen/LoginScreen';
 import NewsScreen from '../screens/NewsScreen/NewsScreen';
 import {Appbar} from 'react-native-paper';
 import RegisterScreen from '../screens/RegisterScreen/RegisterScreen';
+import {APP_THEME} from '../constants/app.theme';
+import {StyleSheet} from 'react-native';
 
 type PublicStackParamsList = {
   Login: undefined;
@@ -17,9 +19,7 @@ type PublicStackParamsList = {
 
 const Stack = createNativeStackNavigator<PublicStackParamsList>();
 
-export type PublicScreenProp = NativeStackNavigationProp<
-  PublicStackParamsList
->;
+export type PublicScreenProp = NativeStackNavigationProp<PublicStackParamsList>;
 
 const PublicStack = () => {
   return (
@@ -28,23 +28,29 @@ const PublicStack = () => {
       screenOptions={{
         header: (props: NativeStackHeaderProps) => {
           return (
-            <Appbar.Header>
+            <Appbar.Header
+              style={{
+                backgroundColor: APP_THEME.colors.primary,
+              }}>
               {props.back && (
                 <Appbar.BackAction
-                  color="white"
+                  color={APP_THEME.colors.accent}
                   onPress={() => {
                     props.navigation.goBack();
                   }}
                 />
               )}
-              <Appbar.Content title="UCOM" color="white" />
+              <Appbar.Content
+                title={'UCOM'}
+                color={APP_THEME.colors.accent}
+                titleStyle={styles.title}
+              />
               {!props.back && (
                 <Appbar.Action
-                  icon="login"
-                  color="white"
-                  onPress={() =>
-                    props.navigation.navigate('Login')
-                  }></Appbar.Action>
+                  icon={'login'}
+                  color={APP_THEME.colors.accent}
+                  onPress={() => props.navigation.navigate('Login')}
+                />
               )}
             </Appbar.Header>
           );
@@ -56,5 +62,12 @@ const PublicStack = () => {
     </Stack.Navigator>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    fontWeight: '500',
+    letterSpacing: 0.2,
+  },
+});
 
 export default PublicStack;

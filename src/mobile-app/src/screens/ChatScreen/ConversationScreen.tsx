@@ -1,13 +1,12 @@
-import { useFocusEffect } from '@react-navigation/native';
-import React, { useCallback, useEffect } from 'react';
-import {View, StyleSheet} from 'react-native';
-import { useDispatch } from 'react-redux';
-import { useSelector } from 'react-redux';
-import { conversationApi } from '../../apis';
+import {useFocusEffect} from '@react-navigation/native';
+import React, {useCallback, useEffect} from 'react';
+import {StyleSheet, View} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {conversationApi} from '../../apis';
 
 import ConversationList from '../../components/Conversation/ConversationList';
-import { AppDispatch, IAppStore } from '../../stores/app.store';
-import { conversationActions } from '../../stores/conversation';
+import {AppDispatch, IAppStore} from '../../stores/app.store';
+import {conversationActions} from '../../stores/conversation';
 import {getListConversation} from '../../stores/conversation/conversation.thunk';
 
 const ConversationScreen = () => {
@@ -17,31 +16,36 @@ const ConversationScreen = () => {
   );
 
   useEffect(() => {
-    if (!notLoadedConversationId) return;
-    const fetchConversation = async () => {
-        const response = await conversationApi.getConversation(notLoadedConversationId);
-        if (response.isSuccess) {
-            const conversation = response.data;
-            dispatch(conversationActions.addConversation(conversation));
-        }
+    if (!notLoadedConversationId) {
+      return;
     }
+    const fetchConversation = async () => {
+      const response = await conversationApi.getConversation(
+        notLoadedConversationId,
+      );
+      if (response.isSuccess) {
+        const conversation = response.data;
+        dispatch(conversationActions.addConversation(conversation));
+      }
+    };
     fetchConversation();
-  }, [dispatch, notLoadedConversationId])
-  
+  }, [dispatch, notLoadedConversationId]);
+
   useEffect(() => {
-    console.log('ConversationScreen getListConversation')
+    console.log('ConversationScreen getListConversation');
     dispatch(getListConversation({pageOptions: {offset: 0}}));
   }, [dispatch]);
-  
-  useFocusEffect(useCallback(() => {
-    //console.log("ConversationScreen is focused") 
-    //dispatch(getListConversation({pageOptions: {offset: 0}}));
-    return () => {
-      //console.log("ConversationScreen is outfocused") 
-    };
-  }, []));
 
-  
+  useFocusEffect(
+    useCallback(() => {
+      //console.log("ConversationScreen is focused")
+      //dispatch(getListConversation({pageOptions: {offset: 0}}));
+      return () => {
+        //console.log("ConversationScreen is outfocused")
+      };
+    }, []),
+  );
+
   return (
     <View style={styles.conversationScreenContainer}>
       <ConversationList />
@@ -54,5 +58,6 @@ export default ConversationScreen;
 const styles = StyleSheet.create({
   conversationScreenContainer: {
     flex: 1,
+    padding: 8,
   },
 });

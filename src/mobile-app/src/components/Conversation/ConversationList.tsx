@@ -1,28 +1,14 @@
-import React, {useEffect} from 'react';
-import {FlatList, RefreshControl, ScrollView, StyleSheet} from 'react-native';
+import React from 'react';
+import {FlatList} from 'react-native';
 import {ActivityIndicator} from 'react-native-paper';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {getListConversation} from '../../stores/conversation/conversation.thunk';
 
 import Loading from '../Loading';
 import ConversationItem from './ConversationItem';
 
 import {Conversation} from '../../types/Conversation/Conversation.type';
-import {useSelector} from 'react-redux';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    backgroundColor: 'pink',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  indicator: {},
-});
 
 const wait = (timeout: number) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -30,9 +16,13 @@ const wait = (timeout: number) => {
 
 const ConversationList = () => {
   const dispatch: AppDispatch = useDispatch();
-  const {data : conversations, status, allLoaded, 
+  const {
+    data: conversations,
+    status,
+    allLoaded,
     conversationsLoading,
-    conversationsOffset} = useSelector((store: IAppStore) => store.conversation);
+    conversationsOffset,
+  } = useSelector((store: IAppStore) => store.conversation);
   const [refreshing, setRefreshing] = React.useState(false);
   const [initLoading, setInitLoading] = React.useState(true);
 
@@ -41,27 +31,37 @@ const ConversationList = () => {
     //console.log('refreshing............');
     dispatch(getListConversation({pageOptions: {offset: 0}}));
     setInitLoading(false);
-    return ()=>{
-    }
+    return () => {};
   }, []);
 
   const loadMoreResults = React.useCallback(async () => {
-    if (conversationsLoading || allLoaded) return;
+    if (conversationsLoading || allLoaded) {
+      return;
+    }
 
     //console.log('loadmoreResult...................', conversationsOffset);
-    dispatch(getListConversation({pageOptions:{offset: conversationsOffset}, loadMore: true}));
+    dispatch(
+      getListConversation({
+        pageOptions: {offset: conversationsOffset},
+        loadMore: true,
+      }),
+    );
   }, [conversationsLoading, allLoaded, conversationsOffset]);
-
 
   const renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!conversationsLoading) return null;
-    return <ActivityIndicator style={styles.indicator} />;
+    if (!conversationsLoading) {
+      return null;
+    }
+    return <ActivityIndicator />;
   };
 
-  if (status === 'pending') return <Loading />;
+  if (status === 'pending') {
+    return <Loading />;
+  }
   return (
     <FlatList
+      showsVerticalScrollIndicator={false}
       onRefresh={() => onRefresh()}
       refreshing={refreshing}
       keyExtractor={(item: Conversation, _) => item.id}

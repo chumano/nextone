@@ -1,15 +1,11 @@
-import React, { useEffect } from 'react';
-import {View, Text, Button, StyleSheet, Image} from 'react-native';
-
-import notifee from '@notifee/react-native';
-import {CommonActions, TabActions, useNavigation} from '@react-navigation/native';
+import React from 'react';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
-import {notificationApi} from '../../apis/notificationApi';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {useDispatch, useSelector} from 'react-redux';
 import NewsList from '../../components/News/NewsList';
-import { conversationActions } from '../../stores/conversation';
-import { ConversationType } from '../../types/Conversation/ConversationType.type';
+import {APP_THEME} from '../../constants/app.theme';
 
 export const HomeScreen = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -25,7 +21,6 @@ export const HomeScreen = () => {
     //   id: 'default',
     //   name: 'Default Channel',
     // });
-
     // // Display a notification
     // await notifee.displayNotification({
     //   title: 'Notification Title',
@@ -35,25 +30,28 @@ export const HomeScreen = () => {
     //     smallIcon: 'ic_launcher', // optional, defaults to 'ic_launcher'.
     //   },
     // });
-
     //call myself
     //const response = await notificationApi.testCall(userInfo!.userId);
     //console.log('testCall', response);
-    
   };
 
   return (
     <View style={styles.homeScreenContainer}>
-      <View style={styles.logoContainer}>
-        <Text style={styles.text}>Hệ thống chỉ huy, điều hành thống nhất</Text>
-        <Image source={require('../../assets/intro_img.png')} />
+      <View style={styles.cardContainer}>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>
+            Hệ thống chỉ huy, điều hành thống nhất
+          </Text>
+        </View>
+        <View style={styles.imageContainer}>
+          <Image source={require('../../assets/intro_img.png')} />
+        </View>
       </View>
 
       {/* <Button title="Test" onPress={onDisplayNotification} /> */}
       <View style={styles.newsListContainer}>
-        <View style={styles.newsListContainer}>
-          <NewsList />
-        </View>
+        <Text style={styles.newsText}>Tin tức gần đây</Text>
+        <NewsList />
       </View>
     </View>
   );
@@ -63,20 +61,49 @@ const styles = StyleSheet.create({
   homeScreenContainer: {
     flex: 1,
   },
-  logoContainer: {
+
+  cardContainer: {
+    paddingHorizontal: APP_THEME.spacing.padding,
+    shadowOpacity: 1,
+    shadowRadius: APP_THEME.rounded,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.accent,
+  },
+
+  textContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 16,
+    marginVertical: APP_THEME.spacing.between_component,
   },
-  newsListContainer: {
-    flex: 1
-  },
-  textHeader: {
-    color: '#000',
-    fontSize: 32,
-  },
+
   text: {
-    color: '#000',
-    fontSize: 18,
+    fontSize: 16,
+    lineHeight: 18,
+    fontWeight: '500',
+    color: APP_THEME.colors.primary,
+  },
+
+  imageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+    left: -18,
+  },
+
+  newsListContainer: {
+    flex: 1,
+    marginVertical: APP_THEME.spacing.between_component,
+  },
+
+  newsText: {
+    fontWeight: '500',
+    fontSize: 20,
+    lineHeight: 24,
+    color: APP_THEME.colors.text,
+    margin: APP_THEME.spacing.between_component,
   },
 });

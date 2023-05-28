@@ -1,20 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Alert, Platform} from 'react-native';
-import {Avatar, Text, TextInput, Button, Portal, Modal, HelperText} from 'react-native-paper';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {Alert, Platform, StyleSheet, View} from 'react-native';
+import {
+  Avatar,
+  Button,
+  HelperText,
+  Modal,
+  Portal,
+  Text,
+  TextInput,
+} from 'react-native-paper';
 
 import {APP_THEME} from '../../constants/app.theme';
 
 import Loading from '../../components/Loading';
 
-import {useDispatch} from 'react-redux';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {getMyProfile} from '../../stores/user';
 
 import {HomeStackProps} from '../../navigation/HomeStack';
-import { userApi } from '../../apis/user.api';
-import { logout } from '../../stores/auth';
+import {userApi} from '../../apis/user.api';
+import {logout} from '../../stores/auth';
 
 export const ProfileScreen = ({navigation}: HomeStackProps) => {
   const dispatch: AppDispatch = useDispatch();
@@ -34,157 +40,210 @@ export const ProfileScreen = ({navigation}: HomeStackProps) => {
 
   const hideModal = () => setVisible(false);
 
-  const deleteUserHanlder = () =>{
+  const deleteUserHandlder = () => {
     setVisible(true);
+  };
+
+  if (userState.status === 'loading' || !userState.data) {
+    return <Loading />;
   }
-  
-  if (userState.status === 'loading' || !userState.data) return <Loading />;
 
   return (
-    <SafeAreaView style={styles.profileContainer}>
-      <View style={styles.userAvatarContainer}>
-        <Avatar.Icon icon="account" size={72}></Avatar.Icon>
-        <View style={styles.userNameContainer}>
+    <View style={styles.profileScreenContainer}>
+      <View style={styles.profileForm}>
+        <View style={styles.userAvatarContainer}>
+          <Avatar.Icon style={styles.avatar} icon="account" size={48} />
           <Text style={styles.userNameText}>{userState.data.name}</Text>
         </View>
-      </View>
-      <View style={styles.userInfoContainer}>
+
         <View style={styles.inputContainer}>
           <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Email</Text>
+            <Text style={styles.labelText}>Email: </Text>
           </View>
           <View style={styles.valueContainer}>
-            <TextInput disabled defaultValue={userState.data.email}></TextInput>
+            <TextInput
+              style={styles.input}
+              disabled
+              defaultValue={userState.data.email}
+            />
           </View>
         </View>
         <View style={styles.inputContainer}>
           <View style={styles.labelContainer}>
-            <Text style={styles.labelText}>Số điện thoại</Text>
+            <Text style={styles.labelText}>Số điện thoại: </Text>
           </View>
           <View style={styles.valueContainer}>
-            <TextInput disabled defaultValue={userState.data.phone}></TextInput>
+            <TextInput
+              style={styles.input}
+              disabled
+              defaultValue={userState.data.phone}
+            />
           </View>
         </View>
-      </View>
-      <View style={styles.buttonsContainer}>
+
         <View style={styles.buttonContainer}>
-          <Button mode="contained" onPress={changeProfileHandler}>
+          <Button
+            labelStyle={{
+              color: APP_THEME.colors.primary,
+            }}
+            style={styles.buttonUpdate}
+            mode="contained"
+            onPress={changeProfileHandler}>
             Cập nhật thông tin
           </Button>
         </View>
         <View style={styles.buttonContainer}>
-          <Button mode="outlined" onPress={changePasswordHandler}>
+          <Button
+            labelStyle={{
+              color: APP_THEME.colors.accent,
+            }}
+            mode="outlined"
+            onPress={changePasswordHandler}>
             Đổi mật khẩu
           </Button>
         </View>
 
-        <View style={{...styles.buttonContainer, width:'auto'}}>
-          <Button mode="outlined" color='red' onPress={deleteUserHanlder}>
+        <View style={styles.buttonContainer}>
+          <Button
+            labelStyle={{
+              color: APP_THEME.colors.primary,
+            }}
+            mode="contained"
+            color={APP_THEME.colors.red}
+            onPress={deleteUserHandlder}>
             Xóa tài khoản
           </Button>
         </View>
       </View>
 
-      {Platform.OS ==='ios' &&
-        <DeleteUserModal visible={visible} hideModal={hideModal}/>
-      }
-    </SafeAreaView>
+      {Platform.OS === 'ios' && (
+        <DeleteUserModal visible={visible} hideModal={hideModal} />
+      )}
+    </View>
   );
 };
 
-const DeleteUserModal :React.FC<{visible: boolean, hideModal: ()=>void}> = ({visible,hideModal})=>{
+const DeleteUserModal: React.FC<{visible: boolean; hideModal: () => void}> = ({
+  visible,
+  hideModal,
+}) => {
   const dispatch: AppDispatch = useDispatch();
-  const containerStyle = {backgroundColor: 'white', padding: 20};
   const [password, setPassword] = useState<any>({
-      value: '',
-      isValid: true,
-      errorMessage :undefined
-    })
-  const onDelete = async ()=>{
-    if(password.value.trim().length===0){
-      setPassword( (state:any)=>({
+    value: '',
+    isValid: true,
+    errorMessage: undefined,
+  });
+  const onDelete = async () => {
+    if (password.value.trim().length === 0) {
+      setPassword((state: any) => ({
         ...state,
-        isValid: false
-      }))
+        isValid: false,
+      }));
       return;
     }
 
     const response = await userApi.selfDelete(password.value);
     //console.log("selfDelete ressponse:" , response)
-    if(!response.isSuccess){
-      Alert.alert('Có lỗi', response.errorMessage!)
+    if (!response.isSuccess) {
+      Alert.alert('Có lỗi', response.errorMessage!);
       return;
     }
 
-    setPassword( (state:any)=>({
+    setPassword((state: any) => ({
       ...state,
       isValid: false,
-      errorMessage : response.errorMessage
-    }))
-    Alert.alert('Xóa tài khoản thàng công')
+      errorMessage: response.errorMessage,
+    }));
+    Alert.alert('Xóa tài khoản thàng công');
     hideModal();
     dispatch(logout());
-  }
+  };
 
-  return <Portal>
-  <Modal visible={visible} onDismiss={hideModal} contentContainerStyle={containerStyle}>
-    <Text style={{fontSize:20}}>Bạn có muốn xóa tài khoản?</Text>
-    <View
-      style={{
-        borderBottomColor: 'black',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-      }}
-    />
-    <Text style={{color:'grey'}}>Xác nhận mật khẩu để xóa</Text>
-    <View style={styles.inputContainer}>
-      <TextInput style={{ width: '100%'}}
-          label="Mật khẩu"
+  return (
+    <Portal>
+      <Modal
+        visible={visible}
+        onDismiss={hideModal}
+        contentContainerStyle={styles.modalContainer}>
+        <View style={styles.modalTitleContainer}>
+          <Text style={styles.modalTitleText}>Bạn có muốn xóa tài khoản?</Text>
+        </View>
+
+        <TextInput
+          style={styles.input}
+          mode={'flat'}
+          placeholder={'Xác nhận mật khẩu'}
+          activeUnderlineColor={APP_THEME.colors.accent}
           secureTextEntry
           value={password.value}
           error={!password.isValid}
-          onChangeText={(txt)=> setPassword({
-            value: txt,
-            isValid: true
-          })}
+          onChangeText={txt =>
+            setPassword({
+              value: txt,
+              isValid: true,
+            })
+          }
         />
-        {!password.isValid && 
-          <HelperText type="error" style={{ width: '100%'}}>
-            {password.errorMessage || 'Mật khẩu phải nhập!'}
+        {!password.isValid && (
+          <HelperText type="error">
+            {password.errorMessage || 'Vui lòng nhập mật khẩu!'}
           </HelperText>
-        }
-    </View>
-    
-    <Button color='red' onPress={onDelete}>
-        Xóa
-    </Button>
-  </Modal>
-</Portal>
-}
+        )}
+
+        <Button
+          mode={'contained'}
+          color={APP_THEME.colors.red}
+          onPress={onDelete}>
+          Xác nhận
+        </Button>
+      </Modal>
+    </Portal>
+  );
+};
 
 const styles = StyleSheet.create({
-  profileContainer: {
-    paddingTop: 16,
+  profileScreenContainer: {
+    flex: 1,
+    alignItems: 'center',
+    padding: APP_THEME.spacing.padding,
+    maxWidth: '100%',
+  },
+  profileForm: {
+    width: '100%',
+    shadowOpacity: 1,
+    shadowRadius: APP_THEME.rounded,
+    shadowOffset: {
+      width: 6,
+      height: 6,
+    },
+    shadowColor: APP_THEME.colors.backdrop,
+    backgroundColor: APP_THEME.colors.primary,
+    padding: APP_THEME.spacing.padding,
+    borderRadius: APP_THEME.rounded,
   },
   userAvatarContainer: {
-    flexDirection: 'row',
-    marginHorizontal: 8,
-    paddingBottom: 8,
-    borderBottomWidth: 0.5,
-    borderColor: APP_THEME.colors.placeholder,
+    alignItems: 'center',
+    marginBottom: 2 * APP_THEME.spacing.between_component,
   },
-  userNameContainer: {
-    justifyContent: 'center',
-    marginLeft: 8,
+  avatar: {
+    marginBottom: APP_THEME.spacing.between_component,
+    backgroundColor: APP_THEME.colors.accent,
   },
-  userInfoContainer: {
-    marginHorizontal: 8,
+  userNameText: {
+    fontSize: 24,
+    lineHeight: 28,
+    fontWeight: '600',
+  },
+  input: {
+    width: '100%',
+    height: 40,
+    marginVertical: APP_THEME.spacing.between_component,
+    backgroundColor: APP_THEME.colors.background,
   },
   inputContainer: {
     flexDirection: 'row',
-    paddingVertical: 8,
-
-    borderBottomWidth: 0.5,
-    borderColor: APP_THEME.colors.placeholder,
+    borderBottomColor: `${APP_THEME.colors.black}3a`,
+    borderBottomWidth: 1,
   },
   labelContainer: {
     flexDirection: 'row',
@@ -194,16 +253,32 @@ const styles = StyleSheet.create({
   valueContainer: {
     flex: 1,
   },
-  buttonsContainer: {
-    marginHorizontal: 8,
+  labelText: {
+    fontWeight: '400',
+    fontSize: 12,
+    lineHeight: 16,
   },
   buttonContainer: {
-    marginTop: 16,
+    marginTop: APP_THEME.spacing.between_component,
+    width: '100%',
   },
-  labelText: {
-    fontWeight: '200',
+  buttonUpdate: {
+    backgroundColor: APP_THEME.colors.accent,
   },
-  userNameText: {
+
+  /* Modal */
+
+  modalContainer: {
+    backgroundColor: APP_THEME.colors.background,
+    padding: APP_THEME.spacing.padding,
+  },
+  modalTitleContainer: {
+    marginBottom: APP_THEME.spacing.between_component,
+  },
+  modalTitleText: {
     fontSize: 24,
+    lineHeight: 28,
+    fontWeight: 'normal',
+    color: APP_THEME.colors.red,
   },
 });

@@ -40,9 +40,9 @@ export default NewsItem;
 const styles = StyleSheet.create({
   newsContainer: {
     flexDirection: 'row',
-    padding: 8,
-    borderBottomColor: APP_THEME.colors.backdrop,
+    borderBottomColor: `${APP_THEME.colors.black}3a`,
     borderBottomWidth: 1,
+    paddingVertical: 8,
   },
   imageContainer: {
     marginRight: 8,
@@ -59,23 +59,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   titleText: {
+    marginBottom: APP_THEME.spacing.between_component,
+    fontWeight: '600',
+    lineHeight: 18,
     fontSize: 16,
-    marginBottom: 4,
   },
   dateText: {
-    fontSize: 12,
-    fontWeight: '300',
+    fontSize: 10,
+    fontWeight: '100',
+    marginBottom: 4,
   },
   descriptionText: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: '400',
     lineHeight: 18,
     textAlign: 'justify',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   viewMoreText: {
+    marginLeft: 'auto',
     fontSize: 12,
     fontWeight: '500',
-    color: APP_THEME.colors.primary,
+    color: APP_THEME.colors.accent,
   },
 });

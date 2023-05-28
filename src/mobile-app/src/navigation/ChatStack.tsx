@@ -12,18 +12,14 @@ import {BottomTabProps} from './BottomTabNavigator';
 
 import ConversationScreen from '../screens/ChatScreen/ConversationScreen';
 import ChatScreen from '../screens/ChatScreen/ChatScreen';
-import {ScrollView, TouchableOpacity} from 'react-native';
-import {Button, Dialog, Portal} from 'react-native-paper';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome5';
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ConversationType} from '../types/Conversation/ConversationType.type';
 import MembersScreen from '../screens/ChatScreen/MembersScreen';
-import {useDispatch} from 'react-redux';
-import {callActions} from '../stores/call/callReducer';
 import FindUsersScreen from '../screens/ChatScreen/ModalCreateConversation';
 import EventDetailScreen from '../screens/EventScreen/EventDetailScreen';
 import {EventInfo} from '../types/Event/EventInfo.type';
 import UserDetailInfoScreen from '../screens/ChatScreen/UserDetailInfoScreen';
+import {APP_THEME} from '../constants/app.theme';
+import {Appbar} from 'react-native-paper';
+import {StyleSheet} from 'react-native';
 
 type ChatStackParamsList = {
   ConversationScreen: undefined;
@@ -59,8 +55,6 @@ export type ConversationScreenProp = NativeStackNavigationProp<
 const Stack = createNativeStackNavigator<ChatStackParamsList>();
 
 const ChatStack = ({navigation, route}: BottomTabProps) => {
- 
-
   useEffect(() => {
     const routeName = getFocusedRouteNameFromRoute(route);
     const isRenderBottomTab =
@@ -84,21 +78,32 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
           component={ConversationScreen}
           options={({route, navigation}) => {
             return {
-              title: 'Tin nhắn',
-              headerRight: () => {
+              header: props => {
                 return (
-                  <>
-                    <TouchableOpacity
-                      onPress={() => {
-                        navigation.navigate('FindUsersScreen');
-                      }}>
-                      <MaterialCommunityIcon
-                        name="chat-plus-outline"
-                        size={20}
-                        color={'#000'}
+                  <Appbar.Header
+                    style={{
+                      backgroundColor: APP_THEME.colors.primary,
+                    }}>
+                    {props.back && (
+                      <Appbar.BackAction
+                        color={APP_THEME.colors.accent}
+                        onPress={() => {
+                          props.navigation.goBack();
+                        }}
                       />
-                    </TouchableOpacity>
-                  </>
+                    )}
+                    <Appbar.Content
+                      title={'Tin nhắn'}
+                      color={APP_THEME.colors.accent}
+                      titleStyle={styles.title}
+                    />
+
+                    <Appbar.Action
+                      icon={'chat-plus'}
+                      color={APP_THEME.colors.accent}
+                      onPress={() => navigation.navigate('FindUsersScreen')}
+                    />
+                  </Appbar.Header>
                 );
               },
             };
@@ -106,21 +111,37 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
         />
         <Stack.Screen
           name="ChatScreen"
-          component={ChatScreen}
-          options={({route, navigation}) => {
-            //console.log('[ChatScreen]route.params', route.params);
-            const {conversationId, } = route.params;
-            return {
-              title: '...',
-              
-            };
+          options={{
+            headerShown: false,
           }}
+          component={ChatScreen}
         />
         <Stack.Screen
           name="FindUsersScreen"
           component={FindUsersScreen}
           options={{
-            title: 'Tìm người dùng',
+            header: props => {
+              return (
+                <Appbar.Header
+                  style={{
+                    backgroundColor: APP_THEME.colors.primary,
+                  }}>
+                  {props.back && (
+                    <Appbar.BackAction
+                      color={APP_THEME.colors.accent}
+                      onPress={() => {
+                        props.navigation.goBack();
+                      }}
+                    />
+                  )}
+                  <Appbar.Content
+                    title={'Tìm người dùng'}
+                    color={APP_THEME.colors.accent}
+                    titleStyle={styles.title}
+                  />
+                </Appbar.Header>
+              );
+            },
           }}
         />
 
@@ -128,7 +149,28 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
           name="MembersScreen"
           component={MembersScreen}
           options={{
-            title: 'Thành viên',
+            header: props => {
+              return (
+                <Appbar.Header
+                  style={{
+                    backgroundColor: APP_THEME.colors.primary,
+                  }}>
+                  {props.back && (
+                    <Appbar.BackAction
+                      color={APP_THEME.colors.accent}
+                      onPress={() => {
+                        props.navigation.goBack();
+                      }}
+                    />
+                  )}
+                  <Appbar.Content
+                    title={'Thành viên'}
+                    color={APP_THEME.colors.accent}
+                    titleStyle={styles.title}
+                  />
+                </Appbar.Header>
+              );
+            },
           }}
         />
 
@@ -144,8 +186,28 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
           name="UserDetailInfoScreen"
           component={UserDetailInfoScreen}
           options={{
-            title: 'Thông tin người dùng',
-            headerBackTitle: 'Trở về',
+            header: props => {
+              return (
+                <Appbar.Header
+                  style={{
+                    backgroundColor: APP_THEME.colors.primary,
+                  }}>
+                  {props.back && (
+                    <Appbar.BackAction
+                      color={APP_THEME.colors.accent}
+                      onPress={() => {
+                        props.navigation.goBack();
+                      }}
+                    />
+                  )}
+                  <Appbar.Content
+                    title={'Thông tin người dùng'}
+                    color={APP_THEME.colors.accent}
+                    titleStyle={styles.title}
+                  />
+                </Appbar.Header>
+              );
+            },
           }}
         />
       </Stack.Navigator>
@@ -154,5 +216,11 @@ const ChatStack = ({navigation, route}: BottomTabProps) => {
     </>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    fontWeight: '500',
+  },
+});
 
 export default ChatStack;

@@ -1,13 +1,13 @@
 import React, {useEffect} from 'react';
-import {FlatList, View} from 'react-native';
+import {FlatList, StyleSheet, View} from 'react-native';
 import {ActivityIndicator, Text} from 'react-native-paper';
-import {useSelector} from 'react-redux';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {getEventsByMe} from '../../stores/event/event.thunk';
 
 import Loading from '../Loading';
 import EventItem from './EventItem';
+import {APP_THEME} from '../../constants/app.theme';
 
 interface EventListProps {}
 const EventList: React.FC<EventListProps> = () => {
@@ -28,7 +28,9 @@ const EventList: React.FC<EventListProps> = () => {
 
   const loadMoreResults = React.useCallback(async () => {
     //console.log({eventState, length: eventState.data?.length});
-    if (eventState.eventsLoading || eventState.allLoaded) return;
+    if (eventState.eventsLoading || eventState.allLoaded) {
+      return;
+    }
 
     //console.log('loadmoreResult...................', eventState.eventsOffset);
     dispatch(
@@ -42,18 +44,23 @@ const EventList: React.FC<EventListProps> = () => {
 
   const renderFooter = () => {
     //it will show indicator at the bottom of the list when data is loading otherwise it returns null
-    if (!eventState.eventsLoading) return null;
+    if (!eventState.eventsLoading) {
+      return null;
+    }
     return <ActivityIndicator />;
   };
 
-  if (eventState.status === 'loading') return <Loading />;
+  if (eventState.status === 'loading') {
+    return <Loading />;
+  }
 
-  if (eventState.status === 'success' && eventState.data?.length === 0)
+  if (eventState.status === 'success' && eventState.data?.length === 0) {
     return (
-      <View style={{alignItems: 'center', justifyContent: 'center', marginTop: 12}}>
-        <Text>Không có sự kiện</Text>
+      <View style={styles.notFoundContainer}>
+        <Text style={styles.notFoundText}>Không tìm thấy sự kiện!</Text>
       </View>
     );
+  }
 
   return (
     <FlatList
@@ -70,5 +77,18 @@ const EventList: React.FC<EventListProps> = () => {
     />
   );
 };
+
+const styles = StyleSheet.create({
+  notFoundContainer: {
+    padding: APP_THEME.spacing.padding,
+    alignItems: 'center',
+  },
+  notFoundText: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '300',
+    opacity: 0.7,
+  },
+});
 
 export default EventList;

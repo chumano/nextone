@@ -26,7 +26,6 @@ interface AudioRecorderProps {
   onRecorded?: (uri: string) => void;
 }
 
-
 const MAX_SECONDS = 120;
 const AudioRecorder: React.FC<AudioRecorderProps> = ({
   recordingEnabled,
@@ -47,14 +46,16 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
     };
   }, []);
 
-  useEffect(()=>{
-    if(recordingEnabled){
+  useEffect(() => {
+    if (recordingEnabled) {
       requestPermissions();
     }
-  },[recordingEnabled])
+  }, [recordingEnabled]);
 
   useEffect(() => {
-    if (recordingEnabled) Keyboard.dismiss();
+    if (recordingEnabled) {
+      Keyboard.dismiss();
+    }
   }, [recordingEnabled]);
 
   const onRecordFinished = useCallback(
@@ -76,7 +77,9 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
     setRecording(false);
     try {
       const audioRecorderPlayer = audioRecorderPlayerRef.current;
-      if (!audioRecorderPlayer) return;
+      if (!audioRecorderPlayer) {
+        return;
+      }
 
       const uri = await audioRecorderPlayer.stopRecorder();
       audioRecorderPlayer.removeRecordBackListener();
@@ -93,10 +96,12 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   }, [recordMiliSecs, onRecordFinished]);
 
   const onStartRecord = useCallback(async () => {
-     //console.log('onStartRecord...')
+    //console.log('onStartRecord...')
 
     const audioRecorderPlayer = audioRecorderPlayerRef.current;
-    if (!audioRecorderPlayer) return;
+    if (!audioRecorderPlayer) {
+      return;
+    }
 
     const audioSet: AudioSet = {
       AudioEncoderAndroid: AudioEncoderAndroidType.AAC,
@@ -150,23 +155,23 @@ const AudioRecorder: React.FC<AudioRecorderProps> = ({
   return (
     <>
       {recordingEnabled && (
-        <View>
+        <>
           <View style={styles.recordCounterContainer}>
-            <Text style={styles.txtRecordCounter}>{recordTime}</Text>
+            <Text style={styles.recordCounterText}>{recordTime}</Text>
           </View>
           <View style={styles.recordingContainer}>
             <TouchableOpacity
-              style={[styles.recordingButton, {backgroundColor: '#eaeaea'}]}
+              style={styles.recordingButton}
               onPressIn={onStartRecord}
               onPressOut={onStopRecord}>
               <MaterialCommunityIcon
                 name="microphone"
-                size={60}
+                size={64}
                 color={APP_THEME.colors.primary}
               />
             </TouchableOpacity>
           </View>
-        </View>
+        </>
       )}
     </>
   );
@@ -182,31 +187,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   recordingButton: {
-    padding: 4,
-    borderRadius: 4,
+    padding: 10,
+    borderRadius: APP_THEME.rounded,
+    backgroundColor: APP_THEME.colors.accent,
   },
 
   recordCounterContainer: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  txtRecordCounter: {
-    color: 'black',
+  recordCounterText: {
     fontSize: 32,
+    lineHeight: 36,
     textAlignVertical: 'center',
-    fontWeight: '200',
-    fontFamily: 'Helvetica Neue',
-    letterSpacing: 3,
+    fontWeight: '100',
   },
 });
 
-const requestPermissions = async ()=>{
+const requestPermissions = async () => {
   if (Platform.OS === 'android') {
     const granted = await requestRecordPermissions();
-    if (!granted) return;
+    if (!granted) {
+      return;
+    }
   }
-}
-
+};
 
 const requestRecordPermissions = async () => {
   try {

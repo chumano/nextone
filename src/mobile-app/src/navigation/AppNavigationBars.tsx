@@ -8,9 +8,8 @@ import {NativeStackHeaderProps} from '@react-navigation/native-stack';
 import {AppDispatch} from '../stores/app.store';
 
 import {logout} from '../stores/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {notificationApi} from '../apis/notificationApi';
-
+import {APP_THEME} from '../constants/app.theme';
+import {StyleSheet} from 'react-native';
 
 export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   navigation,
@@ -27,22 +26,34 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
   };
 
   const logoutHandler = async () => {
-    
     closeMenu();
     dispatch(logout());
   };
 
   return (
     <Appbar.Header>
-      {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-      <Appbar.Content title="UCOM" color="white" />
+      {back ? (
+        <Appbar.BackAction
+          color={APP_THEME.colors.accent}
+          onPress={navigation.goBack}
+        />
+      ) : null}
+      <Appbar.Content
+        title="UCOM"
+        color={APP_THEME.colors.accent}
+        titleStyle={styles.title}
+      />
 
       {!back ? (
         <Menu
           visible={visible}
           onDismiss={closeMenu}
           anchor={
-            <Appbar.Action icon="menu" color="white" onPress={openMenu} />
+            <Appbar.Action
+              icon="menu"
+              color={APP_THEME.colors.accent}
+              onPress={openMenu}
+            />
           }>
           <Menu.Item title="Tài khoản" onPress={navigateToProfileHandler} />
           <Menu.Item title="Đăng xuất" onPress={logoutHandler} />
@@ -51,8 +62,6 @@ export const AppStackNavigationBar: React.FC<NativeStackHeaderProps> = ({
     </Appbar.Header>
   );
 };
-
-
 
 //not use
 export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
@@ -86,3 +95,10 @@ export const AppTabNavigationBar: React.FC<BottomTabHeaderProps> = ({
     </Appbar.Header>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    fontWeight: '500',
+    letterSpacing: 0.2,
+  },
+});

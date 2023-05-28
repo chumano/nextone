@@ -3,7 +3,6 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
-  useRef,
   useState,
 } from 'react';
 import {
@@ -11,10 +10,8 @@ import {
   Platform,
   SafeAreaView,
   StyleSheet,
-  View,
 } from 'react-native';
 import {FAB} from 'react-native-paper';
-import WebView, {WebViewMessageEvent} from 'react-native-webview';
 import {conversationApi} from '../../apis';
 import {eventApi} from '../../apis/event.api';
 import Loading from '../../components/Loading';
@@ -25,8 +22,8 @@ import MapView from './MapView';
 import Geolocation from 'react-native-geolocation-service';
 import {IAppStore} from '../../stores/app.store';
 import {useSelector} from 'react-redux';
-import { useFocusEffect } from '@react-navigation/native';
-import { GlobalContext } from '../../../AppContext';
+import {useFocusEffect} from '@react-navigation/native';
+import {GlobalContext} from '../../../AppContext';
 
 const MapScreen = ({navigation, route}: MapStackProps) => {
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
@@ -36,13 +33,15 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
   const [users, setUsers] = useState<UserStatus[]>();
   const [zoomPosition, setZoomPosition] = useState<[number, number]>();
   const [myLocation, setMyLocation] = useState<[number, number]>();
-  
+
   const globalData = useContext(GlobalContext);
   const {applicationSettings} = globalData;
-  
+
   useLayoutEffect(() => {
     const params: any = route.params;
-    if (!params) return;
+    if (!params) {
+      return;
+    }
     //console.log('MAPSCREEN params', params);
     const {position} = params;
     if (position) {
@@ -64,10 +63,11 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     requestPermission();
   }, []);
 
-
   // load events, users
   const fetchEvents = useCallback(async () => {
-    if (!selectedEventTypeCodes) return;
+    if (!selectedEventTypeCodes) {
+      return;
+    }
 
     const response = await eventApi.getEventsForMap({
       eventTypeCodes: selectedEventTypeCodes,
@@ -96,30 +96,35 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     fetchData();
   }, [fetchEvents, fetchUsers]);
 
-  
-  useFocusEffect(useCallback(() => {
-    const intervalCall = setInterval(async () => {
-      await fetchEvents();
-    }, 30 * 1000);
-    return () => {
-      clearInterval(intervalCall);
-    };
-  }, [fetchEvents]));
+  useFocusEffect(
+    useCallback(() => {
+      const intervalCall = setInterval(async () => {
+        await fetchEvents();
+      }, 30 * 1000);
+      return () => {
+        clearInterval(intervalCall);
+      };
+    }, [fetchEvents]),
+  );
 
-  useFocusEffect(useCallback(() => {
-    //console.log("Map screen is focused",applicationSettings) 
-    const intervalCall = setInterval(async () => {
-      //console.log('[interval] fectch data');
-      await fetchUsers();
-    }, (applicationSettings?.updateLocationHeartbeatInSeconds || 30) * 1000);
-    return () => {
-      //console.log("Map screen is outfocused") 
-      clearInterval(intervalCall);
-    };
-  }, [fetchUsers, applicationSettings]));
+  useFocusEffect(
+    useCallback(() => {
+      //console.log("Map screen is focused",applicationSettings)
+      const intervalCall = setInterval(async () => {
+        //console.log('[interval] fectch data');
+        await fetchUsers();
+      }, (applicationSettings?.updateLocationHeartbeatInSeconds || 30) * 1000);
+      return () => {
+        //console.log("Map screen is outfocused")
+        clearInterval(intervalCall);
+      };
+    }, [fetchUsers, applicationSettings]),
+  );
 
   useEffect(() => {
-    if (!myLocation) return;
+    if (!myLocation) {
+      return;
+    }
     conversationApi.updateMyStatus({
       lat: myLocation[0],
       lon: myLocation[1],
