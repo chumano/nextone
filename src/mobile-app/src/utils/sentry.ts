@@ -4,8 +4,6 @@
 import {Platform} from 'react-native';
 import {Navigation} from 'react-native-navigation';
 import AuthServiceInstance from '../services/AuthService';
-import qs from 'qs';
-import { UserTokenInfoResponse } from '../types/Auth/Auth.type';
 import { JWTDecodeInfo } from '../types/Auth/JWTDecodeInfo.type';
 import jwtDecode from 'jwt-decode';
 
