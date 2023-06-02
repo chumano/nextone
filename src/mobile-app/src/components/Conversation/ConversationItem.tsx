@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
     },
     shadowColor: APP_THEME.colors.backdrop,
     backgroundColor: APP_THEME.colors.primary,
-    paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
     borderRadius: APP_THEME.rounded,
   },
   conversionType: {},
@@ -165,8 +165,8 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   userNameText: {
-    fontSize: 18,
-    lineHeight: 22,
+    fontSize: 15,
+    lineHeight: 20,
     fontWeight: 'normal',
   },
   lastMessageText: {

@@ -1,4 +1,4 @@
-import React, { createContext, Suspense, useContext } from 'react';
+import React, { createContext, Suspense, useContext, useEffect, useState } from 'react';
 
 import './App.scss';
 import {
@@ -17,6 +17,8 @@ import { axiosSetup } from './utils';
 import { AppContextProvider } from './utils/contexts/AppContext';
 import { Provider } from 'react-redux';
 import { store } from './store';
+import TermsPage from './pages/terms/TermsPage';
+import { AuthenticationService } from './services';
 
 //=================================
 //=================================
@@ -45,7 +47,31 @@ const NoAuthLayout = Loadable({
   loading
 });
 
-
+const CheckAuth = (props:any)=>{
+  const [isloading, setLoading] =useState(true);
+  const [isAuthenticated, setIsAuthenticated] =useState(false);
+  useEffect(()=>{
+    (async()=>{
+      try{
+        var isAuthenticated = await AuthenticationService.isAuthenticated();
+        setIsAuthenticated(isAuthenticated)
+      }finally{
+        setLoading(false)
+      }
+      
+    })();
+  },[])
+  
+  return (
+    <Suspense fallback={loading()}>
+        {isloading && loading()}
+        {!isloading && <>
+          {!isAuthenticated && <Redirect {...props} to="/intro" />}
+          {isAuthenticated && <Redirect {...props} to="/chat" />}
+        </>}
+    </Suspense>
+  )
+}
 const App = () => {
   return <>
     <Router>
@@ -104,19 +130,21 @@ const App = () => {
               })}
 
               <Route path={'/'} exact={true}
+                component={CheckAuth}
+              >
+              </Route>
+
+              <Route path={'/dieukhoan'} exact={true}
                 component={withLayout((props) => {
                   const Layout = NoAuthLayout
                   return (
                     <Suspense fallback={loading()}>
-                      <Layout {...props} title={""}>
-                        <Redirect {...props} to="/intro" />
-                      </Layout>
+                      <TermsPage/>
                     </Suspense>
                   )
                 })}
               >
               </Route>
-
 
               <Route path={'*'} exact={false}>
                 <NotFound404 />

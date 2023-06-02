@@ -23,11 +23,10 @@ interface MapViewProps {
     onMapInited?: () => void;
     eventInfos?: EventInfo[],
     users?: UserStatus[],
-    zoomPosition?:[number, number],
-    currentPosition?:[number, number]
+    zoomPosition?:[number, number]
 }
 const MapView: React.FC<MapViewProps> =
-     ({zoomPosition, currentPosition, eventInfos,users, onMapInited }) => {
+     ({zoomPosition, eventInfos,users, onMapInited }) => {
     const dispatch = useDispatch();
     const { data: userInfo } = useSelector((store: IAppStore) => store.auth);
     const navigation = useNavigation<any>();
@@ -37,15 +36,12 @@ const MapView: React.FC<MapViewProps> =
     const [mapConfig, setMapConfig] = useState<MapConfig>();
     const [mapTileUrl, setMapTileUrl] = useState<string>();
 
-    const [userModalVisible, setUserModalVisible] = useState(false); 
-    const [eventModalVisible, setEventModalVisible] = useState(false); 
 
     const fetchSettings = useCallback(async () => {
         const resposne = await conversationApi.getSettings();
         if (resposne.isSuccess) {
             const appSettings = resposne.data;
             const mapConfig = parseMapConfig(appSettings);
-            
 
             if (mapConfig.layers.length > 0) {
                 const { url } = mapConfig.layers[0];
@@ -68,12 +64,19 @@ const MapView: React.FC<MapViewProps> =
     }, [initialized, mapConfig])
 
     useEffect(() => {
-        if (!initialized || !mapConfig|| !zoomPosition) return;
+        if (!initialized || !mapConfig) return;
         setTimeout(()=>{
-            sendMessage({
-                type: 'ZOOMTO',
-                data: zoomPosition
-            });
+            if( zoomPosition){
+                sendMessage({
+                    type: 'ZOOMTO',
+                    data: zoomPosition
+                });
+            }else{
+                sendMessage({
+                    type: 'CLEARZOOMTO',
+                });
+            }
+            
         },500)
        
     }, [initialized, mapConfig,zoomPosition ])
@@ -107,6 +110,7 @@ const MapView: React.FC<MapViewProps> =
             return {
                 position : [o.lastLat, o.lastLon],
                 type: 'user',
+                iconUrl: mapConfig?.defaultUserIconUrl,
                 user: {
                     userId: o.userId,
                     userName: o.userName,
@@ -114,11 +118,13 @@ const MapView: React.FC<MapViewProps> =
                 }
             }
         }) || [];
+        console.log({userList: userList.map(o=>o.user)})
         
         const eventList = eventInfos?.map(o=>{
             return {
                 position : [o.lat, o.lon],
                 type: 'event',
+                iconUrl: mapConfig?.defaultEventIconUrl,
                 event: {
                     eventId: o.id,
                     eventTypeName: o.eventType.name,
@@ -195,12 +201,13 @@ const MapView: React.FC<MapViewProps> =
        
     },[navigation,eventInfos])
 
+    //=============================================
     const sendInitialMessage = useCallback(() => {
         if (!mapConfig) return;
         const config :any =  {
             ...mapConfig,
             mapTileUrl,
-            debugEnabled: false
+            debugEnabled: false //<=========DEBUG MAPVIEW===========
         }
         delete config['layers'];
         let startupMessage: any = {
@@ -260,7 +267,6 @@ const MapView: React.FC<MapViewProps> =
             onMessage={handleMessage}
         />
     },[webViewRef, setLoading , handleMessage])
-   
 
 
     return (<>

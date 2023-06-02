@@ -96,13 +96,6 @@ const MapPageInternal: React.FC = () => {
             <MapToolBar />
 
             <MapSideBar onDeleteEvent={onDeleteEvent}/>
-
-            {/* <div>
-                <p>
-                    latitude: {position?.lat?.toFixed(4)}, longitude: {position?.lng?.toFixed(4)}{' '}
-                    <button onClick={resetMap}>reset</button>
-                </p>
-            </div> */}
         </div>
     )
 }

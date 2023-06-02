@@ -70,7 +70,8 @@ const ConfigEventTypes = () => {
                     bordered
                     rowKey="code"
                     pagination={{
-                        position: ['none', 'none'] as any
+                        total: eventTypes?.length,
+                        pageSize: 10,
                     }}
                 >
                     <Table.Column

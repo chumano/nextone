@@ -24,6 +24,7 @@ import {IAppStore} from '../../stores/app.store';
 import {useSelector} from 'react-redux';
 import {useFocusEffect} from '@react-navigation/native';
 import {GlobalContext} from '../../../AppContext';
+import { APP_THEME } from '../../constants/app.theme';
 
 const MapScreen = ({navigation, route}: MapStackProps) => {
   const {data: userInfo} = useSelector((store: IAppStore) => store.auth);
@@ -152,10 +153,13 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
     );
   }, [setMyLocation]);
 
+  const clearMyLocation = ()=>{
+    setMyLocation(undefined)
+    setZoomPosition(undefined)
+  }
   return (
     <SafeAreaView style={{flex: 1, position: 'relative'}}>
       <MapView
-        currentPosition={myLocation}
         zoomPosition={zoomPosition}
         eventInfos={eventInfos}
         users={users}
@@ -164,7 +168,8 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
 
       {loading && <Loading />}
 
-      <FAB style={styles.floatBtn} small icon="plus" onPress={showMyLocation} />
+      {myLocation && <FAB style={styles.floatBtnClearGPS} small icon="close" onPress={clearMyLocation} />}
+      <FAB style={styles.floatBtnGPS} small icon="plus" onPress={showMyLocation} />
     </SafeAreaView>
   );
 };
@@ -172,10 +177,16 @@ const MapScreen = ({navigation, route}: MapStackProps) => {
 export default MapScreen;
 
 const styles = StyleSheet.create({
-  floatBtn: {
+  floatBtnGPS: {
     position: 'absolute',
     bottom: 8,
+    right: 8
+  },
+  floatBtnClearGPS: {
+    position: 'absolute',
+    bottom: 58,
     right: 8,
+    backgroundColor: APP_THEME.colors.background
   },
 });
 

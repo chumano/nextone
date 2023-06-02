@@ -77,7 +77,7 @@ const MapView : React.FC<{
             }
         }
 
-    }, [comApi]);
+    }, []);
 
     
     useEffect(()=>{
@@ -117,11 +117,6 @@ const MapView : React.FC<{
         }
     }, [map, selectedEvent, selectedUser])
 
-
-    const resetMap = useCallback(() => {
-        // map?.setView(defaultCenter, defaultZoom)
-    }, [map]);
-
     const onMove = useCallback(() => {
         setPosition(map?.getCenter())
     }, [map]);
@@ -146,21 +141,25 @@ const MapView : React.FC<{
     const renderUserMarkers = useMemo(() => {
         return <>
             {onlineUsers.filter(o => o.lastLat != null && o.lastLon != null)
-                .map(o => <MarkerUser key={'user_' + o.userId} user={o}
+                .map(o => <MarkerUser key={'user_' + o.userId} 
+                    user={o}
+                    userIconUrl={mapConfig?.defaultUserIconUrl}
                     openConversation={openConversation(o)}
                     openPopup={selectedUser && selectedUser.userId === o.userId} />
                 )}
         </>
-    }, [onlineUsers, selectedUser, openConversation])
+    }, [onlineUsers, selectedUser, openConversation, mapConfig?.defaultUserIconUrl])
 
     const renderEventMarkers = useMemo(() => {
         return <>
             {events.filter(o => o.lat != null && o.lon != null)
-                .map(o => <MarkerEvent key={'event_' + o.id}  evt={o}
+                .map(o => <MarkerEvent key={'event_' + o.id}  
+                    evt={o}
+                    eventIconUrl={mapConfig?.defaultEventIconUrl}
                     openPopup={selectedEvent && selectedEvent.id === o.id} />
                 )}
         </>
-    }, [events, selectedEvent, onDeleteEvent])
+    }, [events, selectedEvent, onDeleteEvent, mapConfig?.defaultEventIconUrl])
 
     const onSendLocation = useCallback((latlon: L.LatLng, searchType: 'users' | 'near') => {
        setSearchType(searchType);

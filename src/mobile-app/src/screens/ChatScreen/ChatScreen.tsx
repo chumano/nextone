@@ -56,7 +56,6 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
       //load not find conversation
       return;
     }
-
     setSelectedConversation(selectedConversation);
 
     const conversationType = selectedConversation.type;
@@ -190,7 +189,11 @@ const ChatScreen = ({navigation, route}: ChatStackProps) => {
       {selectedConversation && (
         <ChatBox key={conversationId} conversation={selectedConversation} />
       )}
-      {!selectedConversation && <Loading />}
+      {!selectedConversation && <View style={{
+         flex: 1,
+      }}>
+        <Loading />
+        </View>}
     </>
   );
 };

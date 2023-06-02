@@ -187,6 +187,31 @@ namespace ComService.Boudaries.Controllers
             return Ok(ApiResult.Success(items));
         }
 
+        [HttpGet("GetEventsRelativeToMe")]
+        public async Task<IActionResult> GetEventsRelativeToMe([FromQuery] GetEventsByMeDTO filterDTO)
+        {
+            var userId = _userContext.User.UserId;
+            var pageOptions = new PageOptions(filterDTO.Offset, filterDTO.PageSize);
+
+            //where event
+            var query = _comDbContext.Events.AsNoTracking()
+                ;
+
+            var eventTypes = await GetEventTypeForUser(userId);
+            var EventTypeCodes = eventTypes.Select(o => o.Code).ToList();
+            query = query.Where(o => EventTypeCodes.Contains(o.EventTypeCode));
+
+            var items = await query
+                .OrderByDescending(o => o.CreatedDate)
+                .Skip(filterDTO.Offset)
+                .Take(filterDTO.PageSize)
+                .Include(o => o.EventType)
+                .Include(o => o.UserSender)
+                .Include(o => o.Files)
+                .ToListAsync();
+            return Ok(ApiResult.Success(items));
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(string id)
         {
@@ -199,6 +224,11 @@ namespace ComService.Boudaries.Controllers
                     return Ok(ApiResult.Error("Event does not exist"));
                 }
 
+                //TODO: check permission 
+                //- Owner
+                //- Channe lManager 
+                //- Admin
+
                 //find channelEvents
                 var channelEvents = await _comDbContext.Set<ChannelEvent>()
                     .Where(o => o.EventId == id)
@@ -208,7 +238,6 @@ namespace ComService.Boudaries.Controllers
                 var messages = await _comDbContext.Messages
                     .Where(o => o.EventId == id)
                     .ToListAsync();
-
 
                 _comDbContext.Set<ChannelEvent>().RemoveRange(channelEvents);
                 _comDbContext.Messages.RemoveRange(messages);

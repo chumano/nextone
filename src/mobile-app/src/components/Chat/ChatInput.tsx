@@ -50,6 +50,7 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
   const sendMessageHandler = () => {
     onSendMessage(message);
     setMessage('');
+    setSendBtnVisible(false)
   };
 
   const send = useCallback(
@@ -200,19 +201,10 @@ const ChatInput: React.FC<IProps> = ({conversation, onSendMessage}) => {
   return (
     <View style={styles.chatInputContainer}>
       <View style={styles.chatInputInnerContainer}>
-        {/* <View style={styles.iconButtonContainer}>
-          <IconButton
-            style={styles.button}
-            icon="emoticon-happy-outline"
-            size={24}
-          />
-        </View> */}
         <View style={styles.inputContainer}>
           <TextInput
             mode={'flat'}
-            style={{
-              backgroundColor: APP_THEME.colors.primary,
-            }}
+            style={styles.txtInput}
             underlineColor={'transparent'}
             activeUnderlineColor={'transparent'}
             selectionColor={APP_THEME.colors.accent}
@@ -287,11 +279,15 @@ const styles = StyleSheet.create({
   chatInputContainer: {
     backgroundColor: APP_THEME.colors.primary,
     paddingLeft: 8,
-    minHeight: 80,
+    minHeight: 64,
+    justifyContent: 'center',
   },
   chatInputInnerContainer: {
     flexDirection: 'row',
-    padding: 8,
+    paddingLeft: 8,
+    paddingRight: 8,
+    justifyContent: 'center',
+    
   },
   iconButtonsContainer: {
     flexDirection: 'row',
@@ -303,7 +299,10 @@ const styles = StyleSheet.create({
   inputContainer: {
     flex: 1,
     justifyContent: 'center',
-    maxHeight: 48,
+  },
+  txtInput: {
+    backgroundColor: APP_THEME.colors.primary,
+    maxHeight: 48
   },
   button: {
     marginRight: APP_THEME.spacing.between_component,

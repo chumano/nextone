@@ -63,8 +63,12 @@ class AuthenticationService {
     }
 
     //send reuqest to signin silent
-    public signinSilent() {
-        return this.userManager.signinSilent();
+    public async signinSilent() {
+        try{
+            await this.userManager.signinSilent();
+        }catch(error){
+            console.error("AuthenticationService signinSilent", error)
+        }
     }
 
     //request signout
@@ -73,6 +77,7 @@ class AuthenticationService {
         if(user){
             localStorage.clear();
             await this.userManager.signoutRedirect({id_token_hint: user.id_token });
+            this.userManager.clearStaleState();
         }
     }
 

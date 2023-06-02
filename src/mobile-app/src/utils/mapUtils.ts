@@ -13,6 +13,8 @@ export interface MapConfig {
     layers: {id:string, url: string}[],
     minZoom?: number,
     maxZoom?: number,
+    defaultUserIconUrl?: string,
+    defaultEventIconUrl?: string
 }
 
 export const parseMapConfig = (appSettings: AppSettings[]): MapConfig => {
@@ -22,6 +24,8 @@ export const parseMapConfig = (appSettings: AppSettings[]): MapConfig => {
     let maxZoomValue = appSettings.find(o => o.code === 'MapMaxZoom')?.value;
     let boundingBoxValue = appSettings.find(o => o.code === 'MapBounding')?.value;
     let layersValue = appSettings.find(o => o.code === 'MapTileLayers')?.value;
+    let defaultUserIconUrlValue = appSettings.find(o => o.code === 'DefaultUserIconUrl')?.value;
+    let defaultEventIconUrlValue = appSettings.find(o => o.code === 'DefaultEventIconUrl')?.value;
 
     let center = parseData<[number, number]>(centerValue, defaultCenter);
     let zoom = parseData<number>(zoomValue, defaultZoom);
@@ -29,13 +33,17 @@ export const parseMapConfig = (appSettings: AppSettings[]): MapConfig => {
     let maxZoom = parseData<number>(maxZoomValue, defaultMaxZoom);
     let boundingBox = parseData<[[number, number], [number, number]] | undefined>(boundingBoxValue, defaultBoundingBox);
     let layers = parseData< {id:string, url: string}[]>(layersValue, []);
+    let defaultUserIconUrl = defaultUserIconUrlValue
+    let defaultEventIconUrl = defaultEventIconUrlValue
     return {
         center: center,
         zoom: zoom,
         boundingBox: boundingBox,
         layers: layers,
         minZoom: minZoom,
-        maxZoom: maxZoom
+        maxZoom: maxZoom,
+        defaultUserIconUrl,
+        defaultEventIconUrl
     };
 }
 

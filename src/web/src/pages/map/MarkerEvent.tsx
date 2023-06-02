@@ -1,25 +1,21 @@
 import { Button, Tag } from 'antd';
 import L from 'leaflet';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet';
-import eventIconUrl from '../../assets/images/map/event-icon.png';
+import defaultEventIconUrl from '../../assets/images/map/event-icon.png';
 import { showModalEvent } from '../../components/event/ModalEvent';
 import { EventInfo } from '../../models/event/Event.model';
-const eventIcon = L.icon({
-    iconUrl: eventIconUrl,
-    iconSize: [24, 24],
-    iconAnchor: [12, 24],
-    popupAnchor: [0, -24],
-    shadowUrl: undefined,
-    shadowSize: undefined,
-    shadowAnchor: undefined
-});
+
 
 interface MarkerEventProps{
     evt: EventInfo, 
+    eventIconUrl?: string ,
     openPopup?: boolean
 }
-const MarkerEventInternal: React.FC<MarkerEventProps> = ({ evt, openPopup }) => {
+const MarkerEventInternal: React.FC<MarkerEventProps> = ({ 
+    evt,
+    eventIconUrl = defaultEventIconUrl, 
+    openPopup }) => {
     const map = useMap();
     const [refReady, setRefReady] = useState(false);
     let popupRef = useRef<L.Popup>();
@@ -29,6 +25,16 @@ const MarkerEventInternal: React.FC<MarkerEventProps> = ({ evt, openPopup }) => 
             popupRef.current!.openOn(map);
         }
     }, [openPopup, refReady, map]);
+
+    const eventIcon = useMemo(()=> L.icon({
+        iconUrl: eventIconUrl,
+        iconSize: [24, 24],
+        iconAnchor: [12, 24],
+        popupAnchor: [0, -24],
+        shadowUrl: undefined,
+        shadowSize: undefined,
+        shadowAnchor: undefined
+    }),[eventIconUrl]);
 
     return <Marker icon={eventIcon} position={[evt.lat, evt.lon]}>
         <Popup

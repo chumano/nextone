@@ -1,26 +1,19 @@
 import { Button } from 'antd';
 import L from 'leaflet';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Marker, Popup, useMap } from 'react-leaflet';
-import userIconUrl from '../../assets/images/map/user-icon.png';
+import defaultUserIconUrl from '../../assets/images/map/user-icon.png';
 import { UserStatus } from '../../models/user/UserStatus.model';
 import { MessageOutlined } from '@ant-design/icons';
 
-const userIcon = L.icon({
-    iconUrl: userIconUrl,
-    iconSize: [32, 32],
-    iconAnchor: [16, 32],
-    popupAnchor: [0, -32],
-    shadowUrl: undefined,
-    shadowSize: undefined,
-    shadowAnchor: undefined
-});
+
 
 const MarkerUserInternal: React.FC<{ 
     user: UserStatus, 
-    openPopup?: boolean 
+    openPopup?: boolean ,
+    userIconUrl?: string ,
     openConversation?:()=>void
-}> = ({ user, openPopup, openConversation }) => {
+}> = ({ user,userIconUrl =defaultUserIconUrl ,  openPopup, openConversation }) => {
     
     const map = useMap();
     const [refReady, setRefReady] = useState(false);
@@ -31,6 +24,16 @@ const MarkerUserInternal: React.FC<{
             popupRef.current!.openOn(map);
         }
     }, [openPopup, refReady, map]);
+
+    const userIcon = useMemo(()=> L.icon({
+        iconUrl: userIconUrl,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32],
+        shadowUrl: undefined,
+        shadowSize: undefined,
+        shadowAnchor: undefined
+    }) ,[userIconUrl]);
 
     return <Marker icon={userIcon} position={[user.lastLat!, user.lastLon!]}>
         <Popup

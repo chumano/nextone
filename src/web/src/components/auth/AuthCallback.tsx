@@ -13,7 +13,11 @@ const AuthCallback : React.FC<IProp> = (props) =>{
                 const user = await AuthenticationService.signinRedirectCallback();
                 props.history.replace(user.state.url);
             }catch (error){
-                console.error(error);
+                if(await AuthenticationService.isAuthenticated()){
+                    props.history.replace('/')
+                }else{
+                    console.error(error);
+                }
             }
         }
 
