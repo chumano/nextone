@@ -1,11 +1,12 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Button, Image, StyleSheet, Text, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {DetailsScreenNavigationProp} from '../../navigation/HomeStack';
 import {AppDispatch, IAppStore} from '../../stores/app.store';
 import {useDispatch, useSelector} from 'react-redux';
 import NewsList from '../../components/News/NewsList';
 import {APP_THEME} from '../../constants/app.theme';
+// import Sentry from '@sentry/react-native'
 
 export const HomeScreen = () => {
   const dispatch: AppDispatch = useDispatch();
@@ -46,6 +47,9 @@ export const HomeScreen = () => {
         <View style={styles.imageContainer}>
           <Image source={require('../../assets/intro_img.png')} />
         </View>
+
+        {/* <Button title='Try!' onPress={ () => { throw new Error('First error') }}/>
+        <Button title='Native!' onPress={ () => { Sentry.nativeCrash(); }}/> */}
       </View>
 
       {/* <Button title="Test" onPress={onDisplayNotification} /> */}

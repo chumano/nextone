@@ -13,8 +13,8 @@ export const BREADCRUMB_UNCAUGHT_APP_ERROR = 'uncaught-app-error';
 export const BREADCRUMB_UNCAUGHT_NON_ERROR = 'uncaught-non-error';
 
 const Config = {
-    SentryEnabled : false,
-    SentryDsnIos: "",
+    SentryEnabled : true,
+    SentryDsnIos: "", //
     SentryDsnAndroid: "",
     SentryOptions: {
         deactivateStacktraceMerging: true,
@@ -46,8 +46,8 @@ export function initializeSentry() {
 
     const mmConfig = {
         environment:  'production',
-        tracesSampleRate:  0.2,
-        sampleRate:  0.2,
+        tracesSampleRate:  1.0,
+        sampleRate:  1.0,
         attachStacktrace: true, // For Beta, stack traces are automatically attached to all messages logged
     };
 
@@ -118,19 +118,11 @@ export function captureJSException(error: unknown, isFatal: boolean) {
 
 
 const getUserContext = async () => {
-    const currentUser = {
-        id: 'currentUserId',
-        locale: 'en',
-        roles: 'multi-server-test-role',
-    };
 
-    const userToken = await AuthServiceInstance.getAccessToken();
-    if (userToken) {
-        const userTokenObject = qs.parse(
-            userToken,
-        ) as unknown as UserTokenInfoResponse;
+    const access_token = await AuthServiceInstance.getAccessToken();
+    if (access_token) {
         const jwtDecodeInfo = jwtDecode(
-          userTokenObject.access_token,
+            access_token,
         ) as JWTDecodeInfo;
         return jwtDecodeInfo
     }
@@ -139,7 +131,7 @@ const getUserContext = async () => {
 
 
 
-export const addSentryContext = async (serverUrl: string) => {
+export const addSentryContext = async () => {
     if (!Config.SentryEnabled || !Sentry) {
         return;
     }
@@ -149,6 +141,6 @@ export const addSentryContext = async (serverUrl: string) => {
         Sentry.setContext('User-Information', userContext);
 
     } catch (e) {
-        console.error(`addSentryContext for serverUrl ${serverUrl}`, e);
+        console.error(`addSentryContext `, e);
     }
 };

@@ -25,6 +25,7 @@ import { IApplicationSettings } from './types/AppConfig.type';
 import { useNavigation, StackActions, CommonActions  } from '@react-navigation/native';
 import { ChatStackProps, ConversationScreenProp } from './navigation/ChatStack';
 import { ConversationType } from './types/Conversation/ConversationType.type';
+import { addSentryContext } from './utils/sentry';
 
 
 //CHANGE_ME
@@ -78,6 +79,10 @@ const useFirebaseListen = (applicationSettings?: IApplicationSettings) => {
     initNotification();
 
   }, []);
+
+  useEffect(()=>{
+    addSentryContext();
+  },[])
 
   useEffect(() => {
     if(!applicationSettings) return;
