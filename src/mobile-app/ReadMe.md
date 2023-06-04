@@ -74,7 +74,8 @@ arch -x86_64 pod install (run at src/ios)
     - vào thư mục src/ios
     - pod install (hoặc arch -x86_64 pod install)
 
-
+3. sentry.io
+ - sudo ln -s "$(which node)" /usr/local/bin/node
 # Lỗi khi dùng lệnh npx react-native run-android
     - cd android
     - chmod +x gradlew
