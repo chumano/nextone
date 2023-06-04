@@ -90,7 +90,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-<true/>
+	<false/>
 	<key>aps-environment</key>
 	<string>development</string>
 </dict>
