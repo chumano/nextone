@@ -251,6 +251,11 @@ export const chatSlice = createSlice({
             conversation.messages = conversation.messages.filter(o=> o.eventId !== eventId);
             conversationUpdated(state, conversation);
         },
+
+        //clear errorMessage
+        clearErrorMessage: (state)=>{
+            state.errorMessage= undefined;
+        }
     },
     extraReducers: (builder) => {
         //conversation
@@ -284,14 +289,18 @@ export const chatSlice = createSlice({
 
         })
 
+        //delete
         builder.addCase(deleteConversation.fulfilled, (state, action) => {
             const { payload, meta } = action;
             const conversationId = meta.arg;
             if (payload.isSuccess) {
+                state.errorMessage = undefined;
                 state.selectedConversationId = undefined;
                 state.conversations = state.conversations.filter(o => o.id != conversationId);
                 state.channels = state.channels.filter(o => o.id != conversationId);
                 state.allConversations = [...state.channels, ...state.conversations]
+            }else{
+                state.errorMessage = payload.errorMessage || "Không thể xóa";
             }
         })
 

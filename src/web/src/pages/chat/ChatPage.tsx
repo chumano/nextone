@@ -36,7 +36,8 @@ const ChatPage: React.FC = () => {
         allConversations,
         selectedConversationId,
         isShowConversationInfo,
-        notLoadedConversationId
+        notLoadedConversationId,
+        errorMessage
     } = useSelector((store: IAppStore) => store.chat);
 
     const user = useSelector((store: IAppStore) => store.auth.user);
@@ -61,6 +62,17 @@ const ChatPage: React.FC = () => {
             
         }
     }, [dispatch]);
+
+    useEffect(()=>{
+        if(errorMessage){
+            Modal.error({
+                title: 'Có lỗi',
+                content: errorMessage
+              });
+            dispatch(chatActions.clearErrorMessage())  
+            return;
+        }
+    },[errorMessage])
 
    
     useEffect(()=>{

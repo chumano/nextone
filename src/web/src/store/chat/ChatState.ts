@@ -16,7 +16,9 @@ export interface ChatState{
     selectedConversationId?: string;
     selectedConversatio?: ConversationState;
 
-    notLoadedConversationId?: string
+    notLoadedConversationId?: string;
+    
+    errorMessage?:string;
 }
 
 export interface ConversationState extends  Conversation , Channel
