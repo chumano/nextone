@@ -13,14 +13,7 @@ namespace ComService.Infrastructure
     {
         public const string DB_SCHEMA = "com";
         public DbSet<Conversation> Conversations { get; set; }
-
         public DbSet<Channel> Channels { get; set; }
-        //{
-        //    get
-        //    {
-        //        return Conversations.OfType<Channel>();
-        //    }
-        //}
 
         public DbSet<Message> Messages { get; set; }
         public DbSet<Event> Events { get; set; }
@@ -32,6 +25,8 @@ namespace ComService.Infrastructure
         public DbSet<UserDeviceToken> UserDeviceTokens { get; set; }
 
         public DbSet<ConversationMember> ConversationMembers { get; set; }
+
+        public DbSet<UserRelationship> UserRelationships { get; set; }
 
         public ComDbContext(DbContextOptions<ComDbContext> options) : base(options)
         {
@@ -447,6 +442,7 @@ namespace ComService.Infrastructure
 
 
             BuildNewsModels(modelBuilder);
+            BuildUserRelationshipModels(modelBuilder);
         }
 
         void BuildNewsModels(ModelBuilder modelBuilder)
@@ -492,6 +488,34 @@ namespace ComService.Infrastructure
             });
         }
 
+        void BuildUserRelationshipModels(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<UserRelationship>(eb =>
+            {
+                eb.ToTable("T_App_UserRelationship", DB_SCHEMA)
+                 .HasKey(nameof(UserRelationship.UserId), nameof(UserRelationship.OtherUserId));
+
+                eb.Property(o => o.UserId)
+                    .HasColumnType("nvarchar(36)");
+                eb.Property(o => o.OtherUserId)
+                    .HasColumnType("nvarchar(36)");
+
+                eb.Property(o => o.IsBlock)
+                    .HasDefaultValue(false)
+                    .IsRequired();
+
+                eb.Property(o => o.IsFriend)
+                    .HasDefaultValue(false)
+                    .IsRequired();
+
+                eb.Property(o => o.BlockedAt)
+                    .HasColumnType("datetime");
+
+                eb.Property(o => o.FriendAt)
+                    .HasColumnType("datetime");
+
+            });
+        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
